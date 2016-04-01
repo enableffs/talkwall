@@ -1,0 +1,13 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+# Dependency directory
+# https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
+.idea/*
+.env
+node_modules
+bower_components
+npm-debug.log
+.sass-cache
+src/**/*.js
+src/**/*.map
+src/css
