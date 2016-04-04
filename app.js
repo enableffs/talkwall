@@ -21,14 +21,18 @@ var morgan = require('morgan');
 var Promise = require('promise');
 var jwt = require('express-jwt');
 var bodyParser = require('body-parser');
+var tokenManager = require('./config/token_manager');
 var secret = require('./config/secret');
 var methodOverride = require('method-override');
+var passport = require('passport');
+require('./config/passport')(passport);
 var path = require('path');
 var utilities = require('./config/utilities');
 var app = express();
 
 /********* route includes *********/
 var routes = {};
+routes.callbacks =  require('./routes/callbacks.js');
 routes.sync = require('./routes/sync.js');
 
 /********* db connection *********/
@@ -42,11 +46,11 @@ db.on('error', function (err) {
 });
 
 /********* redis connection handler *********/
-/*var redisC = require('./config/redis_database');
+var redisC = require('./config/redis_database');
 redisC.redisClient.on('error', function (err) {
     console.log('Redis error from app.js' + err);
     utilities.processError(err);
-});*/
+});
 
 
 /********* app configuration *********/
@@ -55,6 +59,7 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(morgan('dev'));
+app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, process.env.STATIC_FOLDER)));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.all('*', function(req, res, next) {
@@ -70,5 +75,13 @@ app.all('*', function(req, res, next) {
 app.listen(port);
 console.log('--> samtavla-services listening on port: '+port);
 
+/********* callback *********/
+app.get('/auth/facebook',           passport.authenticate('facebook',   { scope : 'email' }));
+app.get('/auth/facebook/callback',  passport.authenticate('facebook'),  routes.callbacks.fbcallback);
+
+app.get('/auth/google',             passport.authenticate('google',     { scope: 'email' }));
+app.get('/auth/google/callback',    passport.authenticate('google'),    routes.callbacks.googlecallback);
+
+
 /********* sync *********/
-app.get('/api/ping',                                                                                                                                                                routes.sync.ping());
+app.get('/api/ping',                                                    routes.sync.ping());
