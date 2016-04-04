@@ -7,6 +7,10 @@
 /// <reference path="services/urlservice.ts"/>
 /// <reference path="services/utilityservice.ts"/>
 
+/// <reference path="directives/autoresize.ts"/>
+
+/// <reference path="components/landing/landing.ts"/>
+
 /// <reference path="app.run.ts"/>
 
 module SamtavlaApp {
@@ -16,7 +20,8 @@ module SamtavlaApp {
         'ngRoute',
         'ngAria',
         'ngAnimate',
-        'pascalprecht.translate'
+        'pascalprecht.translate',
+        'ngMaterial'
     ];
 
     angular.module('SamtavlaApp', dependencies)
@@ -28,6 +33,7 @@ module SamtavlaApp {
         .service('AuthenticationService', AuthenticationService)
         .service('TokenInterceptor', TokenInterceptor)
         .service('UtilityService', UtilityService)
-
+        .directive('autoresize', AutoResize)
+        .controller('LandingController', LandingController)
         .run(runApp);
 }

@@ -29,7 +29,8 @@ var config = {
         scss: 'src/scss/**/*.scss',
         css: 'src/css',
         fonts: 'src/fonts/**',
-        partials: 'src/partials/**/*.html',
+        partials: 'src/components/**/*.html',
+        partials_sass: 'src/components/**/*.scss',
         images: 'src/images/**',
         languages: 'src/languages/**'
     },
@@ -191,6 +192,7 @@ gulp.task('watch', function() {
 
 gulp.task('watchreload', function() {
     gulp.watch('./www/scss/*.scss', gulp.series('visitrackersass'));
+    gulp.watch('./www/js/components/**/*.scss', gulp.series('visitrackersass'));
     gulp.watch('./www/css/main*.css').on('change', browserSync.reload);
     gulp.watch('./www/js/**/*.js').on('change', browserSync.reload);
     gulp.watch(['./www/partials/*.html', './www/js/components/*.html']).on('change', browserSync.reload);

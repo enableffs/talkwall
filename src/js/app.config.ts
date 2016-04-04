@@ -12,7 +12,7 @@ module SamtavlaApp {
         // Routes
         $routeProvider
             .when('/', {
-                templateUrl : 'partials/landing.html'
+                templateUrl : 'js/components/landing/landing.html'
             });
 
         // Token interceptor
@@ -24,6 +24,5 @@ module SamtavlaApp {
             prefix: './languages/',
             suffix: '.json'
         });
-        $translateProvider.preferredLanguage('en');
     }
 }

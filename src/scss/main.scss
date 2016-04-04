@@ -6,3 +6,31 @@
           Engagelab
 \*------------------------------------------------------*/
 
+@import url(//fonts.googleapis.com/css?family=RobotoDraft&lang=en);
+
+@import "../js/components/landing/landing";
+
+$color-blue        : #00BCD4;
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  background-color: #00B0C1;
+  margin:0;
+  adding:0;
+  font-family:'RobotoDraft', Arial, sans-serif;
+
+}
+
+a, img {
+  border :none !important;
+  outline: none !important;
+}
+
+.hr {
+  border: 0;
+  border-bottom: 1px solid #c0c0c0;
+}
