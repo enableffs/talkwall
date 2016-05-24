@@ -1,6 +1,6 @@
 /// <reference path="_references.ts"/>
 
-module SamtavlaApp {
+module TalkwallApp {
 
     'use strict';
 
@@ -10,7 +10,10 @@ module SamtavlaApp {
                               $routeProvider: ng.route.IRouteProvider) {
 
         // Routes
-        $routeProvider
+        $routeProvider.
+            when('/wall', {
+                templateUrl : 'js/components/wall/wall.html'
+            })
             .when('/', {
                 templateUrl : 'js/components/landing/landing.html'
             });

@@ -1,5 +1,5 @@
 /// <reference path="../_references.ts"/>
 
-module SamtavlaApp {
+module TalkwallApp {
     "use strict";
 }

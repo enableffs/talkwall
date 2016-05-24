@@ -1,7 +1,7 @@
 /// <reference path="../_references.ts"/>
 /// <reference path="authenticationservice.ts"/>
 
-module SamtavlaApp {
+module TalkwallApp {
     "use strict";
 
     export interface ITokenInterceptor {

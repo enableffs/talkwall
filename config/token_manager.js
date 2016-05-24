@@ -1,7 +1,7 @@
 'use strict';
 
 var redisClient = require('./redis_database').redisClient;
-var TOKEN_EXPIRATION = 1440; //24hrs
+var TOKEN_EXPIRATION = 86400; //24hrs
 var TOKEN_EXPIRATION_SEC = TOKEN_EXPIRATION * 60;
 
 // Middleware for token verification

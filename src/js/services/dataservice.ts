@@ -3,7 +3,7 @@
 /// <reference path="authenticationservice.ts"/>
 /// <reference path="../models/models.ts"/>
 
-module SamtavlaApp {
+module TalkwallApp {
     "use strict";
 
     export interface IDataService {

@@ -1,11 +1,12 @@
 /// <reference path="../_references.ts"/>
 
-module SamtavlaApp {
+module TalkwallApp {
     "use strict";
     import ILocationService = angular.ILocationService;
 
     export interface IURLService {
         getDomain(): string;
+        getURL(): string;
     }
 
     export class URLService implements IURLService {
@@ -22,6 +23,9 @@ module SamtavlaApp {
         getDomain(): string {
             return this.domain;
         }
+
+        getURL(): string {
+            return this.$location.protocol() + '://' + this.$location.host() + ':' + this.$location.port();
+        }
     }
 }
-

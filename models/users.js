@@ -26,7 +26,6 @@ var userSchema = Schema({
     },
     defaultEmail:   { type: String, unique: false },
     lastPin:        { type: Schema.Types.ObjectId, ref: 'Pin', default: null },
-    //archiveSpaces:  [{ type: Schema.Types.ObjectId, ref: 'Space' }],
     helpViewed:     { type: Boolean, default: false }
 });
 
