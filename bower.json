@@ -6,7 +6,7 @@
     "Richard Nesnass <richarne@uv.uio.no>"
   ],
   "private": true,
-  "description": "Samtavla application",
+  "description": "Talkwall application",
   "dependencies": {
     "angular": "1.5.5",
     "angular-route": "1.5.5",
@@ -15,5 +15,8 @@
     "angular-translate": "~2.11.0",
     "angular-translate-loader-static-files": "~2.11.0",
     "angular-material": "^1.0.7"
+  },
+  "resolutions": {
+    "angular": "1.5.5"
   }
 }
