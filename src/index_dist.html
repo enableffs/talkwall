@@ -6,7 +6,7 @@
 
 <head>
     <base href="/">
-    <title>Samtavla</title>
+    <title>TalkwallApp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
 
@@ -22,10 +22,11 @@
     <script type="text/javascript" src="/angular-translate/angular-translate.min.js"></script>
     <script type="text/javascript" src="/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
 
-    <script type="text/javascript" src="js/main.min.js"></script>
 </head>
 
-<body>
-<div layout flex ng-view></div>
+<body layout="row" >
+    <div layout flex ng-view></div>
 </body>
+    <!-- Application files  -->
+    <script type="text/javascript" src="js/main.min.js"></script>
 </html>
