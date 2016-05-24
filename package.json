@@ -12,8 +12,8 @@
     "richarne@uv.uio.no"
   ],
   "engines": {
-    "node": "5.5.x",
-    "npm": "2.14.x"
+    "node": "6.2.x",
+    "npm": "3.9.x"
   },
   "license": "UNLICENSED",
   "scripts": {
