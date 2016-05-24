@@ -29,8 +29,8 @@ var config = {
         scss: 'src/scss/**/*.scss',
         css: 'src/css',
         fonts: 'src/fonts/**',
-        partials: 'src/components/**/*.html',
-        partials_sass: 'src/components/**/*.scss',
+        partials: 'src/js/components/**/*.html',
+        partials_sass: 'src/js/components/**/*.scss',
         images: 'src/images/**',
         languages: 'src/languages/**'
     },
@@ -41,7 +41,7 @@ var config = {
         fonts: 'dist/fonts/',
         images: 'dist/images/',
         languages: 'dist/languages/',
-        partials: 'dist/partials'
+        partials: 'dist/js/components/'
     }
 };
 
