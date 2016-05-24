@@ -191,11 +191,11 @@ gulp.task('watch', function() {
 });
 
 gulp.task('watchreload', function() {
-    gulp.watch('./www/scss/*.scss', gulp.series('visitrackersass'));
-    gulp.watch('./www/js/components/**/*.scss', gulp.series('visitrackersass'));
-    gulp.watch('./www/css/main*.css').on('change', browserSync.reload);
-    gulp.watch('./www/js/**/*.js').on('change', browserSync.reload);
-    gulp.watch(['./www/partials/*.html', './www/js/components/*.html']).on('change', browserSync.reload);
+    gulp.watch('./src/scss/*.scss', gulp.series('visitrackersass'));
+    gulp.watch('./src/js/components/**/*.scss', gulp.series('visitrackersass'));
+    gulp.watch('./src/css/main*.css').on('change', browserSync.reload);
+    gulp.watch('./src/js/**/*.js').on('change', browserSync.reload);
+    gulp.watch(['./src/js/components/*.html', './www/js/components/*.html']).on('change', browserSync.reload);
 });
 
 
