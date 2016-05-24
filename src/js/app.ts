@@ -9,8 +9,8 @@
 
 /// <reference path="directives/autoresize.ts"/>
 
-/// <reference path="components/landing/landing.ts"/>
 /// <reference path="components/login/login.ts"/>
+/// <reference path="components/landing/landing.ts"/>
 
 /// <reference path="app.run.ts"/>
 
@@ -35,6 +35,7 @@ module TalkwallApp {
         .service('TokenInterceptor', TokenInterceptor)
         .service('UtilityService', UtilityService)
         .directive('autoresize', AutoResize)
+        .controller('LoginController', LoginController)
         .controller('LandingController', LandingController)
         .run(runApp);
 }
