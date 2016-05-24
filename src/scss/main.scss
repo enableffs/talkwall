@@ -8,7 +8,8 @@
 
 @import url(//fonts.googleapis.com/css?family=RobotoDraft&lang=en);
 
-@import "../js/components/landing/landing";
+@import "../js/components/landing/landing",
+        "../js/components/login/login";
 
 $color-blue        : #00BCD4;
 
@@ -18,7 +19,7 @@ html, body {
 }
 
 body {
-  background-color: #00B0C1;
+  background-color: $color-blue;
   margin:0;
   adding:0;
   font-family:'RobotoDraft', Arial, sans-serif;
@@ -33,4 +34,8 @@ a, img {
 .hr {
   border: 0;
   border-bottom: 1px solid #c0c0c0;
+}
+
+md-toolbar {
+  background-color: $color-blue !important;
 }

@@ -10,10 +10,11 @@
 /// <reference path="directives/autoresize.ts"/>
 
 /// <reference path="components/landing/landing.ts"/>
+/// <reference path="components/login/login.ts"/>
 
 /// <reference path="app.run.ts"/>
 
-module SamtavlaApp {
+module TalkwallApp {
     'use strict';
 
     var dependencies = [
@@ -24,7 +25,7 @@ module SamtavlaApp {
         'ngMaterial'
     ];
 
-    angular.module('SamtavlaApp', dependencies)
+    angular.module('TalkwallApp', dependencies)
 
         .config(configApp)
 

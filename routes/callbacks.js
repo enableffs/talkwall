@@ -10,7 +10,7 @@ var Pin = require('../models/pins');
 exports.fbcallback = function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
-    var token = jwt.sign({id: req.user._id}, secret.secretToken, { expiresInMinutes: tokenManager.TOKEN_EXPIRATION });
+    var token = jwt.sign({id: req.user._id}, secret.secretToken, {expiresIn: tokenManager.TOKEN_EXPIRATION});
 
     var userquery = User.findOne({_id: req.user._id});
     userquery.exec(function (err, user) {
@@ -29,7 +29,7 @@ exports.fbcallback = function(req, res) {
                 }
 
                 //return res.redirect('/#/create?t='+token+'&u='+user._id+'&s='+user.lastPin+'&e='+user.facebook.email+'&h='+user.helpViewed);
-                return res.redirect('/');
+                return res.redirect('/#/wall');
             });
 
         } else {
@@ -41,7 +41,7 @@ exports.fbcallback = function(req, res) {
 exports.googlecallback = function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
-    var token = jwt.sign({id: req.user._id}, secret.secretToken, { expiresInMinutes: tokenManager.TOKEN_EXPIRATION });
+    var token = jwt.sign({id: req.user._id}, secret.secretToken, {expiresIn: tokenManager.TOKEN_EXPIRATION});
 
     var userquery = User.findOne({_id: req.user._id});
     userquery.exec(function (err, user) {
@@ -60,7 +60,7 @@ exports.googlecallback = function(req, res) {
                 }
 
                 //return res.redirect('/#/create?t='+token+'&u='+user._id+'&s='+user.lastPin+'&e='+user.google.email+'&h='+user.helpViewed);
-                return res.redirect('/');
+                return res.redirect('/#/wall');
             });
 
         } else {
