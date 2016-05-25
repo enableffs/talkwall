@@ -9,9 +9,11 @@
 @import url(//fonts.googleapis.com/css?family=RobotoDraft&lang=en);
 
 @import "../js/components/landing/landing",
-        "../js/components/login/login";
+        "../js/components/login/login",
+        "../js/components/wall/wall";
 
 $color-blue        : #00BCD4;
+$color-grey        : #c0c0c0;
 
 html, body {
   overflow: hidden;
@@ -19,11 +21,9 @@ html, body {
 }
 
 body {
-  background-color: $color-blue;
   margin:0;
   adding:0;
   font-family:'RobotoDraft', Arial, sans-serif;
-
 }
 
 a, img {
@@ -33,7 +33,7 @@ a, img {
 
 .hr {
   border: 0;
-  border-bottom: 1px solid #c0c0c0;
+  border-bottom: 1px solid $color-grey;
 }
 
 md-toolbar {

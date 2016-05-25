@@ -11,12 +11,21 @@
 
 /// <reference path="components/login/login.ts"/>
 /// <reference path="components/landing/landing.ts"/>
+/// <reference path="components/wall/wall.ts"/>
 
 /// <reference path="app.run.ts"/>
 
+
+/**
+ * TalkwallApp core application module.
+ * @preferred
+ */
 module TalkwallApp {
     'use strict';
 
+    /**
+     * Array of dependencies to be injected in the application "dependencies".
+     */
     var dependencies = [
         'ngRoute',
         'ngAria',
@@ -37,5 +46,6 @@ module TalkwallApp {
         .directive('autoresize', AutoResize)
         .controller('LoginController', LoginController)
         .controller('LandingController', LandingController)
+        .controller('WallController', WallController)
         .run(runApp);
 }

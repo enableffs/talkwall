@@ -4,25 +4,35 @@
 module TalkwallApp {
 	"use strict";
 	import IDialogService = angular.material.IDialogService;
-	import IScope = angular.IScope;
 	export class LoginController {
-		static $inject = ['$scope', '$mdDialog'];
+		static $inject = ['$mdDialog'];
 
 		constructor(
-			private isolatedScope: IScope,
 			private $mdDialog: IDialogService) {
 			console.log('--> LoginController: started: ');
 		}
 
-		hide(): void {
+		/**
+		 * hide this dialog (see angular.material.IDialogService)
+		 * @aparam response a possible reponse
+		 */
+		hide(response?: any): void {
 			console.log('--> LoginController: hide');
 			this.$mdDialog.hide();
 		};
-		cancel() : void {
+		/**
+		 * cancel this dialog (see angular.material.IDialogService)
+		 * @aparam response a possible reponse
+		 */
+		cancel(response?: any) : void {
 			console.log('--> LoginController: cancel');
 			this.$mdDialog.cancel();
 		};
-		answer(answer): void {
+		/**
+		 * answer this dialog
+		 * @aparam answer aa a string
+		 */
+		answer(answer: string): void {
 			console.log('--> LoginController: answer: ' + answer);
 			this.$mdDialog.hide(answer);
 		};
