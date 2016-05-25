@@ -9,7 +9,8 @@
 @import url(//fonts.googleapis.com/css?family=RobotoDraft&lang=en);
 
 @import "../js/components/landing/landing",
-        "../js/components/login/login";
+        "../js/components/login/login",
+        "../js/components/wall/wall";
 
 $color-blue        : #00BCD4;
 
@@ -19,7 +20,7 @@ html, body {
 }
 
 body {
-  background-color: $color-blue;
+  //background-color: $color-blue;
   margin:0;
   adding:0;
   font-family:'RobotoDraft', Arial, sans-serif;

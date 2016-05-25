@@ -6,6 +6,7 @@ var secret = require('../config/secret');
 var tokenManager = require('../config/token_manager');
 var User = require('../models/users');
 var Pin = require('../models/pins');
+var common = require('../config/common.js');
 
 exports.fbcallback = function(req, res) {
     // If this function gets called, authentication was successful.
@@ -15,25 +16,24 @@ exports.fbcallback = function(req, res) {
     var userquery = User.findOne({_id: req.user._id});
     userquery.exec(function (err, user) {
         if (err) {
-            return res.status(400).end();
+            return res.status(common.StatusMessages.DATABASE_ERROR.status).json({message: common.StatusMessages.DATABASE_ERROR.message, error: err});
         }
 
         if (user != null) {
             console.log('--> user search - got results');
 
             user.defaultEmail = user.facebook.email;
-            user.save(function(error, result, index) {
+            user.save(function(error, newUser) {
                 if (error) {
-                    console.log(err);
-                    return res.status(400).json({message: 'error saving user'});
+                    return res.status(common.StatusMessages.DATABASE_ERROR.status).json({message: common.StatusMessages.DATABASE_ERROR.message, error: error});
                 }
 
-                //return res.redirect('/#/create?t='+token+'&u='+user._id+'&s='+user.lastPin+'&e='+user.facebook.email+'&h='+user.helpViewed);
-                return res.redirect('/#/wall');
+                return res.redirect('/#/wall?t='+token);
+                //return res.status(common.StatusMessages.LOGIN_SUCCESS.status).json({message: common.StatusMessages.LOGIN_SUCCESS.message, user: newUser, token: token});
             });
 
         } else {
-            return res.status(404).json({message: 'empty user'});
+            return res.status(common.StatusMessages.INVALID_USER.status).json({message: common.StatusMessages.INVALID_USER.message});
         }
     });
 };
@@ -46,25 +46,36 @@ exports.googlecallback = function(req, res) {
     var userquery = User.findOne({_id: req.user._id});
     userquery.exec(function (err, user) {
         if (err) {
-            return res.status(400).end();
+            return res.status(common.StatusMessages.DATABASE_ERROR.status).json({message: common.StatusMessages.DATABASE_ERROR.message, error: err});
         }
 
         if (user != null) {
             console.log('--> user search - got results');
 
             user.defaultEmail = user.google.email;
-            user.save(function(error, result, index) {
+            user.save(function(error, newUser) {
                 if (error) {
-                    console.log(err);
-                    return res.status(400).json({message: 'error saving user'});
+                    return res.status(common.StatusMessages.DATABASE_ERROR.status).json({message: common.StatusMessages.DATABASE_ERROR.message, error: error});
                 }
 
-                //return res.redirect('/#/create?t='+token+'&u='+user._id+'&s='+user.lastPin+'&e='+user.google.email+'&h='+user.helpViewed);
-                return res.redirect('/#/wall');
+                return res.redirect('/#/wall?t='+token);
+                //return res.status(common.StatusMessages.LOGIN_SUCCESS.status).json({message: common.StatusMessages.LOGIN_SUCCESS.message, user: newUser, token: token});
             });
 
         } else {
-            return res.status(404).json({message: 'empty user'});
+            return res.status(common.StatusMessages.INVALID_USER.status).json({message: common.StatusMessages.INVALID_USER.message});
         }
     });
+};
+
+exports.logout = function(req, res) {
+    if (req.user) {
+        tokenManager.expireToken(req.headers);
+
+        delete req.user;
+        return res.status(common.StatusMessages.USER_LOGOUT_SUCCESS.status).json({message: common.StatusMessages.USER_LOGOUT_SUCCESS.message});
+    }
+    else {
+        return res.status(common.StatusMessages.USER_LOGOUT_ERROR.status).json({message: common.StatusMessages.USER_LOGOUT_ERROR.message});
+    }
 };

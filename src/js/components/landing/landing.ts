@@ -1,6 +1,7 @@
 /// <reference path="../../_references.ts"/>
 /// <reference path="../../services/urlservice.ts"/>
 /// <reference path="../login/login.ts"/>
+/// <reference path="../../services/dataservice.ts"/>
 
 module TalkwallApp {
 	"use strict";
@@ -10,7 +11,7 @@ module TalkwallApp {
 	import IWindowService = angular.IWindowService;
 
 	export class LandingController {
-		static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$scope', '$window'];
+		static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$scope', '$window', 'DataService'];
 
 		private customFullscreen;
 
@@ -20,7 +21,8 @@ module TalkwallApp {
 			private $mdMedia: IMedia,
 			private $mdDialog: IDialogService,
 			private isolatedScope: IScope,
-			private $window: IWindowService) {
+			private $window: IWindowService,
+			private dataService: DataService) {
 			console.log('--> LandingController: started: ');
 			this.$translate.use(this.urlService.getDomain());
 			this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
