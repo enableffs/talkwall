@@ -226,13 +226,16 @@ rename it to Talkwall
 
 
 
-# Tasks
+# Roadmap
+
+## Version 2.0
 
 * Project setup, platform and distribution
 	* landing page
-	* login panel (google / facebook)
+	* CREATE -> login panel (google / facebook)
 		* auhtentication
-		* list existing walls
+		* list existing walls (moved to 4.0)
+	* JOIN -> pin page
 	* wall
 		* layout
 		* sidepanel-left
@@ -266,31 +269,90 @@ rename it to Talkwall
 				* adds a message to the feed
 				* adds message also to the wall if feed is closed
 		* sidepanel-right
+			* ORGANIZER -> "Join with PIN" panel
+				* as today 	
+			* ORGANIZER -> "Edit tasks" panel
+				* List of exisiting tasks
+				* Add button
+					* "Add task" panel
+						* Text input, background, submit 
+			* ORGANIZER -> "Close Talkwall" panel
+				* Clients are disconnected after X sec.
+				* Send email to organiser with rich text document as attachment.
 		* message "on-board"
-			
-			
+			* control
+				* select: shange styling of message
+				* edit: brings up message bottom-sheet with content
+				* remove: remove from wall
+			* messages has fixed with, variable height to show all content
+		* top bar
+			* next wall button (if next task exists)
+			* previous wall button (if previous task exists)
+			* display task
+			* show mesages button
+			* show screens button
+			* ORGANIZER -> shared focus! button (Ole to design)
+				* Organizer brings all clients to the same wall 	
 
 * Test
 * Bug fixing
 
 
-### Unprioritized
+### Lower priority
 * Project setup, platform and distribution
-	* landing page (edits)
-	* login panel
-		* delete walls
-		* edit wall name
 	* wall
+		* sidepanel-right
+			* "Filter messages" panel
+				* top:
+					* list Nicknames with checkbox
+				* bottom:
+					* list submitted hashtags with checkbox 
 		* sidepanel-left
 			* "Messages" tab
 				* message feed
-					* latest message at the bottom 
 					* message
 						* show question number
 						* history chips needs to be restyled
 						* controllbar
 							* icons may need updating
-			* "Show screens" tab
-				* client feed
-					* client
-						* messages could be highlighted with color to relate which client's messages are on the board
+
+## Version 3.0
+
+* Project setup, platform and distribution
+	* wall
+		* sidepanel-right
+			* "Rules" panel
+				* top: 
+					* ORGANIZER -> "Edit rules"
+						* Edit rules in place
+			* ORGANIZER -> "Edit tasks" panel
+				* "Add task" panel
+					* Select max lenght of messages (three options: concept, tweet, summary) 
+			* "Close Talkwall" panel
+				* Display contents of Talkwall for this client as html in a window.
+				* 
+		* message "on-board"
+			* when selected: copy to next wall when requested
+			* control:
+				* make heading: change styling of message 	
+			
+* Test
+* Bug fixing
+
+
+## Version 4.0
+
+* Project setup, platform and distribution
+	* login panel (feide)
+		* auhtentication
+		* list existing walls
+			* delete walls
+			* edit wall name
+			* share wall as template
+				* copy tasks, labels and rules	
+		* continue wall
+		* start new wall
+
+* Test
+* Bug fixing
+
