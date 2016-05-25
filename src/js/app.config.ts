@@ -6,6 +6,12 @@ module TalkwallApp {
 
     configApp.$inject = ['$translateProvider', '$httpProvider', '$routeProvider'];
 
+    /**
+     * Application-wide overall configuration
+     * @param $translateProvider  Used for defining default language translation support.
+     * @param $httpProvider  Used for registering an interceptor (TokenInterceptor).
+     * @param $routeProvider  Used for defining default routing.
+     */
     export function configApp($translateProvider: angular.translate.ITranslateProvider, $httpProvider: ng.IHttpProvider,
                               $routeProvider: ng.route.IRouteProvider) {
 

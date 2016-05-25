@@ -17,7 +17,8 @@ var gulp = require('gulp'),
     tslint = require("gulp-tslint"),
     cssnano = require('gulp-cssnano'),
     ts = require('gulp-typescript'),
-    del = require('del');
+    del = require('del'),
+    typedoc = require("gulp-typedoc");
 
 var config = {
     project: '/',
@@ -212,7 +213,19 @@ gulp.task('browserSync', function() {
     });
 });
 
+gulp.task("typedoc", function() {
+    return gulp
+        .src(["src/js/**/*.ts"])
+        .pipe(typedoc({
+            module: "commonjs",
+            target: "es5",
+            out: "docs/",
+            name: "Talkwall client"
+        }))
+        ;
+});
 
-gulp.task('dev', gulp.series('sass', 'ts-lint', 'typescripts', 'javascripts'));
+
+gulp.task('dev', gulp.series('sass', 'ts-lint', 'typescripts', 'javascripts', 'typedoc'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-styles', 'copy-languages', 'copy-fonts'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-styles', 'copy-languages', 'copy-fonts', 'typedoc'));

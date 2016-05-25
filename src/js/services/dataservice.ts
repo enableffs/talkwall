@@ -9,6 +9,10 @@ module TalkwallApp {
     import ILocationService = angular.ILocationService;
 
     export interface IDataService {
+        /**
+         * get authentication status
+         * @return status as boolean
+         */
         checkAuthenticated(): boolean;
     }
 
@@ -23,18 +27,21 @@ module TalkwallApp {
         }
 
         checkAuthenticated(): boolean {
-            let tKey = 't';
+            let tKey = 'authenticationToken';
             var tokenParam = this.$routeParams[tKey] || '';
             let tokenKey = 'token';
             if (tokenParam !== '') {
+                //look at the route params first for 'authenticationToken'
                 console.log('--> WallController: token from parameter');
                 this.$window.sessionStorage[tokenKey] = tokenParam;
                 this.$location.search(tKey, null);
                 return true;
             } else if (this.$window.sessionStorage[tokenKey]) {
+                //if not, look at the window session object
                 console.log('--> WallController: token already existing');
                 return true;
             } else {
+                //else, not authenticated
                 console.log('--> WallController: not authenticated');
                 this.$location.path("/");
                 return false;

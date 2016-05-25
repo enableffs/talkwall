@@ -15,9 +15,17 @@
 
 /// <reference path="app.run.ts"/>
 
+
+/**
+ * TalkwallApp core application module.
+ * @preferred
+ */
 module TalkwallApp {
     'use strict';
 
+    /**
+     * Array of dependencies to be injected in the application "dependencies".
+     */
     var dependencies = [
         'ngRoute',
         'ngAria',

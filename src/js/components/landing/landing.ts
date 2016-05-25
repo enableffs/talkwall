@@ -7,12 +7,12 @@ module TalkwallApp {
 	"use strict";
 	import IDialogService = angular.material.IDialogService;
 	import IMedia = angular.material.IMedia;
-	import IScope = angular.IScope;
 	import IWindowService = angular.IWindowService;
 
 	export class LandingController {
-		static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$scope', '$window', 'DataService'];
+		static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$window', 'DataService'];
 
+		//vars
 		private customFullscreen;
 
 		constructor(
@@ -20,17 +20,21 @@ module TalkwallApp {
 			private $translate: any,
 			private $mdMedia: IMedia,
 			private $mdDialog: IDialogService,
-			private isolatedScope: IScope,
 			private $window: IWindowService,
 			private dataService: DataService) {
 			console.log('--> LandingController: started: ');
-			this.$translate.use(this.urlService.getDomain());
+			this.$translate.use(this.urlService.getLanguageDomain());
 			this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
 		}
 
+		/**
+		 * display an advanced dialog for the login, and catches it's events
+		 */
 		showLoginDialog(ev) : void {
 			var handle = this;
+			//detects if the device is small
 			var useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+			//show the dialog
 			this.$mdDialog.show({
 				controller: LoginController,
 				controllerAs: 'loginC',
@@ -40,17 +44,12 @@ module TalkwallApp {
 				clickOutsideToClose: true
 			})
 			.then(function(answer) {
-				//answered
+				//dialog answered
 				console.log('--> LandingController: answer: ' + answer);
-				handle.$window.location.href = handle.urlService.getURL() + answer;
+				handle.$window.location.href = handle.urlService.getHost() + answer;
 			}, function() {
-				//dismissed
-				console.log('--> LandingController: dissmissed');
-			});
-			this.isolatedScope.$watch(function() {
-				return handle.$mdMedia('xs') || handle.$mdMedia('sm');
-			}, function(wantsFullScreen) {
-				handle.customFullscreen = (wantsFullScreen === true);
+				//dialog dismissed
+				console.log('--> LandingController: dismissed');
 			});
 		}
 	}

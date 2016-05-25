@@ -11,7 +11,14 @@ module TalkwallApp {
 	import IRouteParamsService = angular.route.IRouteParamsService;
 	import ILocationService = angular.ILocationService;
 
-	export class WallController {
+	export interface IWallControllerService {
+		/**
+		 * init function for this controller
+		 */
+		activate(): void;
+	}
+
+	export class WallController implements IWallControllerService {
 		static $inject = ['URLService', 'DataService'];
 
 		constructor(

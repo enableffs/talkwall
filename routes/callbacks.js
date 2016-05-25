@@ -28,7 +28,7 @@ exports.fbcallback = function(req, res) {
                     return res.status(common.StatusMessages.DATABASE_ERROR.status).json({message: common.StatusMessages.DATABASE_ERROR.message, error: error});
                 }
 
-                return res.redirect('/#/wall?t='+token);
+                return res.redirect('/#/wall?authenticationToken='+token);
                 //return res.status(common.StatusMessages.LOGIN_SUCCESS.status).json({message: common.StatusMessages.LOGIN_SUCCESS.message, user: newUser, token: token});
             });
 
@@ -58,7 +58,7 @@ exports.googlecallback = function(req, res) {
                     return res.status(common.StatusMessages.DATABASE_ERROR.status).json({message: common.StatusMessages.DATABASE_ERROR.message, error: error});
                 }
 
-                return res.redirect('/#/wall?t='+token);
+                return res.redirect('/#/wall?authenticationToken='+token);
                 //return res.status(common.StatusMessages.LOGIN_SUCCESS.status).json({message: common.StatusMessages.LOGIN_SUCCESS.message, user: newUser, token: token});
             });
 
