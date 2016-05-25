@@ -299,6 +299,8 @@ rename it to Talkwall
 
 
 ### Lower priority
+
+* platform
 	* wall
 		* sidepanel-right
 			* "Filter messages" panel
