@@ -234,7 +234,6 @@ rename it to Talkwall
 	* landing page
 	* CREATE -> login panel (google / facebook)
 		* auhtentication
-		* list existing walls (moved to 4.0)
 	* JOIN -> pin page
 	* wall
 		* layout
@@ -287,19 +286,19 @@ rename it to Talkwall
 			* messages has fixed with, variable height to show all content
 		* top bar
 			* next wall button (if next task exists)
+				* ORGANIZER -> next wall also triggers all participant's apps
 			* previous wall button (if previous task exists)
+				* ORGANIZER -> previous wall also triggers all participant's apps
 			* display task
 			* show mesages button
 			* show screens button
-			* ORGANIZER -> shared focus! button (Ole to design)
-				* Organizer brings all clients to the same wall 	
+	
 
 * Test
 * Bug fixing
 
 
 ### Lower priority
-* Project setup, platform and distribution
 	* wall
 		* sidepanel-right
 			* "Filter messages" panel
@@ -307,6 +306,8 @@ rename it to Talkwall
 					* list Nicknames with checkbox
 				* bottom:
 					* list submitted hashtags with checkbox 
+				* Apply filters to messages on wall and on feed - indicate active filter in panel name
+				* Release filter when whole sidepanel is closed by hamburger
 		* sidepanel-left
 			* "Messages" tab
 				* message feed
@@ -315,10 +316,17 @@ rename it to Talkwall
 						* history chips needs to be restyled
 						* controllbar
 							* icons may need updating
+	 	* sidepanel-left
+			* "Show screens" tab, top:
+				* ORGANIZER -> "Focus on same wall" button 
+					* Brings all clients to the same wall 
+					
+* Test
+* Bug fixing
 
 ## Version 3.0
 
-* Project setup, platform and distribution
+* Platform
 	* wall
 		* sidepanel-right
 			* "Rules" panel
@@ -330,7 +338,7 @@ rename it to Talkwall
 					* Select max lenght of messages (three options: concept, tweet, summary) 
 			* "Close Talkwall" panel
 				* Display contents of Talkwall for this client as html in a window.
-				* 
+				
 		* message "on-board"
 			* when selected: copy to next wall when requested
 			* control:
@@ -342,14 +350,16 @@ rename it to Talkwall
 
 ## Version 4.0
 
-* Project setup, platform and distribution
+* Platform
 	* login panel (feide)
 		* auhtentication
 		* list existing walls
 			* delete walls
 			* edit wall name
 			* share wall as template
-				* copy tasks, labels and rules	
+				* copy tasks, labels and rules
+				* create URL for template
+				* show URL in a window
 		* continue wall
 		* start new wall
 
