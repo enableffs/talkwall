@@ -228,7 +228,7 @@ rename it to Talkwall
 
 # Roadmap
 
-## Version 2.0
+## Version 2.0 minimal
 
 * Project setup, platform and distribution
 	* landing page
@@ -299,7 +299,7 @@ rename it to Talkwall
 * Bug fixing
 
 
-### Lower priority
+## Version 2.0 addition: filtering/hashtags
 
 * platform
 	* wall
@@ -311,6 +311,12 @@ rename it to Talkwall
 					* list submitted hashtags with checkbox 
 				* Apply filters to messages on wall and on feed - indicate active filter in panel name
 				* Release filter when whole sidepanel is closed by hamburger
+				
+
+## Version 2.0 lower priority
+
+* platform
+	* wall
 		* sidepanel-left
 			* "Messages" tab
 				* message feed
@@ -340,7 +346,7 @@ rename it to Talkwall
 				* "Add task" panel
 					* Select max lenght of messages (three options: concept, tweet, summary) 
 			* "Close Talkwall" panel
-				* Display contents of Talkwall for this client as html in a window.
+				* Display contents of Talkwall for this client as (report page rich text or HTML)
 				
 		* message "on-board"
 			* when selected: copy to next wall when requested
