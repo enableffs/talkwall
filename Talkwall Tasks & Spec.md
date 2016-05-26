@@ -278,7 +278,7 @@ rename it to Talkwall
 						* Text input, background, submit 
 			* ORGANIZER -> "Close Talkwall" panel
 				* Clients are disconnected after X sec.
-				* Send email to organiser with rich text document as attachment.
+				* Send email to organiser with link to URL (report page rich text or HTML)
 		* message "on-board"
 			* control
 				* select: shange styling of message
