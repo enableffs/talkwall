@@ -231,11 +231,16 @@ rename it to Talkwall
 ## Version 2.0 minimal
 
 * Project setup, platform and distribution
-	* landing page
+	* landing page (needs edits OLE)
 	* CREATE -> login panel (google / facebook)
 		* auhtentication
-		* open last or create new
-	* JOIN -> pin page
+		* open last or create new (dialog as today)
+			* if new, slide open "new task" right panel
+			* if not, everything closed, with teacher's messages on board
+	* JOIN - ON HOLD => needs more design
+		* join pin dialog with nickname (same nickname can work on multiple devices as the same time) ?
+		* confirmation if nickname already exists?
+		* group level above nicknames?
 	* wall
 		* layout
 		* sidepanel-left
@@ -248,53 +253,74 @@ rename it to Talkwall
 					* latest message at the bottom (no auto scroll, keep position)
 					* message
 						* show text (3 lines that fits 140 characters)
-						* history (chips)
+						* history (chips). chips have a fixed size, with "...". fit as many chips has possible on one line (+ '...' if it goes beyond)
 						* controllbar
-							* select (place on wall)
+							* select (place on wall) / deselect (removes from wall)
+								* keep random placement around the center
 							* edit (should open the text in the edit pane)
+								* if not owner of the message, create a copy, inherit history and metadata, and appends to the message feed. keep originator message ID.
 							* delete (remove from list not from DB)
-						* selected message inherits orange background
+						* selected message inherits 'light' orange background
 			* Add message button (+)
 				* position bottom left
 				* shows a bottom-sheet component
+				* slide open message feed if closed
 			* "Show screens" tab
-				* client feed
+				* client list
 					* client
 						* standard icon (same but for the teacher -> crown)
 						* nickname
-						* select checkbox (selected -> display client's question wall)
+						* select checkbox (selected -> display client's task wall same as teacher's task number)
+					* select all button checks all checkboxes (-> unselect all button, but keep the teacher)
 		* Add message bottom-sheet
 			* textarea fixed length 140 char
 			* check button
-				* adds a message to the feed
-				* adds message also to the wall if feed is closed
-		* sidepanel-right
+				* adds a message to the feed and dismisses the bottom-sheet
+		* sidepanel-right ("slack style", one panel open at a time)
 			* ORGANIZER -> "Join with PIN" panel
-				* as today 	
+				* as today (dynamic update of participants count based on polling)
 			* ORGANIZER -> "Edit tasks" panel
-				* List of exisiting tasks
-				* Add button
-					* "Add task" panel
-						* Text input, background, submit 
+				* List of exisiting tasks (by default empty list)
+					* task has slide control to edit, delete
+					* delete only works if no messages for that task
+				* "Add task" panel (10 tasks max -> matching color palette for task background)
+					* Text input, background, submit (no message size selector)
+					* submit button adds/validates a task in the list above
 			* ORGANIZER -> "Close Talkwall" panel
-				* Clients are disconnected after X sec.
+				* text that explaind the effects of closing 
+				* Clients receive an instruction to disconnect based on polling
+					* dialog thanking for participation
+					* ok, takes back to landing page
 				* Send email to organiser with link to URL (report page rich text or HTML)
-		* message "on-board"
+					* page [https://github.com/engagelab/talkwall/blob/master/export%20spec.md]
+		* message "on-wall"
 			* control
-				* select: shange styling of message
-				* edit: brings up message bottom-sheet with content
-				* remove: remove from wall
-			* messages has fixed with, variable height to show all content
+				* select: highights message by setting a 'light orange' background
+				* edit: brings up message bottom-sheet with its content to edit
+				* remove: remove from wall (-> unhighlights in the feed)
+			* messages has fixed width, variable height to show all content
+				* all content should be visible so messages can be auto relocated
 		* top bar
-			* next wall button (if next task exists)
-				* ORGANIZER -> next wall also triggers all participant's apps
-			* previous wall button (if previous task exists)
-				* ORGANIZER -> previous wall also triggers all participant's apps
-			* display task
-			* show mesages button
-			* show screens button
-	
-
+			* "message feed" button
+			* "screens" button (teacher only)
+			* next task button (if next task exists)
+				* teacher -> next wall also triggers all participant's apps
+				* student -> only affects his/her wall
+			* previous task button (if previous task exists)
+				* teacher -> previous wall also triggers all participant's apps
+				* student -> only affects his/her wall
+			NOTE when moving from one task to the next: 
+				* when interaction occurs (drag, write, scroll, etc -> no polling)
+				* background animation between questions
+			* "hamburger" button (teacher only)
+	* PHONE version => ON HOLD => needs further design
+		* JOIN only
+		* add messages to feed
+		* navigate between tasks
+		* select, edit, delete
+			* select places on the "nickname's" task
+		* wall hidden
+		* right-hand menu hidden
 * Test
 * Bug fixing
 
@@ -321,6 +347,7 @@ rename it to Talkwall
 			* "Messages" tab
 				* message feed
 					* message
+						* (+) button can be turned transparent and list all the way to the bottom
 						* history chips needs to be restyled
 						* controllbar
 							* icons may need updating
