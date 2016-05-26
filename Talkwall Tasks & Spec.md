@@ -234,6 +234,7 @@ rename it to Talkwall
 	* landing page
 	* CREATE -> login panel (google / facebook)
 		* auhtentication
+		* open last or create new
 	* JOIN -> pin page
 	* wall
 		* layout
