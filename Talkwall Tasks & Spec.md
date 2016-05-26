@@ -237,10 +237,8 @@ rename it to Talkwall
 		* open last or create new (dialog as today)
 			* if new, slide open "new task" right panel
 			* if not, everything closed, with teacher's messages on board
-	* JOIN - ON HOLD => needs more design
-		* join pin dialog with nickname (same nickname can work on multiple devices as the same time) ?
-		* confirmation if nickname already exists?
-		* group level above nicknames?
+	* JOIN
+		* join pin dialog with nickname (only one nickname allowed)
 	* wall
 		* layout
 		* sidepanel-left
@@ -313,12 +311,12 @@ rename it to Talkwall
 				* when interaction occurs (drag, write, scroll, etc -> no polling)
 				* background animation between questions
 			* "hamburger" button (teacher only)
-	* PHONE version => ON HOLD => needs further design
+	* PHONE version
 		* JOIN only
 		* add messages to feed
 		* navigate between tasks
-		* select, edit, delete
-			* select places on the "nickname's" task
+		* edit, delete own messages
+			* edit not own creates new copy with history (same as desktop)
 		* wall hidden
 		* right-hand menu hidden
 * Test
