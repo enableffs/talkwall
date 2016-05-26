@@ -306,9 +306,9 @@ rename it to Talkwall
 		* sidepanel-right
 			* "Filter messages" panel
 				* top:
-					* list Nicknames with checkbox
+					* list Nicknames with checkbox (lower pri)
 				* bottom:
-					* list submitted hashtags with checkbox 
+					* list submitted hashtags with checkbox (high pri)
 				* Apply filters to messages on wall and on feed - indicate active filter in panel name
 				* Release filter when whole sidepanel is closed by hamburger
 				
@@ -321,14 +321,9 @@ rename it to Talkwall
 			* "Messages" tab
 				* message feed
 					* message
-						* show question number
 						* history chips needs to be restyled
 						* controllbar
 							* icons may need updating
-	 	* sidepanel-left
-			* "Show screens" tab, top:
-				* ORGANIZER -> "Focus on same wall" button 
-					* Brings all clients to the same wall 
 					
 * Test
 * Bug fixing
