@@ -1,0 +1,11 @@
+<md-bottom-sheet class="md-grid" layout="column" ng-cloak>
+	<div layout="row" layout-align="center center" flex style="margin: 20px">
+		<md-input-container flex class="md-block">
+			<label>Edit message</label>
+			<textarea ng-model="yo" md-maxlength="150" rows="5" md-select-on-focus></textarea>
+		</md-input-container>
+		<md-button class="md-fab" aria-label="Eat cake" style="background-color: #ff7700" ng-click="editMessageC.answer(yo)">
+			<md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
+		</md-button>
+	</div>
+</md-bottom-sheet>

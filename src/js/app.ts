@@ -12,6 +12,7 @@
 /// <reference path="components/login/login.ts"/>
 /// <reference path="components/landing/landing.ts"/>
 /// <reference path="components/wall/wall.ts"/>
+/// <reference path="components/editMessage/editMessage.ts"/>
 
 /// <reference path="app.run.ts"/>
 
@@ -47,5 +48,6 @@ module TalkwallApp {
         .controller('LoginController', LoginController)
         .controller('LandingController', LandingController)
         .controller('WallController', WallController)
+        .controller('EditMessageController', EditMessageController)
         .run(runApp);
 }

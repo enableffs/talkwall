@@ -1,3 +1,75 @@
-<div layout flex ng-controller="WallController as wallC">
-	coucou wall
+<div layout="column" flex ng-controller="WallController as wallC">
+	<div>
+		<md-toolbar class="wall-topToolbar">
+			<div flex layout="row" layout-align="start center">
+				<div flex="33" layout="row" layout-align="start center">
+					<md-button class="md-icon-button" role="button" ng-click="wallC.$mdSidenav('left').open()">
+						<md-icon md-svg-src="images/ic_chat_bubble_outline_orange_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+					<md-button class="md-icon-button" role="button" ng-click="wallC.$mdSidenav('left').open()">
+						<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+				</div>
+				<div flex="66" class="wall-question" layout layout-align="center center">
+					<span>Question #</span>
+				</div>
+				<div flex="33" layout="row" layout-align="end center">
+					<button class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle()">
+						<md-icon ng-show="!wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_menu_orange_24px.svg" aria-hidden="true"></md-icon>
+						<md-icon ng-show="wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
+					</button>
+				</div>
+			</div>
+		</md-toolbar>
+	</div>
+	<section flex layout="row">
+		<md-sidenav flex md-component-id="left" class="md-sidenav-left wall-sidenav" layout="column" ng-class="{'wall-sidemenuLarge' :  wallC.magnified}">
+			<md-toolbar style="margin-top: 64px">
+				<div flex layout="row" layout-align="start center">
+					<div flex layout-align="center center">Messages</div>
+					<md-button ng-if="!wallC.magnified" class="md-icon-button" role="button" ng-click="wallC.magnified = true">
+						<md-icon md-svg-src="images/ic_zoom_in_white_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+					<md-button ng-if="wallC.magnified" class="md-icon-button" role="button" ng-click="wallC.magnified = false">
+						<md-icon md-svg-src="images/ic_zoom_out_white_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+					<md-button class="md-icon-button" role="button" ng-click="wallC.$mdSidenav('left').close(); wallC.magnified = false">
+						<md-icon md-svg-src="images/ic_close_white_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+				</div>
+			</md-toolbar>
+			<md-content style="background-color: #ffffff;" flex>
+				<md-list>
+					<md-list-item ng-repeat="i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]">
+						<md-icon md-svg-icon="images/ic_menu_black_24px.svg"></md-icon>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel massa dictum, vehicula enim ut, accumsan velit. Maecenas ut orci at metus.</p>
+						<md-divider></md-divider>
+					</md-list-item>
+				</md-list>
+			</md-content>
+			<div style="height: 70px; background-color: #FFFFFF"></div>
+		</md-sidenav>
+		<md-sidenav flex md-component-id="right" class="md-sidenav-right" style="background-color: transparent" layout="column">
+			<md-toolbar style="margin-top: 64px">
+				<div flex layout="row" layout-align="start center">
+					<div flex layout-align="center center">Filters</div>
+				</div>
+			</md-toolbar>
+			<md-content style="background-color: #ffffff;" flex>
+				<md-list>
+					<md-list-item ng-repeat="i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]">
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel massa dictum, vehicula enim ut, accumsan velit. Maecenas ut orci at metus.</p>
+						<md-divider></md-divider>
+					</md-list-item>
+				</md-list>
+			</md-content>
+			<div style="height: 70px; background-color: #FFFFFF"></div>
+		</md-sidenav>
+		<div flex style="background-color: #c0c0c0">
+			ftvybhjknghuiejdfhuierfneiruiuerjnogrneomngmtrtgmomrtgmogmtkgtmkgt
+			<md-button class="md-fab" aria-label="Eat cake" style="position: absolute; bottom: 2px; left: 110px; z-index: 60; background-color: #ff7700" ng-click="wallC.showMessageEditor()">
+				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
+			</md-button>
+		</div>
+	</section>
 </div>
