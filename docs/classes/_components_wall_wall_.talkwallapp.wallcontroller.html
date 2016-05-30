@@ -100,7 +100,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#_mdbottomsheet" class="tsd-kind-icon">$md<wbr>Bottom<wbr>Sheet</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#_mdsidenav" class="tsd-kind-icon">$md<wbr>Sidenav</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#dataservice" class="tsd-kind-icon">data<wbr>Service</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#magnified" class="tsd-kind-icon">magnified</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#urlservice" class="tsd-kind-icon">url<wbr>Service</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#_inject" class="tsd-kind-icon">$inject</a></li>
 							</ul>
@@ -109,6 +112,8 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#activate" class="tsd-kind-icon">activate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#showmessageeditor" class="tsd-kind-icon">show<wbr>Message<wbr>Editor</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#togglerightsidemenu" class="tsd-kind-icon">toggle<wbr>Right<wbr>Side<wbr>Menu</a></li>
 							</ul>
 						</section>
 					</div>
@@ -120,13 +125,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Wall<wbr>Controller<span class="tsd-signature-symbol">(</span>urlService<span class="tsd-signature-symbol">: </span><a href="../interfaces/_services_urlservice_.talkwallapp.iurlservice.html" class="tsd-signature-type">IURLService</a>, dataService<span class="tsd-signature-symbol">: </span><a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_components_wall_wall_.talkwallapp.wallcontroller.html" class="tsd-signature-type">WallController</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Wall<wbr>Controller<span class="tsd-signature-symbol">(</span>urlService<span class="tsd-signature-symbol">: </span><a href="../interfaces/_services_urlservice_.talkwallapp.iurlservice.html" class="tsd-signature-type">IURLService</a>, dataService<span class="tsd-signature-symbol">: </span><a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a>, $mdSidenav<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ISidenavService</span>, $mdBottomSheet<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IBottomSheetService</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_components_wall_wall_.talkwallapp.wallcontroller.html" class="tsd-signature-type">WallController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L22">components/wall/wall.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L20">components/wall/wall.ts:20</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -137,6 +142,12 @@
 								<li>
 									<h5>dataService: <a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a></h5>
 								</li>
+								<li>
+									<h5>$mdSidenav: <span class="tsd-signature-type">ISidenavService</span></h5>
+								</li>
+								<li>
+									<h5>$mdBottomSheet: <span class="tsd-signature-type">IBottomSheetService</span></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_components_wall_wall_.talkwallapp.wallcontroller.html" class="tsd-signature-type">WallController</a></h4>
 						</li>
@@ -146,12 +157,42 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_mdbottomsheet" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> $md<wbr>Bottom<wbr>Sheet</h3>
+					<div class="tsd-signature tsd-kind-icon">$md<wbr>Bottom<wbr>Sheet<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">IBottomSheetService</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L26">components/wall/wall.ts:26</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_mdsidenav" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> $md<wbr>Sidenav</h3>
+					<div class="tsd-signature tsd-kind-icon">$md<wbr>Sidenav<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ISidenavService</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L25">components/wall/wall.ts:25</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="dataservice" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> data<wbr>Service</h3>
 					<div class="tsd-signature tsd-kind-icon">data<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L26">components/wall/wall.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L24">components/wall/wall.ts:24</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="magnified" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> magnified</h3>
+					<div class="tsd-signature tsd-kind-icon">magnified<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L20">components/wall/wall.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -161,7 +202,7 @@
 					<div class="tsd-signature tsd-kind-icon">url<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_services_urlservice_.talkwallapp.iurlservice.html" class="tsd-signature-type">IURLService</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L25">components/wall/wall.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L23">components/wall/wall.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -171,7 +212,7 @@
 					<div class="tsd-signature tsd-kind-icon">$inject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L22">components/wall/wall.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L19">components/wall/wall.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -190,6 +231,40 @@
 								<p>Implementation of <a href="../interfaces/_components_wall_wall_.talkwallapp.iwallcontrollerservice.html">IWallControllerService</a>.<a href="../interfaces/_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#activate">activate</a></p>
 								<ul>
 									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L34">components/wall/wall.ts:34</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="showmessageeditor" class="tsd-anchor"></a>
+					<h3>show<wbr>Message<wbr>Editor</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">show<wbr>Message<wbr>Editor<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L38">components/wall/wall.ts:38</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="togglerightsidemenu" class="tsd-anchor"></a>
+					<h3>toggle<wbr>Right<wbr>Side<wbr>Menu</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">toggle<wbr>Right<wbr>Side<wbr>Menu<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L53">components/wall/wall.ts:53</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -215,6 +290,9 @@
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_app_run_.html">"app.run"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_editmessage_editmessage_.html">"components/edit<wbr>Message/edit<wbr>Message"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_components_landing_landing_.html">"components/landing/landing"</a>
@@ -264,7 +342,16 @@
 								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#_mdbottomsheet" class="tsd-kind-icon">$md<wbr>Bottom<wbr>Sheet</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#_mdsidenav" class="tsd-kind-icon">$md<wbr>Sidenav</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#dataservice" class="tsd-kind-icon">data<wbr>Service</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#magnified" class="tsd-kind-icon">magnified</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#urlservice" class="tsd-kind-icon">url<wbr>Service</a>
@@ -274,6 +361,12 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#activate" class="tsd-kind-icon">activate</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#showmessageeditor" class="tsd-kind-icon">show<wbr>Message<wbr>Editor</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#togglerightsidemenu" class="tsd-kind-icon">toggle<wbr>Right<wbr>Side<wbr>Menu</a>
 							</li>
 						</ul>
 					</li>
