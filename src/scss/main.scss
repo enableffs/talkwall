@@ -40,3 +40,7 @@ a, img {
 md-toolbar {
   background-color: $color-blue !important;
 }
+
+md-backdrop.md-sidenav-backdrop {
+  display:none !important;
+}
