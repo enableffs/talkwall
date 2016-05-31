@@ -13,14 +13,17 @@ module TalkwallApp {
 		 * init function for this controller
 		 */
 		activate(): void;
+		/**
+		 * Pop up bottom sheet to edit messages. Slide out left sidenav also
+		 */
+		showMessageEditor(): void;
 	}
 
 	export class WallController implements IWallControllerService {
-		static $inject = ['URLService', 'DataService', '$mdSidenav', '$mdBottomSheet'];
+		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet'];
 		private magnified: boolean = false;
-
+		private question: Question;
 		constructor(
-			private urlService: IURLService,
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService) {
@@ -32,7 +35,7 @@ module TalkwallApp {
 		}
 
 		activate(): void {
-			console.log('--> WallController: activated: ');
+			console.log('--> WallController: activated');
 		}
 
 		showMessageEditor(): void {
@@ -48,10 +51,6 @@ module TalkwallApp {
 				//dialog dismissed
 				console.log('--> WallController: dismissed');
 			});
-		}
-
-		toggleRightSideMenu(): void {
-			this.$mdSidenav('right').toggle();
 		}
 	}
 }

@@ -10,7 +10,7 @@ module TalkwallApp {
 	import IWindowService = angular.IWindowService;
 
 	export class LandingController {
-		static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$window', 'DataService'];
+		static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$window'];
 
 		//vars
 		private customFullscreen;
@@ -20,9 +20,8 @@ module TalkwallApp {
 			private $translate: any,
 			private $mdMedia: IMedia,
 			private $mdDialog: IDialogService,
-			private $window: IWindowService,
-			private dataService: DataService) {
-			console.log('--> LandingController: started: ');
+			private $window: IWindowService) {
+			console.log('--> LandingController: started');
 			this.$translate.use(this.urlService.getLanguageDomain());
 			this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
 		}
