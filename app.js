@@ -34,6 +34,7 @@ var app = express();
 var routes = {};
 routes.callbacks =  require('./routes/callbacks.js');
 routes.sync = require('./routes/sync.js');
+routes.client = require('./routes/client');
 
 /********* db connection *********/
 var mongodbURL = process.env.MONGOLAB_URI;
@@ -51,7 +52,6 @@ redisC.redisClient.on('error', function (err) {
     console.log('Redis error from app.js' + err);
     utilities.processError(err);
 });
-
 
 /********* app configuration *********/
 app.use(bodyParser.json());
@@ -85,6 +85,8 @@ app.get('/auth/facebook/callback',  passport.authenticate('facebook'),  routes.c
 app.get('/auth/google',             passport.authenticate('google',     { scope: 'email' }));
 app.get('/auth/google/callback',    passport.authenticate('google'),    routes.callbacks.googlecallback);
 
+app.put('/poll',                                                        routes.client.poll);
+app.put('/connect',                                                     routes.client.connect);
 
 /********* sync *********/
-app.get('/api/ping',                                                    routes.sync.ping());
+app.get('/ping',                                                    routes.sync.ping());

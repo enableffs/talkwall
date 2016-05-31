@@ -4,11 +4,7 @@ exports.StatusMessages = {
     PING_OK: {
         status: 200,
         message: 'Server alive'
-    }
-};
-
-
-exports.StatusMessages = {
+    },
     INVALID_USER: {
         status: 400,
         message: 'Invalid User'
@@ -28,5 +24,13 @@ exports.StatusMessages = {
     USER_LOGOUT_ERROR: {
         status: 400,
         message: 'Logout error'
+    },
+    POLL_SUCCESS: {
+        status: 200,
+        message: 'Poll successful'
+    },
+    CLIENT_CONNECT_SUCCESS: {
+        status: 200,
+        message: 'Client connection successful'
     }
-}
+};
