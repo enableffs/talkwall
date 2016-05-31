@@ -11,7 +11,7 @@
 					</md-button>
 				</div>
 				<div flex="66" class="wall-question" layout layout-align="center center">
-					<span>Question #</span>
+					<span>{{wallC.question.label}}</span>
 				</div>
 				<div flex="33" layout="row" layout-align="end center">
 					<button class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle()">
@@ -66,7 +66,7 @@
 			<div style="height: 70px; background-color: #FFFFFF"></div>
 		</md-sidenav>
 		<div flex style="background-color: #c0c0c0">
-			ftvybhjknghuiejdfhuierfneiruiuerjnogrneomngmtrtgmomrtgmogmtkgtmkgt
+
 			<md-button class="md-fab" aria-label="Eat cake" style="position: absolute; bottom: 2px; left: 110px; z-index: 60; background-color: #ff7700" ng-click="wallC.showMessageEditor()">
 				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 			</md-button>
