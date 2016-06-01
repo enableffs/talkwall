@@ -12,16 +12,13 @@ module TalkwallApp {
     export class Wall {
         _id: string;
         pin: string;
-        createdOn: Date;
-        questions: Array<string>;
-        constructor() {
-            this.createdOn = new Date();
-        }
+        createdAt: Date;
+        questions: Array<{}>;
     }
 
     export class Question {
         _id: string;
-        createdOn: Date;
+        createdAt: Date;
         label: string;
     }
 }
