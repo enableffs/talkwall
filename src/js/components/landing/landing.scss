@@ -1,6 +1,8 @@
+@import "../../../scss/colors";
+
 #landing-main {
   overflow: hidden;
-  background-color: #FFFFFF;
+  background-color: $color-white;
 }
 
 .landing-betalabel {
@@ -27,14 +29,14 @@
 }
 
 .landing-indexSection {
-  background-color: #FFFFFF;
+  background-color: $color-white;
   padding: 20px;
 }
 
 .landing-arrow-footer {
   height: 70px;
   width: 100%;
-  background-color: #FFFFFF;
+  background-color: $color-white;
   text-align: center;
 }
 
@@ -43,11 +45,11 @@
 }
 
 .landing-arrow svg path {
-  fill: #00BCD4;
+  fill: $color-blue;
 }
 
 md-content {
-  background-color: #FFFFFF;
+  background-color: $color-white;
 }
 
 .landing-centered-button-panel {
@@ -60,13 +62,13 @@ md-content {
 }
 
 .landing-joinButton {
-  background-color: #FF9800 !important;
-  color: #FFFFFF !important;
+  background-color: $color-orange !important;
+  color: $color-white !important;
 }
 
 .landing-createButton {
-  background-color: #FFFFFF !important;
-  color: #000000 !important;
+  background-color: $color-white !important;
+  color: $color-black !important;
 }
 
 .landing-samtavlaLogo {
@@ -76,7 +78,7 @@ md-content {
 .landing-indexSection1,
 .landing-indexSection2,
 .landing-indexSection3 {
-  background-color: #FFFFFF;
+  background-color: $color-white;
   padding: 20px;
 }
 
@@ -93,7 +95,7 @@ md-content {
 .landing-indexSection1Title {
   font-weight: bold;
   font-size: 24px !important;
-  color: #00B0C1;
+  color: $color-blue;
   width: 100%;
   text-align: center;
   margin-left: 10px;
@@ -103,7 +105,7 @@ md-content {
 .landing-indexSection1Desc {
   font-weight: normal;
   font-size: 24px !important;
-  color: #00B0C1;
+  color: $color-blue;
   width: 100%;
   text-align: center;
   margin-left: 10px;
@@ -136,7 +138,7 @@ md-content {
   margin: 10px;
   font-weight: normal;
   font-size: 24px !important;
-  color: #00B0C1;
+  color: $color-blue;
   text-align: left;
 }
 
@@ -161,7 +163,7 @@ md-content {
   font-weight: normal;
   font-size: 17px !important;
   text-align: left;
-  color: #FFFFFF;
+  color: $color-white;
   max-width: 200px;
 }
 
@@ -169,11 +171,11 @@ md-content {
   font-weight: normal;
   font-size: 14px !important;
   text-align: left;
-  color: #00B0C1;
+  color: $color-blue;
   max-width: 200px;
   overflow: hidden !important;
 }
 
 .landing-indexSection4Desc a {
-  color: #00B0C1;
+  color: $color-blue;
 }

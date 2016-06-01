@@ -1,3 +1,15 @@
+@import "../../../scss/colors";
+
+/** Make sure to place the 2 items below way up on the z-index list **/
+md-bottom-sheet {
+  z-index: 1001 !important;
+}
+
+.md-bottom-sheet-backdrop {
+  z-index: 1000 !important;
+}
+/****/
+
 .wall-sidemenuLarge {
   max-width: 100% !important;
   width: 75% !important;
@@ -5,14 +17,57 @@
 
 .wall-topToolbar {
   min-height: 64px;
-  background-color: #D8EDF3 !important;
-  z-index: 90;
+  background-color: $color-lightblue !important;
 }
 
 .wall-question {
-  color: #333333;
+  color: $color-darkgrey;
 }
 
 .wall-sidenav {
-  background-color: transparent;
+  background-color: $color-lightblue;
+  margin-top: 64px;
+}
+
+.wall-rightMenuSection {
+  width: 100%;
+  background-color: $color-lightblue;
+}
+
+.wall-rightMenuFlexOpen {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.wall-rightMenuAddTaskPanel {
+  width: 100%;
+  height: 250px;
+  min-height: 250px;
+  margin-top: 40px;
+}
+
+.wall-rightMenuAddTaskPanel md-input-container {
+  background-color: $color-white;
+}
+
+.wall-addTaskReadyButton {
+  background-color: $color-orange !important;
+  color: $color-white  !important;
+}
+
+.wall-sidenavRightBottomDiv {
+  height: 70px;
+}
+
+.wall-showEditMessageButton {
+  position: absolute;
+  bottom: 2px;
+  left: 110px;
+  z-index: 900 !important;
+  background-color: $color-orange !important;
+}
+
+.wall-mainArea {
+  background-color: $color-grey;
 }
