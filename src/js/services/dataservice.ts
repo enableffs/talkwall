@@ -36,7 +36,9 @@ module TalkwallApp {
         getWall(): Wall;
         /**
          * get a question based on id
-         * @return the question
+         * @param questionId string
+         * @param sFunc success callback
+         * @param eFunc error callback
          */
         getQuestion(questionId: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
@@ -54,6 +56,8 @@ module TalkwallApp {
         private wall: Wall;
         //for dev only
         private questionStore: {} = {};
+        private nickname: string = null;
+        private participants: Array<string> = [];
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
@@ -79,6 +83,7 @@ module TalkwallApp {
                 console.log('--> DataService: token already existing');
                 this.getUser(
                     function(user: User) {
+                        handle.nickname = 'teacher';
                         handle.user = user;
                         //get the last opened or a new wall and a pin number
                         handle.getLastWall(handle.user.lastOpenedWall,
@@ -152,6 +157,7 @@ module TalkwallApp {
             var question = new Question();
             question._id = this.utilityService.v4();
             question.label = label;
+            question.messageFeed = new Array();
             this.wall.questions.push({_id: question._id, label: question.label});
             this.questionStore[question._id] = question;
             successCallbackFn();
