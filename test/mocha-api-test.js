@@ -32,3 +32,74 @@ describe('samtavla server ready', function() {
             });
     });
 });
+
+
+describe('first client connects to the server', function() {
+    it('should return successful client connection', function(done){
+        superagent.put(baseurl+'/connect')
+            .send({
+                question_id: "1",
+                user_id: "1"
+            })
+            .end(function(e,res) {
+                expect(res.statusCode).to.eql(common.StatusMessages.CLIENT_CONNECT_SUCCESS.status);
+                expect(res.body.message).to.eql(common.StatusMessages.CLIENT_CONNECT_SUCCESS.message);
+                done();
+            });
+    });
+});
+
+describe('second client connects to the server', function() {
+    it('should return successful client connection', function(done){
+        superagent.put(baseurl+'/connect')
+            .send({
+                question_id: "1",
+                user_id: "2"
+            })
+            .end(function(e,res) {
+                expect(res.statusCode).to.eql(common.StatusMessages.CLIENT_CONNECT_SUCCESS.status);
+                expect(res.body.message).to.eql(common.StatusMessages.CLIENT_CONNECT_SUCCESS.message);
+                done();
+            });
+    });
+});
+
+describe('first client polls with new data', function() {
+
+    it('should return poll success status, no updated messages [] and question id "1"', function(done){
+        superagent.put(baseurl+'/poll')
+            .send({
+                question_id: "1",
+                user_id: "1",
+                message_ids: ['a','b','c'],
+                status: { question_id: 1 }
+            })
+            .end(function(e,res) {
+                expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
+                expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
+                expect(res.body.result.status.question_id).to.eql("1");
+                expect(res.body.result.messages.length).to.eql(0);
+                done();
+            });
+    });
+});
+
+describe('second client polls with new data, gets first clients new data', function() {
+
+    it('should return successful poll status and the messages updated by the first user [a,b,c]', function(done){
+        superagent.put(baseurl+'/poll')
+            .send({
+                question_id: "1",
+                user_id: "2",
+                message_ids: ['c','d','e'],
+                status: { question_id: "1" }
+            })
+            .end(function(e,res) {
+                expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
+                expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
+                expect(res.body.result.status.question_id).to.eql("1");
+                expect(res.body.result.messages[0]).to.eql("a");
+                done();
+            });
+    });
+});
