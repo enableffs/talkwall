@@ -295,6 +295,14 @@ rename it to Talkwall
 			* control
 				* select: highights message by setting a 'light orange' background
 				* edit: brings up message bottom-sheet with its content to edit
+					* (should open the text in the edit pane)
+					* if not owner of the message (revision 01/06):
+						 * create a copy (clone and get a new message id)
+						 * inherit history and metadata
+						 * inherit position x. y
+						 * appends to the message feed.
+						 * place the new maessage on board on previous position
+						 * remove origin message from board
 				* remove: remove from wall (-> unhighlights in the feed)
 			* messages has fixed width, variable height to show all content
 				* all content should be visible so messages can be auto relocated
