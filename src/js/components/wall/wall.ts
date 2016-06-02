@@ -30,6 +30,7 @@ module TalkwallApp {
 	export class WallController implements IWallControllerService {
 		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet'];
 		private magnified: boolean = false;
+		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
@@ -72,6 +73,8 @@ module TalkwallApp {
 		}
 
 		showMessageEditor(): void {
+			var handle = this;
+			this.dataService.messageToEdit = new Message();
 			this.$mdSidenav('left').open();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
@@ -80,6 +83,14 @@ module TalkwallApp {
 			}).then(function(answer) {
 				//dialog answered
 				console.log('--> WallController: answer: ' + answer);
+				//post message to server and add returned object to question feed
+				handle.dataService.postMessage(handle.question._id, answer,
+				function(message: Message) {
+					handle.question.messageFeed.push(message);
+				},
+				function(error: {}) {
+					//TODO: handle message POST error
+				});
 			}, function() {
 				//dialog dismissed
 				console.log('--> WallController: dismissed');

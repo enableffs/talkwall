@@ -1,14 +1,16 @@
 /// <reference path="../../_references.ts"/>
 /// <reference path="../../services/urlservice.ts"/>
+/// <reference path="../../services/dataservice.ts"/>
 
 module TalkwallApp {
 	"use strict";
 	import IBottomSheetService = angular.material.IBottomSheetService;
 	export class EditMessageController {
-		static $inject = ['$mdBottomSheet'];
+		static $inject = ['$mdBottomSheet', 'DataService'];
 
 		constructor(
-			private $mdBottomSheet: IBottomSheetService) {
+			private $mdBottomSheet: IBottomSheetService,
+			private dataService: DataService) {
 			console.log('--> LoginController: started: ');
 		}
 
@@ -34,7 +36,11 @@ module TalkwallApp {
 		 */
 		answer(answer: string): void {
 			console.log('--> IBottomSheetService: answer: ' + answer);
-			this.$mdBottomSheet.hide(answer);
+			if (answer !== undefined) {
+				this.$mdBottomSheet.hide(answer);
+			} else {
+				this.$mdBottomSheet.cancel();
+			}
 		};
 	}
 }

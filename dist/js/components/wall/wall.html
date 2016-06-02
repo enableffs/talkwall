@@ -3,10 +3,10 @@
 	<md-toolbar class="wall-topToolbar">
 		<div flex layout="row" layout-align="start center">
 			<div flex="33" layout="row" layout-align="start center">
-				<md-button class="md-icon-button" role="button" ng-click="wallC.$mdSidenav('left').open()">
+				<md-button ng-show="wallC.question !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=true;wallC.$mdSidenav('left').open()">
 					<md-icon md-svg-src="images/ic_chat_bubble_outline_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
-				<md-button class="md-icon-button" role="button" ng-click="wallC.$mdSidenav('left').open()">
+				<md-button ng-show="wallC.question !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=false;wallC.$mdSidenav('left').open()">
 					<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 			</div>
@@ -27,11 +27,12 @@
 		<md-sidenav flex md-component-id="left" class="md-sidenav-left wall-sidenav" layout="column" ng-class="{'wall-sidemenuLarge' :  wallC.magnified}">
 			<md-toolbar>
 				<div flex layout="row" layout-align="start center">
-					<div flex layout-align="center center">Messages</div>
-					<md-button ng-if="!wallC.magnified" class="md-icon-button" role="button" ng-click="wallC.magnified = true">
+					<div ng-if="wallC.feedView" flex layout-align="center center">Messages</div>
+					<div ng-if="!wallC.feedView" flex layout-align="center center">Screens</div>
+					<md-button ng-if="!wallC.magnified && wallC.feedView" class="md-icon-button" role="button" ng-click="wallC.magnified = true">
 						<md-icon md-svg-src="images/ic_zoom_in_white_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
-					<md-button ng-if="wallC.magnified" class="md-icon-button" role="button" ng-click="wallC.magnified = false">
+					<md-button ng-if="wallC.magnified && wallC.feedView" class="md-icon-button" role="button" ng-click="wallC.magnified = false">
 						<md-icon md-svg-src="images/ic_zoom_out_white_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
 					<md-button class="md-icon-button" role="button" ng-click="wallC.$mdSidenav('left').close(); wallC.magnified = false">
@@ -40,10 +41,20 @@
 				</div>
 			</md-toolbar>
 			<md-content flex>
-				<md-list>
-					<md-list-item ng-repeat="i in [0,1,2,3]">
+				<!-- left sidenav message feed -->
+				<md-list ng-if="wallC.feedView">
+					<md-list-item ng-repeat="message in wallC.question.messageFeed">
 						<md-icon md-svg-icon="images/ic_menu_black_24px.svg"></md-icon>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vel massa dictum, vehicula enim ut, accumsan velit. Maecenas ut orci at metus.</p>
+						<p>{{ message.text }}</p>
+						<md-divider></md-divider>
+					</md-list-item>
+				</md-list>
+
+				<!-- left sidenav people's screen feed -->
+				<md-list ng-if="!wallC.feedView">
+					<md-list-item ng-repeat="participant in wallC.dataService.participants">
+						<md-icon md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
+						<p>{{ participant }}</p>
 						<md-divider></md-divider>
 					</md-list-item>
 				</md-list>
@@ -56,6 +67,8 @@
 		<!-- right sidenav of the wall -->
 		<md-sidenav md-component-id="right" class="md-sidenav-right wall-sidenav" layout="column">
 			<div flex layout="column">
+
+				<!-- Join with PIN section -->
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(1)">
 						<div flex layout="row" layout-align="start center">
@@ -64,7 +77,26 @@
 							<md-icon ng-if="wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
+					<md-content flex ng-if="wallC.rightMenu1">
+						<div layout="column" layout-align="start center" layout-padding>
+							<h3>Participate on this talkwall</h3>
+							<div class="wall-joinRow wall-joinRow1" layout="row">
+								<md-icon md-svg-src="images/ic_arrow_forward_grey_24px.svg" aria-hidden="true"></md-icon>
+								<span flex>talkwall.net</span>
+							</div>
+							<div class="wall-joinRow wall-joinRow2" layout="row">
+								<md-icon md-svg-src="images/ic_arrow_forward_grey_24px.svg" aria-hidden="true"></md-icon>
+								<span flex>PIN: {{wallC.dataService.getWall().pin}}</span>
+							</div>
+							<div class="wall-joinRow wall-joinRow3" layout="row">
+								<md-icon md-svg-src="images/ic_people_black_24px.svg" aria-hidden="true"></md-icon>
+								<span flex>{{wallC.dataService.participants.length}} participants</span>
+							</div>
+						</div>
+					</md-content>
 				</section>
+
+				<!-- Edit tasks section -->
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(2)">
 						<div flex layout="row" layout-align="start center">
@@ -99,6 +131,8 @@
 						</div>
 					</div>
 				</section>
+
+				<!-- Close talkwall section -->
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
 						<div flex layout="row" layout-align="start center">
@@ -107,6 +141,13 @@
 							<md-icon ng-if="wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
+					<md-content flex ng-if="wallC.rightMenu3">
+						<div layout="column" layout-padding>
+							<md-button class="md-raised wall-powerOffButton">
+								<md-icon md-svg-src="images/ic_power_settings_new_black_24px.svg" aria-hidden="true"></md-icon>
+							</md-button>
+						</div>
+					</md-content>
 				</section>
 			</div>
 		</md-sidenav>
@@ -115,7 +156,7 @@
 		<div flex class="wall-mainArea">
 
 			<!-- (+) fab button to show the editMessage bottomPane -->
-			<md-button class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor()">
+			<md-button ng-if="wallC.question !== null" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor()">
 				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 			</md-button>
 		</div>

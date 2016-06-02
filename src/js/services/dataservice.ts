@@ -48,6 +48,14 @@ module TalkwallApp {
          * @param eFunc error callback
          */
         addQuestion(label: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * post new message to the feed
+         * @param questionId string
+         * @param text the message body
+         * @param sFunc success callback
+         * @param eFunc error callback
+         */
+        postMessage(questionId: string, text: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
     }
 
     export class DataService implements IDataService {
@@ -58,6 +66,7 @@ module TalkwallApp {
         private questionStore: {} = {};
         private nickname: string = null;
         private participants: Array<string> = [];
+        public messageToEdit: Message;
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
@@ -161,6 +170,19 @@ module TalkwallApp {
             this.wall.questions.push({_id: question._id, label: question.label});
             this.questionStore[question._id] = question;
             successCallbackFn();
+        }
+
+        postMessage(questionId, text, successCallbackFn, errorCallbackFn): void {
+            //generate a new message on server with _id and returns it
+            // this.$http.post('message.json')
+            var message = new Message();
+            message._id = this.utilityService.v4();
+            message.creator = this.nickname;
+            message.text = text;
+            message.origin = null;
+            message.edits = new Array();
+            message.edits.push({date: message.createdAt, text: message.text});
+            successCallbackFn(message);
         }
     }
 }
