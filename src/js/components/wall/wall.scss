@@ -51,6 +51,7 @@ md-bottom-sheet {
   background-color: $color-white;
 }
 
+.wall-powerOffButton,
 .wall-addTaskReadyButton {
   background-color: $color-orange !important;
   color: $color-white  !important;
@@ -77,13 +78,13 @@ md-bottom-sheet {
 }
 
 .wall-joinRow1 {
-  font-size: 2em;
+  font-size: 1.7em;
 }
 
 .wall-joinRow2 {
-  font-size: 4em;
+  font-size: 3em;
 }
 
 .wall-joinRow3 {
-  font-size: 2em;
+  font-size: 1.7em;
 }

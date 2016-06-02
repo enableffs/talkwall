@@ -43,3 +43,8 @@ md-toolbar {
 md-backdrop.md-sidenav-backdrop {
   display:none !important;
 }
+
+md-toolbar:focus,
+button:focus {
+  outline:0 !important;
+}

@@ -104,6 +104,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#_location" class="tsd-kind-icon">$location</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#_routeparams" class="tsd-kind-icon">$route<wbr>Params</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#_window" class="tsd-kind-icon">$window</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_services_dataservice_.talkwallapp.dataservice.html#messagetoedit" class="tsd-kind-icon">message<wbr>ToEdit</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#nickname" class="tsd-kind-icon">nickname</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#participants" class="tsd-kind-icon">participants</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#questionstore" class="tsd-kind-icon">question<wbr>Store</a></li>
@@ -122,6 +123,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_services_dataservice_.talkwallapp.dataservice.html#getquestion" class="tsd-kind-icon">get<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_services_dataservice_.talkwallapp.dataservice.html#getuser" class="tsd-kind-icon">get<wbr>User</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_services_dataservice_.talkwallapp.dataservice.html#getwall" class="tsd-kind-icon">get<wbr>Wall</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_services_dataservice_.talkwallapp.dataservice.html#postmessage" class="tsd-kind-icon">post<wbr>Message</a></li>
 							</ul>
 						</section>
 					</div>
@@ -139,7 +141,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L60">services/dataservice.ts:60</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L69">services/dataservice.ts:69</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -173,7 +175,7 @@
 					<div class="tsd-signature tsd-kind-icon">$http<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ng.IHttpService</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L62">services/dataservice.ts:62</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L71">services/dataservice.ts:71</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -183,7 +185,7 @@
 					<div class="tsd-signature tsd-kind-icon">$location<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ILocationService</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L65">services/dataservice.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L74">services/dataservice.ts:74</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +195,7 @@
 					<div class="tsd-signature tsd-kind-icon">$route<wbr>Params<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">IRouteParamsService</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L64">services/dataservice.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L73">services/dataservice.ts:73</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -203,7 +205,17 @@
 					<div class="tsd-signature tsd-kind-icon">$window<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ng.IWindowService</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L63">services/dataservice.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L72">services/dataservice.ts:72</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="messagetoedit" class="tsd-anchor"></a>
+					<h3>message<wbr>ToEdit</h3>
+					<div class="tsd-signature tsd-kind-icon">message<wbr>ToEdit<span class="tsd-signature-symbol">:</span> <a href="_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L69">services/dataservice.ts:69</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -213,7 +225,7 @@
 					<div class="tsd-signature tsd-kind-icon">nickname<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L59">services/dataservice.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L67">services/dataservice.ts:67</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -223,7 +235,7 @@
 					<div class="tsd-signature tsd-kind-icon">participants<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L60">services/dataservice.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L68">services/dataservice.ts:68</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -233,7 +245,7 @@
 					<div class="tsd-signature tsd-kind-icon">question<wbr>Store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L58">services/dataservice.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L66">services/dataservice.ts:66</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -248,7 +260,7 @@
 					<div class="tsd-signature tsd-kind-icon">user<span class="tsd-signature-symbol">:</span> <a href="_models_models_.talkwallapp.user.html" class="tsd-signature-type">User</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L55">services/dataservice.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L63">services/dataservice.ts:63</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -258,7 +270,7 @@
 					<div class="tsd-signature tsd-kind-icon">utility<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="_services_utilityservice_.talkwallapp.utilityservice.html" class="tsd-signature-type">UtilityService</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L66">services/dataservice.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L75">services/dataservice.ts:75</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -268,7 +280,7 @@
 					<div class="tsd-signature tsd-kind-icon">wall<span class="tsd-signature-symbol">:</span> <a href="_models_models_.talkwallapp.wall.html" class="tsd-signature-type">Wall</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L56">services/dataservice.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L64">services/dataservice.ts:64</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -278,7 +290,7 @@
 					<div class="tsd-signature tsd-kind-icon">$inject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L54">services/dataservice.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L62">services/dataservice.ts:62</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -295,7 +307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L154">services/dataservice.ts:154</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L163">services/dataservice.ts:163</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -324,7 +336,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L70">services/dataservice.ts:70</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L79">services/dataservice.ts:79</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -347,7 +359,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L123">services/dataservice.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L132">services/dataservice.ts:132</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -376,7 +388,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L141">services/dataservice.ts:141</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L150">services/dataservice.ts:150</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -405,7 +417,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L110">services/dataservice.ts:110</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L119">services/dataservice.ts:119</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -432,10 +444,42 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getwall">getWall</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L137">services/dataservice.ts:137</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L146">services/dataservice.ts:146</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_models_models_.talkwallapp.wall.html" class="tsd-signature-type">Wall</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="postmessage" class="tsd-anchor"></a>
+					<h3>post<wbr>Message</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">post<wbr>Message<span class="tsd-signature-symbol">(</span>questionId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, successCallbackFn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, errorCallbackFn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L175">services/dataservice.ts:175</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>questionId: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>text: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>successCallbackFn: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>errorCallbackFn: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -521,6 +565,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_services_dataservice_.talkwallapp.dataservice.html#_window" class="tsd-kind-icon">$window</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_services_dataservice_.talkwallapp.dataservice.html#messagetoedit" class="tsd-kind-icon">message<wbr>ToEdit</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_services_dataservice_.talkwallapp.dataservice.html#nickname" class="tsd-kind-icon">nickname</a>
 							</li>
@@ -559,6 +606,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_services_dataservice_.talkwallapp.dataservice.html#getwall" class="tsd-kind-icon">get<wbr>Wall</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_services_dataservice_.talkwallapp.dataservice.html#postmessage" class="tsd-kind-icon">post<wbr>Message</a>
 							</li>
 						</ul>
 					</li>

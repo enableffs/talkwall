@@ -46,5 +46,10 @@ module TalkwallApp {
                 ypos: number;
             };
         };
+        constructor() {
+            this.createdAt = new Date();
+            this.deleted = false;
+            this.text = '';
+        }
     }
 }
