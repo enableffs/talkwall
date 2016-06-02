@@ -1,7 +1,7 @@
 /// <reference path="../../_references.ts"/>
 /// <reference path="../../services/urlservice.ts"/>
 /// <reference path="../../services/dataservice.ts"/>
-/// <reference path="../editMessage/editMessage.ts"/>
+/// <reference path="../editMessagePanel/editMessagePanel.ts"/>
 
 module TalkwallApp {
 	"use strict";
@@ -79,7 +79,7 @@ module TalkwallApp {
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
 				controllerAs: 'editMessageC',
-				templateUrl: 'js/components/editMessage/editMessage.html'
+				templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
 			}).then(function(answer) {
 				//dialog answered
 				console.log('--> WallController: answer: ' + answer);

@@ -32,10 +32,10 @@ module TalkwallApp {
         text: string;
         creator: string;        //nickname
         deleted: boolean;
-        origin: {
+        origin: Array<{
             nickname: string;
             message_id: string;
-        };
+        }>;
         edits: Array<{
             date: Date;
             text: string;

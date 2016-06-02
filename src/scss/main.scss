@@ -9,9 +9,10 @@
 @import url(//fonts.googleapis.com/css?family=RobotoDraft&lang=en);
 
 @import "colors",
-        "../js/components/editMessage/editMessage",
+        "../js/components/editMessagePanel/editMessagePanel",
         "../js/components/landing/landing",
         "../js/components/login/login",
+        "../js/components/feedMessage/feedMessage",
         "../js/components/wall/wall";
 
 
@@ -44,6 +45,8 @@ md-backdrop.md-sidenav-backdrop {
   display:none !important;
 }
 
+div:focus,
+p:focus,
 md-toolbar:focus,
 button:focus {
   outline:0 !important;
