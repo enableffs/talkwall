@@ -11,7 +11,7 @@ module TalkwallApp {
 		constructor(
 			private $mdBottomSheet: IBottomSheetService,
 			private dataService: DataService) {
-			console.log('--> LoginController: started: ');
+			console.log('--> EditMessageController: started: ');
 		}
 
 		/**
@@ -19,7 +19,7 @@ module TalkwallApp {
 		 * @aparam response a possible reponse
 		 */
 		hide(response?: any): void {
-			console.log('--> IBottomSheetService: hide');
+			console.log('--> EditMessageController: hide');
 			this.$mdBottomSheet.hide();
 		};
 		/**
@@ -27,7 +27,7 @@ module TalkwallApp {
 		 * @aparam response a possible reponse
 		 */
 		cancel(response?: any) : void {
-			console.log('--> IBottomSheetService: cancel');
+			console.log('--> EditMessageController: cancel');
 			this.$mdBottomSheet.cancel();
 		};
 		/**
@@ -35,7 +35,7 @@ module TalkwallApp {
 		 * @aparam answer aa a string
 		 */
 		answer(answer: string): void {
-			console.log('--> IBottomSheetService: answer: ' + answer);
+			console.log('--> EditMessageController: answer: ' + answer);
 			if (answer !== undefined) {
 				this.$mdBottomSheet.hide(answer);
 			} else {

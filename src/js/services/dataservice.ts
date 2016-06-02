@@ -179,7 +179,8 @@ module TalkwallApp {
             message._id = this.utilityService.v4();
             message.creator = this.nickname;
             message.text = text;
-            message.origin = null;
+            message.origin = new Array();
+            message.origin.push({nickname: message.creator, message_id: message._id});
             message.edits = new Array();
             message.edits.push({date: message.createdAt, text: message.text});
             successCallbackFn(message);

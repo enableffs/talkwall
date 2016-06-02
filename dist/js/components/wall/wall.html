@@ -40,14 +40,10 @@
 					</md-button>
 				</div>
 			</md-toolbar>
-			<md-content flex>
+			<md-content flex style="overflow-x: hidden !important;">
 				<!-- left sidenav message feed -->
 				<md-list ng-if="wallC.feedView">
-					<md-list-item ng-repeat="message in wallC.question.messageFeed">
-						<md-icon md-svg-icon="images/ic_menu_black_24px.svg"></md-icon>
-						<p>{{ message.text }}</p>
-						<md-divider></md-divider>
-					</md-list-item>
+					<div feed-message ng-repeat="message in wallC.question.messageFeed" message="message"></div>
 				</md-list>
 
 				<!-- left sidenav people's screen feed -->
@@ -112,6 +108,7 @@
 								<p>{{question.label}}</p>
 								<md-divider></md-divider>
 							</md-list-item>
+							<md-divider></md-divider>
 						</md-list>
 					</md-content>
 					<div ng-if="wallC.rightMenu2" layout="column" class="wall-rightMenuAddTaskPanel">
@@ -127,7 +124,7 @@
 								<md-button flex><img src="images/back033.png" aria-hidden="true" width="100%" /></md-button>
 								<md-button flex><img src="images/back044.png" aria-hidden="true" width="100%" /></md-button>
 							</div>
-							<md-button class="md-raised" ng-class="{'wall-addTaskReadyButton' :  wallC.newQuestion !== ''}" ng-click="wallC.postNewQuestion()">Add</md-button>
+							<md-button class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.newQuestion === ''" ng-click="wallC.postNewQuestion()">Add</md-button>
 						</div>
 					</div>
 				</section>
