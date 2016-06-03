@@ -109,7 +109,7 @@ gulp.task('javascripts', function() {
 gulp.task('images', function() {
     return gulp.src(config.src.images)
         .pipe(newer(config.dist.images))
-        .pipe(imagemin())
+        //.pipe(imagemin())
         .pipe(gulp.dest(config.dist.images));
 });
 

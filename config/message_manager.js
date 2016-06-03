@@ -8,77 +8,111 @@ var extend = require('util')._extend;
 var Mm = function() {
     this.data = {};
 
-    //  data[question][user].messages : Array   contains all message IDs that have been modified
+    //  data[question][user].messages : Array   contains all messages that have been modified
     //  data[question][user].status : Object    contains any status messages to send to the user
 };
 
 /**
  * Add additional users to the manager
  *
- * @param {string} question_id
- * @param {[string]} user_ids
+ * 'status' area reflects the 'present state'
+ *      e.g. which question ID the client should be on after this poll
+ *      e.g. the client nicknames currently connected to this question
+ * 'messages' area reflects 'changed messages'
+ *
+ * @param {string} wall_id
+ * @param {string} question_id (can be null)
+ * @param {string} nickname
  */
-Mm.prototype.addUsers = function(question_id, user_ids) {
+Mm.prototype.addUser = function(wall_id, question_id, nickname) {
 
-    // Create the question reference first, if not already there
-    if (!this.data.hasOwnProperty(question_id)) {
-        this.data[question_id] = {};
+    // If question_id === null, add this nickname to the wall's connected_nicknames
+    // If question_id !== null, also add this nickname to the question's polling 'messages' list
+
+    // Create the wall reference first, if not already there and set up content
+    if (!this.data.hasOwnProperty(wall_id)) {
+        this.data[wall_id] = {
+            status: {
+                select_question_id: question_id,
+                connected_nicknames: []
+            },
+            messages: {}
+        };
+    }
+    // Add the nickname if not already there
+    if (this.data[wall_id].status['connected_nicknames'].indexOf(nickname) === -1) {
+        this.data[wall_id].status['connected_nicknames'].push(nickname);
     }
 
-    // Add a new user structure to this question
-    for(var i = 0; i < user_ids.length; i++) {
-        this.data[question_id][user_ids[i]] = {
-            status: {
-                question_id: question_id
-            },
-            messages: []
+    if(question_id !== null) {
+        // Create the question reference first, if not already there
+        if (!this.data[wall_id].messages.hasOwnProperty(question_id)) {
+            this.data[wall_id].messages[question_id] = {};
         }
+        this.data[wall_id].messages[question_id][nickname] = [];
     }
 };
 
 /**
  * Remove users from the manager
  *
+ * @param {string} wall_id
  * @param {string} question_id
- * @param {Array} user_ids
+ * @param {Array} nickname
  */
-Mm.prototype.removeUsers = function(question_id, user_ids) {
-    for(var i = 0; i < user_ids.length; i++) {
-        delete this.data[question_id][user_ids[i]];
-    }
+Mm.prototype.removeUser = function(wall_id, question_id, nickname) {
+    delete this.data[wall_id].messages[question_id][nickname];
 };
 
-
 /**
- * Update a question's status and message called from a particular user and return any updates made by other users
+ * Update a question's status and message called from a particular user
  *
+ * @param {string} wall_id
  * @param {string} question_id
- * @param {string} user_id              the particular calling user
- * @param {Array} edited_message_ids    the message ids edited by the calling user
- * @param {Object} status
+ * @param {string} nickname                         the particular calling user
+ * @param {Array<Message>} edited_messages          the message objects edited by the calling user
+ * @param {Object} status                           any change to the present status
  */
-Mm.prototype.getUpdate = function(question_id, user_id, edited_message_ids, status) {
-
-    // Reference to my pending updates and any change to status
-    var my_update = {
-        messages: this.data[question_id][user_id]['messages'],
-        status: this.data[question_id][user_id]['status']
-    };
+Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_messages, status) {
 
     // Make note of my changes in other users' lists on the same question
-    if (edited_message_ids.length > 0) {
-        for (var key in this.data[question_id]) {
-            if (this.data[question_id].hasOwnProperty(key) && key !== user_id) {
-                for (var i = 0; i < edited_message_ids.length; i++) {
-                    this.data[question_id][key]['messages'].push(edited_message_ids[i]);
+    if (edited_messages !== null && edited_messages.length > 0) {
+        var messages = this.data[wall_id].messages[question_id];
+        for (var key in messages) {
+            if (messages.hasOwnProperty(key) && key !== nickname) {
+                for (var i = 0; i < edited_messages.length; i++) {
+                    messages[key].push(edited_messages[i]);
                 }
             }
         }
     }
 
-    // Reset my own update data.  Opportunity to set status values.
-    this.data[question_id][user_id]['messages'] = [];
-    this.data[question_id][user_id]['status'] = status;
+    // Opportunity to set status values.
+    if (status !== null) {
+        if (status.select_question_id !== "") {
+            this.data[wall_id]['status'].select_question_id = status.select_question_id;
+        }
+    }
+};
+
+
+/**
+ * Return any updates made by other users
+ *
+ * @param {string} wall_id
+ * @param {string} question_id
+ * @param {string} nickname              the particular calling user's nickname
+ */
+Mm.prototype.getUpdate = function(wall_id, question_id, nickname) {
+
+    // Reference to my pending updates and any change to status
+    var my_update = {
+        messages: this.data[wall_id].messages[question_id][nickname],
+        status: this.data[wall_id]['status']
+    };
+
+    // Reset my own update data
+    this.data[wall_id].messages[question_id][nickname] = [];
 
     return my_update;
 };
