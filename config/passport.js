@@ -2,9 +2,10 @@
 
 var FacebookStrategy =  require('passport-facebook').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var LocalAPIKeyStrategy = require('passport-localapikey-es6').Strategy;
 
 // load up the user model
-var User       = require('../models/users');
+var User  = require('../models/user');
 
 module.exports = function(passport) {
 
@@ -19,6 +20,18 @@ module.exports = function(passport) {
             done(err, user);
         });
     });
+
+    // LOCAL ================================================================
+
+    passport.use(new LocalAPIKeyStrategy(
+        function(apikey, done) {
+            User.findOne({ 'local.apikey' : apikey }, function (err, user) {
+                if (err) { return done(err); }
+                if (!user) { return done(null, false); }
+                return done(null, user);
+            });
+        }
+    ));
 
     // FACEBOOK ================================================================
     passport.use(new FacebookStrategy({

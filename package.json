@@ -35,8 +35,9 @@
     "passport": "0.3.2",
     "passport-facebook": "^2.1.0",
     "passport-google-oauth": "^1.0.0",
+    "passport-localapikey-es6": "0.5.0",
     "promise": "7.1.1",
-    "redis": "2.6.0-2",
+    "redis": "2.6.1",
     "superagent": "2.0.0-alpha.3",
     "typescript": "1.8.10",
     "underscore": "1.8.3"
