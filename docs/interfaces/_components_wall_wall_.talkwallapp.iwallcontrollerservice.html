@@ -95,7 +95,9 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#activate" class="tsd-kind-icon">activate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#postnewquestion" class="tsd-kind-icon">post<wbr>New<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#showmessageeditor" class="tsd-kind-icon">show<wbr>Message<wbr>Editor</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglerightmenu" class="tsd-kind-icon">toggle<wbr>Right<wbr>Menu</a></li>
 							</ul>
 						</section>
 					</div>
@@ -126,10 +128,32 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="postnewquestion" class="tsd-anchor"></a>
+					<h3>post<wbr>New<wbr>Question</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">post<wbr>New<wbr>Question<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L27">components/wall/wall.ts:27</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Post a new question</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="showmessageeditor" class="tsd-anchor"></a>
 					<h3>show<wbr>Message<wbr>Editor</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">show<wbr>Message<wbr>Editor<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">show<wbr>Message<wbr>Editor<span class="tsd-signature-symbol">(</span>newMessage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -143,6 +167,40 @@
 									<p>Pop up bottom sheet to edit messages. Slide out left sidenav also</p>
 								</div>
 							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>newMessage: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="togglerightmenu" class="tsd-anchor"></a>
+					<h3>toggle<wbr>Right<wbr>Menu</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">toggle<wbr>Right<wbr>Menu<span class="tsd-signature-symbol">(</span>index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L23">components/wall/wall.ts:23</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Toggles which right menu should be open</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>index: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -168,7 +226,10 @@
 						<a href="../modules/_app_run_.html">"app.run"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_editmessage_editmessage_.html">"components/edit<wbr>Message/edit<wbr>Message"</a>
+						<a href="../modules/_components_editmessagepanel_editmessagepanel_.html">"components/edit<wbr>Message<wbr>Panel/edit<wbr>Message<wbr>Panel"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_feedmessage_feedmessage_.html">"components/feed<wbr>Message/feed<wbr>Message"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_components_landing_landing_.html">"components/landing/landing"</a>
@@ -221,7 +282,13 @@
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#activate" class="tsd-kind-icon">activate</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#postnewquestion" class="tsd-kind-icon">post<wbr>New<wbr>Question</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#showmessageeditor" class="tsd-kind-icon">show<wbr>Message<wbr>Editor</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglerightmenu" class="tsd-kind-icon">toggle<wbr>Right<wbr>Menu</a>
 							</li>
 						</ul>
 					</li>

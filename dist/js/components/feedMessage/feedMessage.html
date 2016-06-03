@@ -1,0 +1,42 @@
+<div layout="column" ng-class="{'feedMessage-messageSelected': feedMessageC.isSelected}">
+	<div layout="row" flex="none">
+
+		<div class="feedMessage-messageControl" layout="column" ng-if="feedMessageC.showControls" layout-align="center center">
+			<div layout="row">
+				<md-button class="feedMessage-showControlButton feedMessage-close" ng-click="feedMessageC.showControls = false">
+					<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
+				</md-button>
+				<md-button class="feedMessage-showControlButton">
+					<md-icon md-svg-icon="images/ic_delete_forever_orange_24px.svg" ng-click="feedMessageC.deleteMessage()"></md-icon>
+				</md-button>
+			</div>
+			<div layout="row">
+				<md-button class="feedMessage-showControlButton" ng-class="{'feedMessage-messageSelected': feedMessageC.isSelected}">
+					<md-icon ng-if="!feedMessageC.isSelected" md-svg-icon="images/ic_lightbulb_outline_orange_24px.svg" ng-click="feedMessageC.selectMessage()"></md-icon>
+					<md-icon ng-if="feedMessageC.isSelected" md-svg-icon="images/ic_lightbulb_outline_darkgrey_24px.svg" ng-click="feedMessageC.unselectMessage()"></md-icon>
+				</md-button>
+				<md-button class="feedMessage-showControlButton">
+					<md-icon md-svg-icon="images/ic_mode_edit_orange_24px.svg" ng-click="feedMessageC.editMessage()"></md-icon>
+				</md-button>
+			</div>
+		</div>
+
+		<div layout="column" ng-if="!feedMessageC.showControls" layout-align="center center">
+			<md-button ng-if="!feedMessageC.showControls" class="feedMessage-showControlButton" ng-click="feedMessageC.showControls = true">
+				<md-icon md-svg-icon="images/ic_menu_grey_24px.svg"></md-icon>
+			</md-button>
+		</div>
+
+
+		<div layout="column" layout-align="space-between none" flex-grow="true" class="feedMessage-messageBody feedMessage-wordWrap">
+			<div layout="column" flex="none" class="feedMessage-wordWrap">
+				{{ feedMessageC.message.text }}
+			</div>
+			<div layout="row" layout-align="end center">
+				<span class="feedMessage-nicknameChip" ng-repeat="origin in feedMessageC.message.origin.reverse()">{{ origin.nickname }}</span>
+			</div>
+		</div>
+
+	</div>
+	<md-divider></md-divider>
+</div>

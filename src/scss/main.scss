@@ -8,13 +8,13 @@
 
 @import url(//fonts.googleapis.com/css?family=RobotoDraft&lang=en);
 
-@import "../js/components/landing/landing",
+@import "colors",
+        "../js/components/editMessagePanel/editMessagePanel",
+        "../js/components/landing/landing",
         "../js/components/login/login",
+        "../js/components/feedMessage/feedMessage",
         "../js/components/wall/wall";
 
-$color-blue        : #00BCD4;
-$color-lightblue   : #D8EDF3;
-$color-grey        : #c0c0c0;
 
 html, body {
   overflow: hidden;
@@ -43,4 +43,11 @@ md-toolbar {
 
 md-backdrop.md-sidenav-backdrop {
   display:none !important;
+}
+
+div:focus,
+p:focus,
+md-toolbar:focus,
+button:focus {
+  outline:0 !important;
 }

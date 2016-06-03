@@ -1,0 +1,11 @@
+<md-bottom-sheet layout="column" ng-cloak>
+	<div layout="row" layout-align="center center" flex class="editMessage-editContainer">
+		<md-input-container flex class="md-block">
+			<label>Edit message</label>
+			<textarea ng-model="editMessageC.dataService.messageToEdit.text" md-maxlength="140" maxlength="140" rows="5" md-select-on-focus></textarea>
+		</md-input-container>
+		<md-button ng-disabled="editMessageC.dataService.messageToEdit.text === ''" class="md-fab editMessage-validateButton" ng-click="editMessageC.answer(editMessageC.dataService.messageToEdit.text)">
+			<md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
+		</md-button>
+	</div>
+</md-bottom-sheet>

@@ -1,15 +1,17 @@
 /// <reference path="../../_references.ts"/>
 /// <reference path="../../services/urlservice.ts"/>
+/// <reference path="../../services/dataservice.ts"/>
 
 module TalkwallApp {
 	"use strict";
 	import IBottomSheetService = angular.material.IBottomSheetService;
 	export class EditMessageController {
-		static $inject = ['$mdBottomSheet'];
+		static $inject = ['$mdBottomSheet', 'DataService'];
 
 		constructor(
-			private $mdBottomSheet: IBottomSheetService) {
-			console.log('--> LoginController: started: ');
+			private $mdBottomSheet: IBottomSheetService,
+			private dataService: DataService) {
+			console.log('--> EditMessageController: started: ');
 		}
 
 		/**
@@ -17,7 +19,7 @@ module TalkwallApp {
 		 * @aparam response a possible reponse
 		 */
 		hide(response?: any): void {
-			console.log('--> IBottomSheetService: hide');
+			console.log('--> EditMessageController: hide');
 			this.$mdBottomSheet.hide();
 		};
 		/**
@@ -25,7 +27,7 @@ module TalkwallApp {
 		 * @aparam response a possible reponse
 		 */
 		cancel(response?: any) : void {
-			console.log('--> IBottomSheetService: cancel');
+			console.log('--> EditMessageController: cancel');
 			this.$mdBottomSheet.cancel();
 		};
 		/**
@@ -33,8 +35,12 @@ module TalkwallApp {
 		 * @aparam answer aa a string
 		 */
 		answer(answer: string): void {
-			console.log('--> IBottomSheetService: answer: ' + answer);
-			this.$mdBottomSheet.hide(answer);
+			console.log('--> EditMessageController: answer: ' + answer);
+			if (answer !== undefined) {
+				this.$mdBottomSheet.hide(answer);
+			} else {
+				this.$mdBottomSheet.cancel();
+			}
 		};
 	}
 }

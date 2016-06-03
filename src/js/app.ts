@@ -8,11 +8,12 @@
 /// <reference path="services/utilityservice.ts"/>
 
 /// <reference path="directives/autoresize.ts"/>
+/// <reference path="components/feedMessage/feedMessage.ts"/>
 
 /// <reference path="components/login/login.ts"/>
 /// <reference path="components/landing/landing.ts"/>
 /// <reference path="components/wall/wall.ts"/>
-/// <reference path="components/editMessage/editMessage.ts"/>
+/// <reference path="components/editMessagePanel/editMessagePanel.ts"/>
 
 /// <reference path="app.run.ts"/>
 
@@ -45,6 +46,7 @@ module TalkwallApp {
         .service('TokenInterceptor', TokenInterceptor)
         .service('UtilityService', UtilityService)
         .directive('autoresize', AutoResize)
+        .directive('feedMessage', FeedMessage)
         .controller('LoginController', LoginController)
         .controller('LandingController', LandingController)
         .controller('WallController', WallController)
