@@ -244,25 +244,25 @@ rename it to Talkwall
 		* sidepanel-left
 			* "Messages" tab
 				* zoom
-					* larger side panel
+					* ~~larger side panel~~
 					* apply larger fonts
 				* message feed
-					* white footer to allow graphical position of the (+) button (so that it doesn't cover a message)
-					* latest message at the bottom (no auto scroll, keep position)
+					* ~~white footer to allow graphical position of the (+) button (so that it doesn't cover a message)~~
+					* ~~latest message at the bottom (no auto scroll, keep position)~~
 					* message
-						* show text (3 lines that fits 140 characters)
+						* ~~show text (3 lines that fits 140 characters)~~
 						* history (chips). chips have a fixed size, with "...". fit as many chips has possible on one line (+ '...' if it goes beyond)
 						* controllbar
-							* select (place on wall) / deselect (removes from wall)
+							* ~~select (place on wall) / deselect (removes from wall)~~
 								* keep random placement around the center
-							* edit (should open the text in the edit pane)
+							* ~~edit (should open the text in the edit pane)~~
 								* if not owner of the message, create a copy, inherit history and metadata, and appends to the message feed. keep originator message ID.
-							* delete (remove from list not from DB)
-						* selected message inherits 'light' orange background
-			* Add message button (+)
-				* position bottom left
-				* shows a bottom-sheet component
-				* slide open message feed if closed
+							* ~~delete (remove from list not from DB)~~
+						* ~~selected message inherits 'light' orange background~~
+			* ~~Add message button (+)~~
+				* ~~position bottom left~~
+				* ~~shows a bottom-sheet component~~
+				* ~~slide open message feed if closed~~
 			* "Show screens" tab
 				* client list
 					* client
@@ -270,10 +270,10 @@ rename it to Talkwall
 						* nickname
 						* select checkbox (selected -> display client's task wall same as teacher's task number)
 					* select all button checks all checkboxes (-> unselect all button, but keep the teacher)
-		* Add message bottom-sheet
-			* textarea fixed length 140 char
-			* check button
-				* adds a message to the feed and dismisses the bottom-sheet
+		* ~~Add message bottom-sheet~~
+			* ~~textarea fixed length 140 char~~
+			* ~~check button~~
+				* ~~adds a message to the feed and dismisses the bottom-sheet~~
 		* sidepanel-right ("slack style", one panel open at a time)
 			* ORGANIZER -> "Join with PIN" panel
 				* as today (dynamic update of participants count based on polling)
@@ -282,8 +282,8 @@ rename it to Talkwall
 					* task has slide control to edit, delete
 					* delete only works if no messages for that task
 				* "Add task" panel (10 tasks max -> matching color palette for task background)
-					* Text input, background, submit (no message size selector)
-					* submit button adds/validates a task in the list above
+					* ~~Text input, background, submit (no message size selector)~~
+					* ~~submit button adds/validates a task in the list above~~
 			* ORGANIZER -> "Close Talkwall" panel
 				* text that explaind the effects of closing 
 				* Clients receive an instruction to disconnect based on polling
@@ -307,8 +307,8 @@ rename it to Talkwall
 			* messages has fixed width, variable height to show all content
 				* all content should be visible so messages can be auto relocated
 		* top bar
-			* "message feed" button
-			* "screens" button (teacher only)
+			* ~~"message feed" button~~
+			* ~~"screens" button (teacher only)~~
 			* next task button (if next task exists)
 				* teacher -> next wall also triggers all participant's apps
 				* student -> only affects his/her wall
@@ -318,7 +318,7 @@ rename it to Talkwall
 			NOTE when moving from one task to the next: 
 				* when interaction occurs (drag, write, scroll, etc -> no polling)
 				* background animation between questions
-			* "hamburger" button (teacher only)
+			* ~~"hamburger" button (teacher only)~~
 	* PHONE version
 		* JOIN only
 		* add messages to feed
