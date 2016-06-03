@@ -16,7 +16,7 @@ module TalkwallApp {
 		/**
 		 * Pop up bottom sheet to edit messages. Slide out left sidenav also
 		 */
-		showMessageEditor(): void;
+		showMessageEditor(newMessage: boolean): void;
 		/**
 		 * Toggles which right menu should be open
 		 */
@@ -34,9 +34,8 @@ module TalkwallApp {
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
-		private question: Question = null;
 		private currentQuestionIndex: number = 0;
-		private newQuestion: string = '';
+		private newQuestionLabel: string = '';
 		constructor(
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
@@ -62,19 +61,20 @@ module TalkwallApp {
 
 		refreshQuestion(): void {
 			var handle = this;
-			let idKey = '_id';
-			this.dataService.getQuestion(this.dataService.getWall().questions[this.currentQuestionIndex][idKey],
-				function(success: Question) {
-					handle.question = success;
+			this.dataService.setQuestion(this.currentQuestionIndex,
+				function() {
+					//question updated
 				},
 				function(error: {}) {
 					//TODO: handle question retrieval error
 				});
 		}
 
-		showMessageEditor(): void {
+		showMessageEditor(newMessage): void {
 			var handle = this;
-			this.dataService.messageToEdit = new Message();
+			if (newMessage) {
+				this.dataService.messageToEdit = new Message();
+			}
 			this.$mdSidenav('left').open();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
@@ -84,13 +84,15 @@ module TalkwallApp {
 				//dialog answered
 				console.log('--> WallController: answer: ' + answer);
 				//post message to server and add returned object to question feed
-				handle.dataService.postMessage(handle.question._id, answer,
-				function(message: Message) {
-					handle.question.messageFeed.push(message);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				});
+				handle.dataService.sendMessage(
+					function() {
+						//success
+						handle.dataService.messageToEdit = null;
+					},
+					function(error: {}) {
+						//TODO: handle message POST error
+					}
+				);
 			}, function() {
 				//dialog dismissed
 				console.log('--> WallController: dismissed');
@@ -124,10 +126,10 @@ module TalkwallApp {
 
 		postNewQuestion(): void {
 			var handle = this;
-			this.dataService.addQuestion(this.newQuestion,
+			this.dataService.addQuestion(this.newQuestionLabel,
 				function() {
 					//success
-					handle.newQuestion = '';
+					handle.newQuestionLabel = '';
 					handle.refreshQuestion();
 				},
 				function(error: {}) {

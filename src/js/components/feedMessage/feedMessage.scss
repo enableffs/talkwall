@@ -1,5 +1,10 @@
 @import "../../../scss/colors";
 
+.feedMessage-messageSelected {
+  background-color: $color-orange;
+  background-color: rgba(255, 119, 0, 0.5);
+}
+
 .feedMessage-showControlButton {
   width: 40px !important;
   height: 40px !important;
@@ -24,8 +29,20 @@
   padding-left: 4px;
   padding-right: 4px;
   margin-left: 5px;
+  font-size: .8em;
 }
 
 .feedMessage-messageBody {
   margin: 5px;
+}
+
+.feedMessage-messageControl {
+  background-color: $color-grey;
+}
+
+.feedMessage-wordWrap {
+  width: 100%;
+  overflow: hidden;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
 }
