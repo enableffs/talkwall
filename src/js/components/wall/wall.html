@@ -3,15 +3,15 @@
 	<md-toolbar class="wall-topToolbar">
 		<div flex layout="row" layout-align="start center">
 			<div flex="33" layout="row" layout-align="start center">
-				<md-button ng-show="wallC.question !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=true;wallC.$mdSidenav('left').open()">
+				<md-button ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=true;wallC.$mdSidenav('left').open()">
 					<md-icon md-svg-src="images/ic_chat_bubble_outline_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
-				<md-button ng-show="wallC.question !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=false;wallC.$mdSidenav('left').open()">
+				<md-button ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=false;wallC.$mdSidenav('left').open()">
 					<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 			</div>
 			<div flex="66" class="wall-question" layout layout-align="center center">
-				<span>{{wallC.question.label}}</span>
+				<span>{{wallC.dataService.getQuestion().label}}</span>
 			</div>
 			<div flex="33" layout="row" layout-align="end center">
 				<button class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle();wallC.toggleRightMenu(0)">
@@ -43,7 +43,7 @@
 			<md-content flex style="overflow-x: hidden !important;">
 				<!-- left sidenav message feed -->
 				<md-list ng-if="wallC.feedView">
-					<div feed-message ng-repeat="message in wallC.question.messageFeed" message="message"></div>
+					<div feed-message ng-repeat="message in wallC.dataService.getQuestion().messageFeed" message="message" show-edit-panel="wallC.showMessageEditor(false)" ng-if="!message.deleted"></div>
 				</md-list>
 
 				<!-- left sidenav people's screen feed -->
@@ -114,7 +114,7 @@
 					<div ng-if="wallC.rightMenu2" layout="column" class="wall-rightMenuAddTaskPanel">
 						<md-input-container class="md-block">
 							<label>Add task</label>
-							<textarea ng-model="wallC.newQuestion" rows="5" md-select-on-focus></textarea>
+							<textarea ng-model="wallC.newQuestionLabel" rows="5" md-select-on-focus></textarea>
 						</md-input-container>
 						<div layout="column">
 							<span>Background</span>
@@ -124,7 +124,7 @@
 								<md-button flex><img src="images/back033.png" aria-hidden="true" width="100%" /></md-button>
 								<md-button flex><img src="images/back044.png" aria-hidden="true" width="100%" /></md-button>
 							</div>
-							<md-button class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.newQuestion === ''" ng-click="wallC.postNewQuestion()">Add</md-button>
+							<md-button class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.newQuestionLabel === ''" ng-click="wallC.postNewQuestion()">Add</md-button>
 						</div>
 					</div>
 				</section>
@@ -153,7 +153,7 @@
 		<div flex class="wall-mainArea">
 
 			<!-- (+) fab button to show the editMessage bottomPane -->
-			<md-button ng-if="wallC.question !== null" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor()">
+			<md-button ng-if="wallC.dataService.getQuestion() !== null" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true)">
 				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 			</md-button>
 		</div>

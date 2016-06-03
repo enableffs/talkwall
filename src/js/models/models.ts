@@ -40,12 +40,7 @@ module TalkwallApp {
             date: Date;
             text: string;
         }>;
-        board: {
-            nickname: {
-                xpos: number;
-                ypos: number;
-            };
-        };
+        board: {};
         constructor() {
             this.createdAt = new Date();
             this.deleted = false;

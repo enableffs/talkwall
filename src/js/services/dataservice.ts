@@ -35,12 +35,22 @@ module TalkwallApp {
          */
         getWall(): Wall;
         /**
-         * get a question based on id
-         * @param questionId string
+         * get current question
+         * @return the current question
+         */
+        getQuestion(): Question;
+        /**
+         * get current nickname
+         * @return the current nickname
+         */
+        getNickname(): string;
+        /**
+         * set a question based on id
+         * @param questionIndex index in the questions array
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        getQuestion(questionId: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        setQuestion(questionIndex: number, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
          * add new question to the wall
          * @param label the question
@@ -50,18 +60,23 @@ module TalkwallApp {
         addQuestion(label: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
          * post new message to the feed
-         * @param questionId string
-         * @param text the message body
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        postMessage(questionId: string, text: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        sendMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * delete a message from the feed
+         * @param sFunc success callback
+         * @param eFunc error callback
+         */
+        deleteMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
     }
 
     export class DataService implements IDataService {
         static $inject = ['$http', '$window', '$routeParams', '$location', 'UtilityService'];
         private user: User;
         private wall: Wall;
+        private question: Question = null;
         //for dev only
         private questionStore: {} = {};
         private nickname: string = null;
@@ -147,7 +162,15 @@ module TalkwallApp {
             return this.wall;
         }
 
-        getQuestion(questionId, successCallbackFn, errorCallbackFn): void {
+        getQuestion(): Question {
+            return this.question;
+        }
+
+        getNickname(): string {
+            return this.nickname;
+        }
+
+        setQuestion(questionIndex, successCallbackFn, errorCallbackFn): void {
             /*this.$http.get('question.json')
                 .success(function(data) {
                     console.log('--> DataService: getQuestion success');
@@ -157,7 +180,9 @@ module TalkwallApp {
                     console.log('--> DataService: getQuestion failure: ' + error);
                     errorCallbackFn({status: error.status, message: error.data});
                 });*/
-            successCallbackFn(this.questionStore[questionId]);
+            let idKey = '_id';
+            this.question = this.questionStore[this.wall.questions[questionIndex][idKey]];
+            successCallbackFn();
         }
 
         addQuestion(label, successCallbackFn, errorCallbackFn): void {
@@ -172,18 +197,42 @@ module TalkwallApp {
             successCallbackFn();
         }
 
-        postMessage(questionId, text, successCallbackFn, errorCallbackFn): void {
+        sendMessage(successCallbackFn, errorCallbackFn): void {
             //generate a new message on server with _id and returns it
-            // this.$http.post('message.json')
-            var message = new Message();
-            message._id = this.utilityService.v4();
-            message.creator = this.nickname;
-            message.text = text;
-            message.origin = new Array();
-            message.origin.push({nickname: message.creator, message_id: message._id});
-            message.edits = new Array();
-            message.edits.push({date: message.createdAt, text: message.text});
-            successCallbackFn(message);
+            if (this.messageToEdit._id === undefined) {
+                // this.$http.post('message.json')
+                var message = new Message();
+                message._id = this.utilityService.v4();
+                message.creator = this.nickname;
+                message.text = this.messageToEdit.text;
+                message.origin = new Array();
+                message.origin.push({nickname: message.creator, message_id: message._id});
+                message.edits = new Array();
+                message.board = {};
+                message.edits.push({date: message.createdAt, text: message.text});
+                //TODO: push the message received by the server instead
+                this.question.messageFeed.push(message);
+                successCallbackFn();
+            } else {
+                // this.$http.put('message.json')
+                //if we get a 200 response we are happy, nothing to do
+                successCallbackFn();
+            }
+        }
+
+        deleteMessage(successCallbackFn, errorCallbackFn): void {
+            //update message on server with _id and returns it
+            // this.$http.put('message.json')
+            //on response, update the feed
+            /*let idKey = '_id';
+            for (var i = 0; i < this.question.messageFeed.length; i++) {
+                if (this.question.messageFeed[i][idKey] === message._id) {
+                    this.question.messageFeed.splice(i, 1);
+                    this.question.messageFeed.splice(i, 0, message);
+                }
+            }*/
+            //if we get a 200 response we are happy, nothing to do
+            successCallbackFn();
         }
     }
 }
