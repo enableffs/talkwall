@@ -70,6 +70,16 @@ module TalkwallApp {
          * @param eFunc error callback
          */
         deleteMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * get the board dimensions object
+         * @return the dimension object
+         */
+        getBoardDivSize(): {};
+        /**
+         * set the board dimensions object
+         * @param dimensions as a JSON object
+         */
+        setBoardDivSize(dimensions: {}): void;
     }
 
     export class DataService implements IDataService {
@@ -82,6 +92,7 @@ module TalkwallApp {
         private nickname: string = null;
         private participants: Array<string> = [];
         public messageToEdit: Message;
+        private boardDivSize: {};
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
@@ -233,6 +244,15 @@ module TalkwallApp {
             }*/
             //if we get a 200 response we are happy, nothing to do
             successCallbackFn();
+        }
+
+        setBoardDivSize(newSize: any): void {
+            console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));
+            this.boardDivSize = newSize;
+        }
+
+        getBoardDivSize() {
+            return this.boardDivSize;
         }
     }
 }

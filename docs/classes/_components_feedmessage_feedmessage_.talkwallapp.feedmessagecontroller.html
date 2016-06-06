@@ -94,11 +94,12 @@
 						<section class="tsd-index-section tsd-is-not-exported">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#dataservice" class="tsd-kind-icon">data<wbr>Service</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#isselected" class="tsd-kind-icon">is<wbr>Selected</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#_document" class="tsd-kind-icon">$document</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#dataservice" class="tsd-kind-icon">data<wbr>Service</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#isolatedscope" class="tsd-kind-icon">isolated<wbr>Scope</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#message" class="tsd-kind-icon">message</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#showcontrols" class="tsd-kind-icon">show<wbr>Controls</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#utilityservice" class="tsd-kind-icon">utility<wbr>Service</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-not-exported"><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#_inject" class="tsd-kind-icon">$inject</a></li>
 							</ul>
 						</section>
@@ -121,13 +122,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-not-exported">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Feed<wbr>Message<wbr>Controller<span class="tsd-signature-symbol">(</span>isolatedScope<span class="tsd-signature-symbol">: </span><a href="../interfaces/_components_feedmessage_feedmessage_.talkwallapp.feedmessagedirectivescope.html" class="tsd-signature-type">FeedMessageDirectiveScope</a>, dataService<span class="tsd-signature-symbol">: </span><a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html" class="tsd-signature-type">FeedMessageController</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Feed<wbr>Message<wbr>Controller<span class="tsd-signature-symbol">(</span>isolatedScope<span class="tsd-signature-symbol">: </span><a href="../interfaces/_components_feedmessage_feedmessage_.talkwallapp.feedmessagedirectivescope.html" class="tsd-signature-type">FeedMessageDirectiveScope</a>, dataService<span class="tsd-signature-symbol">: </span><a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a>, $document<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IDocumentService</span>, utilityService<span class="tsd-signature-symbol">: </span><a href="_services_utilityservice_.talkwallapp.utilityservice.html" class="tsd-signature-type">UtilityService</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html" class="tsd-signature-type">FeedMessageController</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L12">components/feedMessage/feedMessage.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L13">components/feedMessage/feedMessage.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -138,6 +139,12 @@
 								<li>
 									<h5>dataService: <a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a></h5>
 								</li>
+								<li>
+									<h5>$document: <span class="tsd-signature-type">ng.IDocumentService</span></h5>
+								</li>
+								<li>
+									<h5>utilityService: <a href="_services_utilityservice_.talkwallapp.utilityservice.html" class="tsd-signature-type">UtilityService</a></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html" class="tsd-signature-type">FeedMessageController</a></h4>
 						</li>
@@ -146,23 +153,23 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported">
-					<a name="dataservice" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> data<wbr>Service</h3>
-					<div class="tsd-signature tsd-kind-icon">data<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-not-exported">
+					<a name="_document" class="tsd-anchor"></a>
+					<h3>$document</h3>
+					<div class="tsd-signature tsd-kind-icon">$document<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ng.IDocumentService</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L16">components/feedMessage/feedMessage.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L18">components/feedMessage/feedMessage.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported">
-					<a name="isselected" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Selected</h3>
-					<div class="tsd-signature tsd-kind-icon">is<wbr>Selected<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-not-exported">
+					<a name="dataservice" class="tsd-anchor"></a>
+					<h3>data<wbr>Service</h3>
+					<div class="tsd-signature tsd-kind-icon">data<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L12">components/feedMessage/feedMessage.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L17">components/feedMessage/feedMessage.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -172,7 +179,7 @@
 					<div class="tsd-signature tsd-kind-icon">isolated<wbr>Scope<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_components_feedmessage_feedmessage_.talkwallapp.feedmessagedirectivescope.html" class="tsd-signature-type">FeedMessageDirectiveScope</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L15">components/feedMessage/feedMessage.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L16">components/feedMessage/feedMessage.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -182,7 +189,7 @@
 					<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <a href="_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L10">components/feedMessage/feedMessage.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L12">components/feedMessage/feedMessage.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -192,7 +199,17 @@
 					<div class="tsd-signature tsd-kind-icon">show<wbr>Controls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L11">components/feedMessage/feedMessage.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L13">components/feedMessage/feedMessage.ts:13</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported">
+					<a name="utilityservice" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> utility<wbr>Service</h3>
+					<div class="tsd-signature tsd-kind-icon">utility<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="_services_utilityservice_.talkwallapp.utilityservice.html" class="tsd-signature-type">UtilityService</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L19">components/feedMessage/feedMessage.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -202,7 +219,7 @@
 					<div class="tsd-signature tsd-kind-icon">$inject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L8">components/feedMessage/feedMessage.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L10">components/feedMessage/feedMessage.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -219,7 +236,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L23">components/feedMessage/feedMessage.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L26">components/feedMessage/feedMessage.ts:26</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -241,7 +258,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L30">components/feedMessage/feedMessage.ts:30</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L35">components/feedMessage/feedMessage.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -258,7 +275,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L45">components/feedMessage/feedMessage.ts:45</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L50">components/feedMessage/feedMessage.ts:50</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -275,7 +292,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L50">components/feedMessage/feedMessage.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L55">components/feedMessage/feedMessage.ts:55</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -292,7 +309,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L68">components/feedMessage/feedMessage.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L73">components/feedMessage/feedMessage.ts:73</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -343,6 +360,9 @@
 						<a href="../modules/_directives_autoresize_.html">"directives/autoresize"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="../modules/_directives_watchboardsize_.html">"directives/watchboardsize"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_models_models_.html">"models/models"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -372,11 +392,11 @@
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-not-exported">
 								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported">
-								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#dataservice" class="tsd-kind-icon">data<wbr>Service</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-not-exported">
+								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#_document" class="tsd-kind-icon">$document</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported">
-								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#isselected" class="tsd-kind-icon">is<wbr>Selected</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-not-exported">
+								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#dataservice" class="tsd-kind-icon">data<wbr>Service</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported">
 								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#isolatedscope" class="tsd-kind-icon">isolated<wbr>Scope</a>
@@ -386,6 +406,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported">
 								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#showcontrols" class="tsd-kind-icon">show<wbr>Controls</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-not-exported">
+								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#utilityservice" class="tsd-kind-icon">utility<wbr>Service</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-not-exported">
 								<a href="_components_feedmessage_feedmessage_.talkwallapp.feedmessagecontroller.html#_inject" class="tsd-kind-icon">$inject</a>
@@ -414,6 +437,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="../modules/_components_feedmessage_feedmessage_.talkwallapp.html#feedmessage" class="tsd-kind-icon">Feed<wbr>Message</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<a href="../modules/_components_feedmessage_feedmessage_.talkwallapp.html#linker" class="tsd-kind-icon">linker</a>
 					</li>
 				</ul>
 			</nav>

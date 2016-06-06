@@ -25,6 +25,8 @@ module TalkwallApp {
 		 * Post a new question
 		 */
 		postNewQuestion(): void;
+
+		getLocationPosition(e, p: {}): {};
 	}
 
 	export class WallController implements IWallControllerService {
@@ -36,6 +38,8 @@ module TalkwallApp {
 		private rightMenu3: boolean = false;
 		private currentQuestionIndex: number = 0;
 		private newQuestionLabel: string = '';
+		private viewHeight = 700;
+		private viewWidth = 1200;
 		constructor(
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
@@ -136,6 +140,34 @@ module TalkwallApp {
 					//TODO: handle question retrieval error
 				}
 			);
+		}
+
+		getLocationPosition(e, p: {}): {} {
+			let xposKey = 'xpos';
+			let yposKey = 'ypos';
+			let leftKey = 'left';
+			let topKey = 'top';
+			var calcTopPos: number = p[yposKey] * this.viewHeight;
+			var calcLeftPos: number = p[xposKey] * this.viewWidth;
+
+			var pos: {} = {
+				top: (calcTopPos - 25) + 'px',
+				left: (calcLeftPos - 25) + 'px'
+			};
+
+			if (calcLeftPos < 25 ) {
+				pos[leftKey] = '0px';
+			} else if (calcLeftPos > (this.viewWidth - 25)) {
+				pos[leftKey] = (this.viewWidth - 50) + 'px';
+			}
+
+			if (calcTopPos < 25 ) {
+				pos[topKey] = '0px';
+			} else if (calcTopPos > (this.viewHeight - 25)) {
+				pos[topKey] = (this.viewHeight - 50) + 'px';
+			}
+
+			return pos;
 		}
 	}
 }
