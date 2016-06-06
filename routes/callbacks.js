@@ -4,9 +4,17 @@
 var jwt = require('jsonwebtoken');
 var secret = require('../config/secret');
 var tokenManager = require('../config/token_manager');
-var User = require('../models/users');
-var Pin = require('../models/pins');
+var User = require('../models/user');
 var common = require('../config/common.js');
+
+exports.localapicallback = function(req, res) {
+    var token = jwt.sign({id: req.user._id}, secret.secretToken, {expiresIn: tokenManager.TOKEN_EXPIRATION});
+
+    return res.status(common.StatusMessages.LOGIN_SUCCESS.status).json({
+        message: common.StatusMessages.LOGIN_SUCCESS.message, token: token
+    });
+};
+
 
 exports.fbcallback = function(req, res) {
     // If this function gets called, authentication was successful.

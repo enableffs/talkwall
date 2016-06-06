@@ -1,11 +1,16 @@
-// app/models/user.js
-// load the things we need
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// define the schema for our user model
 var userSchema = Schema({
 
+    local:
+    {
+        apikey:     String,
+        email:      String,
+        name:       String,
+        createdAt:  { type: Date, default: Date.now },
+        lastLogin:  { type: Date }
+    },
     facebook:
     {
         id:         String,

@@ -35,6 +35,7 @@ var routes = {};
 routes.callbacks =  require('./routes/callbacks.js');
 routes.sync = require('./routes/sync.js');
 routes.client = require('./routes/client');
+routes.teacher = require('./routes/teacher');
 
 /********* db connection *********/
 var mongodbURL = process.env.MONGOLAB_URI;
@@ -44,6 +45,9 @@ var db = mongoose.connection;
 db.on('error', function (err) {
     console.log('Mongo error from app.js '+err);
     utilities.processError(err);
+});
+db.once('open', function callback () {
+    routes.teacher.createTestUser();
 });
 
 /********* redis connection handler *********/
@@ -79,14 +83,31 @@ app.listen(port);
 console.log('--> samtavla-services listening on port: '+port);
 
 /********* callback *********/
-app.get('/auth/facebook',           passport.authenticate('facebook',   { scope : 'email' }));
-app.get('/auth/facebook/callback',  passport.authenticate('facebook'),  routes.callbacks.fbcallback);
+app.get('/auth/facebook',           passport.authenticate('facebook',           { scope : 'email' }));
+app.get('/auth/facebook/callback',  passport.authenticate('facebook'),          routes.callbacks.fbcallback);
 
-app.get('/auth/google',             passport.authenticate('google',     { scope: 'email' }));
-app.get('/auth/google/callback',    passport.authenticate('google'),    routes.callbacks.googlecallback);
+app.get('/auth/google',             passport.authenticate('google',             { scope: 'email' }));
+app.get('/auth/google/callback',    passport.authenticate('google'),            routes.callbacks.googlecallback);
 
-app.put('/poll',                                                        routes.client.poll);
-app.put('/connect',                                                     routes.client.connect);
+app.get('/auth/localapikey',        passport.authenticate('localapikey'),       routes.callbacks.localapicallback);
 
-/********* sync *********/
-app.get('/ping',                                                    routes.sync.ping());
+/********* authenticated (teacher only) operations *********/
+app.get('/walls',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWalls);
+app.get('/wall/:id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWall);
+app.post('/wall',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createWall);
+app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateWall);
+app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);
+
+/********* client (student / teacher) operations *********/
+app.get('/join/:pin/:nickname',                                                                     routes.client.joinWall);
+app.get('/question/:wall_id/:question_id/:nickname',                                                routes.client.getQuestion);
+app.get('/poll/:wall_id/:question_id/:nickname',                                                    routes.client.poll);
+app.post('/message',                                                                                routes.client.createMessage);
+app.put('/message',                                                                                 routes.client.updateMessage);
+
+/********* setup & debug *********/
+app.get('/ping',                                                                                    routes.sync.ping());
+
+if(process.env.STATIC_FOLDER === 'src') {   // Only enable this route if we are using development .env file
+    app.delete('/wall/:id',   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,         routes.teacher.deleteWall);
+}
