@@ -46,3 +46,12 @@
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
 }
+
+.feedMessage-messageOnBoard {
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: $color-white !important;
+  position: absolute !important;
+  cursor: move;
+}

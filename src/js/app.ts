@@ -9,6 +9,7 @@
 
 /// <reference path="directives/autoresize.ts"/>
 /// <reference path="components/feedMessage/feedMessage.ts"/>
+/// <reference path="directives/watchboardsize.ts"/>
 
 /// <reference path="components/login/login.ts"/>
 /// <reference path="components/landing/landing.ts"/>
@@ -46,6 +47,7 @@ module TalkwallApp {
         .service('TokenInterceptor', TokenInterceptor)
         .service('UtilityService', UtilityService)
         .directive('autoresize', AutoResize)
+        .directive('watchBoardSize', WatchBoardSize)
         .directive('feedMessage', FeedMessage)
         .controller('LoginController', LoginController)
         .controller('LandingController', LandingController)
