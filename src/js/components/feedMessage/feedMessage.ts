@@ -26,8 +26,12 @@ module TalkwallApp {
 		 */
 		activate(): void {
 			console.log('--> FeedMessageController activated');
+			this.message.isPinned = false;
 			if (this.message.board[this.dataService.getNickname()] !== undefined) {
 				this.message.isSelected = true;
+				if (this.message.board[this.dataService.getNickname()].pinned === true) {
+					this.message.isPinned = false;
+				}
 			} else {
 				this.message.isSelected = false;
 			}
@@ -57,7 +61,8 @@ module TalkwallApp {
 			var handle = this;
 			this.message.board[this.dataService.getNickname()] = {
 				xpos: handle.utilityService.getRandomBetween(45, 55) / 100,
-				ypos: handle.utilityService.getRandomBetween(45, 55) / 100
+				ypos: handle.utilityService.getRandomBetween(45, 55) / 100,
+				pinned: false
 			};
 			this.dataService.messageToEdit = this.message;
 			this.dataService.sendMessage(
@@ -74,6 +79,7 @@ module TalkwallApp {
 		unselectMessage(): void {
 			var handle = this;
 			delete this.message.board[this.dataService.getNickname()];
+			this.message.isPinned = false;
 			this.dataService.messageToEdit = this.message;
 			this.dataService.sendMessage(
 				function() {
@@ -83,6 +89,36 @@ module TalkwallApp {
 				function(error: {}) {
 					//TODO: handle message POST error
 				});
+		}
+
+		pinMessage(): void {
+			var handle = this;
+			this.message.board[this.dataService.getNickname()].pinned = true;
+			this.dataService.messageToEdit = this.message;
+			this.dataService.sendMessage(
+				function() {
+					handle.message.isPinned = true;
+					handle.dataService.messageToEdit = null;
+				},
+				function(error: {}) {
+					//TODO: handle message POST error
+				}
+			);
+		}
+
+		unpinMessage(): void {
+			var handle = this;
+			this.message.board[this.dataService.getNickname()].pinned = false;
+			this.dataService.messageToEdit = this.message;
+			this.dataService.sendMessage(
+				function() {
+					handle.message.isPinned = false;
+					handle.dataService.messageToEdit = null;
+				},
+				function(error: {}) {
+					//TODO: handle message POST error
+				}
+			);
 		}
 	}
 
@@ -120,8 +156,6 @@ module TalkwallApp {
 		function mousemove(event) {
 			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = event.screenX - startX;
 			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = event.screenY - startY;
-			console.log('mousemove: ' + isolatedScope.data.board[ctrl.dataService.getNickname()].xpos + ' - ' +
-				isolatedScope.data.board[ctrl.dataService.getNickname()].ypos);
 
 			if (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos < 0) {
 				isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = 0;

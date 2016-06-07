@@ -153,10 +153,11 @@
 		<div flex class="wall-mainArea">
 
 			<div watch-board-size style="position: absolute; top: 64px; left: 0; bottom: 0; right: 0; background-color: #333333">
-				<div feed-message class="feedMessage-messageOnBoard"
+				<div feed-message
 					 ng-repeat="message in wallC.dataService.getQuestion().messageFeed"
 					 data="message" on-board="true"
 					 show-edit-panel="wallC.showMessageEditor(false)"
+					 ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned}"
 					 ng-if="!message.deleted && message.isSelected"></div>
 				<!-- ng-style="wallC.getLocationPosition($event, message.board[wallC.dataService.getNickname()])" -->
 			</div>
