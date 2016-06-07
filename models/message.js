@@ -24,7 +24,8 @@ var messageSchema = Schema({
         board:  {
             nickname: {                         here, 'nickname' should be dynamically allocated
                 xpos:   { type: Number },
-                ypos:   { type: Number }
+                ypos:   { type: Number },
+                pinned: { type: Boolean, default: false }
             }
         }
 

@@ -8,6 +8,7 @@ var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
 var Question = require('../models/question');
 var Message = require('../models/message');
+var Utilities = require('../config/utilities');
 
 /**
  * @api {get} /poll Respond to this call with any changed messages and status
@@ -209,8 +210,9 @@ exports.createMessage = function(req, res) {
         }
         if (wall_id !== null) {
 
-            // Create a new Message with the supplied object   *** Not vetted!! :S
+            // Create a new Message with the supplied object, including board properties   *** Not vetted!! :S
             var newMessage = new Message(req.body.message);
+            newMessage.board = {};
             newMessage.save(function (error, message) {
                 if (error) {
                     return res.status(common.StatusMessages.CREATE_ERROR.status).json({
@@ -219,7 +221,7 @@ exports.createMessage = function(req, res) {
                 }
                 else {
                     // Update the message manager to notify other clients
-                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
+              //      mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
 
                     // Update the question with this new message, and return
                     Question.findOneAndUpdate({
@@ -278,7 +280,7 @@ exports.updateMessage = function(req, res) {
                     });
                 } else {
                     // Update the message manager to notify other clients
-                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
+           //         mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
 
                     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                         message: common.StatusMessages.UPDATE_SUCCESS.message

@@ -64,7 +64,7 @@ describe('get the user details', function() {
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.GET_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.GET_SUCCESS.message);
-                expect(res.body.result.defaultEmail).to.eql("abc@abc.net");
+                expect(res.body.result.nickname).to.eql("custom_teacher");
                 TEACHER_USER = res.body.result;
                 done();
             });
@@ -168,7 +168,7 @@ describe('teacher adds a new question', function() {
             .set('Authorization', 'Bearer '+ TEACHER_TOKEN)
             .send({
                 wall_id: FIRST_WALL._id,
-                label: "What is the meaning of life?"
+                question: { label: "What is the meaning of life?" }
             })
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.CREATE_SUCCESS.status);

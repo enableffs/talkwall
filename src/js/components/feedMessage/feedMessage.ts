@@ -38,13 +38,11 @@ module TalkwallApp {
 		}
 
 		deleteMessage(): void {
-			var handle = this;
-			this.message.deleted = true;
-			this.dataService.messageToEdit = this.message;
-			this.dataService.deleteMessage(
+            this.dataService.setMessageToEdit(this.message);
+            this.message.deleted = true;
+			this.dataService.updateMessage(
 				function() {
 					//success delete
-					handle.dataService.messageToEdit = null;
 				},
 				function(error: {}) {
 					//TODO: handle message delete error
@@ -53,7 +51,7 @@ module TalkwallApp {
 		}
 
 		editMessage(): void {
-			this.dataService.messageToEdit = this.message;
+			this.dataService.setMessageToEdit(this.message);
 			this.isolatedScope.showEditPanel();
 		}
 
@@ -64,11 +62,11 @@ module TalkwallApp {
 				ypos: handle.utilityService.getRandomBetween(45, 55) / 100,
 				pinned: false
 			};
-			this.dataService.messageToEdit = this.message;
-			this.dataService.sendMessage(
+			this.dataService.setMessageToEdit(this.message);
+			this.dataService.updateMessage(
 				function() {
 					handle.message.isSelected = true;
-					handle.dataService.messageToEdit = null;
+					handle.dataService.setMessageToEdit(null);
 				},
 				function(error: {}) {
 					//TODO: handle message POST error
@@ -80,11 +78,11 @@ module TalkwallApp {
 			var handle = this;
 			delete this.message.board[this.dataService.getNickname()];
 			this.message.isPinned = false;
-			this.dataService.messageToEdit = this.message;
-			this.dataService.sendMessage(
+			this.dataService.setMessageToEdit(this.message);
+			this.dataService.updateMessage(
 				function() {
 					handle.message.isSelected = false;
-					handle.dataService.messageToEdit = null;
+					handle.dataService.setMessageToEdit(null);
 				},
 				function(error: {}) {
 					//TODO: handle message POST error
@@ -94,11 +92,11 @@ module TalkwallApp {
 		pinMessage(): void {
 			var handle = this;
 			this.message.board[this.dataService.getNickname()].pinned = true;
-			this.dataService.messageToEdit = this.message;
-			this.dataService.sendMessage(
+			this.dataService.setMessageToEdit(this.message);
+			this.dataService.updateMessage(
 				function() {
 					handle.message.isPinned = true;
-					handle.dataService.messageToEdit = null;
+					handle.dataService.setMessageToEdit(null);
 				},
 				function(error: {}) {
 					//TODO: handle message POST error
@@ -109,11 +107,11 @@ module TalkwallApp {
 		unpinMessage(): void {
 			var handle = this;
 			this.message.board[this.dataService.getNickname()].pinned = false;
-			this.dataService.messageToEdit = this.message;
-			this.dataService.sendMessage(
+			this.dataService.setMessageToEdit(this.message);
+			this.dataService.updateMessage(
 				function() {
 					handle.message.isPinned = false;
-					handle.dataService.messageToEdit = null;
+					handle.dataService.setMessageToEdit(null);
 				},
 				function(error: {}) {
 					//TODO: handle message POST error

@@ -29,7 +29,7 @@ var userSchema = Schema({
         createdAt:  { type: Date, default: Date.now },
         lastLogin:  { type: Date }
     },
-    nickname:       String,
+    nickname:       { type: String, default: 'teacher' },
     defaultEmail:   { type: String, unique: false },
     lastOpenedWall: { type: Schema.Types.ObjectId, ref: 'Wall', default: null},
     helpViewed:     { type: Boolean, default: false }

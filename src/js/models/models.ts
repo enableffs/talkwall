@@ -50,6 +50,9 @@ module TalkwallApp {
             this.createdAt = new Date();
             this.deleted = false;
             this.text = '';
+            this.origin = [];
+            this.edits = [];
+            this.board = {};
         }
     }
 

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
-var Message = require('./message');
-var QuestionSchema = require('./question').schema;
+var Question = require('./question');
+var QuestionSchema = Question.schema;
 var Schema = mongoose.Schema;
 
 // define the schema for our message model
@@ -13,9 +13,9 @@ var wallSchema = Schema({
 });
 
 wallSchema.pre('remove', function(next) {
-    Message.find({ _id: { $in: this.questions.messages } }).exec(function(error, messages) {
-        messages.forEach(function(m) {
-            m.remove();
+    Question.find({ _id: { $in: this.questions } }).exec(function(error, questions) {
+        questions.forEach(function(q) {
+            q.remove();
         });
         next();
     });

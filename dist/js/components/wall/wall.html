@@ -44,7 +44,7 @@
 			<md-content flex style="overflow-x: hidden !important;">
 				<!-- left sidenav message feed -->
 				<md-list ng-if="wallC.feedView">
-					<div ng-class="{'feedMessage-messageSelected': message.isSelected}" feed-message on-board="false" ng-repeat="message in wallC.dataService.getQuestion().messageFeed" data="message" show-edit-panel="wallC.showMessageEditor(false)" ng-if="!message.deleted"></div>
+					<div ng-class="{'feedMessage-messageSelected': message.isSelected}" feed-message on-board="false" ng-repeat="message in wallC.dataService.getQuestion().messages" data="message" show-edit-panel="wallC.showMessageEditor(false)" ng-if="!message.deleted"></div>
 				</md-list>
 
 				<!-- left sidenav people's screen feed -->
@@ -155,7 +155,7 @@
 
 			<div watch-board-size style="position: absolute; top: 64px; left: 0; bottom: 0; right: 0; background-color: #333333">
 				<div feed-message
-					 ng-repeat="message in wallC.dataService.getQuestion().messageFeed"
+					 ng-repeat="message in wallC.dataService.getQuestion().messages"
 					 data="message" on-board="true"
 					 show-edit-panel="wallC.showMessageEditor(false)"
 					 ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned}"

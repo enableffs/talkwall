@@ -99,13 +99,13 @@ module TalkwallApp {
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        sendMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        addMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
          * delete a message from the feed
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        deleteMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        updateMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
          * get the board dimensions object
          * @return the dimension object
@@ -116,18 +116,21 @@ module TalkwallApp {
          * @param dimensions as a JSON object
          */
         setBoardDivSize(dimensions: {}): void;
+
+        setMessageToEdit(message: Message): void;
+        getMessageToEdit(): Message;
     }
 
     export class DataService implements IDataService {
         static $inject = ['$http', '$window', '$routeParams', '$location', 'UtilityService', 'URLService'];
         private user: User;
         private wall: Wall;
-        private question: Question = null;
+        private question: Question;
+        private messageToEdit: Message = new Message();
 
         //for dev only
         private studentNickname: string = null;
         private participants: Array<string> = [];
-        public messageToEdit: Message;
         private boardDivSize: {};
         private userAuthorised = false;
 
@@ -194,7 +197,7 @@ module TalkwallApp {
 
         requestWall(wallId, successCallbackFn, errorCallbackFn): void {
             //return the previous wall with a the existing PIN from REDIS (if expired return true)
-            this.$http.get(this.urlService.getHost() + '/wall')
+            this.$http.get(this.urlService.getHost() + '/wall/' + wallId)
                 .success((data) => {
                     let resultKey = 'result';
                     this.wall = data[resultKey];
@@ -248,6 +251,15 @@ module TalkwallApp {
                 });
         }
 
+        // Accessor functions for passing messages between directives
+        setMessageToEdit(message: Message) {
+            this.messageToEdit = message;
+        }
+
+        getMessageToEdit(): Message {
+            return this.messageToEdit;
+        }
+
         userIsAuthorised(): boolean {
             return this.userAuthorised;
         }
@@ -286,18 +298,18 @@ module TalkwallApp {
                     });
         }
 
+        //generate a new question on server with _id and returns it
         addQuestion(label, successCallbackFn, errorCallbackFn): void {
-            //generate a new question on server with _id and returns it
             var question = new Question(label);
-            this.$http.post(this.urlService.getHost() + '/question', question)
+            this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.wall._id, question: question})
                 .success((data) => {
                     let resultKey = 'result';
-                    var newQuestion = new Question(data[resultKey].label);
-                    newQuestion.createdAt = data[resultKey].createdAt;
-                    newQuestion._id = data[resultKey]._id;
-                    this.wall.questions.push(newQuestion);
+                    question.createdAt = data[resultKey].createdAt;
+                    question._id = data[resultKey]._id;
+                    this.wall.questions.push(question);
+                    this.question = question;
                     if (typeof successCallbackFn === "function") {
-                        successCallbackFn(newQuestion);
+                        successCallbackFn(question);
                     }
                 })
                 .catch((error) => {
@@ -308,8 +320,38 @@ module TalkwallApp {
                 });
         }
 
-        sendMessage(successCallbackFn, errorCallbackFn): void {
-            //generate a new message on server with _id and returns it
+        //generate a new message on server with _id and returns it
+        addMessage(successCallbackFn, errorCallbackFn): void {
+            var nickname = this.getNickname();
+            if (this.messageToEdit === null) {
+                errorCallbackFn({status: '400', message: "message is not defined"});
+            }
+            this.messageToEdit.creator = this.getNickname();
+            this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: this.messageToEdit._id});
+            this.messageToEdit.edits.push({date: this.messageToEdit.createdAt, text: this.messageToEdit.text});
+
+            this.$http.post(this.urlService.getHost() + '/message', {
+                message: this.messageToEdit,
+                pin: this.wall.pin,
+                nickname: nickname
+            })
+                .success((data) => {
+                    let resultKey = 'result';
+                    this.messageToEdit.createdAt = data[resultKey].createdAt;
+                    this.messageToEdit._id = data[resultKey]._id;
+                    this.question.messages.push(this.messageToEdit);
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(this.messageToEdit);
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getQuestion failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+
+           /*
             if (this.messageToEdit._id === undefined) {
                 // this.$http.post('message.json')
                 var message = new Message();
@@ -329,8 +371,35 @@ module TalkwallApp {
                 //if we get a 200 response we are happy, nothing to do
                 successCallbackFn();
             }
+            */
         }
 
+        //update a new on server and return it
+        updateMessage(successCallbackFn, errorCallbackFn): void {
+            if (this.messageToEdit === null) {
+                errorCallbackFn({status: '400', message: "message is not defined"});
+            }
+            this.$http.put(this.urlService.getHost() + '/message', {
+                    message: this.messageToEdit,
+                    pin: this.wall.pin,
+                    nickname: this.getNickname()
+                })
+                .success((data) => {
+                    let resultKey = 'result';
+                    var message = data[resultKey];
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(message);
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getQuestion failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+        }
+
+        /*
         deleteMessage(successCallbackFn, errorCallbackFn): void {
             //update message on server with _id and returns it
             // this.$http.put('message.json')
@@ -341,10 +410,11 @@ module TalkwallApp {
              this.question.messageFeed.splice(i, 1);
              this.question.messageFeed.splice(i, 0, message);
              }
-             }*/
+             }
             //if we get a 200 response we are happy, nothing to do
             successCallbackFn();
         }
+        */
 
         setBoardDivSize(newSize: any): void {
             console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));

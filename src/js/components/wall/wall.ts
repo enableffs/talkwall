@@ -46,6 +46,7 @@ module TalkwallApp {
         private currentWall: Wall;
         private currentQuestion: Question;
         private currentQuestionIndex: number = 0;
+        private messageToEdit: Message;
 
         private viewHeight = 700;
         private viewWidth = 1200;
@@ -79,8 +80,9 @@ module TalkwallApp {
 		showMessageEditor(newMessage): void {
 			var handle = this;
 			if (newMessage) {
-				this.dataService.messageToEdit = new Message();
+                handle.dataService.setMessageToEdit(new Message());
 			}
+            this.messageToEdit = handle.dataService.getMessageToEdit();
 			this.$mdSidenav('left').open();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
@@ -90,15 +92,18 @@ module TalkwallApp {
 				//dialog answered
 				console.log('--> WallController: answer: ' + answer);
 				//post message to server and add returned object to question feed
-				handle.dataService.sendMessage(
-					function() {
-						//success
-						handle.dataService.messageToEdit = null;
-					},
-					function(error: {}) {
-						//TODO: handle message POST error
-					}
-				);
+                if (newMessage) {
+                    handle.dataService.addMessage(
+                        function () {
+                            //success
+                        },
+                        function (error: {}) {
+                            //TODO: handle message POST error
+                        }
+                    );
+                } else {
+                    handle.dataService.updateMessage( null, null);
+                }
 			}, function() {
 				//dialog dismissed
 				console.log('--> WallController: dismissed');
