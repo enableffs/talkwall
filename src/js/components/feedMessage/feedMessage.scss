@@ -37,6 +37,9 @@
 
 .feedMessage-messageControl {
   background-color: $color-grey;
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
 }
 
 .feedMessage-wordWrap {
