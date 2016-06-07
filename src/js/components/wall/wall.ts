@@ -26,7 +26,7 @@ module TalkwallApp {
 		 */
 		postNewQuestion(): void;
 
-		getLocationPosition(e, p: {}): {};
+		getLocationPosition(p: {}): {};
 	}
 
 	export class WallController implements IWallControllerService {
@@ -142,31 +142,13 @@ module TalkwallApp {
 			);
 		}
 
-		getLocationPosition(e, p: {}): {} {
-			let xposKey = 'xpos';
+		getLocationPosition(p: {}): {} {
 			let yposKey = 'ypos';
-			let leftKey = 'left';
-			let topKey = 'top';
-			var calcTopPos: number = p[yposKey] * this.viewHeight;
-			var calcLeftPos: number = p[xposKey] * this.viewWidth;
-
+			let xposKey = 'xpos';
 			var pos: {} = {
-				top: (calcTopPos - 25) + 'px',
-				left: (calcLeftPos - 25) + 'px'
+				top: (p[yposKey] * 100) + '%',
+				left: (p[xposKey] * 100) + '%'
 			};
-
-			if (calcLeftPos < 25 ) {
-				pos[leftKey] = '0px';
-			} else if (calcLeftPos > (this.viewWidth - 25)) {
-				pos[leftKey] = (this.viewWidth - 50) + 'px';
-			}
-
-			if (calcTopPos < 25 ) {
-				pos[topKey] = '0px';
-			} else if (calcTopPos > (this.viewHeight - 25)) {
-				pos[topKey] = (this.viewHeight - 50) + 'px';
-			}
-
 			return pos;
 		}
 	}
