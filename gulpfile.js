@@ -72,28 +72,6 @@ gulp.task('sass', function() {
         }))
         .pipe(gulp.dest(config.src.css))
         .pipe(gulp.dest(config.dist.css));
-        /*.pipe(sass({
-                style: 'expanded',
-                includePaths: [require('node-normalize-scss').includePaths, config.bower+'susy/sass']
-            })
-            .on('error', function(err){
-                browserSync.notify(err.message, 10000);
-                this.emit('end');
-            })
-            .on('error', sass.logError)
-        )
-        .pipe(autoprefixer({
-            browsers: ['last 2 versions'],
-            cascade: false
-        }))
-        .pipe(gulp.dest(config.src.css))
-        .pipe(browserSync.reload({stream: true}))
-        .pipe(cssnano())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(config.dist.css))
-        .pipe(sass({errLogToConsole: true}))*/
 });
 
 
@@ -239,7 +217,6 @@ gulp.task("typedoc", function() {
 });
 
 
-gulp.task('css', gulp.series('sass'));
 gulp.task('dev', gulp.series('sass', 'ts-lint', 'typescripts', 'javascripts', 'typedoc'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
 gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
