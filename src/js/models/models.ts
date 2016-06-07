@@ -5,6 +5,7 @@ module TalkwallApp {
 
     export class User {
         _id: string;
+        nickname: string;
         lastOpenedWall: string;   //wall _id
         defaultEmail: string;
     }
@@ -13,17 +14,19 @@ module TalkwallApp {
         _id: string;
         pin: string;
         createdAt: Date;
-        questions: Array<{
-            _id: string;        //Question._id
-            label: string;      //Question.label
-        }>;
+        questions: Array<Question>;
     }
 
     export class Question {
         _id: string;
         createdAt: Date;
         label: string;
-        messageFeed: Array<Message>;
+        messages: Array<Message>;
+
+        constructor(label: string) {
+            this.label = label;
+            this.messages = [];
+        }
     }
 
     export class Message {
@@ -46,5 +49,13 @@ module TalkwallApp {
             this.deleted = false;
             this.text = '';
         }
+    }
+
+    export class PollUpdate {
+        status: {
+            select_question_id: string;
+            connected_nicknames: Array<string>;
+        };
+        messages: {};
     }
 }

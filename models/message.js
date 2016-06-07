@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 // define the schema for our message model
 var messageSchema = Schema({
-    question_id:     { type: Schema.Types.ObjectId, ref: 'Question', default: null},
+    question_id:    { type: Schema.Types.ObjectId, ref: 'Question', default: null},
     createdAt:      { type: Date, default: Date.now },
     text:           { type: String, default: "" },
     creator:        { type: String }, // nickname

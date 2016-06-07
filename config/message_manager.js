@@ -3,8 +3,6 @@
  * It also notifies a client of change of status
  */
 
-var extend = require('util')._extend;
-
 var Mm = function() {
     this.data = {};
 
@@ -44,7 +42,7 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
         this.data[wall_id].status['connected_nicknames'].push(nickname);
     }
 
-    if(question_id !== null) {
+    if(question_id !== "") {
         // Create the question reference first, if not already there
         if (!this.data[wall_id].messages.hasOwnProperty(question_id)) {
             this.data[wall_id].messages[question_id] = {};
@@ -54,14 +52,40 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
 };
 
 /**
- * Remove users from the manager
+ * Remove users from a question
  *
  * @param {string} wall_id
  * @param {string} question_id
  * @param {Array} nickname
  */
 Mm.prototype.removeUser = function(wall_id, question_id, nickname) {
-    delete this.data[wall_id].messages[question_id][nickname];
+    // Remove this nickname from the question's polling 'messages' list
+    if( typeof this.data[wall_id] !== 'undefined' &&
+        typeof this.data[wall_id].messages[question_id][nickname] !== 'undefined') {
+            delete this.data[wall_id].messages[question_id][nickname];
+    }
+};
+
+/**
+ * Remove users from the wall entirely
+ *
+ * @param {string} wall_id
+ * @param {Array} nickname
+ */
+Mm.prototype.removeFromWall = function(wall_id, nickname) {
+    // Remove this nickname from the wall's connected_nicknames
+    var i = this.data[wall_id].status.connected_nicknames.indexOf(nickname);
+    this.data[wall_id].status.connected_nicknames.splice(i, 1);
+};
+
+/**
+ * Remove all users from the wall entirely
+ *
+ * @param {string} wall_id
+ */
+Mm.prototype.removeAllFromWall = function(wall_id) {
+    // Remove all nicknames from the wall's connected_nicknames
+    this.data[wall_id].status.connected_nicknames = [];
 };
 
 /**
