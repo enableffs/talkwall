@@ -125,6 +125,7 @@ module TalkwallApp {
 	function linker(isolatedScope: FeedMessageDirectiveScope , element: ng.IAugmentedJQuery,
 	                attributes: ng.IAttributes, ctrl: FeedMessageController) {
 		let viewWidthKey = 'VIEW_WIDTH', viewHeightKey = 'VIEW_HEIGHT';
+		let changedTouchesKey = 'changedTouches';
 		var startX = 0, startY = 0;
 
 		if (isolatedScope.onBoard === 'true') {
@@ -137,26 +138,44 @@ module TalkwallApp {
 				left: isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * 100 + '%'
 			});
 
-			element.on('mousedown', function(event) {
+			element.on('mousedown touchstart', function(event) {
 				// Prevent default dragging of selected content
 				event.preventDefault();
-
-				// Calculate limits based on current bounding box size
 				currentSize = ctrl.dataService.getBoardDivSize();
 				messageWidth = element.prop('offsetWidth');
 				messageHeight = element.prop('offsetHeight');
-				startX = event.screenX - (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * currentSize[viewWidthKey]);
-				startY = event.screenY - (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * currentSize[viewHeightKey]);
-				ctrl.$document.on('mousemove', mousemove);
-				ctrl.$document.on('mouseup', mouseup);
 
+				if (event instanceof TouchEvent) {
+					// Handling the touchstart event
+					var touchobj = event[changedTouchesKey][0];
+					startX = touchobj.clientX;
+					startY = touchobj.clientY;
+					ctrl.$document.on('touchmove', touchmove);
+					ctrl.$document.on('touchend', touchend);
+				} else if (event instanceof MouseEvent) {
+					// Handling the mousedown event
+					startX = event.screenX - (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * currentSize[viewWidthKey]);
+					startY = event.screenY - (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * currentSize[viewHeightKey]);
+					ctrl.$document.on('mousemove', mousemove);
+					ctrl.$document.on('mouseup', mouseup);
+				}
 			});
 		}
 
 		function mousemove(event) {
 			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = event.screenX - startX;
 			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = event.screenY - startY;
+			doMove();
+		}
 
+		function touchmove(event) {
+			var touchobj = event[changedTouchesKey][0];
+			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = touchobj.pageX - startX;
+			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = touchobj.pageY - startY;
+			doMove();
+		}
+
+		function doMove() {
 			if (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos < 0) {
 				isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = 0;
 			}
@@ -187,6 +206,11 @@ module TalkwallApp {
 		function mouseup() {
 			ctrl.$document.off('mousemove', mousemove);
 			ctrl.$document.off('mouseup', mouseup);
+		}
+
+		function touchend() {
+			ctrl.$document.off('touchmove', touchmove);
+			ctrl.$document.off('touchend', touchend);
 		}
 	}
 
