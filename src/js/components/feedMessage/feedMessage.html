@@ -6,8 +6,10 @@
 				<md-button class="feedMessage-showControlButton feedMessage-close" ng-click="feedMessageC.showControls = false">
 					<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
 				</md-button>
-				<md-button class="feedMessage-showControlButton">
-					<md-icon md-svg-icon="images/ic_delete_forever_orange_24px.svg" ng-click="feedMessageC.deleteMessage()"></md-icon>
+				<md-button class="feedMessage-showControlButton" ng-class="{'feedMessage-messageSelected': feedMessageC.message.isPinned && feedMessageC.isolatedScope.onBoard === 'true'}">
+					<md-icon ng-if="feedMessageC.isolatedScope.onBoard === 'false'" md-svg-icon="images/ic_delete_forever_orange_24px.svg" ng-click="feedMessageC.deleteMessage()"></md-icon>
+					<md-icon ng-if="feedMessageC.isolatedScope.onBoard === 'true' && !feedMessageC.message.isPinned" md-svg-icon="images/ic_location_on_orange_24px.svg" ng-click="feedMessageC.pinMessage()"></md-icon>
+					<md-icon ng-if="feedMessageC.isolatedScope.onBoard === 'true' && feedMessageC.message.isPinned" md-svg-icon="images/ic_location_on_black_24px.svg" ng-click="feedMessageC.unpinMessage()"></md-icon>
 				</md-button>
 			</div>
 			<div layout="row">
