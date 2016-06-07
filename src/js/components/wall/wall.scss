@@ -1,15 +1,5 @@
 @import "../../../scss/colors";
 
-/** Make sure to place the 2 items below way up on the z-index list **/
-md-bottom-sheet {
-  z-index: 16000001 !important;
-}
-
-.md-bottom-sheet-backdrop {
-  z-index: 16000000 !important;
-}
-/****/
-
 .wall-sidemenuLarge {
   max-width: 100% !important;
   width: 75% !important;
