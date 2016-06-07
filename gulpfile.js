@@ -119,6 +119,11 @@ gulp.task('copy-index-html', function() {
         .pipe(gulp.dest(config.dist.root));
 });
 
+gulp.task('copy-json', function() {
+    return gulp.src('src/*.json')
+        .pipe(gulp.dest(config.dist.root));
+});
+
 gulp.task('copy-images', function () {
     return gulp.src(config.src.images)
         .pipe(gulp.dest(config.dist.images))
@@ -228,4 +233,4 @@ gulp.task("typedoc", function() {
 
 gulp.task('dev', gulp.series('sass', 'ts-lint', 'typescripts', 'javascripts', 'typedoc'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-styles', 'copy-languages', 'copy-fonts', 'typedoc'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-styles', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
