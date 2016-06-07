@@ -2,11 +2,11 @@
 
 /** Make sure to place the 2 items below way up on the z-index list **/
 md-bottom-sheet {
-  z-index: 1001 !important;
+  z-index: 16000001 !important;
 }
 
 .md-bottom-sheet-backdrop {
-  z-index: 1000 !important;
+  z-index: 16000000 !important;
 }
 /****/
 
