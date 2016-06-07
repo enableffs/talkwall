@@ -12,6 +12,7 @@
 /// <reference path="directives/watchboardsize.ts"/>
 
 /// <reference path="components/login/login.ts"/>
+/// <reference path="components/join/join.ts"/>
 /// <reference path="components/landing/landing.ts"/>
 /// <reference path="components/wall/wall.ts"/>
 /// <reference path="components/editMessagePanel/editMessagePanel.ts"/>
@@ -50,6 +51,7 @@ module TalkwallApp {
         .directive('watchBoardSize', WatchBoardSize)
         .directive('feedMessage', FeedMessage)
         .controller('LoginController', LoginController)
+        .controller('JoinController', JoinController)
         .controller('LandingController', LandingController)
         .controller('WallController', WallController)
         .controller('EditMessageController', EditMessageController)

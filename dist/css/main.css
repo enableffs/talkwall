@@ -198,6 +198,10 @@ md-content {
   height: 75px !important;
 }
 
+.join-menuitem {
+  height: 75px !important;
+}
+
 .feedMessage-messageSelected {
   background-color: rgba(255, 119, 0, 0.5);
 }

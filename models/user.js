@@ -29,8 +29,9 @@ var userSchema = Schema({
         createdAt:  { type: Date, default: Date.now },
         lastLogin:  { type: Date }
     },
+    nickname:       { type: String, default: 'teacher' },
     defaultEmail:   { type: String, unique: false },
-    lastPin:        { type: Schema.Types.ObjectId, ref: 'Pin', default: null },
+    lastOpenedWall: { type: Schema.Types.ObjectId, ref: 'Wall', default: null},
     helpViewed:     { type: Boolean, default: false }
 });
 

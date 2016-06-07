@@ -1,16 +1,15 @@
 var mongoose = require('mongoose');
 var Question = require('./question');
+var QuestionSchema = Question.schema;
 var Schema = mongoose.Schema;
 
 // define the schema for our message model
 var wallSchema = Schema({
-
     pin:            { type: String },
     label:          { type: String },
     createdAt:      { type: Date, default: Date.now },
     createdBy:      { type: Schema.Types.ObjectId, ref: 'User', default: null},
-    questions:      [{type: Schema.Types.ObjectId, ref: 'Question', default: null}]
-
+    questions:      [QuestionSchema]
 });
 
 wallSchema.pre('remove', function(next) {

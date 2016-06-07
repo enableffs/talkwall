@@ -2,6 +2,7 @@
 /// <reference path="urlservice.ts"/>
 /// <reference path="authenticationservice.ts"/>
 /// <reference path="utilityservice.ts"/>
+/// <reference path="urlservice.ts"/>
 /// <reference path="../models/models.ts"/>
 
 module TalkwallApp {
@@ -11,24 +12,59 @@ module TalkwallApp {
     import IPromise = angular.IPromise;
 
     export interface IDataService {
+
+        /*
+         ********* authenticated (teacher only) operations *********
+         app.get('/walls',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWalls);
+         app.get('/wall/:id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWall);
+         app.post('/wall',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createWall);
+         app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateWall);
+         app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);
+
+         ********* client (student / teacher) operations *********
+         app.get('/join/:pin/:nickname',                                                                     routes.client.joinWall);
+         app.get('/question/:wall_id/:question_id/:nickname',                                                routes.client.getQuestion);
+         app.get('/poll/:wall_id/:question_id/:nickname',                                                    routes.client.poll);
+         app.post('/message',                                                                                routes.client.createMessage);
+         app.put('/message',
+
+         */
+
         /**
-         * get authentication status
+         * check authentication status
          * @return status as boolean
          */
-        checkAuthenticated(sFunc: (success: Wall) => void): void;
+        userIsAuthorised(): boolean;
+
+        /**
+         * establish authentication status
+         */
+        checkAuthentication(sFunc: (success: {}) => void, eFunc: (error: {}) => void): void;
         /**
          * get authenticated user
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        getUser(sFunc: (success: User) => void, eFunc: (error: {}) => void): void;
+        requestUser(sFunc: (success: User) => void, eFunc: (error: {}) => void): void;
         /**
-         * get last existing from services wall if any. if not get a new one
+         * get last existing from services wall if any.
          * @param wallId string
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        getLastWall(wallId: string, sFunc: (success: Wall) => void, eFunc: (error: {}) => void): void;
+        requestWall(wallId: string, sFunc: (success: Wall) => void, eFunc: (error: {}) => void): void;
+        /**
+         * create a new wall
+         * @param sFunc success callback
+         * @param eFunc error callback
+         */
+        createWall(sFunc: (success: Wall) => void, eFunc: (error: {}) => void): void;
+        /**
+         * join a wall
+         * @param sFunc success callback
+         * @param eFunc error callback
+         */
+        joinWall(joinModel: {}, sFunc: (success: Wall) => void, eFunc: (error: {}) => void): void;
         /**
          * get current wall
          * @return the current wall
@@ -50,7 +86,7 @@ module TalkwallApp {
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        setQuestion(questionIndex: number, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        requestPoll(questionIndex: number, previousQuestionIndex: number, sFunc: () => void, eFunc: (error: {}) => void): void;
         /**
          * add new question to the wall
          * @param label the question
@@ -63,13 +99,13 @@ module TalkwallApp {
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        sendMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        addMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
          * delete a message from the feed
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        deleteMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        updateMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
          * get the board dimensions object
          * @return the dimension object
@@ -80,33 +116,38 @@ module TalkwallApp {
          * @param dimensions as a JSON object
          */
         setBoardDivSize(dimensions: {}): void;
+
+        setMessageToEdit(message: Message): void;
+        getMessageToEdit(): Message;
     }
 
     export class DataService implements IDataService {
-        static $inject = ['$http', '$window', '$routeParams', '$location', 'UtilityService'];
+        static $inject = ['$http', '$window', '$routeParams', '$location', 'UtilityService', 'URLService'];
         private user: User;
         private wall: Wall;
-        private question: Question = null;
+        private question: Question;
+        private messageToEdit: Message = new Message();
+
         //for dev only
-        private questionStore: {} = {};
-        private nickname: string = null;
+        private studentNickname: string = null;
         private participants: Array<string> = [];
-        public messageToEdit: Message;
         private boardDivSize: {};
+        private userAuthorised = false;
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
                      private $routeParams: IRouteParamsService,
                      private $location: ILocationService,
-                     private utilityService: UtilityService) {
+                     private utilityService: UtilityService,
+                     private urlService: IURLService) {
             console.log('--> DataService started ...');
         }
 
-        checkAuthenticated(successCallbackFn): void {
-            var handle = this;
-            let tKey = 'authenticationToken';
+        // Remove token string from the address bar. Then, if authorised, get the user model and the most recent wall
+        // Otherwise, follow on back to where we came from..
+        checkAuthentication(successCallbackFn, errorCallbackFn): void {
+            let tKey = 'authenticationToken', tokenKey = 'token';
             var tokenParam = this.$routeParams[tKey] || '';
-            let tokenKey = 'token';
             if (tokenParam !== '') {
                 //look at the route params first for 'authenticationToken'
                 console.log('--> DataService: token from parameter');
@@ -114,59 +155,113 @@ module TalkwallApp {
                 //this will reload the page, clearing the token parameter. next time around it will hit the next 'else if'
                 this.$location.search(tKey, null);
             } else if (this.$window.sessionStorage[tokenKey]) {
+                this.userAuthorised = true;
                 //look at the window session object for the token. time to load the question
                 console.log('--> DataService: token already existing');
-                this.getUser(
-                    function(user: User) {
-                        handle.nickname = 'teacher';
-                        handle.user = user;
-                        //get the last opened or a new wall and a pin number
-                        handle.getLastWall(handle.user.lastOpenedWall,
-                            function(wall: Wall) {
-                                handle.wall = wall;
-                                successCallbackFn();
-                            },
-                            function(error: {}) {
-                                //TODO: handle get wall error
-                            }
-                        );
-                    },
-                    function(error: {}) {
+
+                this.requestUser((user: User) => {
+                        if (user.lastOpenedWall === null) {
+                            this.createWall(successCallbackFn, errorCallbackFn);
+                        } else {
+                            this.requestWall(user.lastOpenedWall, successCallbackFn, errorCallbackFn);
+                        }
+                    }, (error) => {
                         //TODO: handle get user error
                     }
                 );
             } else {
-                //else, not authenticated
-                console.log('--> DataService: not authenticated');
-                this.$location.path("/");
+                // Fall through..
+                successCallbackFn();
             }
         }
 
-        getUser(successCallbackFn, errorCallbackFn): void {
+        requestUser(successCallbackFn, errorCallbackFn): void {
             //this will return the correct user from the service, based on the req.user object.
-            this.$http.get('user.json')
-                .success(function(data) {
+            this.$http.get(this.urlService.getHost() + '/user')
+                .success((data) => {
+                    let resultKey = 'result';
+                    this.user = data[resultKey];
                     console.log('--> DataService: getUser success');
-                    successCallbackFn(data);
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(this.user);
+                    }
                 })
-                .catch(function(error) {
+                .catch((error) => {
                     console.log('--> DataService: getUser failure: ' + error);
-                    errorCallbackFn({status: error.status, message: error.data});
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
                 });
         }
 
-        getLastWall(wallId, successCallbackFn, errorCallbackFn): void {
+
+        requestWall(wallId, successCallbackFn, errorCallbackFn): void {
             //return the previous wall with a the existing PIN from REDIS (if expired return true)
-            //if wallId is null, return a new wall (from service) with a new PIN and an empty 'first' question
-            this.$http.get('wall.json')
-                .success(function(data) {
+            this.$http.get(this.urlService.getHost() + '/wall/' + wallId)
+                .success((data) => {
+                    let resultKey = 'result';
+                    this.wall = data[resultKey];
+                    this.question = this.wall.questions[0];
                     console.log('--> DataService: getWall success');
-                    successCallbackFn(data);
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(this.wall);
+                    }
                 })
-                .catch(function(error) {
+                .catch((error) => {
                     console.log('--> DataService: getWall failure: ' + error);
-                    errorCallbackFn({status: error.status, message: error.data});
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
                 });
+        }
+
+        createWall(successCallbackFn, errorCallbackFn): void {
+            this.$http.post(this.urlService.getHost() + '/wall', {label: "New Wall: " + new Date().toDateString()})
+                .success((data) => {
+                    let resultKey = 'result';
+                    this.wall = data[resultKey];
+                    console.log('--> DataService: getWall success');
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(this.wall);
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getWall failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+        }
+
+        joinWall(joinModel, successCallbackFn, errorCallbackFn): void {
+            this.$http.get(this.urlService.getHost() + '/join/' + joinModel.nickname + '/' + joinModel.pin)
+                .success((data) => {
+                    let resultKey = 'result';
+                    this.wall = data[resultKey];
+                    console.log('--> DataService: getWall success');
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(this.wall);
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getWall failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+        }
+
+        // Accessor functions for passing messages between directives
+        setMessageToEdit(message: Message) {
+            this.messageToEdit = message;
+        }
+
+        getMessageToEdit(): Message {
+            return this.messageToEdit;
+        }
+
+        userIsAuthorised(): boolean {
+            return this.userAuthorised;
         }
 
         getWall(): Wall {
@@ -178,73 +273,148 @@ module TalkwallApp {
         }
 
         getNickname(): string {
-            return this.nickname;
+            if (this.userAuthorised) {
+                return this.user.nickname;
+            } else {
+                return this.studentNickname;
+            }
         }
 
-        setQuestion(questionIndex, successCallbackFn, errorCallbackFn): void {
-            /*this.$http.get('question.json')
-                .success(function(data) {
-                    console.log('--> DataService: getQuestion success');
-                    successCallbackFn(data);
-                })
-                .catch(function(error) {
-                    console.log('--> DataService: getQuestion failure: ' + error);
-                    errorCallbackFn({status: error.status, message: error.data});
-                });*/
-            let idKey = '_id';
-            this.question = this.questionStore[this.wall.questions[questionIndex][idKey]];
-            successCallbackFn();
+        // Set previousQuestionIndex if we are changing questions. Else set it to -1
+        requestPoll(questionIndex, previousQuestionIndex, successCallbackFn, errorCallbackFn): void {
+            this.$http.get(this.urlService.getHost() + '/poll/' + this.getNickname() + '/' + this.wall._id +
+                '/' + questionIndex + '/' + previousQuestionIndex)
+                    .success((data) => {
+                        let resultKey = 'result';
+                        this.processUpdatedMessages(data[resultKey]);
+                        if (typeof successCallbackFn === "function") {
+                            successCallbackFn();
+                        }
+                    })
+                    .catch((error) => {
+                        if (typeof errorCallbackFn === "function") {
+                            errorCallbackFn({status: error.status, message: error.message});
+                        }
+                    });
         }
 
+        //generate a new question on server with _id and returns it
         addQuestion(label, successCallbackFn, errorCallbackFn): void {
-            //generate a new question on server with _id and returns it
-            // this.$http.post('question.json')
-            var question = new Question();
-            question._id = this.utilityService.v4();
-            question.label = label;
-            question.messageFeed = new Array();
-            this.wall.questions.push({_id: question._id, label: question.label});
-            this.questionStore[question._id] = question;
-            successCallbackFn();
+            var question = new Question(label);
+            this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.wall._id, question: question})
+                .success((data) => {
+                    let resultKey = 'result';
+                    question.createdAt = data[resultKey].createdAt;
+                    question._id = data[resultKey]._id;
+                    this.wall.questions.push(question);
+                    this.question = question;
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(question);
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getQuestion failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
         }
 
-        sendMessage(successCallbackFn, errorCallbackFn): void {
-            //generate a new message on server with _id and returns it
+        //generate a new message on server with _id and returns it
+        addMessage(successCallbackFn, errorCallbackFn): void {
+            var nickname = this.getNickname();
+            if (this.messageToEdit === null) {
+                errorCallbackFn({status: '400', message: "message is not defined"});
+            }
+            this.messageToEdit.creator = this.getNickname();
+            this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: this.messageToEdit._id});
+            this.messageToEdit.edits.push({date: this.messageToEdit.createdAt, text: this.messageToEdit.text});
+
+            this.$http.post(this.urlService.getHost() + '/message', {
+                message: this.messageToEdit,
+                pin: this.wall.pin,
+                nickname: nickname
+            })
+                .success((data) => {
+                    let resultKey = 'result';
+                    this.messageToEdit.createdAt = data[resultKey].createdAt;
+                    this.messageToEdit._id = data[resultKey]._id;
+                    this.question.messages.push(this.messageToEdit);
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(this.messageToEdit);
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getQuestion failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+
+           /*
             if (this.messageToEdit._id === undefined) {
                 // this.$http.post('message.json')
                 var message = new Message();
                 message._id = this.utilityService.v4();
-                message.creator = this.nickname;
+                message.creator = this.getNickname();
                 message.text = this.messageToEdit.text;
-                message.origin = new Array();
+                message.origin = [];
                 message.origin.push({nickname: message.creator, message_id: message._id});
-                message.edits = new Array();
+                message.edits = [];
                 message.board = {};
                 message.edits.push({date: message.createdAt, text: message.text});
                 //TODO: push the message received by the server instead
-                this.question.messageFeed.push(message);
+                this.question.messages.push(message);
                 successCallbackFn();
             } else {
                 // this.$http.put('message.json')
                 //if we get a 200 response we are happy, nothing to do
                 successCallbackFn();
             }
+            */
         }
 
+        //update a new on server and return it
+        updateMessage(successCallbackFn, errorCallbackFn): void {
+            if (this.messageToEdit === null) {
+                errorCallbackFn({status: '400', message: "message is not defined"});
+            }
+            this.$http.put(this.urlService.getHost() + '/message', {
+                    message: this.messageToEdit,
+                    pin: this.wall.pin,
+                    nickname: this.getNickname()
+                })
+                .success((data) => {
+                    let resultKey = 'result';
+                    var message = data[resultKey];
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(message);
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getQuestion failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+        }
+
+        /*
         deleteMessage(successCallbackFn, errorCallbackFn): void {
             //update message on server with _id and returns it
             // this.$http.put('message.json')
             //on response, update the feed
             /*let idKey = '_id';
-            for (var i = 0; i < this.question.messageFeed.length; i++) {
-                if (this.question.messageFeed[i][idKey] === message._id) {
-                    this.question.messageFeed.splice(i, 1);
-                    this.question.messageFeed.splice(i, 0, message);
-                }
-            }*/
+             for (var i = 0; i < this.question.messageFeed.length; i++) {
+             if (this.question.messageFeed[i][idKey] === message._id) {
+             this.question.messageFeed.splice(i, 1);
+             this.question.messageFeed.splice(i, 0, message);
+             }
+             }
             //if we get a 200 response we are happy, nothing to do
             successCallbackFn();
         }
+        */
 
         setBoardDivSize(newSize: any): void {
             console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));
@@ -253,6 +423,11 @@ module TalkwallApp {
 
         getBoardDivSize() {
             return this.boardDivSize;
+        }
+
+        // Process each updated message sent by the poll
+        processUpdatedMessages(pollUpdateObject) {
+            console.log('--> processing messages');
         }
     }
 }

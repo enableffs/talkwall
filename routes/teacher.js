@@ -15,6 +15,69 @@ function randomNumberInRange(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+/**
+ * @api {get} /user Get a user details
+ * @apiName getUser
+ * @apiGroup authorised
+ *
+ * @apiSuccess {User} user User object
+ */
+exports.getUser = function(req, res) {
+    if (typeof req.user.id === 'undefined' || req.user.id == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = User.findOne({
+        _id : req.user.id
+    });
+
+    query.exec(function(error, user) {
+        if(error) {
+            return res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message, result: error});
+        }
+        else {
+            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                message: common.StatusMessages.GET_SUCCESS.message, result: user});
+        }
+    })
+};
+
+
+/**
+ * @api {put} /user Update a users details
+ * @apiName updateUser
+ * @apiGroup authorised
+ *
+ * @apiSuccess {User} user Updated user object (at this time, only 'lastOpenedWall' and 'defaultEmail')
+ */
+exports.updateUser = function(req, res) {
+
+    if (typeof req.user.id === 'undefined' || req.user.id == null
+        || typeof req.body.user === 'undefined' || req.body.user == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = User.findOne({
+        _id : req.user.id
+    });
+
+    query.exec(function(error, user) {
+        if(error) {
+            return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
+        }
+        else {
+            user.lastOpenedWall = req.body.user.lastOpenedWall;
+            user.defaultEmail = req.body.user.defaultEmail;
+            user.save();
+            return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                message: common.StatusMessages.UPDATE_SUCCESS.message, result: user});
+        }
+    })
+};
 
 /**
  * @api {post} /wall Create a new wall with generated pin number
@@ -50,9 +113,16 @@ exports.createWall = function(req, res) {
             // Save the new pin and wall ID to redis
             redisClient.set(newPin, wall.id);
             redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
-            return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
-                message: common.StatusMessages.CREATE_SUCCESS.message,
-                result: wall
+            User.findOneAndUpdate( { _id: req.user.id }, { lastOpenedWall : wall.id }, function(error, user) {
+                if(error) {
+                    return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                        message: common.StatusMessages.UPDATE_ERROR.message, result: error});
+                } else {
+                    return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                        message: common.StatusMessages.CREATE_SUCCESS.message,
+                        result: wall
+                    });
+                }
             });
         }
     })
@@ -197,8 +267,15 @@ exports.getWall = function(req, res) {
                 wall.pin = newPin;
                 wall.save();
             }
-            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
-                message: common.StatusMessages.GET_SUCCESS.message, result: wall});
+            User.findOneAndUpdate( { _id: req.user.id }, { lastOpenedWall : wall.id }, function(error, user) {
+                if(error) {
+                    return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                        message: common.StatusMessages.UPDATE_ERROR.message, result: error});
+                } else {
+                    return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                        message: common.StatusMessages.GET_SUCCESS.message, result: wall});
+                }
+            });
         }
     })
 };
@@ -213,7 +290,7 @@ exports.getWall = function(req, res) {
 exports.createQuestion = function(req, res) {
 
     if (typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
-        || typeof req.body.label === 'undefined' || req.body.label == null ){
+        || typeof req.body.question.label === 'undefined' || req.body.question.label == null ){
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
@@ -228,20 +305,18 @@ exports.createQuestion = function(req, res) {
                 message: common.StatusMessages.CREATE_ERROR.message, result: error});
         }
         else {
-            var newQuestion = new Question({
-                label: req.body.label,
-                wall_id: wall._id
-            });
-            newQuestion.save(function(error, question) {
-                if(error) {
-                    return res.status(common.StatusMessages.DATABASE_ERROR.status).json({
-                        message: common.StatusMessages.DATABASE_ERROR.message, result: error});
+            var newQuestion = new Question(req.body.question);
+            wall.questions.push(newQuestion);
+            wall.save(function(error, wall) {
+                if (error) {
+                    return res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                        message: common.StatusMessages.CREATE_ERROR.message, result: error});
+                } else {
+                    return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                        message: common.StatusMessages.CREATE_SUCCESS.message, result: wall});
                 }
-                wall.questions.push(question._id);
-                wall.save();
-                return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
-                    message: common.StatusMessages.CREATE_SUCCESS.message, result: question});
             });
+
         }
     })
 };
@@ -262,7 +337,9 @@ exports.createTestUser = function() {
     User.find().exec(function (err, users) {
         if (users.length === 0) {
             var newUser = new User();
+            newUser.defaultEmail = "abc@abc.net";
             newUser.local.apikey = 'abcdef';
+            newUser.nickname = 'custom_teacher';
             newUser.save();
             console.log("*** Test User created");
         } else {
