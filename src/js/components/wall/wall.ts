@@ -25,6 +25,8 @@ module TalkwallApp {
 		 * Post a new question
 		 */
 		postNewQuestion(): void;
+
+		getLocationPosition(p: {}): {};
         /**
          * Get question at index
          * @param index wall.questions Index of the question being selected
@@ -44,6 +46,9 @@ module TalkwallApp {
         private currentWall: Wall;
         private currentQuestion: Question;
         private currentQuestionIndex: number = 0;
+
+        private viewHeight = 700;
+        private viewWidth = 1200;
 
 		constructor(
 			private dataService: DataService,
@@ -134,6 +139,16 @@ module TalkwallApp {
 					//TODO: handle question retrieval error
 				}
 			);
+		}
+
+		getLocationPosition(p: {}): {} {
+			let yposKey = 'ypos';
+			let xposKey = 'xpos';
+			var pos: {} = {
+				top: (p[yposKey] * 100) + '%',
+				left: (p[xposKey] * 100) + '%'
+			};
+			return pos;
 		}
 	}
 }

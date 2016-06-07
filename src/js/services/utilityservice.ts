@@ -10,6 +10,11 @@ module TalkwallApp {
          * @return the UID
          */
         v4(): string;
+        /**
+         * generate a random number between two values
+         * @return the random number
+         */
+        getRandomBetween(min: number, max: number): number;
     }
 
     export class UtilityService implements IUtilityService {
@@ -38,5 +43,9 @@ module TalkwallApp {
             return Math.random() * max;
         }
 
+
+        getRandomBetween(min: number, max: number) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
     }
 }

@@ -35,6 +35,8 @@ module TalkwallApp {
         text: string;
         creator: string;        //nickname
         deleted: boolean;
+        isSelected: boolean;
+        isPinned: boolean;
         origin: Array<{
             nickname: string;
             message_id: string;

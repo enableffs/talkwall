@@ -1,19 +1,20 @@
-<div layout="column" ng-class="{'feedMessage-messageSelected': feedMessageC.isSelected}">
+<div layout="column">
 	<div layout="row" flex="none">
-
-		<div class="feedMessage-messageControl" layout="column" ng-if="feedMessageC.showControls" layout-align="center center">
+		<div class="feedMessage-messageControl" layout="column" ng-show="feedMessageC.showControls" layout-align="center center">
 			<div layout="row">
 				<md-button class="feedMessage-showControlButton feedMessage-close" ng-click="feedMessageC.showControls = false">
 					<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
 				</md-button>
-				<md-button class="feedMessage-showControlButton">
-					<md-icon md-svg-icon="images/ic_delete_forever_orange_24px.svg" ng-click="feedMessageC.deleteMessage()"></md-icon>
+				<md-button class="feedMessage-showControlButton" ng-class="{'feedMessage-messageSelected': feedMessageC.message.isPinned && feedMessageC.isolatedScope.onBoard === 'true'}">
+					<md-icon ng-show="feedMessageC.isolatedScope.onBoard === 'false'" md-svg-icon="images/ic_delete_forever_orange_24px.svg" ng-click="feedMessageC.deleteMessage()"></md-icon>
+					<md-icon ng-show="feedMessageC.isolatedScope.onBoard === 'true' && !feedMessageC.message.isPinned" md-svg-icon="images/ic_location_on_orange_24px.svg" ng-click="feedMessageC.pinMessage()"></md-icon>
+					<md-icon ng-show="feedMessageC.isolatedScope.onBoard === 'true' && feedMessageC.message.isPinned" md-svg-icon="images/ic_location_on_black_24px.svg" ng-click="feedMessageC.unpinMessage()"></md-icon>
 				</md-button>
 			</div>
 			<div layout="row">
-				<md-button class="feedMessage-showControlButton" ng-class="{'feedMessage-messageSelected': feedMessageC.isSelected}">
-					<md-icon ng-if="!feedMessageC.isSelected" md-svg-icon="images/ic_lightbulb_outline_orange_24px.svg" ng-click="feedMessageC.selectMessage()"></md-icon>
-					<md-icon ng-if="feedMessageC.isSelected" md-svg-icon="images/ic_lightbulb_outline_darkgrey_24px.svg" ng-click="feedMessageC.unselectMessage()"></md-icon>
+				<md-button class="feedMessage-showControlButton" ng-class="{'feedMessage-messageSelected': feedMessageC.message.isSelected}">
+					<md-icon ng-show="!feedMessageC.message.isSelected" md-svg-icon="images/ic_lightbulb_outline_orange_24px.svg" ng-click="feedMessageC.selectMessage()"></md-icon>
+					<md-icon ng-show="feedMessageC.message.isSelected" md-svg-icon="images/ic_lightbulb_outline_darkgrey_24px.svg" ng-click="feedMessageC.unselectMessage()"></md-icon>
 				</md-button>
 				<md-button class="feedMessage-showControlButton">
 					<md-icon md-svg-icon="images/ic_mode_edit_orange_24px.svg" ng-click="feedMessageC.editMessage()"></md-icon>
@@ -21,8 +22,8 @@
 			</div>
 		</div>
 
-		<div layout="column" ng-if="!feedMessageC.showControls" layout-align="center center">
-			<md-button ng-if="!feedMessageC.showControls" class="feedMessage-showControlButton" ng-click="feedMessageC.showControls = true">
+		<div layout="column" ng-show="!feedMessageC.showControls" layout-align="center center">
+			<md-button ng-show="!feedMessageC.showControls" class="feedMessage-showControlButton" ng-click="feedMessageC.showControls = true">
 				<md-icon md-svg-icon="images/ic_menu_grey_24px.svg"></md-icon>
 			</md-button>
 		</div>

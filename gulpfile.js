@@ -46,6 +46,11 @@ var config = {
     }
 };
 
+var sassOptions = {
+    errLogToConsole: true,
+    outputStyle: 'expanded'
+};
+
 function showError (error) {
     console.log(error.toString());
     this.emit('end');
@@ -60,28 +65,13 @@ gulp.task('clean:dist', function () {
 
 gulp.task('sass', function() {
     return gulp.src(config.src.scss)
-        .pipe(sass({
-                style: 'expanded',
-                includePaths: [require('node-normalize-scss').includePaths, config.bower+'susy/sass']
-            })
-            .on('error', function(err){
-                browserSync.notify(err.message, 10000);
-                this.emit('end');
-            })
-            .on('error', sass.logError)
-        )
+        .pipe(sass(sassOptions).on('error', sass.logError))
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
         }))
         .pipe(gulp.dest(config.src.css))
-        .pipe(browserSync.reload({stream: true}))
-        .pipe(cssnano())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(config.dist.css))
-        .pipe(sass({errLogToConsole: true}))
+        .pipe(gulp.dest(config.dist.css));
 });
 
 
@@ -119,6 +109,11 @@ gulp.task('copy-index-html', function() {
         .pipe(gulp.dest(config.dist.root));
 });
 
+gulp.task('copy-json', function() {
+    return gulp.src('src/*.json')
+        .pipe(gulp.dest(config.dist.root));
+});
+
 gulp.task('copy-images', function () {
     return gulp.src(config.src.images)
         .pipe(gulp.dest(config.dist.images))
@@ -127,10 +122,6 @@ gulp.task('copy-images', function () {
 gulp.task('copy-partials-html', function() {
     return gulp.src(config.src.partials)
         .pipe(gulp.dest(config.dist.partials));
-});
-
-gulp.task('copy-styles', function () {
-    return gulp.src(config.src.css).pipe(gulp.dest(config.dist.css))
 });
 
 gulp.task('copy-languages', function () {
@@ -228,4 +219,4 @@ gulp.task("typedoc", function() {
 
 gulp.task('dev', gulp.series('sass', 'ts-lint', 'typescripts', 'javascripts', 'typedoc'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-styles', 'copy-languages', 'copy-fonts', 'typedoc'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));

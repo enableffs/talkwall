@@ -46,9 +46,18 @@ md-backdrop.md-sidenav-backdrop {
   display:none !important;
 }
 
+md-bottom-sheet {
+  z-index: 1001 !important;
+}
+
+.md-bottom-sheet-backdrop {
+  z-index: 1000 !important;
+}
+
 div:focus,
 p:focus,
 md-toolbar:focus,
 button:focus {
   outline:0 !important;
 }
+

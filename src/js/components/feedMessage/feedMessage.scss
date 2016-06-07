@@ -1,7 +1,6 @@
 @import "../../../scss/colors";
 
 .feedMessage-messageSelected {
-  background-color: $color-orange;
   background-color: rgba(255, 119, 0, 0.5);
 }
 
@@ -38,6 +37,9 @@
 
 .feedMessage-messageControl {
   background-color: $color-grey;
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
 }
 
 .feedMessage-wordWrap {
@@ -45,4 +47,22 @@
   overflow: hidden;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
+}
+
+.feedMessage-messageOnBoard {
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: $color-white !important;
+  position: absolute !important;
+  cursor: move;
+}
+
+.feedMessage-messageOnBoardSelected {
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: rgba(255, 119, 0, 0.5) !important;
+  position: absolute !important;
+  cursor: move;
 }
