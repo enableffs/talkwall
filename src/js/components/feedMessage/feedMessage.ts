@@ -7,16 +7,17 @@ module TalkwallApp {
 	"use strict";
 	import ITimeoutService = angular.ITimeoutService;
 	class FeedMessageController {
-		static $inject = ['$scope', 'DataService', '$document', 'UtilityService'];
+		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$timeout'];
 
 		private message: Message;
-		private showControls: boolean = false;
+		public showControls: boolean = false;
 
 		constructor(
 			private isolatedScope: FeedMessageDirectiveScope,
 			public dataService: DataService,
 			public $document: ng.IDocumentService,
-			private utilityService: UtilityService) {
+			private utilityService: UtilityService,
+			public $timeout: ITimeoutService) {
 			this.message = isolatedScope.data;
 		};
 
@@ -88,12 +89,12 @@ module TalkwallApp {
 	function linker(isolatedScope: FeedMessageDirectiveScope , element: ng.IAugmentedJQuery,
 	                attributes: ng.IAttributes, ctrl: FeedMessageController) {
 		let viewWidthKey = 'VIEW_WIDTH', viewHeightKey = 'VIEW_HEIGHT';
+		var startX = 0, startY = 0;
 
 		if (isolatedScope.onBoard === 'true') {
 			var messageWidth = element.prop('offsetWidth');
 			var messageHeight = element.prop('offsetHeight');
 			var currentSize = ctrl.dataService.getBoardDivSize();
-			var startX = 0, startY = 0;
 
 			element.css({
 				top: isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * 100 + '%',
@@ -112,12 +113,15 @@ module TalkwallApp {
 				startY = event.screenY - (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * currentSize[viewHeightKey]);
 				ctrl.$document.on('mousemove', mousemove);
 				ctrl.$document.on('mouseup', mouseup);
+
 			});
 		}
 
 		function mousemove(event) {
 			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = event.screenX - startX;
 			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = event.screenY - startY;
+			console.log('mousemove: ' + isolatedScope.data.board[ctrl.dataService.getNickname()].xpos + ' - ' +
+				isolatedScope.data.board[ctrl.dataService.getNickname()].ypos);
 
 			if (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos < 0) {
 				isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = 0;
@@ -139,17 +143,17 @@ module TalkwallApp {
 				top: isolatedScope.data.board[ctrl.dataService.getNickname()].ypos + 'px',
 				left: isolatedScope.data.board[ctrl.dataService.getNickname()].xpos + 'px'
 			});
-		}
 
-		function mouseup() {
-			ctrl.$document.off('mousemove', mousemove);
-			ctrl.$document.off('mouseup', mouseup);
 			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos =
 				isolatedScope.data.board[ctrl.dataService.getNickname()].xpos / currentSize[viewWidthKey];
 			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos =
 				isolatedScope.data.board[ctrl.dataService.getNickname()].ypos / currentSize[viewHeightKey];
 		}
 
+		function mouseup() {
+			ctrl.$document.off('mousemove', mousemove);
+			ctrl.$document.off('mouseup', mouseup);
+		}
 	}
 
 	//isolated scope interface
