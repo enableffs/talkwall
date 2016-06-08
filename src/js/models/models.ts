@@ -36,7 +36,16 @@ module TalkwallApp {
         }
     }
 
-    export class Question {
+    export interface IQuestion {
+        _id: string;
+        createdAt: Date;
+        label: string;
+        messages: Array<Message>;
+
+        getMessageById (id: string) : Message;
+    }
+
+    export class Question implements IQuestion {
         _id: string;
         createdAt: Date;
         label: string;
@@ -46,10 +55,22 @@ module TalkwallApp {
             this.label = label;
             this.messages = [];
         }
+
+        // Return the Question for the given question ID
+        getMessageById (id: string) : Message {
+            this.messages.forEach(function(m) {
+                if (m._id === id) {
+                    return m;
+                }
+            });
+            return null;
+        };
     }
+
 
     export class Message {
         _id: string;
+        question_id: string;
         createdAt: Date;
         text: string;
         creator: string;        //nickname

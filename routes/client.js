@@ -248,6 +248,36 @@ exports.createMessage = function(req, res) {
 };
 
 /**
+ * @api {get} /messages Get all messages for a wall and question
+ * @apiName getMessages
+ * @apiGroup non-authorised
+ *
+ * @apiSuccess {Array<Message>} messages List of messages found
+ */
+exports.getMessages = function(req, res) {
+
+    if (typeof req.params.question_id === 'undefined' || req.params.question_id == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Message.find({
+        'question_id' : req.params.question_id
+    }).lean();
+
+    query.exec(function(error, messages) {
+        if(error) {
+            return res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message, result: error});
+        }
+        else {
+            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                message: common.StatusMessages.GET_SUCCESS.message, result: messages});
+        }
+    })
+};
+
+/**
  * @api {put} /message Edit a message by submitting a Message object and pin
  * @apiName updateMessage
  * @apiGroup non-authorised

@@ -88,7 +88,6 @@ module TalkwallApp {
         getNickname(): string;
         /**
          * set a question based on id
-         * @param questionIndex index in the questions array
          * @param sFunc success callback
          * @param eFunc error callback
          */
@@ -107,11 +106,15 @@ module TalkwallApp {
          */
         addMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
-         * delete a message from the feed
+         * update a message on the feed
          * @param sFunc success callback
          * @param eFunc error callback
          */
         updateMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * get all current messages on the feed for this question
+         */
+        getMessages(): void;
         /**
          * get the board dimensions object
          * @return the dimension object
@@ -308,7 +311,12 @@ module TalkwallApp {
                 control = 'new';
             }   // Otherwise, we continue to poll the same question
 
-            this.question = this.wall.questions[questionIndex];
+            this.question = <IQuestion>this.wall.questions[questionIndex];
+
+            // Get the whole list of existing messages if we are 'new' or 'changing'
+            if (control !== 'none') {
+                this.getMessages();
+            }
             this.stopPolling();
             this.startPolling(previous_question_id, control);
             if (typeof successCallbackFn === "function") {
@@ -373,6 +381,7 @@ module TalkwallApp {
             this.messageToEdit.creator = this.getNickname();
             this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: this.messageToEdit._id});
             this.messageToEdit.edits.push({date: this.messageToEdit.createdAt, text: this.messageToEdit.text});
+            this.messageToEdit.question_id = this.question._id;
 
             this.$http.post(this.urlService.getHost() + '/message', {
                 message: this.messageToEdit,
@@ -393,6 +402,17 @@ module TalkwallApp {
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
+                });
+        }
+
+        getMessages(): void {
+            this.$http.get(this.urlService.getHost() + '/messages/' + this.question._id)
+                .success((data) => {
+                    let resultKey = 'result';
+                    this.question.messages = data[resultKey];
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getQuestion failure: ' + error);
                 });
         }
 
@@ -491,8 +511,14 @@ module TalkwallApp {
 
             // Message updates
 
-            pollUpdateObject.messages.forEach(function(message) {
-                console.log('Message from: ' + message.creator + ' : ' + message.text);
+            pollUpdateObject.messages.forEach((updated_message) => {
+                var old_message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.question);
+                if ( old_message !== null) {                            // Message exists and needs to be updated
+                   // this.utilityService.removeNull(updated_message);
+                   angular.extend(old_message, updated_message);
+                } else {                                            // Message is new and needs to be added to the list
+                    this.question.messages.push(updated_message);
+                }
             });
         }
     }

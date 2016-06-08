@@ -107,6 +107,7 @@ app.get('/disconnect/:nickname/:pin',                                           
 app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:control',                     routes.client.poll);
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessage);
+app.get('/messages/:question_id',                                                                   routes.client.getMessages);
 
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());
