@@ -80,7 +80,7 @@ app.all('*', function(req, res, next) {
 
 /********* start the server *********/
 app.listen(port);
-console.log('--> samtavla-services listening on port: '+port);
+console.log('--> samtavla-services listening on port: ' + port);
 
 /********* callback *********/
 app.get('/auth/facebook',           passport.authenticate('facebook',           { scope : 'email' }));
@@ -92,6 +92,8 @@ app.get('/auth/google/callback',    passport.authenticate('google'),            
 app.get('/auth/localapikey',        passport.authenticate('localapikey'),       routes.callbacks.localapicallback);
 
 /********* authenticated (teacher only) operations *********/
+app.get('/user',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getUser);
+app.put('/user',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateUser);
 app.get('/walls',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWalls);
 app.get('/wall/:id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWall);
 app.post('/wall',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createWall);
@@ -99,9 +101,10 @@ app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenMan
 app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);
 
 /********* client (student / teacher) operations *********/
-app.get('/join/:pin/:nickname',                                                                     routes.client.joinWall);
-app.get('/question/:wall_id/:question_id/:nickname',                                                routes.client.getQuestion);
-app.get('/poll/:wall_id/:question_id/:nickname',                                                    routes.client.poll);
+app.get('/join/:nickname/:pin',                                                                     routes.client.joinWall);
+app.get('/disconnect/:nickname/:pin',                                                               routes.client.disconnectWall);
+//app.get('/question/:nickname/:wall_id/:question_index/:previous_question_index',                        routes.client.getQuestion);
+app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:control',                     routes.client.poll);
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessage);
 

@@ -25,8 +25,11 @@ module TalkwallApp {
 		 * Post a new question
 		 */
 		postNewQuestion(): void;
-
-		getLocationPosition(p: {}): {};
+        /**
+         * Get question at index
+         * @param index wall.questions Index of the question being selected
+         */
+        setQuestion(index: number): void;
 	}
 
 	export class WallController implements IWallControllerService {
@@ -36,50 +39,57 @@ module TalkwallApp {
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
-		private currentQuestionIndex: number = 0;
 		private newQuestionLabel: string = '';
-		private viewHeight = 700;
-		private viewWidth = 1200;
+
+        private currentWall: Wall;
+        private currentQuestion: Question = null;
+        private currentQuestionIndex: number = 0;
+        private messageToEdit: Message;
+
+        private viewHeight = 700;
+        private viewWidth = 1200;
+
 		constructor(
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService) {
 			console.log('--> WallController: started: ');
 
-			var handle = this;
-			this.dataService.checkAuthenticated(function() {
-				handle.activate();
-			});
+			this.dataService.checkAuthentication((success) => {
+				this.activate();
+			}, null);
 		}
 
 		activate(): void {
-			console.log('--> WallController: activated');
-			//retrieve the first question of the current wall
-			if (this.dataService.getWall().questions.length > 0 && this.dataService.getWall().questions.length >= this.currentQuestionIndex) {
-				this.refreshQuestion(this.currentQuestionIndex);
-			} else {
-				this.rightMenu2 = true;
-				this.$mdSidenav('right').open();
+            this.currentWall = this.dataService.getWall();
+            if (this.currentWall.questions.length > 0) {
+                this.setQuestion(this.currentQuestionIndex);    // Select first question, no previous question
+            }
+			if (this.dataService.userIsAuthorised()) {
+                this.rightMenu2 = true;
+                this.$mdSidenav('right').open();
 			}
 		}
 
-		refreshQuestion(index: number): void {
-			var handle = this;
-			this.currentQuestionIndex = index;
-			this.dataService.setQuestion(this.currentQuestionIndex,
-				function() {
-					//question updated
-				},
-				function(error: {}) {
-					//TODO: handle question retrieval error
-				});
+        setQuestion(questionIndex: number) {
+	        this.currentQuestionIndex = questionIndex;
+	        this.dataService.setQuestion(this.currentQuestionIndex,
+		        (newQuestion) => {
+			        //success
+	                this.currentQuestion = newQuestion;
+		        },
+		        function() {
+			        //error
+		        }
+	        );
 		}
 
 		showMessageEditor(newMessage): void {
 			var handle = this;
 			if (newMessage) {
-				this.dataService.messageToEdit = new Message();
+                handle.dataService.setMessageToEdit(new Message());
 			}
+            this.messageToEdit = handle.dataService.getMessageToEdit();
 			this.$mdSidenav('left').open();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
@@ -89,15 +99,18 @@ module TalkwallApp {
 				//dialog answered
 				console.log('--> WallController: answer: ' + answer);
 				//post message to server and add returned object to question feed
-				handle.dataService.sendMessage(
-					function() {
-						//success
-						handle.dataService.messageToEdit = null;
-					},
-					function(error: {}) {
-						//TODO: handle message POST error
-					}
-				);
+                if (newMessage) {
+                    handle.dataService.addMessage(
+                        function () {
+                            //success
+                        },
+                        function (error: {}) {
+                            //TODO: handle message POST error
+                        }
+                    );
+                } else {
+                    handle.dataService.updateMessage( null, null);
+                }
 			}, function() {
 				//dialog dismissed
 				console.log('--> WallController: dismissed');
@@ -130,27 +143,18 @@ module TalkwallApp {
 		}
 
 		postNewQuestion(): void {
-			var handle = this;
 			this.dataService.addQuestion(this.newQuestionLabel,
-				function() {
-					//success
-					handle.newQuestionLabel = '';
-					handle.refreshQuestion(handle.currentQuestionIndex);
+				(success) => {
+					this.newQuestionLabel = '';
+					//set the current question if none
+					if (this.currentQuestion === null) {
+						this.setQuestion(this.currentQuestionIndex);
+					}
 				},
-				function(error: {}) {
+				function(error) {
 					//TODO: handle question retrieval error
 				}
 			);
-		}
-
-		getLocationPosition(p: {}): {} {
-			let yposKey = 'ypos';
-			let xposKey = 'xpos';
-			var pos: {} = {
-				top: (p[yposKey] * 100) + '%',
-				left: (p[xposKey] * 100) + '%'
-			};
-			return pos;
 		}
 	}
 }

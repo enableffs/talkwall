@@ -1,6 +1,7 @@
 /// <reference path="../../_references.ts"/>
 /// <reference path="../../services/urlservice.ts"/>
 /// <reference path="../login/login.ts"/>
+/// <reference path="../join/join.ts"/>
 /// <reference path="../../services/dataservice.ts"/>
 
 module TalkwallApp {
@@ -10,7 +11,7 @@ module TalkwallApp {
 	import IWindowService = angular.IWindowService;
 
 	export class LandingController {
-		static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$window'];
+		static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$window', 'DataService'];
 
 		//vars
 		private customFullscreen;
@@ -20,7 +21,8 @@ module TalkwallApp {
 			private $translate: any,
 			private $mdMedia: IMedia,
 			private $mdDialog: IDialogService,
-			private $window: IWindowService) {
+			private $window: IWindowService,
+			private dataService: DataService) {
 			console.log('--> LandingController: started');
 			this.$translate.use(this.urlService.getLanguageDomain());
 			this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
@@ -50,6 +52,32 @@ module TalkwallApp {
 				//dialog dismissed
 				console.log('--> LandingController: dismissed');
 			});
+		};
+
+		/**
+		 * display dialog for joining with pin and nickname
+		 */
+		showJoinDialog(ev) : void {
+			var handle = this;
+			//detects if the device is small
+			var useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+			//show the dialog
+			this.$mdDialog.show({
+					controller: JoinController,
+					controllerAs: 'joinC',
+					templateUrl: 'js/components/join/join.html',
+					parent: angular.element(document.body),
+					targetEvent: ev,
+					clickOutsideToClose: true
+				})
+				.then(function(joinModel) {
+					handle.dataService.joinWall(joinModel, () => {
+						handle.$window.location.href = handle.urlService.getHost() + '/#/wall';
+					}, null);
+				}, function() {
+					//dialog dismissed
+					console.log('--> LandingController: dismissed');
+				});
 		}
 	}
 }

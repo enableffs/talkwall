@@ -8,10 +8,14 @@ module TalkwallApp {
 	export class EditMessageController {
 		static $inject = ['$mdBottomSheet', 'DataService'];
 
+		private messageToEdit: Message;
+
 		constructor(
 			private $mdBottomSheet: IBottomSheetService,
 			private dataService: DataService) {
 			console.log('--> EditMessageController: started: ');
+
+			this.messageToEdit = dataService.getMessageToEdit();
 		}
 
 		/**

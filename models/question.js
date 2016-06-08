@@ -4,12 +4,9 @@ var Schema = mongoose.Schema;
 
 // define the schema for our message model
 var questionSchema = Schema({
-
-    wall_id:        { type: Schema.Types.ObjectId, ref: 'Wall', default: null},
     createdAt:      { type: Date, default: Date.now },
     label:          { type: String },
-    messages:       [{type: Schema.Types.ObjectId, ref: 'Message', default: null}]
-
+    messages:       [ { type: Schema.Types.ObjectId, ref: 'Message', default: null } ]
 });
 
 questionSchema.pre('remove', function(next) {
