@@ -7,6 +7,7 @@ module TalkwallApp {
 	"use strict";
 	import IBottomSheetService = angular.material.IBottomSheetService;
 	import ISidenavService = angular.material.ISidenavService;
+	import IWindowService = angular.IWindowService;
 
 	export interface IWallControllerService {
 		/**
@@ -33,7 +34,7 @@ module TalkwallApp {
 	}
 
 	export class WallController implements IWallControllerService {
-		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet'];
+		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', 'URLService', '$window'];
 		private magnified: boolean = false;
 		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
@@ -52,7 +53,9 @@ module TalkwallApp {
 		constructor(
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
-			private $mdBottomSheet: IBottomSheetService) {
+			private $mdBottomSheet: IBottomSheetService,
+			private urlService: IURLService,
+			private $window: IWindowService) {
 			console.log('--> WallController: started: ');
 
 			this.dataService.checkAuthentication((success) => {
@@ -61,12 +64,16 @@ module TalkwallApp {
 		}
 
 		activate(): void {
-            if (this.dataService.getWall().questions.length > 0) {
-                this.setQuestion(this.currentQuestionIndex);    // Select first question, no previous question
-            }
-			if (this.dataService.userIsAuthorised()) {
-                this.rightMenu2 = true;
-                this.$mdSidenav('right').open();
+			if (this.dataService.getWall() === null) {
+				this.$window.location.href = this.urlService.getHost() + '/#/';
+			} else {
+	            if (this.dataService.getWall().questions.length > 0) {
+	                this.setQuestion(this.currentQuestionIndex);    // Select first question, no previous question
+	            }
+				if (this.dataService.userIsAuthorised()) {
+	                this.rightMenu2 = true;
+	                this.$mdSidenav('right').open();
+				}
 			}
 		}
 
