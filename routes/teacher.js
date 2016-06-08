@@ -258,7 +258,7 @@ exports.getWall = function(req, res) {
                 message: common.StatusMessages.GET_ERROR.message, result: error});
         }
         else {
-            if (wall.pin === -1) {                      // Reallocate a pin to this wall if it was previously expired
+            if (wall !== null && wall.pin === -1) {                      // Reallocate a pin to this wall if it was previously expired
                 // Find a pin that is not already used
                 var newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
                 while(redisClient.exists(newPin) === 1) {

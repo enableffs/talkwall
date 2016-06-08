@@ -79,6 +79,11 @@ module TalkwallApp {
          * get current nickname
          * @return the current nickname
          */
+        setQuestion(questionIndex: number, sFunc: () => void, eFunc: (error: {}) => void): void;
+        /**
+         * get current nickname
+         * @return the current nickname
+         */
         getNickname(): string;
         /**
          * set a question based on id
@@ -270,6 +275,11 @@ module TalkwallApp {
 
         getQuestion(): Question {
             return this.question;
+        }
+
+        setQuestion(questionIndex, successCallbackFn, errorCallbackFn): void {
+            this.question = this.wall.questions[questionIndex];
+            successCallbackFn(this.question);
         }
 
         getNickname(): string {

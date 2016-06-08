@@ -25,8 +25,6 @@ module TalkwallApp {
 		 * Post a new question
 		 */
 		postNewQuestion(): void;
-
-		getLocationPosition(p: {}): {};
         /**
          * Get question at index
          * @param index wall.questions Index of the question being selected
@@ -43,8 +41,8 @@ module TalkwallApp {
 		private rightMenu3: boolean = false;
 		private newQuestionLabel: string = '';
 
-        private currentWall: Wall;
-        private currentQuestion: Question;
+        /*private currentWall: Wall;
+        private currentQuestion: Question = null;*/
         private currentQuestionIndex: number = 0;
         private messageToEdit: Message;
 
@@ -63,9 +61,8 @@ module TalkwallApp {
 		}
 
 		activate(): void {
-            this.currentWall = this.dataService.getWall();
-            if (this.currentWall.questions.length > 0) {
-                this.setQuestion(0);    // Select first question, no previous question
+            if (this.dataService.getWall().questions.length > 0) {
+                this.setQuestion(this.currentQuestionIndex);    // Select first question, no previous question
             }
 			if (this.dataService.userIsAuthorised()) {
                 this.rightMenu2 = true;
@@ -74,7 +71,15 @@ module TalkwallApp {
 		}
 
         setQuestion(questionIndex: number) {
-			this.currentQuestion = this.currentWall.questions[questionIndex];
+	        this.dataService.setQuestion(questionIndex,
+		        () => {
+			        //success
+	                this.currentQuestionIndex = questionIndex;
+		        },
+		        function() {
+			        //error
+		        }
+	        );
 		}
 
 		showMessageEditor(newMessage): void {
@@ -139,21 +144,15 @@ module TalkwallApp {
 			this.dataService.addQuestion(this.newQuestionLabel,
 				(success) => {
 					this.newQuestionLabel = '';
+					//set the current question if none
+					if (this.dataService.getQuestion() === null) {
+						this.setQuestion(this.currentQuestionIndex);
+					}
 				},
 				function(error) {
 					//TODO: handle question retrieval error
 				}
 			);
-		}
-
-		getLocationPosition(p: {}): {} {
-			let yposKey = 'ypos';
-			let xposKey = 'xpos';
-			var pos: {} = {
-				top: (p[yposKey] * 100) + '%',
-				left: (p[xposKey] * 100) + '%'
-			};
-			return pos;
 		}
 	}
 }
