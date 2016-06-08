@@ -10,6 +10,7 @@ module TalkwallApp {
     import IRouteParamsService = angular.route.IRouteParamsService;
     import ILocationService = angular.ILocationService;
     import IPromise = angular.IPromise;
+    import IMedia = angular.material.IMedia;
 
     export interface IDataService {
 
@@ -127,11 +128,12 @@ module TalkwallApp {
     }
 
     export class DataService implements IDataService {
-        static $inject = ['$http', '$window', '$routeParams', '$location', 'UtilityService', 'URLService'];
-        private user: User;
-        private wall: Wall;
-        private question: Question;
+        static $inject = ['$http', '$window', '$routeParams', '$location', 'UtilityService', 'URLService', '$mdMedia'];
+        private user: User = null;
+        private wall: Wall = null;
+        private question: Question = null;
         private messageToEdit: Message = new Message();
+        private phoneMode: boolean = false;
 
         //for dev only
         private studentNickname: string = null;
@@ -144,7 +146,8 @@ module TalkwallApp {
                      private $routeParams: IRouteParamsService,
                      private $location: ILocationService,
                      private utilityService: UtilityService,
-                     private urlService: IURLService) {
+                     private urlService: IURLService,
+                     private $mdMedia: IMedia) {
             console.log('--> DataService started ...');
         }
 
@@ -152,6 +155,7 @@ module TalkwallApp {
         // Otherwise, follow on back to where we came from..
         checkAuthentication(successCallbackFn, errorCallbackFn): void {
             let tKey = 'authenticationToken', tokenKey = 'token';
+            this.phoneMode = this.$mdMedia('max-width: 960px');
             var tokenParam = this.$routeParams[tKey] || '';
             if (tokenParam !== '') {
                 //look at the route params first for 'authenticationToken'
@@ -243,6 +247,7 @@ module TalkwallApp {
                 .success((data) => {
                     let resultKey = 'result';
                     this.wall = data[resultKey];
+                    this.studentNickname = joinModel.nickname;
                     console.log('--> DataService: getWall success');
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.wall);
@@ -428,6 +433,7 @@ module TalkwallApp {
 
         setBoardDivSize(newSize: any): void {
             console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));
+            this.phoneMode = this.$mdMedia('max-width: 960px');
             this.boardDivSize = newSize;
         }
 
