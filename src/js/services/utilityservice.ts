@@ -1,5 +1,5 @@
 /// <reference path="../_references.ts"/>
-
+/// <reference path="../models/models.ts"/>
 
 module TalkwallApp {
     "use strict";
@@ -47,5 +47,36 @@ module TalkwallApp {
         getRandomBetween(min: number, max: number) {
             return Math.floor(Math.random() * (max - min + 1) + min);
         }
+
+        removeNullIn(prop, obj) {
+            var pr = obj[prop];
+            if (pr === null || pr === undefined) {
+                delete obj[prop];
+            } else if (typeof pr === 'object') {
+                for (var i in pr) {
+                    if (pr.hasOwnProperty(i)) {
+                        this.removeNullIn(i, pr);
+                    }
+                }
+            }
+        }
+
+        removeNull(obj) {
+            for (var i in obj) {
+                if (obj.hasOwnProperty(i)) {
+                    this.removeNullIn(i, obj);
+                }
+            }
+        }
+
+        // Return the Question for the given question ID
+        getMessageFromQuestionById (id: string, question: Question) : Message {
+            question.messages.forEach(function(m) {
+                if (m._id === id) {
+                    return m;
+                }
+            });
+            return null;
+        };
     }
 }

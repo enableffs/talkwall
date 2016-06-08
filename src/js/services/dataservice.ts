@@ -88,11 +88,10 @@ module TalkwallApp {
         getNickname(): string;
         /**
          * set a question based on id
-         * @param questionIndex index in the questions array
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        requestPoll(questionIndex: number, previousQuestionIndex: number, sFunc: () => void, eFunc: (error: {}) => void): void;
+        requestPoll(previousQuestionId: string, control: string, sFunc: () => void, eFunc: (error: {}) => void): void;
         /**
          * add new question to the wall
          * @param label the question
@@ -107,11 +106,15 @@ module TalkwallApp {
          */
         addMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
-         * delete a message from the feed
+         * update a message on the feed
          * @param sFunc success callback
          * @param eFunc error callback
          */
         updateMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * get all current messages on the feed for this question
+         */
+        getMessages(): void;
         /**
          * get the board dimensions object
          * @return the dimension object
@@ -123,17 +126,33 @@ module TalkwallApp {
          */
         setBoardDivSize(dimensions: {}): void;
 
+        /**
+         * set a message as the editable message object
+         */
         setMessageToEdit(message: Message): void;
+        /**
+         * retrieve the editable message object
+         */
         getMessageToEdit(): Message;
+        /**
+         * run the polling timer
+         */
+        startPolling(previous_question_id: string, control: string): void;
+        /**
+         * pause the polling timer
+         */
+        stopPolling(): void;
     }
 
     export class DataService implements IDataService {
-        static $inject = ['$http', '$window', '$routeParams', '$location', 'UtilityService', 'URLService', '$mdMedia'];
+        static $inject = ['$http', '$window', '$routeParams', '$location', '$interval', 'UtilityService', 'URLService', '$mdMedia'];
         private user: User = null;
         private wall: Wall = null;
         private question: Question = null;
         private messageToEdit: Message = new Message();
         private phoneMode: boolean = false;
+
+        private timerHandle;
 
         //for dev only
         private studentNickname: string = null;
@@ -145,6 +164,7 @@ module TalkwallApp {
                      private $window: ng.IWindowService,
                      private $routeParams: IRouteParamsService,
                      private $location: ILocationService,
+                     private $interval: ng.IIntervalService,
                      private utilityService: UtilityService,
                      private urlService: IURLService,
                      private $mdMedia: IMedia) {
@@ -210,11 +230,8 @@ module TalkwallApp {
                 .success((data) => {
                     let resultKey = 'result';
                     this.wall = data[resultKey];
-                    this.question = this.wall.questions[0];
                     console.log('--> DataService: getWall success');
-                    if (typeof successCallbackFn === "function") {
-                        successCallbackFn(this.wall);
-                    }
+                    this.setQuestion(0, successCallbackFn, errorCallbackFn);
                 })
                 .catch((error) => {
                     console.log('--> DataService: getWall failure: ' + error);
@@ -282,9 +299,29 @@ module TalkwallApp {
             return this.question;
         }
 
+        // If we are changing questions, set the polling params correctly
         setQuestion(questionIndex, successCallbackFn, errorCallbackFn): void {
-            this.question = this.wall.questions[questionIndex];
-            successCallbackFn(this.question);
+            var previous_question_id = 'none', control = 'none';
+
+            // If true, we are changing questions
+            if (this.question !== null && this.wall.questions.indexOf(this.question) !== questionIndex) {
+                previous_question_id = this.question._id;
+                control = 'change';
+            } else if (this.question === null) {  // If true, this is the first time we started polling on the wall
+                control = 'new';
+            }   // Otherwise, we continue to poll the same question
+
+            this.question = <IQuestion>this.wall.questions[questionIndex];
+
+            // Get the whole list of existing messages if we are 'new' or 'changing'
+            if (control !== 'none') {
+                this.getMessages();
+            }
+            this.stopPolling();
+            this.startPolling(previous_question_id, control);
+            if (typeof successCallbackFn === "function") {
+                successCallbackFn(this.wall);
+            }
         }
 
         getNickname(): string {
@@ -296,9 +333,9 @@ module TalkwallApp {
         }
 
         // Set previousQuestionIndex if we are changing questions. Else set it to -1
-        requestPoll(questionIndex, previousQuestionIndex, successCallbackFn, errorCallbackFn): void {
+        requestPoll(previousQuestionId, control, successCallbackFn, errorCallbackFn): void {
             this.$http.get(this.urlService.getHost() + '/poll/' + this.getNickname() + '/' + this.wall._id +
-                '/' + questionIndex + '/' + previousQuestionIndex)
+                '/' + this.question._id + '/' + previousQuestionId + '/' + control)
                     .success((data) => {
                         let resultKey = 'result';
                         this.processUpdatedMessages(data[resultKey]);
@@ -344,6 +381,7 @@ module TalkwallApp {
             this.messageToEdit.creator = this.getNickname();
             this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: this.messageToEdit._id});
             this.messageToEdit.edits.push({date: this.messageToEdit.createdAt, text: this.messageToEdit.text});
+            this.messageToEdit.question_id = this.question._id;
 
             this.$http.post(this.urlService.getHost() + '/message', {
                 message: this.messageToEdit,
@@ -365,28 +403,17 @@ module TalkwallApp {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
                 });
+        }
 
-           /*
-            if (this.messageToEdit._id === undefined) {
-                // this.$http.post('message.json')
-                var message = new Message();
-                message._id = this.utilityService.v4();
-                message.creator = this.getNickname();
-                message.text = this.messageToEdit.text;
-                message.origin = [];
-                message.origin.push({nickname: message.creator, message_id: message._id});
-                message.edits = [];
-                message.board = {};
-                message.edits.push({date: message.createdAt, text: message.text});
-                //TODO: push the message received by the server instead
-                this.question.messages.push(message);
-                successCallbackFn();
-            } else {
-                // this.$http.put('message.json')
-                //if we get a 200 response we are happy, nothing to do
-                successCallbackFn();
-            }
-            */
+        getMessages(): void {
+            this.$http.get(this.urlService.getHost() + '/messages/' + this.question._id)
+                .success((data) => {
+                    let resultKey = 'result';
+                    this.question.messages = data[resultKey];
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getQuestion failure: ' + error);
+                });
         }
 
         //update a new on server and return it
@@ -441,9 +468,58 @@ module TalkwallApp {
             return this.boardDivSize;
         }
 
-        // Process each updated message sent by the poll
-        processUpdatedMessages(pollUpdateObject) {
-            console.log('--> processing messages');
+        //  Run the polling timer
+        // 'previous_question_id' can be an empty string if not changing questions
+        // 'control' this is a regular poll 'none', the first poll 'new', or we are changing questions 'change'
+        startPolling(previous_question_id: string, control: string) {
+            // Don't allow more than one timer
+            if ( angular.isDefined(this.timerHandle) ) {
+                return;
+            }
+
+            // Make the special request without delay, and set up regular polling
+            this.requestPoll(previous_question_id, control, (success) => {
+
+                // Begin further requests at time intervals
+                this.timerHandle = this.$interval(() => {
+                    this.requestPoll('none', 'none', null, null);
+                }, 5000);
+
+            }, null);
+        }
+
+        // Stop the polling timer
+        stopPolling() {
+            if (angular.isDefined(this.timerHandle)) {
+                this.$interval.cancel(this.timerHandle);
+                this.timerHandle = undefined;
+            }
+        }
+
+
+        // Process updated messages retrieved on the poll response
+        processUpdatedMessages(pollUpdateObject: PollUpdate) {
+
+            // Status updates
+
+            // Update participant list
+            this.participants = pollUpdateObject.status.connected_nicknames;
+            // Change questions if directed by the update
+            if (pollUpdateObject.status.select_question_id !== this.question._id) {
+                this.setQuestion(this.wall.getQuestionIndexById(pollUpdateObject.status.select_question_id), null, null);
+            }
+
+            // Message updates
+
+            pollUpdateObject.messages.forEach((updated_message) => {
+                var old_message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.question);
+                if ( old_message !== null) {                            // Message exists and needs to be updated
+                   // this.utilityService.removeNull(updated_message);
+                   angular.extend(old_message, updated_message);
+                } else {                                            // Message is new and needs to be added to the list
+                    this.question.messages.push(updated_message);
+                }
+            });
         }
     }
 }
