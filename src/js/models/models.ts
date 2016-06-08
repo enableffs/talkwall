@@ -15,6 +15,25 @@ module TalkwallApp {
         pin: string;
         createdAt: Date;
         questions: Array<Question>;
+
+        // Return the Question for the given question ID
+        getQuestionById(id: string): Question {
+            this.questions.forEach(function(q) {
+                if (q._id === id) {
+                    return q;
+                }
+            });
+            return null;
+        }
+        // Return the index of the given question ID
+        getQuestionIndexById(id: string): number {
+            this.questions.forEach(function(q, index) {
+                if (q._id === id) {
+                    return index;
+                }
+            });
+            return -1;
+        }
     }
 
     export class Question {
@@ -61,6 +80,6 @@ module TalkwallApp {
             select_question_id: string;
             connected_nicknames: Array<string>;
         };
-        messages: {};
+        messages: Array<Message>;
     }
 }
