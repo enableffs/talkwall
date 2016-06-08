@@ -2,7 +2,7 @@
 	<!-- top toolbar component of the wall -->
 	<md-toolbar class="wall-topToolbar">
 		<div flex layout="row" layout-align="start center">
-			<div flex="33" layout="row" layout-align="start center">
+			<div hide-xs hide-sm flex="33" layout="row" layout-align="start center">
 				<md-button ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=true;wallC.$mdSidenav('left').open()">
 					<md-icon md-svg-src="images/ic_chat_bubble_outline_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
@@ -10,7 +10,7 @@
 					<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 			</div>
-			<div flex="grow" class="wall-question" layout="row" layout-align="center center">
+			<div hide-xs hide-sm flex="grow" class="wall-question" layout="row" layout-align="center center">
 				<div layout layout-align="start center" ng-if="wallC.currentQuestionIndex > 0" ng-click="wallC.setQuestion(wallC.currentQuestionIndex-1)">
 					<md-button class="md-icon-button" role="button">
 						<md-icon md-svg-src="images/ic_arrow_back_orange_24px.svg" aria-hidden="true"></md-icon>
@@ -31,7 +31,28 @@
 					</md-button>
 				</div>
 			</div>
-			<div flex="33" layout="row" layout-align="end center">
+			<div hide-gt-sm flex="grow" class="wall-question" layout="row" layout-align="center center">
+				<div flex="grow" layout layout-align="start center" flex="grow">
+					<div layout="row" ng-if="wallC.dataService.getQuestion() !== null" layout-align="center center">
+						<div class="wall-question-index" layout layout-align="center center">{{ wallC.currentQuestionIndex + 1}}</div>
+						<div>{{wallC.dataService.getQuestion().label}}</div>
+					</div>
+					<div layout="row" ng-if="wallC.dataService.getQuestion() === null" layout-align="center center">
+						No question available
+					</div>
+				</div>
+				<div layout layout-align="start center" ng-if="wallC.currentQuestionIndex > 0" ng-click="wallC.setQuestion(wallC.currentQuestionIndex-1)">
+					<md-button class="md-icon-button" role="button">
+						<md-icon md-svg-src="images/ic_arrow_back_orange_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+				</div>
+				<div layout layout-align="end center" ng-if="wallC.currentQuestionIndex < (wallC.dataService.getWall().questions.length - 1)" ng-click="wallC.setQuestion(wallC.currentQuestionIndex+1)">
+					<md-button class="md-icon-button" role="button">
+						<md-icon md-svg-src="images/ic_arrow_forward_orange_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+				</div>
+			</div>
+			<div hide-xs hide-sm flex="33" layout="row" layout-align="end center">
 				<button class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle();wallC.toggleRightMenu(0)">
 					<md-icon ng-show="!wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_menu_orange_24px.svg" aria-hidden="true"></md-icon>
 					<md-icon ng-show="wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
@@ -42,18 +63,18 @@
 	<section flex layout="row" id="wallSection">
 
 		<!-- left sidenav of the wall -->
-		<md-sidenav flex md-component-id="left" class="md-sidenav-left wall-sidenav" layout="column" ng-class="{'wall-sidemenuLarge' :  wallC.magnified}">
+		<md-sidenav md-component-id="left" class="md-sidenav-left wall-sidenav" layout="column" ng-class="{'wall-sidemenuLarge' :  wallC.magnified}" md-is-locked-open="$mdMedia('max-width: 960px')">
 			<md-toolbar>
 				<div flex layout="row" layout-align="start center">
 					<div ng-if="wallC.feedView" flex layout-align="center center">Messages</div>
-					<div ng-if="!wallC.feedView" flex layout-align="center center">Screens</div>
-					<md-button ng-if="!wallC.magnified && wallC.feedView" class="md-icon-button" role="button" ng-click="wallC.magnified = true">
+					<div ng-if="!wallC.feedView && !wallC.dataService.phoneMode" flex layout-align="center center">Screens</div>
+					<md-button ng-if="!wallC.magnified && wallC.feedView && !wallC.dataService.phoneMode" class="md-icon-button" role="button" ng-click="wallC.magnified = true">
 						<md-icon md-svg-src="images/ic_zoom_in_white_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
-					<md-button ng-if="wallC.magnified && wallC.feedView" class="md-icon-button" role="button" ng-click="wallC.magnified = false">
+					<md-button ng-if="wallC.magnified && wallC.feedView && !wallC.dataService.phoneMode" class="md-icon-button" role="button" ng-click="wallC.magnified = false">
 						<md-icon md-svg-src="images/ic_zoom_out_white_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
-					<md-button class="md-icon-button" role="button" ng-click="wallC.$mdSidenav('left').close(); wallC.magnified = false">
+					<md-button ng-if="!wallC.dataService.phoneMode" class="md-icon-button" role="button" ng-click="wallC.$mdSidenav('left').close(); wallC.magnified = false">
 						<md-icon md-svg-src="images/ic_close_white_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
 				</div>
@@ -73,13 +94,16 @@
 					</md-list-item>
 				</md-list>
 			</md-content>
-			<div class="wall-sidenavRightBottomDiv">
+			<div class="wall-sidenavRightBottomDiv" layout="row" layout-align="center center">
 				<!-- this is to allow the fab button 'show editMessage' to float over the bottom of the sidenav -->
+				<md-button ng-if="wallC.dataService.phoneMode && wallC.dataService.getQuestion() !== null" class="md-fab wall-showEditMessageButtonPhone" ng-click="wallC.showMessageEditor(true)">
+					<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
+				</md-button>
 			</div>
 		</md-sidenav>
 
 		<!-- right sidenav of the wall -->
-		<md-sidenav md-component-id="right" class="md-sidenav-right wall-sidenav" layout="column">
+		<md-sidenav ng-if="!wallC.dataService.phoneMode" md-component-id="right" class="md-sidenav-right wall-sidenav" layout="column">
 			<div flex layout="column">
 
 				<!-- Join with PIN section -->
@@ -176,12 +200,12 @@
 					 data="message" on-board="true"
 					 show-edit-panel="wallC.showMessageEditor(false)"
 					 ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned}"
-					 ng-if="!message.deleted && message.isSelected"></div>
+					 ng-if="!message.deleted && message.isSelected && !wallC.dataService.phoneMode"></div>
 				<!-- ng-style="wallC.getLocationPosition($event, message.board[wallC.dataService.getNickname()])" -->
 			</div>
 
 			<!-- (+) fab button to show the editMessage bottomPane -->
-			<md-button ng-if="wallC.dataService.getQuestion() !== null" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true)">
+			<md-button ng-if="wallC.dataService.getQuestion() !== null && !wallC.dataService.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true)">
 				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 			</md-button>
 		</div>
