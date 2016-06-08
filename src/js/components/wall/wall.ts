@@ -56,15 +56,16 @@ module TalkwallApp {
 			console.log('--> WallController: activated');
 			//retrieve the first question of the current wall
 			if (this.dataService.getWall().questions.length > 0 && this.dataService.getWall().questions.length >= this.currentQuestionIndex) {
-				this.refreshQuestion();
+				this.refreshQuestion(this.currentQuestionIndex);
 			} else {
 				this.rightMenu2 = true;
 				this.$mdSidenav('right').open();
 			}
 		}
 
-		refreshQuestion(): void {
+		refreshQuestion(index: number): void {
 			var handle = this;
+			this.currentQuestionIndex = index;
 			this.dataService.setQuestion(this.currentQuestionIndex,
 				function() {
 					//question updated
@@ -134,7 +135,7 @@ module TalkwallApp {
 				function() {
 					//success
 					handle.newQuestionLabel = '';
-					handle.refreshQuestion();
+					handle.refreshQuestion(handle.currentQuestionIndex);
 				},
 				function(error: {}) {
 					//TODO: handle question retrieval error

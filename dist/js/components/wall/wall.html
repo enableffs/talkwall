@@ -10,8 +10,23 @@
 					<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 			</div>
-			<div flex="66" class="wall-question" layout layout-align="center center">
-				<span>{{wallC.dataService.getQuestion().label}}</span>
+			<div flex="grow" class="wall-question" layout="row" layout-align="center center">
+				<div layout layout-align="start center" ng-if="wallC.currentQuestionIndex > 0" ng-click="wallC.refreshQuestion(wallC.currentQuestionIndex-1)">
+					<md-button class="md-icon-button" role="button">
+						<md-icon md-svg-src="images/ic_arrow_back_orange_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+				</div>
+				<div flex="grow" layout layout-align="center center" flex="grow">
+					<div layout="row" ng-if="wallC.dataService.getQuestion() !== null" layout-align="center center">
+						<div class="wall-question-index" layout layout-align="center center">{{ wallC.currentQuestionIndex + 1}}</div>
+						<div>{{wallC.dataService.getQuestion().label}}</div>
+					</div>
+				</div>
+				<div layout layout-align="end center" ng-if="wallC.currentQuestionIndex < (wallC.dataService.getWall().questions.length - 1)" ng-click="wallC.refreshQuestion(wallC.currentQuestionIndex+1)">
+					<md-button class="md-icon-button" role="button">
+						<md-icon md-svg-src="images/ic_arrow_forward_orange_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+				</div>
 			</div>
 			<div flex="33" layout="row" layout-align="end center">
 				<button class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle();wallC.toggleRightMenu(0)">
@@ -130,7 +145,7 @@
 				</section>
 
 				<!-- Close talkwall section -->
-				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3}">
+				<section ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
 						<div flex layout="row" layout-align="start center">
 							<div flex layout-align="center center">Close Talkwall</div>
@@ -138,7 +153,7 @@
 							<md-icon ng-if="wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
-					<md-content flex ng-if="wallC.rightMenu3">
+					<md-content ng-if="wallC.rightMenu3">
 						<div layout="column" layout-padding>
 							<md-button class="md-raised wall-powerOffButton">
 								<md-icon md-svg-src="images/ic_power_settings_new_black_24px.svg" aria-hidden="true"></md-icon>

@@ -279,9 +279,17 @@ md-content {
   color: #333333;
 }
 
+.wall-question-index {
+  background-color: #000000;
+  color: #FFFFFF;
+  font-size: .7em;
+  margin-right: 5px;
+  min-width: 12px;
+  height: 20px;
+}
+
 .wall-sidenav {
   background-color: rgba(216, 237, 243, 0.5);
-  /* $color-lightblue with .5 opacity */
   margin-top: 64px;
 }
 

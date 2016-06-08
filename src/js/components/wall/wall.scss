@@ -14,8 +14,17 @@
   color: $color-darkgrey;
 }
 
+.wall-question-index {
+  background-color: $color-black;
+  color: $color-white;
+  font-size: .7em;
+  margin-right: 5px;
+  min-width: 12px;
+  height: 20px;
+}
+
 .wall-sidenav {
-  background-color: rgba(216, 237, 243, 0.5);   /* $color-lightblue with .5 opacity */
+  background-color: rgba(216, 237, 243, 0.5);
   margin-top: 64px;
 }
 
