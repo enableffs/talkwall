@@ -41,8 +41,8 @@ module TalkwallApp {
 		private rightMenu3: boolean = false;
 		private newQuestionLabel: string = '';
 
-        private currentWall: Wall;
-        private currentQuestion: Question = null;
+        /*private currentWall: Wall;
+        private currentQuestion: Question = null;*/
         private currentQuestionIndex: number = 0;
         private messageToEdit: Message;
 
@@ -61,8 +61,7 @@ module TalkwallApp {
 		}
 
 		activate(): void {
-            this.currentWall = this.dataService.getWall();
-            if (this.currentWall.questions.length > 0) {
+            if (this.dataService.getWall().questions.length > 0) {
                 this.setQuestion(this.currentQuestionIndex);    // Select first question, no previous question
             }
 			if (this.dataService.userIsAuthorised()) {
@@ -72,11 +71,10 @@ module TalkwallApp {
 		}
 
         setQuestion(questionIndex: number) {
-	        this.currentQuestionIndex = questionIndex;
-	        this.dataService.setQuestion(this.currentQuestionIndex,
-		        (newQuestion) => {
+	        this.dataService.setQuestion(questionIndex,
+		        () => {
 			        //success
-	                this.currentQuestion = newQuestion;
+	                this.currentQuestionIndex = questionIndex;
 		        },
 		        function() {
 			        //error
@@ -147,7 +145,7 @@ module TalkwallApp {
 				(success) => {
 					this.newQuestionLabel = '';
 					//set the current question if none
-					if (this.currentQuestion === null) {
+					if (this.dataService.getQuestion() === null) {
 						this.setQuestion(this.currentQuestionIndex);
 					}
 				},
