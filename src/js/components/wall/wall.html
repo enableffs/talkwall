@@ -79,7 +79,7 @@
 					</md-button>
 				</div>
 			</md-toolbar>
-			<md-content flex style="overflow-x: hidden !important;">
+			<md-content flex="grow" style="overflow-x: hidden !important;">
 				<!-- left sidenav message feed -->
 				<md-list ng-if="wallC.feedView">
 					<div ng-class="{'feedMessage-messageSelected': message.isSelected}" feed-message on-board="false" ng-repeat="message in wallC.dataService.getQuestion().messages" data="message" show-edit-panel="wallC.showMessageEditor(false)" ng-if="!message.deleted"></div>
