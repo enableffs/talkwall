@@ -53,11 +53,13 @@
 .wall-powerOffButton,
 .wall-addTaskReadyButton {
   background-color: $color-orange !important;
-  color: $color-white  !important;
+  color: $color-white !important;
 }
 
 .wall-sidenavRightBottomDiv {
-  height: 70px;
+  height: 70px !important;
+  min-height: 70px !important;
+  max-height: 70px !important;
 }
 
 .wall-showEditMessageButton {
