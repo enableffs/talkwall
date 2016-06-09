@@ -34,7 +34,7 @@ exports.poll = function(req, res) {
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    if (req.params.control === 'change') {
+    if (req.params.control === 'change' && req.params.previous_question_id !== 'none') {
         // We are changing questions, so remove the user from previous question and add them to the new one
         mm.removeUser(req.params.wall_id, req.params.previous_question_id, req.params.nickname);
         mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname);
@@ -221,7 +221,7 @@ exports.createMessage = function(req, res) {
                 }
                 else {
                     // Update the message manager to notify other clients
-              //      mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
+                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
 
                     // Update the question with this new message, and return
                     Question.findOneAndUpdate({
@@ -245,6 +245,36 @@ exports.createMessage = function(req, res) {
             });
         }
     });
+};
+
+/**
+ * @api {get} /messages Get all messages for a wall and question
+ * @apiName getMessages
+ * @apiGroup non-authorised
+ *
+ * @apiSuccess {Array<Message>} messages List of messages found
+ */
+exports.getMessages = function(req, res) {
+
+    if (typeof req.params.question_id === 'undefined' || req.params.question_id == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Message.find({
+        'question_id' : req.params.question_id
+    }).lean();
+
+    query.exec(function(error, messages) {
+        if(error) {
+            return res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message, result: error});
+        }
+        else {
+            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                message: common.StatusMessages.GET_SUCCESS.message, result: messages});
+        }
+    })
 };
 
 /**
@@ -280,7 +310,7 @@ exports.updateMessage = function(req, res) {
                     });
                 } else {
                     // Update the message manager to notify other clients
-           //         mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
+                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
 
                     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                         message: common.StatusMessages.UPDATE_SUCCESS.message
