@@ -238,9 +238,9 @@ rename it to Talkwall
 			* if new, slide open "new task" right panel
 			* if not, everything closed, with teacher's messages on board
 	* JOIN
-		* join pin dialog with nickname (only one nickname allowed)
+		* ~~join pin dialog with nickname (only one nickname allowed)~~
 	* wall
-		* layout
+		* ~~layout~~
 		* sidepanel-left
 			* "Messages" tab
 				* zoom
@@ -254,7 +254,7 @@ rename it to Talkwall
 						* history (chips). chips have a fixed size, with "...". fit as many chips has possible on one line (+ '...' if it goes beyond)
 						* controllbar
 							* ~~select (place on wall) / deselect (removes from wall)~~
-								* keep random placement around the center
+								* ~~keep random placement around the center~~
 							* ~~edit (should open the text in the edit pane)~~
 								* if not owner of the message, create a copy, inherit history and metadata, and appends to the message feed. keep originator message ID.
 							* ~~delete (remove from list not from DB)~~
@@ -293,9 +293,9 @@ rename it to Talkwall
 					* page [https://github.com/engagelab/talkwall/blob/master/export%20spec.md]
 		* message "on-wall"
 			* control
-				* select: highights message by setting a 'light orange' background
+				* ~~select: highights message by setting a 'light orange' background~~
 				* edit: brings up message bottom-sheet with its content to edit
-					* (should open the text in the edit pane)
+					* ~~(should open the text in the edit pane)~~
 					* if not owner of the message (revision 01/06):
 						 * create a copy (clone and get a new message id)
 						 * inherit history and metadata
@@ -303,9 +303,9 @@ rename it to Talkwall
 						 * appends to the message feed.
 						 * place the new maessage on board on previous position
 						 * remove origin message from board
-				* remove: remove from wall (-> unhighlights in the feed)
-			* messages has fixed width, variable height to show all content
-				* all content should be visible so messages can be auto relocated
+				* ~~remove: remove from wall (-> unhighlights in the feed)~~
+			* ~~messages has fixed width, variable height to show all content~~
+				* ~~all content should be visible so messages can be auto relocated~~
 		* top bar
 			* ~~"message feed" button~~
 			* ~~"screens" button (teacher only)~~
@@ -320,13 +320,13 @@ rename it to Talkwall
 				* background animation between questions
 			* ~~"hamburger" button (teacher only)~~
 	* PHONE version
-		* JOIN only
-		* add messages to feed
-		* navigate between tasks
+		* ~~JOIN only~~
+		* ~~add messages to feed~~
+		* ~~navigate between tasks~~
 		* edit, delete own messages
 			* edit not own creates new copy with history (same as desktop)
-		* wall hidden
-		* right-hand menu hidden
+		* ~~wall hidden~~
+		* ~~right-hand menu hidden~~
 * Test
 * Bug fixing
 
