@@ -8,10 +8,12 @@ var messageSchema = Schema({
     text:           { type: String, default: "" },
     creator:        { type: String }, // nickname
     deleted:        { type: Boolean, default: false },
-    origin: {
-        nickname:   { type: String },
-        message_id: { type: String }
-    },
+    origin: [
+        {
+            nickname:   { type: String },
+            message_id: { type: String, default: "" }
+        }
+    ],
     edits: [
         {
             date:   { type: Date },

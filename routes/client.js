@@ -224,9 +224,10 @@ exports.createMessage = function(req, res) {
                     mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
 
                     // Update the question with this new message, and return
-                    Question.findOneAndUpdate({
-                        '_id': req.body.message.question_id
-                    }, {$push: {messages: message._id}}, function(error, question) {
+                    Wall.findOneAndUpdate({
+                        '_id': wall_id,
+                        'questions._id': req.body.message.question_id
+                    }, { $push: { "questions.$.messages" : message }}, function(error, wall) {
                         if(error) {
                             return res.status(common.StatusMessages.CREATE_ERROR.status).json({
                                 message: common.StatusMessages.CREATE_ERROR.message

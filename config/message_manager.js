@@ -31,7 +31,10 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
     if (!this.data.hasOwnProperty(wall_id)) {
         this.data[wall_id] = {
             status: {
-                select_question_id: question_id,
+                commands_to_server : {
+                    select_question_id: question_id,
+                    close_wall: false
+                },
                 connected_nicknames: []
             },
             messages: {}
@@ -113,8 +116,16 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
 
     // Opportunity to set status values.
     if (status !== null) {
-        if (status.select_question_id !== "") {
-            this.data[wall_id]['status'].select_question_id = status.select_question_id;
+        if (status.commands_to_server.select_question_id !== "") {
+            this.data[wall_id]['status'].commands_to_server.select_question_id = status.commands_to_server.select_question_id;
+        }
+        if (status.commands_to_server.close_wall) {
+            this.data[wall_id]['status'].commands_to_server.close_wall = true;
+            this.data[wall_id].status.connected_nicknames = [];
+
+            // If re-opening the wall, reset 'closed' to false
+        } else if (this.data[wall_id].status.connected_nicknames.length < 2) {
+            this.data[wall_id]['status'].commands_to_server.close_wall = false;
         }
     }
 };
