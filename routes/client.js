@@ -18,7 +18,7 @@ var Utilities = require('../config/utilities');
  *
  * @apiParam {String} wall_id ID of the wall to get
  * @apiParam {String} question_id ID of the question to get
- * @apiParam {String} previous_question_id ID of the previous question to assist removal from polling
+ * @apiParam {String} previous_question_id ID of the previous question to assist removal from polling when changing question
  * @apiParam {String} nickname Connecting client's nickname
  * @apiParam {String} control type of poll ('new', 'change', 'poll')
  *
@@ -224,9 +224,10 @@ exports.createMessage = function(req, res) {
                     mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
 
                     // Update the question with this new message, and return
-                    Question.findOneAndUpdate({
-                        '_id': req.body.message.question_id
-                    }, {$push: {messages: message._id}}, function(error, question) {
+                    Wall.findOneAndUpdate({
+                        '_id': wall_id,
+                        'questions._id': req.body.message.question_id
+                    }, { $push: { "questions.$.messages" : message }}, function(error, wall) {
                         if(error) {
                             return res.status(common.StatusMessages.CREATE_ERROR.status).json({
                                 message: common.StatusMessages.CREATE_ERROR.message

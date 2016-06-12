@@ -71,12 +71,22 @@ module TalkwallApp {
 
         // Return the Question for the given question ID
         getMessageFromQuestionById (id: string, question: Question) : Message {
-            question.messages.forEach(function(m) {
-                if (m._id === id) {
-                    return m;
+            for (var i = 0; i < question.messages.length; i++) {
+                if (question.messages[i]._id === id) {
+                    return question.messages[i];
                 }
-            });
+            }
             return null;
         };
+
+        // Return the index of the given question ID on a wall
+        getQuestionIndexFromWallById(id: string, wall: Wall): number {
+            for (var i = 0; i < wall.questions.length; i++) {
+                if (wall.questions[i]._id === id) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 }

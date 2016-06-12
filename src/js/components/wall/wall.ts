@@ -44,11 +44,11 @@ module TalkwallApp {
 
         /*private currentWall: Wall;
         private currentQuestion: Question = null;*/
-        private currentQuestionIndex: number = 0;
         private messageToEdit: Message;
 
         private viewHeight = 700;
         private viewWidth = 1200;
+
 
 		constructor(
 			private dataService: DataService,
@@ -58,17 +58,19 @@ module TalkwallApp {
 			private $window: IWindowService) {
 			console.log('--> WallController: started: ');
 
+
 			this.dataService.checkAuthentication((success) => {
 				this.activate();
 			}, null);
 		}
+
 
 		activate(): void {
 			if (this.dataService.getWall() === null) {
 				this.$window.location.href = this.urlService.getHost() + '/#/';
 			} else {
 	            if (this.dataService.getWall().questions.length > 0) {
-	                this.setQuestion(this.currentQuestionIndex);    // Select first question, no previous question
+	                this.setQuestion(0);    // Select first question, no previous question
 	            }
 				if (this.dataService.userIsAuthorised()) {
 	                this.rightMenu2 = true;
@@ -77,16 +79,19 @@ module TalkwallApp {
 			}
 		}
 
-        setQuestion(questionIndex: number) {
-	        this.dataService.setQuestion(questionIndex,
+        setQuestion(index) {
+	        this.dataService.setQuestion(index,
 		        () => {
 			        //success
-	                this.currentQuestionIndex = questionIndex;
 		        },
 		        function() {
 			        //error
 		        }
 	        );
+		}
+
+		closeWall() {
+			this.dataService.closeWallNow();
 		}
 
 		showMessageEditor(newMessage): void {
@@ -151,9 +156,9 @@ module TalkwallApp {
 			this.dataService.addQuestion(this.newQuestionLabel,
 				(success) => {
 					this.newQuestionLabel = '';
-					//set the current question if none
+					//set to the new question if none
 					if (this.dataService.getQuestion() === null) {
-						this.setQuestion(this.currentQuestionIndex);
+						this.setQuestion(0);
 					}
 				},
 				function(error) {
