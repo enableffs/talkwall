@@ -73,8 +73,8 @@ module TalkwallApp {
     export class PollUpdate {
         status: {
             commands_to_server: {
-                select_question_id: string;     // set to '' for no change
-                close_wall: boolean;             // set to false for no change
+                teacher_question_id: string;     // set to '' for no change
+                wall_closed: boolean;             // set to false for no change
             },
             connected_nicknames: Array<string>;
         };
@@ -84,8 +84,8 @@ module TalkwallApp {
         constructor(question_id, close_wall) {
             this.status = {
                 commands_to_server : {
-                    select_question_id: question_id,
-                    close_wall: close_wall
+                    teacher_question_id: question_id,
+                    wall_closed: close_wall
                 },
                 connected_nicknames: [],
             };

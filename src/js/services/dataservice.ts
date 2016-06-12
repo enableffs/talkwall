@@ -238,7 +238,7 @@ module TalkwallApp {
                 });
         }
 
-
+        // For authorised users only
         requestWall(wallId, successCallbackFn, errorCallbackFn): void {
             //return the previous wall with a the existing PIN from REDIS (if expired return true)
             this.$http.get(this.urlService.getHost() + '/wall/' + wallId)
@@ -256,6 +256,7 @@ module TalkwallApp {
                 });
         }
 
+        // For authorised users only
         createWall(successCallbackFn, errorCallbackFn): void {
             this.$http.post(this.urlService.getHost() + '/wall', {label: "New Wall: " + new Date().toDateString()})
                 .success((data) => {
@@ -274,6 +275,7 @@ module TalkwallApp {
                 });
         }
 
+        // For non-authorised users
         joinWall(joinModel, successCallbackFn, errorCallbackFn): void {
             this.$http.get(this.urlService.getHost() + '/join/' + joinModel.nickname + '/' + joinModel.pin)
                 .success((data) => {
@@ -557,14 +559,14 @@ module TalkwallApp {
             // Run on client connections only - receive status updates from teacher
             if (!this.userAuthorised) {
                 // Change questions if directed by the teacher
-                if (pollUpdateObject.status.commands_to_server.select_question_id !== this.mytTeachersQuestionID) {
-                    this.mytTeachersQuestionID = pollUpdateObject.status.commands_to_server.select_question_id;
+                if (pollUpdateObject.status.commands_to_server.teacher_question_id !== this.mytTeachersQuestionID) {
+                    this.mytTeachersQuestionID = pollUpdateObject.status.commands_to_server.teacher_question_id;
                     this.setQuestion(this.utilityService.getQuestionIndexFromWallById(
                         this.mytTeachersQuestionID, this.wall), null, null);
                 }
 
                 // Close wall if closed by teacher
-                if (pollUpdateObject.status.commands_to_server.close_wall) {
+                if (pollUpdateObject.status.commands_to_server.wall_closed) {
                     this.stopPolling();
                     this.wall.pin = '0000';
                     this.wall.closed = true;

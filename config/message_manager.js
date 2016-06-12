@@ -16,6 +16,13 @@ var Mm = function() {
  * 'status' area reflects the 'present state'
  *      e.g. which question ID the client should be on after this poll
  *      e.g. the client nicknames currently connected to this question
+ *
+ *      commands_to_server {
+ *          wall_closed: boolean,
+ *          force_change_question: boolean,
+ *          change_to_question_id: question_id
+ *      }
+ *
  * 'messages' area reflects 'changed messages'
  *
  * @param {string} wall_id
@@ -32,21 +39,22 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
         this.data[wall_id] = {
             status: {
                 commands_to_server : {
-                    select_question_id: question_id,
-                    close_wall: false
+                    wall_closed: false,
+                    teacher_question_id: ''
                 },
                 connected_nicknames: []
             },
             messages: {}
         };
     }
-    // Add the nickname if not already there
+    // Add the nickname to the connected users list, if not already there
     if (this.data[wall_id].status['connected_nicknames'].indexOf(nickname) === -1) {
         this.data[wall_id].status['connected_nicknames'].push(nickname);
     }
 
-    if(question_id !== "") {
-        // Create the question reference first, if not already there
+    // Create a message list for this user, if they are beginning to poll
+    if (question_id !== "") {
+        // Create the question reference, if not already there
         if (!this.data[wall_id].messages.hasOwnProperty(question_id)) {
             this.data[wall_id].messages[question_id] = {};
         }
@@ -93,6 +101,7 @@ Mm.prototype.removeAllFromWall = function(wall_id) {
 
 /**
  * Update a question's status and message called from a particular user
+ * Only an authorised user should send a status update
  *
  * @param {string} wall_id
  * @param {string} question_id
@@ -116,16 +125,12 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
 
     // Opportunity to set status values.
     if (status !== null) {
-        if (status.commands_to_server.select_question_id !== "") {
-            this.data[wall_id]['status'].commands_to_server.select_question_id = status.commands_to_server.select_question_id;
+        if (status.commands_to_server.teacher_question_id !== "") {
+            this.data[wall_id]['status'].commands_to_server.teacher_question_id = status.commands_to_server.teacher_question_id;
         }
-        if (status.commands_to_server.close_wall) {
-            this.data[wall_id]['status'].commands_to_server.close_wall = true;
+        this.data[wall_id]['status'].commands_to_server.wall_closed = status.commands_to_server.wall_closed;
+        if (status.commands_to_server.wall_closed) {
             this.data[wall_id].status.connected_nicknames = [];
-
-            // If re-opening the wall, reset 'closed' to false
-        } else if (this.data[wall_id].status.connected_nicknames.length < 2) {
-            this.data[wall_id]['status'].commands_to_server.close_wall = false;
         }
     }
 };

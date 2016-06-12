@@ -157,7 +157,7 @@ exports.updateWall = function(req, res) {
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         }
         else {
-            if (req.body.pollupdate.status.commands_to_server.close_wall) {       // Close this wall to clients by expiring the pin
+            if (req.body.pollupdate.status.commands_to_server.wall_closed) {       // Close this wall to clients by expiring the pin
                 redisClient.EXPIRE(wall.pin, 1);
                 wall.pin = '0000';
             }
@@ -273,8 +273,8 @@ exports.getWall = function(req, res) {
                 } else {
                     var status = {
                         commands_to_server: {
-                            select_question_id: '',     // set to '' for no change
-                            close_wall: false           // set to false for no change
+                            teacher_question_id: '',     // set to '' for no change
+                            wall_closed: false           // set to false for no change
                         },
                         connected_nicknames: []
                     };
@@ -348,7 +348,7 @@ exports.createTestUser = function() {
             var newUser = new User();
             newUser.defaultEmail = "abc@abc.net";
             newUser.local.apikey = 'abcdef';
-            newUser.nickname = 'custom_teacher';
+            newUser.nickname = 'teacher';
             newUser.save();
             console.log("*** Test User created");
         } else {

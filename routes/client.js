@@ -18,7 +18,7 @@ var Utilities = require('../config/utilities');
  *
  * @apiParam {String} wall_id ID of the wall to get
  * @apiParam {String} question_id ID of the question to get
- * @apiParam {String} previous_question_id ID of the previous question to assist removal from polling
+ * @apiParam {String} previous_question_id ID of the previous question to assist removal from polling when changing question
  * @apiParam {String} nickname Connecting client's nickname
  * @apiParam {String} control type of poll ('new', 'change', 'poll')
  *
