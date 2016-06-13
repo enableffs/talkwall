@@ -99,7 +99,15 @@ module TalkwallApp {
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        addQuestion(label: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        addQuestion(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * retrieve the editable question object
+         */
+        getQuestionToEdit(): Question;
+        /**
+         * set a question as the editable question object
+         */
+        setQuestionToEdit(question: Question);
         /**
          * post new message to the feed
          * @param sFunc success callback
@@ -158,6 +166,7 @@ module TalkwallApp {
         private wall: Wall = null;
         private question: Question = null;
         private messageToEdit: Message = new Message();
+        private questionToEdit: Question = new Question('');
         private phoneMode: boolean = false;
 
         private timerHandle;
@@ -414,26 +423,39 @@ module TalkwallApp {
                     });
         }
 
+        getQuestionToEdit(): Question {
+            return this.questionToEdit;
+        }
+
+        setQuestionToEdit(question: Question) {
+            this.questionToEdit = question;
+        }
+
         //generate a new question on server with _id and returns it
-        addQuestion(label, successCallbackFn, errorCallbackFn): void {
-            var question = new Question(label);
-            this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.wall._id, question: question})
-                .success((data) => {
-                    let resultKey = 'result';
-                    question.createdAt = data[resultKey].createdAt;
-                    question._id = data[resultKey]._id;
-                    this.wall.questions.push(question);
-                    //this.question = question;
-                    if (typeof successCallbackFn === "function") {
-                        successCallbackFn(question);
-                    }
-                })
-                .catch((error) => {
-                    console.log('--> DataService: getQuestion failure: ' + error);
-                    if (typeof errorCallbackFn === "function") {
-                        errorCallbackFn({status: error.status, message: error.message});
-                    }
-                });
+        addQuestion(successCallbackFn, errorCallbackFn): void {
+            if (this.questionToEdit._id === '') {
+                //create a new question based on 
+                this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.wall._id, question: this.questionToEdit})
+                    .success((data) => {
+                        let resultKey = 'result';
+                        this.wall.questions.push(data[resultKey]);
+                        //this.question = question;
+                        if (typeof successCallbackFn === "function") {
+                            successCallbackFn();
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('--> DataService: getQuestion failure: ' + error);
+                        if (typeof errorCallbackFn === "function") {
+                            errorCallbackFn({status: error.status, message: error.message});
+                        }
+                    });
+            } else {
+                //this is an update do the server business....
+                console.log('updating the question');
+                this.questionToEdit.showControls = false;
+                successCallbackFn();
+            }
         }
 
         //generate a new message on server with _id and returns it

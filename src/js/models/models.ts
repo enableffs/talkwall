@@ -33,10 +33,13 @@ module TalkwallApp {
         createdAt: Date;
         label: string;
         messages: Array<Message>;
+        showControls: boolean;
 
         constructor(label: string) {
+            this._id = '';
             this.label = label;
             this.messages = [];
+            this.showControls = false;
         }
     }
 

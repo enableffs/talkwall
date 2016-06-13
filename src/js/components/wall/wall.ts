@@ -25,7 +25,7 @@ module TalkwallApp {
 		/**
 		 * Post a new question
 		 */
-		postNewQuestion(): void;
+		postQuestion(): void;
         /**
          * Get question at index
          * @param index wall.questions Index of the question being selected
@@ -40,17 +40,8 @@ module TalkwallApp {
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
-		private newQuestionLabel: string = '';
 
-        /*private currentWall: Wall;
-        private currentQuestion: Question = null;*/
-        private messageToEdit: Message;
-
-        private viewHeight = 700;
-        private viewWidth = 1200;
-
-
-		constructor(
+        constructor(
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService,
@@ -96,13 +87,12 @@ module TalkwallApp {
 			this.dataService.closeWallNow();
 		}
 
-		showMessageEditor(newMessage): void {
+		showMessageEditor(newMessage: boolean): void {
 			var handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(new Message());
 			}
-            this.messageToEdit = handle.dataService.getMessageToEdit();
-			this.$mdSidenav('left').open();
+            this.$mdSidenav('left').open();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
 				controllerAs: 'editMessageC',
@@ -154,14 +144,16 @@ module TalkwallApp {
 			}
 		}
 
-		postNewQuestion(): void {
-			this.dataService.addQuestion(this.newQuestionLabel,
+		postQuestion(): void {
+
+			this.dataService.addQuestion(
 				(success) => {
-					this.newQuestionLabel = '';
 					//set to the new question if none
 					if (this.dataService.getQuestion() === null) {
 						this.setQuestion(0);
 					}
+					//clear the question to edit ...
+					this.dataService.setQuestionToEdit(new Question(''));
 				},
 				function(error) {
 					//TODO: handle question retrieval error

@@ -66,8 +66,8 @@
 		<md-sidenav md-component-id="left" class="md-sidenav-left wall-sidenav" layout="column" ng-class="{'wall-sidemenuLarge' :  wallC.magnified}" md-is-locked-open="$mdMedia('max-width: 960px')">
 			<md-toolbar>
 				<div flex layout="row" layout-align="start center">
-					<div ng-if="wallC.feedView" flex layout-align="center center">Messages</div>
-					<div ng-if="!wallC.feedView && !wallC.dataService.phoneMode" flex layout-align="center center">Screens</div>
+					<div ng-if="wallC.feedView" flex class="wall-toolbarText" layout-align="center center">Messages</div>
+					<div ng-if="!wallC.feedView && !wallC.dataService.phoneMode" flex class="wall-toolbarText" layout-align="center center">Screens</div>
 					<md-button ng-if="!wallC.magnified && wallC.feedView && !wallC.dataService.phoneMode" class="md-icon-button" role="button" ng-click="wallC.magnified = true">
 						<md-icon md-svg-src="images/ic_zoom_in_white_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
@@ -110,7 +110,7 @@
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(1)">
 						<div flex layout="row" layout-align="start center">
-							<div flex layout-align="center center">Join with PIN</div>
+							<div flex class="wall-toolbarText" layout-align="center center">Join with PIN</div>
 							<md-icon ng-if="!wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
 							<md-icon ng-if="wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
@@ -138,25 +138,20 @@
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(2)">
 						<div flex layout="row" layout-align="start center">
-							<div flex layout-align="center center">Edit tasks</div>
+							<div flex class="wall-toolbarText" layout-align="center center">Edit tasks</div>
 							<md-icon ng-if="!wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
 							<md-icon ng-if="wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
 					<md-content flex ng-if="wallC.rightMenu2">
 						<md-list>
-							<md-list-item ng-repeat="question in wallC.dataService.getWall().questions">
-								<md-icon md-svg-icon="images/ic_menu_black_24px.svg"></md-icon>
-								<p>{{question.label}}</p>
-								<md-divider></md-divider>
-							</md-list-item>
-							<md-divider></md-divider>
+							<div task ng-repeat="question in wallC.dataService.getWall().questions" data="question" show-edit-panel="wallC.showMessageEditor(false)"></div>
 						</md-list>
 					</md-content>
 					<div ng-if="wallC.rightMenu2" layout="column" class="wall-rightMenuAddTaskPanel">
 						<md-input-container class="md-block">
 							<label>Add task</label>
-							<textarea ng-model="wallC.newQuestionLabel" rows="5" md-select-on-focus></textarea>
+							<textarea ng-model="wallC.dataService.getQuestionToEdit().label" rows="5" md-select-on-focus></textarea>
 						</md-input-container>
 						<div layout="column">
 							<span>Background</span>
@@ -166,7 +161,10 @@
 								<md-button flex><img src="images/back033.png" aria-hidden="true" width="100%" /></md-button>
 								<md-button flex><img src="images/back044.png" aria-hidden="true" width="100%" /></md-button>
 							</div>
-							<md-button class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.newQuestionLabel === ''" ng-click="wallC.postNewQuestion()">Add</md-button>
+							<md-button class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.dataService.getQuestionToEdit().label === ''" ng-click="wallC.postQuestion()">
+								<span ng-if="wallC.dataService.getQuestionToEdit()._id === ''">Add</span>
+								<span ng-if="wallC.dataService.getQuestionToEdit()._id !== ''">Save</span>
+							</md-button>
 						</div>
 					</div>
 				</section>
@@ -175,7 +173,7 @@
 				<section ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
 						<div flex layout="row" layout-align="start center">
-							<div flex layout-align="center center">Close Talkwall</div>
+							<div flex class="wall-toolbarText" layout-align="center center">Close Talkwall</div>
 							<md-icon ng-if="!wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
 							<md-icon ng-if="wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
