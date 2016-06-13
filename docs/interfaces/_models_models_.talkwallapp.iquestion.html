@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>TalkwallApp | Talkwall client</title>
+	<title>IQuestion | Talkwall client</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,54 +57,123 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_app_run_.html">&quot;app.run&quot;</a>
+					<a href="../modules/_models_models_.html">&quot;models/models&quot;</a>
 				</li>
 				<li>
-					<a href="_app_run_.talkwallapp.html">TalkwallApp</a>
+					<a href="../modules/_models_models_.talkwallapp.html">TalkwallApp</a>
+				</li>
+				<li>
+					<a href="_models_models_.talkwallapp.iquestion.html">IQuestion</a>
 				</li>
 			</ul>
-			<h1>Module TalkwallApp</h1>
+			<h1>Interface IQuestion</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">IQuestion</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implemented by</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../classes/_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a></li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Functions</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_app_run_.talkwallapp.html#runapp" class="tsd-kind-icon">run<wbr>App</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_models_models_.talkwallapp.iquestion.html#_id" class="tsd-kind-icon">_id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_models_models_.talkwallapp.iquestion.html#createdat" class="tsd-kind-icon">created<wbr>At</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_models_models_.talkwallapp.iquestion.html#label" class="tsd-kind-icon">label</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_models_models_.talkwallapp.iquestion.html#messages" class="tsd-kind-icon">messages</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_models_models_.talkwallapp.iquestion.html#getmessagebyid" class="tsd-kind-icon">get<wbr>Message<wbr>ById</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="runapp" class="tsd-anchor"></a>
-					<h3>run<wbr>App</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">run<wbr>App<span class="tsd-signature-symbol">(</span>$rootScope<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IRootScopeService</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="_id" class="tsd-anchor"></a>
+					<h3>_id</h3>
+					<div class="tsd-signature tsd-kind-icon">_id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/models/models.ts#L40">models/models.ts:40</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="createdat" class="tsd-anchor"></a>
+					<h3>created<wbr>At</h3>
+					<div class="tsd-signature tsd-kind-icon">created<wbr>At<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/models/models.ts#L41">models/models.ts:41</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="label" class="tsd-anchor"></a>
+					<h3>label</h3>
+					<div class="tsd-signature tsd-kind-icon">label<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/models/models.ts#L42">models/models.ts:42</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="messages" class="tsd-anchor"></a>
+					<h3>messages</h3>
+					<div class="tsd-signature tsd-kind-icon">messages<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/models/models.ts#L43">models/models.ts:43</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="getmessagebyid" class="tsd-anchor"></a>
+					<h3>get<wbr>Message<wbr>ById</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Message<wbr>ById<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/app.run.ts#L9">app.run.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/models/models.ts#L45">models/models.ts:45</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>$rootScope: <span class="tsd-signature-type">ng.IRootScopeService</span></h5>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../classes/_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -117,74 +186,110 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="__references_.html">"_<wbr>references"</a>
+						<a href="../modules/__references_.html">"_<wbr>references"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_app_.html">"app"</a>
+						<a href="../modules/_app_.html">"app"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_app_config_.html">"app.config"</a>
+						<a href="../modules/_app_config_.html">"app.config"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_app_run_.html">"app.run"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_editmessagepanel_editmessagepanel_.html">"components/edit<wbr>Message<wbr>Panel/edit<wbr>Message<wbr>Panel"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_feedmessage_feedmessage_.html">"components/feed<wbr>Message/feed<wbr>Message"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_join_join_.html">"components/join/join"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_landing_landing_.html">"components/landing/landing"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_login_login_.html">"components/login/login"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_task_task_.html">"components/task/task"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_wall_wall_.html">"components/wall/wall"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_directives_autoresize_.html">"directives/autoresize"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_directives_watchboardsize_.html">"directives/watchboardsize"</a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="_app_run_.html">"app.run"</a>
+						<a href="../modules/_models_models_.html">"models/models"</a>
 						<ul>
 							<li class="current tsd-kind-module tsd-parent-kind-external-module tsd-is-not-exported">
-								<a href="_app_run_.talkwallapp.html">Talkwall<wbr>App</a>
+								<a href="../modules/_models_models_.talkwallapp.html">Talkwall<wbr>App</a>
 							</li>
 						</ul>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_components_editmessagepanel_editmessagepanel_.html">"components/edit<wbr>Message<wbr>Panel/edit<wbr>Message<wbr>Panel"</a>
+						<a href="../modules/_services_authenticationservice_.html">"services/authenticationservice"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_components_feedmessage_feedmessage_.html">"components/feed<wbr>Message/feed<wbr>Message"</a>
+						<a href="../modules/_services_dataservice_.html">"services/dataservice"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_components_join_join_.html">"components/join/join"</a>
+						<a href="../modules/_services_tokenservice_.html">"services/tokenservice"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_components_landing_landing_.html">"components/landing/landing"</a>
+						<a href="../modules/_services_urlservice_.html">"services/urlservice"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_components_login_login_.html">"components/login/login"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_components_task_task_.html">"components/task/task"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_components_wall_wall_.html">"components/wall/wall"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_directives_autoresize_.html">"directives/autoresize"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_directives_watchboardsize_.html">"directives/watchboardsize"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_models_models_.html">"models/models"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_services_authenticationservice_.html">"services/authenticationservice"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_services_dataservice_.html">"services/dataservice"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_services_tokenservice_.html">"services/tokenservice"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_services_urlservice_.html">"services/urlservice"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_services_utilityservice_.html">"services/utilityservice"</a>
+						<a href="../modules/_services_utilityservice_.html">"services/utilityservice"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="_app_run_.talkwallapp.html#runapp" class="tsd-kind-icon">run<wbr>App</a>
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="../classes/_models_models_.talkwallapp.message.html" class="tsd-kind-icon">Message</a>
 					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="../classes/_models_models_.talkwallapp.pollupdate.html" class="tsd-kind-icon">Poll<wbr>Update</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="../classes/_models_models_.talkwallapp.question.html" class="tsd-kind-icon">Question</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="../classes/_models_models_.talkwallapp.user.html" class="tsd-kind-icon">User</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="../classes/_models_models_.talkwallapp.wall.html" class="tsd-kind-icon">Wall</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-module">
+						<a href="_models_models_.talkwallapp.iquestion.html" class="tsd-kind-icon">IQuestion</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_models_models_.talkwallapp.iquestion.html#_id" class="tsd-kind-icon">_id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_models_models_.talkwallapp.iquestion.html#createdat" class="tsd-kind-icon">created<wbr>At</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_models_models_.talkwallapp.iquestion.html#label" class="tsd-kind-icon">label</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_models_models_.talkwallapp.iquestion.html#messages" class="tsd-kind-icon">messages</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_models_models_.talkwallapp.iquestion.html#getmessagebyid" class="tsd-kind-icon">get<wbr>Message<wbr>ById</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
 				</ul>
 			</nav>
 		</div>
