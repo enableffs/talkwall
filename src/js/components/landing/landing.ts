@@ -71,7 +71,7 @@ module TalkwallApp {
 					clickOutsideToClose: true
 				})
 				.then(function(joinModel) {
-					handle.dataService.joinWall(joinModel, () => {
+					handle.dataService.getClientWall(joinModel, () => {
 						handle.$window.location.href = handle.urlService.getHost() + '/#/wall';
 					}, null);
 				}, function() {

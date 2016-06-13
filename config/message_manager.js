@@ -13,7 +13,7 @@ var Mm = function() {
 /**
  * Add additional users to the manager
  *
- * 'status' area reflects the last update Date made by teacher, and the connected users
+ * 'status' area reflects the last update Date made by teacher, teacher's current question, and the connected users
  *
  * 'messages' area reflects 'changed messages' for every nickname except the one making the change
  *
@@ -30,8 +30,8 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
     if (!this.data.hasOwnProperty(wall_id)) {
         this.data[wall_id] = {
             status: {
-                last_update: Date(now),
-                teacher_question_id: '',
+                last_update: Date.now(),
+                teacher_question_id: 'none',
                 connected_nicknames: []
             },
             messages: {}
@@ -42,7 +42,7 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
         this.data[wall_id].status['connected_nicknames'].push(nickname);
     }
 
-    // Create a message list for this user, if they are beginning to poll
+    // Create a message list for this user for a particular question
     if (question_id !== 'none') {
         // Create the question reference, if not already there
         if (!this.data[wall_id].messages.hasOwnProperty(question_id)) {
@@ -94,7 +94,7 @@ Mm.prototype.removeAllFromWall = function(wall_id) {
  * Only an authorised user should send a status update
  *
  * @param {string} wall_id
- * @param {string} question_id
+ * @param {string} question_id                      question_id can be 'none' if the teacher has not changed questions
  * @param {string} nickname                         the particular calling user
  * @param {Array<Message>} edited_messages          the message objects edited by the calling user
  * @param {boolean} status_update                   wall status has changed (true | false).
@@ -115,8 +115,10 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
 
     // Opportunity to set status
     if (status_update) {
-        this.data[wall_id]['status'].teacher_question_id = question_id;
-        this.data[wall_id]['status'].last_update = Date(now);
+        if(question_id !== 'none') {
+            this.data[wall_id]['status'].teacher_question_id = question_id;
+        }
+        this.data[wall_id]['status'].last_update = Date.now();
     }
 };
 

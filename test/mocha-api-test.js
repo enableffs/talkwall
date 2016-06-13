@@ -163,16 +163,7 @@ describe('teacher updates details for a particular wall. ' +
         superagent.put(baseurl+'/wall')
             .set('Authorization', 'Bearer '+ TEACHER_TOKEN)
             .send({
-                wall: FIRST_WALL,
-                nickname: TEACHER_NICKNAME,
-                pollupdate: {
-                    status: {
-                        commands_to_server: {
-                            teacher_question_id: FIRST_WALL.questions[0]._id,
-                            wall_closed: false
-                        }
-                    }
-                }
+                wall: FIRST_WALL
             })
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.UPDATE_SUCCESS.status);
@@ -183,29 +174,26 @@ describe('teacher updates details for a particular wall. ' +
     });
 });
 
-
-
-
-/*  =========   NON-AUTHORISED (STUDENT / TEACHER) CALLS ========== */
-
-/*
-describe('teacher selects a question. Result should include 0 messages', function() {
-    it('should return question details', function(done){
-        superagent.get(baseurl+'/question/' + FIRST_WALL._id + '/' + FIRST_WALL.questions[0] + '/' + TEACHER_NICKNAME)
+describe('teacher notifies the selection of a question', function() {
+    it('should return success status', function(done){
+        superagent.get(baseurl+'/change/' + FIRST_WALL._id + '/' + FIRST_WALL.questions[0]._id)
+            .set('Authorization', 'Bearer '+ TEACHER_TOKEN)
             .end(function(e,res) {
-                expect(res.statusCode).to.eql(common.StatusMessages.GET_SUCCESS.status);
-                expect(res.body.message).to.eql(common.StatusMessages.GET_SUCCESS.message);
-                expect(res.body.result.label).to.eql("What is the meaning of life?");
-                expect(res.body.result.messages.length).to.eql(0);
+                expect(res.statusCode).to.eql(common.StatusMessages.UPDATE_SUCCESS.status);
+                expect(res.body.message).to.eql(common.StatusMessages.UPDATE_SUCCESS.message);
                 done();
             });
     });
 });
-*/
+
+/*  =========   NON-AUTHORISED (STUDENT / TEACHER) CALLS ========== */
+
+
+
 
 describe('first client connects to the first wall created by teacher', function() {
     it('should return successful client connection', function(done){
-        superagent.get(baseurl+'/join/' + FIRST_CLIENT_NICKNAME + '/' + FIRST_WALL.pin)
+        superagent.get(baseurl+'/clientwall/' + FIRST_CLIENT_NICKNAME + '/' + FIRST_WALL.pin)
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.CLIENT_CONNECT_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.CLIENT_CONNECT_SUCCESS.message);
@@ -231,7 +219,7 @@ describe('first client selects a question. Result should include 0 messages', fu
 
 describe('second client connects to the first wall created by teacher', function() {
     it('should return successful client connection', function(done){
-        superagent.get(baseurl+'/join/' + SECOND_CLIENT_NICKNAME + '/' + FIRST_WALL.pin)
+        superagent.get(baseurl+'/clientwall/' + SECOND_CLIENT_NICKNAME + '/' + FIRST_WALL.pin)
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.CLIENT_CONNECT_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.CLIENT_CONNECT_SUCCESS.message);
@@ -338,7 +326,7 @@ describe('first client polls for new data', function() {
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
-                expect(res.body.result.status.commands_to_server.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
+                expect(res.body.result.status.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
                 expect(res.body.result.status.connected_nicknames.length).to.eql(3);
                 expect(res.body.result.messages.length).to.eql(0);
                 done();
@@ -353,7 +341,7 @@ describe('second client polls for new data, gets first clients new data', functi
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
-                expect(res.body.result.status.commands_to_server.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
+                expect(res.body.result.status.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
                 expect(res.body.result.status.connected_nicknames.length).to.eql(3);
                 expect(res.body.result.messages.length).to.eql(1);
                 expect(res.body.result.messages[0].text).to.eql("No one knows");
@@ -391,7 +379,7 @@ describe('first client polls for new data again', function() {
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
-                expect(res.body.result.status.commands_to_server.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
+                expect(res.body.result.status.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
                 expect(res.body.result.status.connected_nicknames.length).to.eql(3);
                 expect(res.body.result.messages.length).to.eql(1);
                 expect(res.body.result.messages[0].board[SECOND_CLIENT_NICKNAME].xpos).to.eql(100);
@@ -402,6 +390,7 @@ describe('first client polls for new data again', function() {
 
 
 /*  ===============    CLEANUP    =============== */
+
 
 describe('remove the test Wall and associated questions and messages', function() {
 

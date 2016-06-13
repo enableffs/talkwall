@@ -6,9 +6,7 @@ var common = require('../config/common.js');
 var mm = require('../config/message_manager').mm;
 var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
-var Question = require('../models/question');
 var Message = require('../models/message');
-var Utilities = require('../config/utilities');
 
 /**
  * @api {get} /poll Respond to this call with any changed messages and status
@@ -38,7 +36,7 @@ exports.poll = function(req, res) {
 
     if (req.params.control === 'change' && req.params.previous_question_id !== 'none') {
         // We are changing questions, so remove the user from previous question and add them to the new one
-        mm.removeUser(req.params.wall_id, req.params.previous_question_id, req.params.nickname);
+        mm.removeFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname);
         mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname);
     } else if (req.params.control === 'new') {
         // We are entering for the first time, so add the user
@@ -53,17 +51,17 @@ exports.poll = function(req, res) {
 };
 
 /**
- * @api {get} /join Join a wall with pin - simply returns wall details if the pin exists and wall is open.
+ * @api {get} /clientwall Get a wall by pin - simply returns wall details if the pin exists and wall is open.
  * Adds user to wall nickname list
  *
- * @apiName joinWall
+ * @apiName clientWall
  * @apiGroup non-authorised
  *
  * @apiParam {String} pin Pin of the wall to get
  * @apiParam {String} nickname Connecting client's nickname
  *
  */
-exports.joinWall = function(req, res) {
+exports.clientWall = function(req, res) {
 
     if (typeof req.params.pin === 'undefined' || req.params.pin == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
@@ -313,7 +311,7 @@ exports.updateMessage = function(req, res) {
                     });
                 } else {
                     // Update the message manager to notify other clients
-                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
+                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], false);
 
                     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                         message: common.StatusMessages.UPDATE_SUCCESS.message
