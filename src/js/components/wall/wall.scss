@@ -7,11 +7,21 @@
 
 .wall-topToolbar {
   min-height: 64px;
+  max-height: 64px;
+  height: 64px;
   background-color: $color-lightblue !important;
 }
 
 .wall-question {
   color: $color-darkgrey;
+}
+
+.wall-question div,
+.wall-question {
+  max-height: 50px !important;
+  overflow:hidden;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
 }
 
 .wall-question-index {
@@ -41,13 +51,23 @@
 
 .wall-rightMenuAddTaskPanel {
   width: 100%;
-  height: 250px;
+  height: 270px;
   min-height: 250px;
-  margin-top: 20px;
+  padding: 20px 8px 8px 8px !important;
 }
 
 .wall-rightMenuAddTaskPanel md-input-container {
-  background-color: $color-white;
+  background-color: $color-white !important;
+  margin: 0px 8px 20px 8px !important;
+  max-height: 80px !important;
+}
+
+.wall-rightMenuAddTaskPanel md-input-container textarea {
+  max-height: 80px !important;
+}
+
+.wall-rightMenuAddTaskPanel span {
+  margin-left: 8px !important;
 }
 
 .wall-powerOffButton,
@@ -88,6 +108,10 @@
 
 .wall-joinRow3 {
   font-size: 1.7em;
+}
+
+.wall-toolbarText {
+  margin-left: 14px;
 }
 
 

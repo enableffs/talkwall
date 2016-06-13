@@ -1,0 +1,35 @@
+@import "../../../scss/colors";
+
+.task-showControlButton {
+  width: 40px !important;
+  height: 40px !important;
+  max-width: 40px !important;
+  min-width: 40px !important;
+  max-height: 40px !important;
+}
+
+.task-textMargin {
+  margin-left: 10px !important;
+}
+
+.task-close {
+  background-color: $color-white !important;
+}
+
+.task-messageBody {
+  margin: 5px;
+}
+
+.task-messageControl {
+  background-color: $color-grey;
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+}
+
+.task-wordWrap {
+  width: 100%;
+  overflow: hidden;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
