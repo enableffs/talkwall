@@ -36,7 +36,6 @@ module TalkwallApp {
         showControls: boolean;
 
         constructor(label: string) {
-            this._id = '';
             this.label = label;
             this.messages = [];
             this.showControls = false;
@@ -75,10 +74,8 @@ module TalkwallApp {
     // Class used to send and respond with status & message updates through polling
     export class PollUpdate {
         status: {
-            commands_to_server: {
-                teacher_question_id: string;     // set to '' for no change
-                wall_closed: boolean;             // set to false for no change
-            },
+            last_update: number;
+            teacher_question_id: string;
             connected_nicknames: Array<string>;
         };
         messages: Array<Message>;
@@ -86,10 +83,8 @@ module TalkwallApp {
         // set status to PollUpdate('', false) to prevent any status update on server
         constructor(question_id, close_wall) {
             this.status = {
-                commands_to_server : {
-                    teacher_question_id: question_id,
-                    wall_closed: close_wall
-                },
+                last_update: Date.now(),
+                teacher_question_id: question_id,
                 connected_nicknames: [],
             };
             this.messages = [];

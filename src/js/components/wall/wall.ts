@@ -60,9 +60,8 @@ module TalkwallApp {
 			if (this.dataService.getWall() === null) {
 				this.$window.location.href = this.urlService.getHost() + '/#/';
 			} else {
-	            if (this.dataService.getWall().questions.length > 0) {
-	                this.setQuestion(0);    // Select first question, no previous question
-	            }
+				var question_index = this.dataService.getWall().questions.length > 0 ? 0 : -1;
+				this.setQuestion(question_index);
 				if (this.dataService.userIsAuthorised()) {
 	                this.rightMenu2 = true;
 	                this.$mdSidenav('right').open();

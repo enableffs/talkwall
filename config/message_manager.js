@@ -13,35 +13,25 @@ var Mm = function() {
 /**
  * Add additional users to the manager
  *
- * 'status' area reflects the 'present state'
- *      e.g. which question ID the client should be on after this poll
- *      e.g. the client nicknames currently connected to this question
+ * 'status' area reflects the last update Date made by teacher, teacher's current question, and the connected users
  *
- *      commands_to_server {
- *          wall_closed: boolean,
- *          force_change_question: boolean,
- *          change_to_question_id: question_id
- *      }
- *
- * 'messages' area reflects 'changed messages'
+ * 'messages' area reflects 'changed messages' for every nickname except the one making the change
  *
  * @param {string} wall_id
- * @param {string} question_id (can be null)
+ * @param {string} question_id (can be 'none')
  * @param {string} nickname
  */
 Mm.prototype.addUser = function(wall_id, question_id, nickname) {
 
-    // If question_id === null, add this nickname to the wall's connected_nicknames
-    // If question_id !== null, also add this nickname to the question's polling 'messages' list
+    // If question_id === 'none', add this nickname to the wall's connected_nicknames
+    // If question_id !== 'none', also add this nickname to the question's polling 'messages' list
 
     // Create the wall reference first, if not already there and set up content
     if (!this.data.hasOwnProperty(wall_id)) {
         this.data[wall_id] = {
             status: {
-                commands_to_server : {
-                    wall_closed: false,
-                    teacher_question_id: ''
-                },
+                last_update: Date.now(),
+                teacher_question_id: 'none',
                 connected_nicknames: []
             },
             messages: {}
@@ -52,8 +42,8 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
         this.data[wall_id].status['connected_nicknames'].push(nickname);
     }
 
-    // Create a message list for this user, if they are beginning to poll
-    if (question_id !== "") {
+    // Create a message list for this user for a particular question
+    if (question_id !== 'none') {
         // Create the question reference, if not already there
         if (!this.data[wall_id].messages.hasOwnProperty(question_id)) {
             this.data[wall_id].messages[question_id] = {};
@@ -63,13 +53,13 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
 };
 
 /**
- * Remove users from a question
+ * Remove user from a question
  *
  * @param {string} wall_id
  * @param {string} question_id
  * @param {Array} nickname
  */
-Mm.prototype.removeUser = function(wall_id, question_id, nickname) {
+Mm.prototype.removeFromQuestion = function(wall_id, question_id, nickname) {
     // Remove this nickname from the question's polling 'messages' list
     if( typeof this.data[wall_id] !== 'undefined' &&
         typeof this.data[wall_id].messages[question_id][nickname] !== 'undefined') {
@@ -78,7 +68,7 @@ Mm.prototype.removeUser = function(wall_id, question_id, nickname) {
 };
 
 /**
- * Remove users from the wall entirely
+ * Remove user from a wall
  *
  * @param {string} wall_id
  * @param {Array} nickname
@@ -100,16 +90,16 @@ Mm.prototype.removeAllFromWall = function(wall_id) {
 };
 
 /**
- * Update a question's status and message called from a particular user
+ * Update a question's status and messages
  * Only an authorised user should send a status update
  *
  * @param {string} wall_id
- * @param {string} question_id
+ * @param {string} question_id                      question_id can be 'none' if the teacher has not changed questions
  * @param {string} nickname                         the particular calling user
  * @param {Array<Message>} edited_messages          the message objects edited by the calling user
- * @param {Object} status                           any change to the present status
+ * @param {boolean} status_update                   wall status has changed (true | false).
  */
-Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_messages, status) {
+Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_messages, status_update) {
 
     // Make note of my changes in other users' lists on the same question
     if (edited_messages !== null && edited_messages.length > 0) {
@@ -123,15 +113,12 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
         }
     }
 
-    // Opportunity to set status values.
-    if (status !== null) {
-        if (status.commands_to_server.teacher_question_id !== "") {
-            this.data[wall_id]['status'].commands_to_server.teacher_question_id = status.commands_to_server.teacher_question_id;
+    // Opportunity to set status
+    if (status_update) {
+        if(question_id !== 'none') {
+            this.data[wall_id]['status'].teacher_question_id = question_id;
         }
-        this.data[wall_id]['status'].commands_to_server.wall_closed = status.commands_to_server.wall_closed;
-        if (status.commands_to_server.wall_closed) {
-            this.data[wall_id].status.connected_nicknames = [];
-        }
+        this.data[wall_id]['status'].last_update = Date.now();
     }
 };
 
@@ -140,21 +127,23 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
  * Return any updates made by other users
  *
  * @param {string} wall_id
- * @param {string} question_id
+ * @param {string} question_id           can be 'none' if requesting only status
  * @param {string} nickname              the particular calling user's nickname
  */
 Mm.prototype.getUpdate = function(wall_id, question_id, nickname) {
 
+    var messages = [];
+    if(question_id !== 'none') {
+        messages = this.data[wall_id].messages[question_id][nickname];
+        // Reset my own update data
+        this.data[wall_id].messages[question_id][nickname] = [];
+    }
+
     // Reference to my pending updates and any change to status
-    var my_update = {
-        messages: this.data[wall_id].messages[question_id][nickname],
+    return {
+        messages: messages,
         status: this.data[wall_id]['status']
-    };
-
-    // Reset my own update data
-    this.data[wall_id].messages[question_id][nickname] = [];
-
-    return my_update;
+    }
 };
 
 exports.mm = new Mm();

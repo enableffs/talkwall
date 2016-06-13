@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
-var Question = require('./question');
-var QuestionSchema = Question.schema;
+var Message = require('./message');
+var Question = require('./question').schema;
 var Schema = mongoose.Schema;
 
 // define the schema for our message model
@@ -10,16 +10,18 @@ var wallSchema = Schema({
     createdAt:      { type: Date, default: Date.now },
     createdBy:      { type: Schema.Types.ObjectId, ref: 'User', default: null },
     closed:         { type: Boolean, default: false },
-    questions:      [QuestionSchema]
+    questions:      [Question]
 });
 
 wallSchema.pre('remove', function(next) {
-    Question.find({ _id: { $in: this.questions } }).exec(function(error, questions) {
-        questions.forEach(function(q) {
-            q.remove();
+
+    for(var i=0; i< this.questions.length; i++) {
+        Message.remove({ _id: { $in: this.questions[i].messages } }).exec(function(error, result) {
         });
-        next();
-    });
+    }
+    next();
+
+
 });
 
 module.exports = mongoose.model('Wall', wallSchema);

@@ -81,7 +81,7 @@ exports.StatusMessages = {
         message: 'Model delete error'
     },
     PIN_DOES_NOT_EXIST: {
-        status: 400,
+        status: 204,
         message: 'Pin code does not exist'
     },
     PIN_RETRIEVAL_ERROR: {
