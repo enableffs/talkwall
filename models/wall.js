@@ -8,7 +8,8 @@ var wallSchema = Schema({
     pin:            { type: String },
     label:          { type: String },
     createdAt:      { type: Date, default: Date.now },
-    createdBy:      { type: Schema.Types.ObjectId, ref: 'User', default: null},
+    createdBy:      { type: Schema.Types.ObjectId, ref: 'User', default: null },
+    closed:         { type: Boolean, default: false },
     questions:      [QuestionSchema]
 });
 

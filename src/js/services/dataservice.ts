@@ -3,6 +3,7 @@
 /// <reference path="authenticationservice.ts"/>
 /// <reference path="utilityservice.ts"/>
 /// <reference path="urlservice.ts"/>
+/// <reference path="../components/close/close.ts"/>
 /// <reference path="../models/models.ts"/>
 
 module TalkwallApp {
@@ -80,7 +81,7 @@ module TalkwallApp {
          * get current nickname
          * @return the current nickname
          */
-        setQuestion(questionIndex: number, sFunc: () => void, eFunc: (error: {}) => void): void;
+        setQuestion(newQuestionIndex: number, sFunc: () => void, eFunc: (error: {}) => void): void;
         /**
          * get current nickname
          * @return the current nickname
@@ -98,7 +99,15 @@ module TalkwallApp {
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        addQuestion(label: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        addQuestion(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * retrieve the editable question object
+         */
+        getQuestionToEdit(): Question;
+        /**
+         * set a question as the editable question object
+         */
+        setQuestionToEdit(question: Question);
         /**
          * post new message to the feed
          * @param sFunc success callback
@@ -111,6 +120,10 @@ module TalkwallApp {
          * @param eFunc error callback
          */
         updateMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * Force all connected clients to change to this question id
+         */
+        updateWall(status: PollUpdate, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
          * get all current messages on the feed for this question
          */
@@ -142,14 +155,18 @@ module TalkwallApp {
          * pause the polling timer
          */
         stopPolling(): void;
+
+
     }
 
     export class DataService implements IDataService {
-        static $inject = ['$http', '$window', '$routeParams', '$location', '$interval', 'UtilityService', 'URLService', '$mdMedia'];
+        static $inject = ['$http', '$window', '$routeParams', '$location', '$interval', '$mdDialog', 'UtilityService',
+            'URLService', '$mdMedia'];
         private user: User = null;
         private wall: Wall = null;
         private question: Question = null;
         private messageToEdit: Message = new Message();
+        private questionToEdit: Question = new Question('');
         private phoneMode: boolean = false;
 
         private timerHandle;
@@ -157,19 +174,26 @@ module TalkwallApp {
         //for dev only
         private studentNickname: string = null;
         private participants: Array<string> = [];
+        private mytTeachersQuestionID: string = '';
         private boardDivSize: {};
         private userAuthorised = false;
+        private customFullscreen;
+        private currentQuestionIndex: number = 0;
+
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
                      private $routeParams: IRouteParamsService,
                      private $location: ILocationService,
                      private $interval: ng.IIntervalService,
+                     private $mdDialog: angular.material.IDialogService,
                      private utilityService: UtilityService,
                      private urlService: IURLService,
                      private $mdMedia: IMedia) {
+            this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
             console.log('--> DataService started ...');
         }
+
 
         // Remove token string from the address bar. Then, if authorised, get the user model and the most recent wall
         // Otherwise, follow on back to where we came from..
@@ -223,7 +247,7 @@ module TalkwallApp {
                 });
         }
 
-
+        // For authorised users only
         requestWall(wallId, successCallbackFn, errorCallbackFn): void {
             //return the previous wall with a the existing PIN from REDIS (if expired return true)
             this.$http.get(this.urlService.getHost() + '/wall/' + wallId)
@@ -241,6 +265,7 @@ module TalkwallApp {
                 });
         }
 
+        // For authorised users only
         createWall(successCallbackFn, errorCallbackFn): void {
             this.$http.post(this.urlService.getHost() + '/wall', {label: "New Wall: " + new Date().toDateString()})
                 .success((data) => {
@@ -259,6 +284,7 @@ module TalkwallApp {
                 });
         }
 
+        // For non-authorised users
         joinWall(joinModel, successCallbackFn, errorCallbackFn): void {
             this.$http.get(this.urlService.getHost() + '/join/' + joinModel.nickname + '/' + joinModel.pin)
                 .success((data) => {
@@ -287,6 +313,10 @@ module TalkwallApp {
             return this.messageToEdit;
         }
 
+        getCurrentQuestionIndex(): number {
+            return this.currentQuestionIndex;
+        }
+
         userIsAuthorised(): boolean {
             return this.userAuthorised;
         }
@@ -299,23 +329,29 @@ module TalkwallApp {
             return this.question;
         }
 
-        // If we are changing questions, set the polling params correctly
-        setQuestion(questionIndex, successCallbackFn, errorCallbackFn): void {
+        // If we are changing questions, or a new question, set the polling params correctly. Input new question index.
+        setQuestion(newIndex, successCallbackFn, errorCallbackFn): void {
             var previous_question_id = 'none', control = 'none';
+            this.currentQuestionIndex = newIndex;
 
             // If true, we are changing questions
-            if (this.question !== null && this.wall.questions.indexOf(this.question) !== questionIndex) {
+            if (this.question !== null && this.wall.questions.indexOf(this.question) !== this.currentQuestionIndex) {
                 previous_question_id = this.question._id;
                 control = 'change';
             } else if (this.question === null) {  // If true, this is the first time we started polling on the wall
                 control = 'new';
             }   // Otherwise, we continue to poll the same question
 
-            this.question = <IQuestion>this.wall.questions[questionIndex];
+            this.question = this.wall.questions[this.currentQuestionIndex];
 
             // Get the whole list of existing messages if we are 'new' or 'changing'
+            // Enforce a change of question if we are the teacher
             if (control !== 'none') {
                 this.getMessages();
+                if (this.userAuthorised) {
+                    var status = new PollUpdate(this.question._id, false);
+                    this.updateWall(status, null, null);
+                }
             }
             this.stopPolling();
             this.startPolling(previous_question_id, control);
@@ -324,12 +360,35 @@ module TalkwallApp {
             }
         }
 
+        closeWallNow(): void {
+            var status = new PollUpdate('', true);
+            this.updateWall(status, null, null);
+        }
+
         getNickname(): string {
             if (this.userAuthorised) {
                 return this.user.nickname;
             } else {
                 return this.studentNickname;
             }
+        }
+
+        updateWall(pollupdate: PollUpdate, successCallbackFn, errorCallbackFn): void {
+            this.$http.put(this.urlService.getHost() + '/wall', {
+                    wall: this.wall,
+                    pollupdate: pollupdate
+                })
+                .success(() => {
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn();
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService: getQuestion failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
         }
 
         // Set previousQuestionIndex if we are changing questions. Else set it to -1
@@ -350,26 +409,39 @@ module TalkwallApp {
                     });
         }
 
+        getQuestionToEdit(): Question {
+            return this.questionToEdit;
+        }
+
+        setQuestionToEdit(question: Question) {
+            this.questionToEdit = question;
+        }
+
         //generate a new question on server with _id and returns it
-        addQuestion(label, successCallbackFn, errorCallbackFn): void {
-            var question = new Question(label);
-            this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.wall._id, question: question})
-                .success((data) => {
-                    let resultKey = 'result';
-                    question.createdAt = data[resultKey].createdAt;
-                    question._id = data[resultKey]._id;
-                    this.wall.questions.push(question);
-                    this.question = question;
-                    if (typeof successCallbackFn === "function") {
-                        successCallbackFn(question);
-                    }
-                })
-                .catch((error) => {
-                    console.log('--> DataService: getQuestion failure: ' + error);
-                    if (typeof errorCallbackFn === "function") {
-                        errorCallbackFn({status: error.status, message: error.message});
-                    }
-                });
+        addQuestion(successCallbackFn, errorCallbackFn): void {
+            if (this.questionToEdit._id === '') {
+                //create a new question based on 
+                this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.wall._id, question: this.questionToEdit})
+                    .success((data) => {
+                        let resultKey = 'result';
+                        this.wall.questions.push(data[resultKey]);
+                        //this.question = question;
+                        if (typeof successCallbackFn === "function") {
+                            successCallbackFn();
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('--> DataService: getQuestion failure: ' + error);
+                        if (typeof errorCallbackFn === "function") {
+                            errorCallbackFn({status: error.status, message: error.message});
+                        }
+                    });
+            } else {
+                //this is an update do the server business....
+                console.log('updating the question');
+                this.questionToEdit.showControls = false;
+                successCallbackFn();
+            }
         }
 
         //generate a new message on server with _id and returns it
@@ -379,7 +451,7 @@ module TalkwallApp {
                 errorCallbackFn({status: '400', message: "message is not defined"});
             }
             this.messageToEdit.creator = this.getNickname();
-            this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: this.messageToEdit._id});
+            this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: null});
             this.messageToEdit.edits.push({date: this.messageToEdit.createdAt, text: this.messageToEdit.text});
             this.messageToEdit.question_id = this.question._id;
 
@@ -469,10 +541,11 @@ module TalkwallApp {
         }
 
         //  Run the polling timer
-        // 'previous_question_id' can be an empty string if not changing questions
+        // 'previous_question_id' can be 'none' if not changing questions
         // 'control' this is a regular poll 'none', the first poll 'new', or we are changing questions 'change'
         startPolling(previous_question_id: string, control: string) {
             // Don't allow more than one timer
+            var handle = this;
             if ( angular.isDefined(this.timerHandle) ) {
                 return;
             }
@@ -481,8 +554,8 @@ module TalkwallApp {
             this.requestPoll(previous_question_id, control, (success) => {
 
                 // Begin further requests at time intervals
-                this.timerHandle = this.$interval(() => {
-                    this.requestPoll('none', 'none', null, null);
+                handle.timerHandle = handle.$interval(() => {
+                    handle.requestPoll('none', 'none', null, null);
                 }, 5000);
 
             }, null);
@@ -504,9 +577,23 @@ module TalkwallApp {
 
             // Update participant list
             this.participants = pollUpdateObject.status.connected_nicknames;
-            // Change questions if directed by the update
-            if (pollUpdateObject.status.select_question_id !== this.question._id) {
-                this.setQuestion(this.wall.getQuestionIndexById(pollUpdateObject.status.select_question_id), null, null);
+
+            // Run on client connections only - receive status updates from teacher
+            if (!this.userAuthorised) {
+                // Change questions if directed by the teacher
+                if (pollUpdateObject.status.commands_to_server.teacher_question_id !== this.mytTeachersQuestionID) {
+                    this.mytTeachersQuestionID = pollUpdateObject.status.commands_to_server.teacher_question_id;
+                    this.setQuestion(this.utilityService.getQuestionIndexFromWallById(
+                        this.mytTeachersQuestionID, this.wall), null, null);
+                }
+
+                // Close wall if closed by teacher
+                if (pollUpdateObject.status.commands_to_server.wall_closed) {
+                    this.stopPolling();
+                    this.wall.pin = '0000';
+                    this.wall.closed = true;
+                    this.showClosingDialog();
+                }
             }
 
             // Message updates
@@ -520,6 +607,25 @@ module TalkwallApp {
                     this.question.messages.push(updated_message);
                 }
             });
+        }
+
+        showClosingDialog() : void {
+            //detects if the device is small
+            var useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+            //show the dialog
+            this.$mdDialog.show({
+                    controller: CloseController,
+                    controllerAs: 'closeC',
+                    templateUrl: 'js/components/close/close.html',
+                    parent: angular.element(document.body),
+                    clickOutsideToClose: true
+                })
+                .then(function() {
+                    console.log('--> ClosingController: answered');
+                }, function() {
+                    //dialog dismissed
+                    console.log('--> LandingController: dismissed');
+                });
         }
     }
 }

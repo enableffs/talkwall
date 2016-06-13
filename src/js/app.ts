@@ -54,6 +54,7 @@ module TalkwallApp {
         .directive('task', Task)
         .controller('LoginController', LoginController)
         .controller('JoinController', JoinController)
+        .controller('CloseController', CloseController)
         .controller('LandingController', LandingController)
         .controller('WallController', WallController)
         .controller('EditMessageController', EditMessageController)

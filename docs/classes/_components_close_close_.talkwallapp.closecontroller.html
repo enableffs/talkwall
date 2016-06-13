@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ITokenInterceptor | Talkwall client</title>
+	<title>CloseController | Talkwall client</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -57,16 +57,16 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_services_tokenservice_.html">&quot;services/tokenservice&quot;</a>
+					<a href="../modules/_components_close_close_.html">&quot;components/close/close&quot;</a>
 				</li>
 				<li>
-					<a href="../modules/_services_tokenservice_.talkwallapp.html">TalkwallApp</a>
+					<a href="../modules/_components_close_close_.talkwallapp.html">TalkwallApp</a>
 				</li>
 				<li>
-					<a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html">ITokenInterceptor</a>
+					<a href="_components_close_close_.talkwallapp.closecontroller.html">CloseController</a>
 				</li>
 			</ul>
-			<h1>Interface ITokenInterceptor</h1>
+			<h1>Class CloseController</h1>
 		</div>
 	</div>
 </header>
@@ -77,14 +77,8 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ITokenInterceptor</span>
+						<span class="target">CloseController</span>
 					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel">
-				<h3>Implemented by</h3>
-				<ul class="tsd-hierarchy">
-					<li><a href="../classes/_services_tokenservice_.talkwallapp.tokeninterceptor.html" class="tsd-signature-type">TokenInterceptor</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -92,108 +86,170 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_components_close_close_.talkwallapp.closecontroller.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_close_close_.talkwallapp.closecontroller.html#_mddialog" class="tsd-kind-icon">$md<wbr>Dialog</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="_components_close_close_.talkwallapp.closecontroller.html#_inject" class="tsd-kind-icon">$inject</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html#request" class="tsd-kind-icon">request</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html#requesterror" class="tsd-kind-icon">request<wbr>Error</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html#response" class="tsd-kind-icon">response</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html#responseerror" class="tsd-kind-icon">response<wbr>Error</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_components_close_close_.talkwallapp.closecontroller.html#answer" class="tsd-kind-icon">answer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_components_close_close_.talkwallapp.closecontroller.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_components_close_close_.talkwallapp.closecontroller.html#hide" class="tsd-kind-icon">hide</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Close<wbr>Controller<span class="tsd-signature-symbol">(</span>$mdDialog<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IDialogService</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_components_close_close_.talkwallapp.closecontroller.html" class="tsd-signature-type">CloseController</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/close/close.ts#L8">components/close/close.ts:8</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>$mdDialog: <span class="tsd-signature-type">IDialogService</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_components_close_close_.talkwallapp.closecontroller.html" class="tsd-signature-type">CloseController</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_mddialog" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> $md<wbr>Dialog</h3>
+					<div class="tsd-signature tsd-kind-icon">$md<wbr>Dialog<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">IDialogService</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/close/close.ts#L11">components/close/close.ts:11</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
+					<a name="_inject" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> $inject</h3>
+					<div class="tsd-signature tsd-kind-icon">$inject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/close/close.ts#L8">components/close/close.ts:8</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="request" class="tsd-anchor"></a>
-					<h3>request</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">request<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IRequestConfig</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IRequestConfig</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="answer" class="tsd-anchor"></a>
+					<h3>answer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">answer<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/tokenservice.ts#L8">services/tokenservice.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/close/close.ts#L35">components/close/close.ts:35</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>config: <span class="tsd-signature-type">ng.IRequestConfig</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ng.IRequestConfig</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>answer this dialog</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>aparam</dt>
+									<dd><p>answer aa a string</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="requesterror" class="tsd-anchor"></a>
-					<h3>request<wbr>Error</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">request<wbr>Error<span class="tsd-signature-symbol">(</span>rejection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IHttpPromiseCallbackArg</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IHttpPromiseCallbackArg</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cancel" class="tsd-anchor"></a>
+					<h3>cancel</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/tokenservice.ts#L9">services/tokenservice.ts:9</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/close/close.ts#L27">components/close/close.ts:27</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>cancel this dialog (see angular.material.IDialogService)</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>aparam</dt>
+									<dd><p>response a possible reponse</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>rejection: <span class="tsd-signature-type">ng.IHttpPromiseCallbackArg</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> response: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ng.IHttpPromiseCallbackArg</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="response" class="tsd-anchor"></a>
-					<h3>response</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">response<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IPromise</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IPromise</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="hide" class="tsd-anchor"></a>
+					<h3>hide</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">hide<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/tokenservice.ts#L10">services/tokenservice.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/close/close.ts#L19">components/close/close.ts:19</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>hide this dialog (see angular.material.IDialogService)</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>aparam</dt>
+									<dd><p>response a possible reponse</p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>response: <span class="tsd-signature-type">ng.IPromise</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> response: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ng.IPromise</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="responseerror" class="tsd-anchor"></a>
-					<h3>response<wbr>Error</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">response<wbr>Error<span class="tsd-signature-symbol">(</span>rejection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IHttpPromiseCallbackArg</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IHttpPromiseCallbackArg</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/tokenservice.ts#L11">services/tokenservice.ts:11</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>rejection: <span class="tsd-signature-type">ng.IHttpPromiseCallbackArg</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ng.IHttpPromiseCallbackArg</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -217,8 +273,13 @@
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_app_run_.html">"app.run"</a>
 					</li>
-					<li class=" tsd-kind-external-module">
+					<li class="current tsd-kind-external-module">
 						<a href="../modules/_components_close_close_.html">"components/close/close"</a>
+						<ul>
+							<li class="current tsd-kind-module tsd-parent-kind-external-module tsd-is-not-exported">
+								<a href="../modules/_components_close_close_.talkwallapp.html">Talkwall<wbr>App</a>
+							</li>
+						</ul>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_components_editmessagepanel_editmessagepanel_.html">"components/edit<wbr>Message<wbr>Panel/edit<wbr>Message<wbr>Panel"</a>
@@ -256,13 +317,8 @@
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_services_dataservice_.html">"services/dataservice"</a>
 					</li>
-					<li class="current tsd-kind-external-module">
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_services_tokenservice_.html">"services/tokenservice"</a>
-						<ul>
-							<li class="current tsd-kind-module tsd-parent-kind-external-module tsd-is-not-exported">
-								<a href="../modules/_services_tokenservice_.talkwallapp.html">Talkwall<wbr>App</a>
-							</li>
-						</ul>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="../modules/_services_urlservice_.html">"services/urlservice"</a>
@@ -274,25 +330,28 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="../classes/_services_tokenservice_.talkwallapp.tokeninterceptor.html" class="tsd-kind-icon">Token<wbr>Interceptor</a>
-					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html" class="tsd-kind-icon">IToken<wbr>Interceptor</a>
+					<li class="current tsd-kind-class tsd-parent-kind-module">
+						<a href="_components_close_close_.talkwallapp.closecontroller.html" class="tsd-kind-icon">Close<wbr>Controller</a>
 						<ul>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html#request" class="tsd-kind-icon">request</a>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="_components_close_close_.talkwallapp.closecontroller.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html#requesterror" class="tsd-kind-icon">request<wbr>Error</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_components_close_close_.talkwallapp.closecontroller.html#_mddialog" class="tsd-kind-icon">$md<wbr>Dialog</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html#response" class="tsd-kind-icon">response</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
+								<a href="_components_close_close_.talkwallapp.closecontroller.html#_inject" class="tsd-kind-icon">$inject</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_services_tokenservice_.talkwallapp.itokeninterceptor.html#responseerror" class="tsd-kind-icon">response<wbr>Error</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_components_close_close_.talkwallapp.closecontroller.html#answer" class="tsd-kind-icon">answer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_components_close_close_.talkwallapp.closecontroller.html#cancel" class="tsd-kind-icon">cancel</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_components_close_close_.talkwallapp.closecontroller.html#hide" class="tsd-kind-icon">hide</a>
 							</li>
 						</ul>
 					</li>

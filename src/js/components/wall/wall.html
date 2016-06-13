@@ -11,21 +11,21 @@
 				</md-button>
 			</div>
 			<div hide-xs hide-sm flex="grow" class="wall-question" layout="row" layout-align="center center">
-				<div layout layout-align="start center" ng-if="wallC.currentQuestionIndex > 0" ng-click="wallC.setQuestion(wallC.currentQuestionIndex-1)">
+				<div layout layout-align="start center" ng-show="wallC.dataService.getCurrentQuestionIndex() > 0" ng-click="wallC.setQuestion(wallC.dataService.getCurrentQuestionIndex()-1)">
 					<md-button class="md-icon-button" role="button">
 						<md-icon md-svg-src="images/ic_arrow_back_orange_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
 				</div>
 				<div flex="grow" layout layout-align="center center" flex="grow">
 					<div layout="row" ng-if="wallC.dataService.getQuestion() !== null" layout-align="center center">
-						<div class="wall-question-index" layout layout-align="center center">{{ wallC.currentQuestionIndex + 1}}</div>
+						<div class="wall-question-index" layout layout-align="center center">{{ wallC.dataService.getCurrentQuestionIndex() + 1}}</div>
 						<div>{{wallC.dataService.getQuestion().label}}</div>
 					</div>
 					<div layout="row" ng-if="wallC.dataService.getQuestion() === null" layout-align="center center">
 						No question available
 					</div>
 				</div>
-				<div layout layout-align="end center" ng-if="wallC.currentQuestionIndex < (wallC.dataService.getWall().questions.length - 1)" ng-click="wallC.setQuestion(wallC.currentQuestionIndex+1)">
+				<div layout layout-align="end center" ng-show="wallC.dataService.getCurrentQuestionIndex() < (wallC.dataService.getWall().questions.length - 1)" ng-click="wallC.setQuestion(wallC.dataService.getCurrentQuestionIndex()+1)">
 					<md-button class="md-icon-button" role="button">
 						<md-icon md-svg-src="images/ic_arrow_forward_orange_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
@@ -34,19 +34,19 @@
 			<div hide-gt-sm flex="grow" class="wall-question" layout="row" layout-align="center center">
 				<div flex="grow" layout layout-align="start center" flex="grow">
 					<div layout="row" ng-if="wallC.dataService.getQuestion() !== null" layout-align="center center">
-						<div class="wall-question-index" layout layout-align="center center">{{ wallC.currentQuestionIndex + 1}}</div>
+						<div class="wall-question-index" layout layout-align="center center">{{ wallC.dataService.getCurrentQuestionIndex() + 1}}</div>
 						<div>{{wallC.dataService.getQuestion().label}}</div>
 					</div>
 					<div layout="row" ng-if="wallC.dataService.getQuestion() === null" layout-align="center center">
 						No question available
 					</div>
 				</div>
-				<div layout layout-align="start center" ng-if="wallC.currentQuestionIndex > 0" ng-click="wallC.setQuestion(wallC.currentQuestionIndex-1)">
+				<div layout layout-align="start center" ng-if="wallC.dataService.getCurrentQuestionIndex() > 0" ng-click="wallC.setQuestion(wallC.dataService.getCurrentQuestionIndex()-1)">
 					<md-button class="md-icon-button" role="button">
 						<md-icon md-svg-src="images/ic_arrow_back_orange_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
 				</div>
-				<div layout layout-align="end center" ng-if="wallC.currentQuestionIndex < (wallC.dataService.getWall().questions.length - 1)" ng-click="wallC.setQuestion(wallC.currentQuestionIndex+1)">
+				<div layout layout-align="end center" ng-if="wallC.dataService.getCurrentQuestionIndex() < (wallC.dataService.getWall().questions.length - 1)" ng-click="wallC.setQuestion(wallC.dataService.getCurrentQuestionIndex()+1)">
 					<md-button class="md-icon-button" role="button">
 						<md-icon md-svg-src="images/ic_arrow_forward_orange_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
@@ -151,7 +151,7 @@
 					<div ng-if="wallC.rightMenu2" layout="column" class="wall-rightMenuAddTaskPanel">
 						<md-input-container class="md-block">
 							<label>Add task</label>
-							<textarea ng-model="wallC.newQuestionLabel" rows="5" md-select-on-focus></textarea>
+							<textarea ng-model="wallC.dataService.getQuestionToEdit().label" rows="5" md-select-on-focus></textarea>
 						</md-input-container>
 						<div layout="column">
 							<span>Background</span>
@@ -161,7 +161,10 @@
 								<md-button flex><img src="images/back033.png" aria-hidden="true" width="100%" /></md-button>
 								<md-button flex><img src="images/back044.png" aria-hidden="true" width="100%" /></md-button>
 							</div>
-							<md-button class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.newQuestionLabel === ''" ng-click="wallC.postNewQuestion()">Add</md-button>
+							<md-button class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.dataService.getQuestionToEdit().label === ''" ng-click="wallC.postQuestion()">
+								<span ng-if="wallC.dataService.getQuestionToEdit()._id === ''">Add</span>
+								<span ng-if="wallC.dataService.getQuestionToEdit()._id !== ''">Save</span>
+							</md-button>
 						</div>
 					</div>
 				</section>
@@ -177,7 +180,7 @@
 					</md-toolbar>
 					<md-content ng-if="wallC.rightMenu3">
 						<div layout="column" layout-padding>
-							<md-button class="md-raised wall-powerOffButton">
+							<md-button class="md-raised wall-powerOffButton" ng-click="wallC.closeWall()">
 								<md-icon md-svg-src="images/ic_power_settings_new_black_24px.svg" aria-hidden="true"></md-icon>
 							</md-button>
 						</div>

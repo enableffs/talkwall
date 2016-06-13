@@ -16,6 +16,13 @@ var Mm = function() {
  * 'status' area reflects the 'present state'
  *      e.g. which question ID the client should be on after this poll
  *      e.g. the client nicknames currently connected to this question
+ *
+ *      commands_to_server {
+ *          wall_closed: boolean,
+ *          force_change_question: boolean,
+ *          change_to_question_id: question_id
+ *      }
+ *
  * 'messages' area reflects 'changed messages'
  *
  * @param {string} wall_id
@@ -31,19 +38,23 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
     if (!this.data.hasOwnProperty(wall_id)) {
         this.data[wall_id] = {
             status: {
-                select_question_id: question_id,
+                commands_to_server : {
+                    wall_closed: false,
+                    teacher_question_id: ''
+                },
                 connected_nicknames: []
             },
             messages: {}
         };
     }
-    // Add the nickname if not already there
+    // Add the nickname to the connected users list, if not already there
     if (this.data[wall_id].status['connected_nicknames'].indexOf(nickname) === -1) {
         this.data[wall_id].status['connected_nicknames'].push(nickname);
     }
 
-    if(question_id !== "") {
-        // Create the question reference first, if not already there
+    // Create a message list for this user, if they are beginning to poll
+    if (question_id !== "") {
+        // Create the question reference, if not already there
         if (!this.data[wall_id].messages.hasOwnProperty(question_id)) {
             this.data[wall_id].messages[question_id] = {};
         }
@@ -90,6 +101,7 @@ Mm.prototype.removeAllFromWall = function(wall_id) {
 
 /**
  * Update a question's status and message called from a particular user
+ * Only an authorised user should send a status update
  *
  * @param {string} wall_id
  * @param {string} question_id
@@ -113,8 +125,12 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
 
     // Opportunity to set status values.
     if (status !== null) {
-        if (status.select_question_id !== "") {
-            this.data[wall_id]['status'].select_question_id = status.select_question_id;
+        if (status.commands_to_server.teacher_question_id !== "") {
+            this.data[wall_id]['status'].commands_to_server.teacher_question_id = status.commands_to_server.teacher_question_id;
+        }
+        this.data[wall_id]['status'].commands_to_server.wall_closed = status.commands_to_server.wall_closed;
+        if (status.commands_to_server.wall_closed) {
+            this.data[wall_id].status.connected_nicknames = [];
         }
     }
 };

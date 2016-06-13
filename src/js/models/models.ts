@@ -13,27 +13,12 @@ module TalkwallApp {
     export class Wall {
         _id: string;
         pin: string;
+        label: string;
         createdAt: Date;
+        createdBy: string;
+        closed: boolean;
         questions: Array<Question>;
 
-        // Return the Question for the given question ID
-        getQuestionById(id: string): Question {
-            this.questions.forEach(function(q) {
-                if (q._id === id) {
-                    return q;
-                }
-            });
-            return null;
-        }
-        // Return the index of the given question ID
-        getQuestionIndexById(id: string): number {
-            this.questions.forEach(function(q, index) {
-                if (q._id === id) {
-                    return index;
-                }
-            });
-            return -1;
-        }
     }
 
     export interface IQuestion {
@@ -41,8 +26,6 @@ module TalkwallApp {
         createdAt: Date;
         label: string;
         messages: Array<Message>;
-
-        getMessageById (id: string) : Message;
     }
 
     export class Question implements IQuestion {
@@ -50,21 +33,14 @@ module TalkwallApp {
         createdAt: Date;
         label: string;
         messages: Array<Message>;
+        showControls: boolean;
 
         constructor(label: string) {
+            this._id = '';
             this.label = label;
             this.messages = [];
+            this.showControls = false;
         }
-
-        // Return the Question for the given question ID
-        getMessageById (id: string) : Message {
-            this.messages.forEach(function(m) {
-                if (m._id === id) {
-                    return m;
-                }
-            });
-            return null;
-        };
     }
 
 
@@ -96,11 +72,27 @@ module TalkwallApp {
         }
     }
 
+    // Class used to send and respond with status & message updates through polling
     export class PollUpdate {
         status: {
-            select_question_id: string;
+            commands_to_server: {
+                teacher_question_id: string;     // set to '' for no change
+                wall_closed: boolean;             // set to false for no change
+            },
             connected_nicknames: Array<string>;
         };
         messages: Array<Message>;
+
+        // set status to PollUpdate('', false) to prevent any status update on server
+        constructor(question_id, close_wall) {
+            this.status = {
+                commands_to_server : {
+                    teacher_question_id: question_id,
+                    wall_closed: close_wall
+                },
+                connected_nicknames: [],
+            };
+            this.messages = [];
+        }
     }
 }

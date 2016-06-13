@@ -8,7 +8,6 @@ module TalkwallApp {
 		static $inject = ['$scope', 'DataService'];
 
 		private question: Question;
-		public showControls: boolean = false;
 
 		constructor(
 			private isolatedScope: TaskDirectiveScope,
@@ -29,6 +28,7 @@ module TalkwallApp {
 
 		editQuestion(): void {
 			console.log('--> TaskController edit');
+			this.dataService.setQuestionToEdit(this.question);
 		}
 	}
 
