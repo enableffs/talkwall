@@ -71,7 +71,9 @@ module TalkwallApp {
 			} else {
 	            if (this.dataService.getWall().questions.length > 0) {
 	                this.setQuestion(0);    // Select first question, no previous question
-	            }
+	            } else {
+                    this.setQuestion(-1);    // Start polling without a question, awaiting an update from teacher
+                }
 				if (this.dataService.userIsAuthorised()) {
 	                this.rightMenu2 = true;
 	                this.$mdSidenav('right').open();

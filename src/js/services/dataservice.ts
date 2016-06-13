@@ -169,7 +169,7 @@ module TalkwallApp {
         private boardDivSize: {};
         private userAuthorised = false;
         private customFullscreen;
-        private currentQuestionIndex: number = 0;
+        private currentQuestionIndex: number = -1;
 
 
         constructor (private $http: ng.IHttpService,
@@ -246,7 +246,8 @@ module TalkwallApp {
                     let resultKey = 'result';
                     this.wall = data[resultKey];
                     console.log('--> DataService: getWall success');
-                    this.setQuestion(0, successCallbackFn, errorCallbackFn);
+                    var question_index = this.wall.questions.length > 0 ? 0 : -1;
+                    this.setQuestion(question_index, successCallbackFn, errorCallbackFn);
                 })
                 .catch((error) => {
                     console.log('--> DataService: getWall failure: ' + error);
@@ -323,27 +324,37 @@ module TalkwallApp {
         // If we are changing questions, or a new question, set the polling params correctly. Input new question index.
         setQuestion(newIndex, successCallbackFn, errorCallbackFn): void {
             var previous_question_id = 'none', control = 'none';
-            this.currentQuestionIndex = newIndex;
 
             // If true, we are changing questions
-            if (this.question !== null && this.wall.questions.indexOf(this.question) !== this.currentQuestionIndex) {
+            if (this.question !== null && this.wall.questions.indexOf(this.question) !== newIndex) {
                 previous_question_id = this.question._id;
                 control = 'change';
-            } else if (this.question === null) {  // If true, this is the first time we started polling on the wall
-                control = 'new';
-            }   // Otherwise, we continue to poll the same question
 
-            this.question = this.wall.questions[this.currentQuestionIndex];
+            // If true, this is the first time we started polling on the wall
+            } else if (this.question === null) {
+                control = 'new';
+            }
+            // Otherwise, we will continue to poll the same question
+
+            // Now set the question if we have it available on the client.
+            // If not, we will poll anyway, until notification arrives from server of teacher moving to a question
+            if (newIndex !== -1) {
+                this.question = this.wall.questions[newIndex];
+                this.currentQuestionIndex = newIndex;
+            }
 
             // Get the whole list of existing messages if we are 'new' or 'changing'
             // Enforce a change of question if we are the teacher
             if (control !== 'none') {
-                this.getMessages();
+                if(this.question !== null) {
+                    this.getMessages();
+                }
                 if (this.userAuthorised) {
                     var status = new PollUpdate(this.question._id, false);
-                    this.updateWall(status, null, null);
+                    this.updateWall(null, null);
                 }
             }
+
             this.stopPolling();
             this.startPolling(previous_question_id, control);
             if (typeof successCallbackFn === "function") {
@@ -364,10 +375,9 @@ module TalkwallApp {
             }
         }
 
-        updateWall(pollupdate: PollUpdate, successCallbackFn, errorCallbackFn): void {
+        updateWall(successCallbackFn, errorCallbackFn): void {
             this.$http.put(this.urlService.getHost() + '/wall', {
-                    wall: this.wall,
-                    pollupdate: pollupdate
+                    wall: this.wall
                 })
                 .success(() => {
                     if (typeof successCallbackFn === "function") {
@@ -384,8 +394,12 @@ module TalkwallApp {
 
         // Set previousQuestionIndex if we are changing questions. Else set it to -1
         requestPoll(previousQuestionId, control, successCallbackFn, errorCallbackFn): void {
+            var question_id = 'none';
+            if (this.question !== null) {
+                question_id = this.question._id;
+            }
             this.$http.get(this.urlService.getHost() + '/poll/' + this.getNickname() + '/' + this.wall._id +
-                '/' + this.question._id + '/' + previousQuestionId + '/' + control)
+                '/' + question_id + '/' + previousQuestionId + '/' + control)
                     .success((data) => {
                         let resultKey = 'result';
                         this.processUpdatedMessages(data[resultKey]);
@@ -520,7 +534,7 @@ module TalkwallApp {
 
         //  Run the polling timer
         // 'previous_question_id' can be 'none' if not changing questions
-        // 'control' this is a regular poll 'none', the first poll 'new', or we are changing questions 'change'
+        // 'control' - 'none' is a regular poll, 'new' is the first poll, 'change' we are changing questions
         startPolling(previous_question_id: string, control: string) {
             // Don't allow more than one timer
             var handle = this;
@@ -558,11 +572,23 @@ module TalkwallApp {
 
             // Run on client connections only - receive status updates from teacher
             if (!this.userAuthorised) {
-                // Change questions if directed by the teacher
-                if (pollUpdateObject.status.commands_to_server.teacher_question_id !== this.mytTeachersQuestionID) {
-                    this.mytTeachersQuestionID = pollUpdateObject.status.commands_to_server.teacher_question_id;
-                    this.setQuestion(this.utilityService.getQuestionIndexFromWallById(
-                        this.mytTeachersQuestionID, this.wall), null, null);
+                // Change questions if directed by the teacher, or re-request the questions if updated by teacher
+                // Run this check also if there is no current question
+                var poll_teacher_question_id = pollUpdateObject.status.commands_to_server.teacher_question_id;
+                if (poll_teacher_question_id !== this.mytTeachersQuestionID || this.currentQuestionIndex === -1) {
+                    var question_index = this.utilityService.getQuestionIndexFromWallById(poll_teacher_question_id, this.wall);
+                    if (question_index !== -1) {
+                        this.mytTeachersQuestionID = poll_teacher_question_id;
+                        this.setQuestion(question_index, null, null);
+                    } else {     // Teacher has created a new question the client does not have!
+                                 // So refresh the wall and come back here to setQuestion()
+                        var joinModel = {
+                            nickname: this.getNickname(),
+                            pin: this.wall.pin
+                        };
+                        this.joinWall(joinModel, null, null);
+                        // The polling cycle will pick up the quesiton on next cycle
+                    }
                 }
 
                 // Close wall if closed by teacher

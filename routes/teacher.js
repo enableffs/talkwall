@@ -134,15 +134,10 @@ exports.createWall = function(req, res) {
  * @apiGroup authorised
  *
  * @apiSuccess {Wall} wall Updated wall object
- * status: {
- *              select_question_id: "",
- *              close_wall: false
- *          }
  */
 exports.updateWall = function(req, res) {
 
-    if (typeof req.body.wall === 'undefined' || req.body.wall == null
-        || typeof req.body.pollupdate === 'undefined' || req.body.pollupdate == null ){
+    if (typeof req.body.wall === 'undefined' || req.body.wall == null ) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
@@ -160,9 +155,10 @@ exports.updateWall = function(req, res) {
             if (req.body.pollupdate.status.commands_to_server.wall_closed) {       // Close this wall to clients by expiring the pin
                 redisClient.EXPIRE(wall.pin, 1);
                 wall.pin = '0000';
+                mm.removeAllFromWall(wall._id);
             }
             wall.save();
-            mm.putUpdate(wall._id, '', '', null, req.body.pollupdate.status);
+            mm.putUpdate(wall._id, '', '', null, true);
             return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
         }
@@ -321,6 +317,7 @@ exports.createQuestion = function(req, res) {
                     return res.status(common.StatusMessages.CREATE_ERROR.status).json({
                         message: common.StatusMessages.CREATE_ERROR.message, result: error});
                 } else {
+                    mm.putUpdate(wall._id, '', req.body.nickname, [message], false);
                     return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message, result: wall.questions[qindex]});
                 }

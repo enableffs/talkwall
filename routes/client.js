@@ -17,8 +17,10 @@ var Utilities = require('../config/utilities');
  * @apiGroup non-authorised
  *
  * @apiParam {String} wall_id ID of the wall to get
- * @apiParam {String} question_id ID of the question to get
+ * @apiParam {String} question_id ID of the question to get.
+ *                      Can be 'none' if we are only polling for status
  * @apiParam {String} previous_question_id ID of the previous question to assist removal from polling when changing question
+ *                      Can be 'none' if not changing questions.
  * @apiParam {String} nickname Connecting client's nickname
  * @apiParam {String} control type of poll ('new', 'change', 'poll')
  *
@@ -221,7 +223,7 @@ exports.createMessage = function(req, res) {
                 }
                 else {
                     // Update the message manager to notify other clients
-                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], null);
+                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], false);
 
                     // Update the question with this new message, and return
                     Wall.findOneAndUpdate({
