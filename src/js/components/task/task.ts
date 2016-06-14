@@ -4,14 +4,16 @@
 
 module TalkwallApp {
 	"use strict";
+	import IDialogService = angular.material.IDialogService;
 	class TaskController {
-		static $inject = ['$scope', 'DataService'];
+		static $inject = ['$scope', 'DataService', '$mdDialog'];
 
 		private question: Question;
 
 		constructor(
 			private isolatedScope: TaskDirectiveScope,
-			public dataService: DataService) {
+			public dataService: DataService,
+			private $mdDialog: IDialogService) {
 			this.question = isolatedScope.data;
 		};
 
@@ -22,9 +24,35 @@ module TalkwallApp {
 			console.log('--> TaskController activated');
 		}
 
-		deleteQuestion(): void {
+		deleteQuestion(ev): void {
 			console.log('--> TaskController delete');
-			this.dataService.deleteQuestion(this.question);
+			var handle = this;
+			this.dataService.deleteQuestion(this.question,
+				function(code) {
+					if (code === 401) {
+						handle.$mdDialog.show(
+							handle.$mdDialog.alert()
+								.clickOutsideToClose(true)
+								.title('Question not deleted')
+								.content('This question contains messages and cannot be deleted anymore.')
+								.ok('OK')
+						);
+					} else {
+						//200 => set question to 0
+						handle.dataService.setQuestion(0,
+							() => {
+								//success
+							},
+							function() {
+								//error
+							}
+						);
+					}
+				},
+				function(error) {
+					console.log('--> TaskController deleteQuestion error: ' + error);
+				}
+			);
 		}
 
 		editQuestion(): void {
