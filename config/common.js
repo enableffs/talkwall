@@ -44,6 +44,14 @@ exports.StatusMessages = {
         status: 400,
         message: 'Client connection error'
     },
+    CLIENT_DISCONNECT_SUCCESS: {
+        status: 200,
+        message: 'Client disconnection successful'
+    },
+    CLIENT_DISCONNECT_ERROR: {
+        status: 400,
+        message: 'Client disconnection error'
+    },
     PARAMETER_UNDEFINED_ERROR: {
         status: 400,
         message: 'Request parameter undefined'

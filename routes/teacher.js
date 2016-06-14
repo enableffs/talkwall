@@ -165,6 +165,36 @@ exports.updateWall = function(req, res) {
     })
 };
 
+
+/**
+* @api {get} /close Close a wall
+* @apiName closeWall
+* @apiGroup authorised
+*
+*/
+exports.closeWall = function(req, res) {
+
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null ) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+    var query = Wall.findOneAndUpdate({
+        _id : req.params.wall_id
+    }, {closed: true, pin: '0000'}, { new: true });
+
+    query.exec(function(error, wall) {
+        if(error) {
+            return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
+        } else {
+            redisClient.EXPIRE(wall.pin, 1);
+            mm.removeAllFromWall(wall._id);
+            return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                message: common.StatusMessages.UPDATE_SUCCESS.message});
+        }
+    })
+};
+
 /**
  * @api {get} /change Notify change of question
  * @apiName changeQuestion
@@ -173,13 +203,13 @@ exports.updateWall = function(req, res) {
  */
 exports.notifyChangeQuestion = function(req, res) {
 
-    if (typeof req.params.wallid === 'undefined' || req.params.wallid == null
-    || typeof req.params.questionid === 'undefined' || req.params.questionid == null) {
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
+    || typeof req.params.question_id === 'undefined' || req.params.question_id == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    mm.putUpdate(req.params.wallid, req.params.questionid, '', null, true);
+    mm.putUpdate(req.params.wall_id, req.params.question_id, '', null, true);
     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
         message: common.StatusMessages.UPDATE_SUCCESS.message});
 };

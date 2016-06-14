@@ -109,6 +109,7 @@ exports.clientWall = function(req, res) {
 exports.disconnectWall = function(req, res) {
 
     if (typeof req.params.pin === 'undefined' || req.params.pin == null
+        || typeof req.params.question_id === 'undefined' || req.params.question_id == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
@@ -124,14 +125,15 @@ exports.disconnectWall = function(req, res) {
 
             query.exec(function(error, wall) {
                 if(error) {
-                    return res.status(common.StatusMessages.GET_ERROR.status).json({
-                        message: common.StatusMessages.GET_ERROR.message, result: error});
+                    return res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
+                        message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error});
                 }
                 else {
                     // Remove nickname from the wall users list (message manager)
+                    mm.removeFromQuestion(req.params.wall_id, req.params.question_id, req.params.nickname);
                     mm.removeFromWall(req.params.wall_id, req.params.nickname);
-                    return res.status(common.StatusMessages.CLIENT_CONNECT_SUCCESS.status).json({
-                        message: common.StatusMessages.CLIENT_CONNECT_SUCCESS.message, result: wall});
+                    return res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+                        message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message, result: wall});
                 }
             });
         } else {        // Pin has expired or does not exist

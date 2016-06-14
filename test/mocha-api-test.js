@@ -388,6 +388,28 @@ describe('first client polls for new data again', function() {
     });
 });
 
+describe('second user disconnects from wall', function() {
+    it('should return update success status', function(done){
+        superagent.get(baseurl+'/disconnect/' + SECOND_CLIENT_NICKNAME + '/' + FIRST_WALL.pin + '/' + FIRST_WALL.questions[0]._id)
+            .end(function(e,res) {
+                expect(res.statusCode).to.eql(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status);
+                expect(res.body.message).to.eql(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message);
+                done();
+            });
+    });
+});
+
+describe('authorised user closes wall by dedicated route call', function() {
+    it('should return update success status', function(done){
+        superagent.get(baseurl+'/close/' + FIRST_WALL._id)
+            .set('Authorization', 'Bearer '+ TEACHER_TOKEN)
+            .end(function(e,res) {
+                expect(res.statusCode).to.eql(common.StatusMessages.UPDATE_SUCCESS.status);
+                expect(res.body.message).to.eql(common.StatusMessages.UPDATE_SUCCESS.message);
+                done();
+            });
+    });
+});
 
 /*  ===============    CLEANUP    =============== */
 
