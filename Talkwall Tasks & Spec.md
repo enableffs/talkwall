@@ -279,7 +279,7 @@ rename it to Talkwall
 				* as today (dynamic update of participants count based on polling)
 			* ORGANIZER -> "Edit tasks" panel
 				* List of exisiting tasks (by default empty list)
-					* task has slide control to edit, delete
+					* ~~task has slide control to edit, delete~~
 					* delete only works if no messages for that task
 				* "Add task" panel (10 tasks max -> matching color palette for task background)
 					* ~~Text input, background, submit (no message size selector)~~
