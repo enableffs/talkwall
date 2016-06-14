@@ -234,9 +234,9 @@ rename it to Talkwall
 	* landing page (needs edits OLE)
 	* CREATE -> login panel (google / facebook)
 		* ~~auhtentication~~
-		* open last or create new (dialog as today)
-			* if new, slide open "new task" right panel
-			* if not, everything closed, with teacher's messages on board
+		* ~~open last or create new (dialog as today)~~
+			* ~~if new, slide open "new task" right panel~~
+			* ~~if not, everything closed, with teacher's messages on board~~
 	* JOIN
 		* ~~join pin dialog with nickname (only one nickname allowed)~~
 	* wall
