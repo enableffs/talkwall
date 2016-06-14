@@ -278,14 +278,14 @@ rename it to Talkwall
 			* ORGANIZER -> "Join with PIN" panel
 				* as today (dynamic update of participants count based on polling)
 			* ORGANIZER -> "Edit tasks" panel
-				* List of exisiting tasks (by default empty list)
+				* ~~List of exisiting tasks (by default empty list)~~
 					* ~~task has slide control to edit, delete~~
-					* delete only works if no messages for that task
+					* ~~delete only works if no messages for that task~~
 				* "Add task" panel (10 tasks max -> matching color palette for task background)
 					* ~~Text input, background, submit (no message size selector)~~
 					* ~~submit button adds/validates a task in the list above~~
 			* ORGANIZER -> "Close Talkwall" panel
-				* text that explaind the effects of closing 
+				* ~~text that explaind the effects of closing~~
 				* Clients receive an instruction to disconnect based on polling
 					* dialog thanking for participation
 					* ok, takes back to landing page
