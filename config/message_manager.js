@@ -75,8 +75,12 @@ Mm.prototype.removeFromQuestion = function(wall_id, question_id, nickname) {
  */
 Mm.prototype.removeFromWall = function(wall_id, nickname) {
     // Remove this nickname from the wall's connected_nicknames
-    var i = this.data[wall_id].status.connected_nicknames.indexOf(nickname);
-    this.data[wall_id].status.connected_nicknames.splice(i, 1);
+    if( typeof this.data[wall_id] !== 'undefined') {
+        var i = this.data[wall_id].status.connected_nicknames.indexOf(nickname);
+        if (i >= 0) {
+            this.data[wall_id].status.connected_nicknames.splice(i, 1);
+        }
+    }
 };
 
 /**
@@ -86,7 +90,9 @@ Mm.prototype.removeFromWall = function(wall_id, nickname) {
  */
 Mm.prototype.removeAllFromWall = function(wall_id) {
     // Remove all nicknames from the wall's connected_nicknames
-    this.data[wall_id].status.connected_nicknames = [];
+    if (this.data.hasOwnProperty(wall_id)) {
+        this.data[wall_id].status.connected_nicknames = [];
+    }
 };
 
 /**

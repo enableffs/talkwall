@@ -100,11 +100,12 @@ app.post('/wall',                   jwt({secret: secret.secretToken}),  tokenMan
 app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateWall);
 app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);
 app.put('/question',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateQuestion);
-app.get('/change/:wallid/:questionid',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
+app.get('/change/:wall_id/:question_id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
+app.get('/close/:wall_id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
 
 /********* client (student / teacher) operations *********/
 app.get('/clientwall/:nickname/:pin',                                                               routes.client.clientWall);
-app.get('/disconnect/:nickname/:pin',                                                               routes.client.disconnectWall);
+app.get('/disconnect/:nickname/:pin/:question_id',                                                  routes.client.disconnectWall);
 app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:control',                     routes.client.poll);
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessage);

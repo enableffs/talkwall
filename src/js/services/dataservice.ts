@@ -7,11 +7,13 @@
 /// <reference path="../models/models.ts"/>
 
 module TalkwallApp {
+    import IAngularEvent = angular.IAngularEvent;
     "use strict";
     import IRouteParamsService = angular.route.IRouteParamsService;
     import ILocationService = angular.ILocationService;
     import IPromise = angular.IPromise;
     import IMedia = angular.material.IMedia;
+    import IScope = angular.IScope;
 
     export interface IDataService {
 
@@ -204,6 +206,12 @@ module TalkwallApp {
                      private $mdMedia: IMedia) {
             this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
             console.log('--> DataService started ...');
+
+            $window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
+                $http.get(this.urlService.getHost() +
+                    '/disconnect/' + this.getNickname() + '/' + this.wall.pin + '/' + this.question._id);
+            };
+
         }
 
 
