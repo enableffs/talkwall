@@ -232,12 +232,12 @@ rename it to Talkwall
 
 * Project setup, platform and distribution
 	* landing page (needs edits OLE)
-	* CREATE -> login panel (google / facebook)
+	* ~~CREATE -> login panel (google / facebook)~~
 		* ~~auhtentication~~
 		* ~~open last or create new (dialog as today)~~
 			* ~~if new, slide open "new task" right panel~~
 			* ~~if not, everything closed, with teacher's messages on board~~
-	* JOIN
+	* ~~JOIN~~
 		* ~~join pin dialog with nickname (only one nickname allowed)~~
 	* wall
 		* ~~layout~~
