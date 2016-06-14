@@ -310,11 +310,11 @@ rename it to Talkwall
 			* ~~"message feed" button~~
 			* ~~"screens" button (teacher only)~~
 			* next task button (if next task exists)
-				* teacher -> next wall also triggers all participant's apps
-				* student -> only affects his/her wall
-			* previous task button (if previous task exists)
-				* teacher -> previous wall also triggers all participant's apps
-				* student -> only affects his/her wall
+				* ~~teacher -> next wall also triggers all participant's apps~~
+				* ~~student -> only affects his/her wall~~
+			* ~~previous task button (if previous task exists)~~
+				* ~~teacher -> previous wall also triggers all participant's apps~~
+				* ~~student -> only affects his/her wall~~
 			NOTE when moving from one task to the next: 
 				* when interaction occurs (drag, write, scroll, etc -> no polling)
 				* background animation between questions
