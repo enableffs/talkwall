@@ -357,7 +357,7 @@ exports.updateQuestion = function(req, res) {
     }
 
     var query = Wall.findOneAndUpdate( {
-        _id : req.body.wall._id,
+        _id : req.body.wall_id,
         "questions._id": req.body.question._id
     }, { "questions.$" : req.body.question }, { new: true });
 

@@ -161,10 +161,8 @@
 								<md-button flex><img src="images/back033.png" aria-hidden="true" width="100%" /></md-button>
 								<md-button flex><img src="images/back044.png" aria-hidden="true" width="100%" /></md-button>
 							</div>
-							<md-button class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.dataService.getQuestionToEdit().label === ''" ng-click="wallC.postQuestion()">
-								<span ng-if="wallC.dataService.getQuestionToEdit()._id === ''">Add</span>
-								<span ng-if="wallC.dataService.getQuestionToEdit()._id !== ''">Save</span>
-							</md-button>
+							<md-button ng-if="wallC.dataService.getQuestionToEdit()._id === ''" class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.dataService.getQuestionToEdit().label === ''" ng-click="wallC.postQuestion(false)">Add</md-button>
+							<md-button ng-if="wallC.dataService.getQuestionToEdit()._id !== ''" class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.dataService.getQuestionToEdit().label === ''" ng-click="wallC.postQuestion(true)">Save</md-button>
 						</div>
 					</div>
 				</section>
