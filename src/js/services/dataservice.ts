@@ -131,6 +131,11 @@ module TalkwallApp {
          */
         updateQuestion(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
+         * delete a question
+         * @param question to be deleted
+         */
+        deleteQuestion(question: Question): void;
+        /**
          * get all current messages on the feed for this question
          */
         getMessages(): void;
@@ -484,6 +489,7 @@ module TalkwallApp {
             if (this.questionToEdit === null) {
                 errorCallbackFn({status: '400', message: "question is not defined"});
             }
+
             this.$http.put(this.urlService.getHost() + '/question', {
                     wall_id: this.wall._id,
                     question: this.questionToEdit
@@ -501,6 +507,16 @@ module TalkwallApp {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
                 });
+        }
+
+        deleteQuestion(question: Question): void {
+            for (var i = 0; i < this.wall.questions.length; i++) {
+                if (this.wall.questions[i]._id === question._id) {
+                    this.wall.questions.splice(i, 1);
+                }
+            }
+
+            //TODO: persist this to the server
         }
 
         //generate a new message on server with _id and returns it

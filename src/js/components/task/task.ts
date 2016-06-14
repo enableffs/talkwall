@@ -24,6 +24,7 @@ module TalkwallApp {
 
 		deleteQuestion(): void {
 			console.log('--> TaskController delete');
+			this.dataService.deleteQuestion(this.question);
 		}
 
 		editQuestion(): void {
