@@ -134,7 +134,7 @@ module TalkwallApp {
          * delete a question
          * @param question to be deleted
          */
-        deleteQuestion(question: Question): void;
+        deleteQuestion(question: Question, sFunc: (code: number) => void, eFunc: (error: {}) => void): void;
         /**
          * get all current messages on the feed for this question
          */
@@ -228,7 +228,19 @@ module TalkwallApp {
                         if (user.lastOpenedWall === null) {
                             this.createWall(successCallbackFn, errorCallbackFn);
                         } else {
-                            this.requestWall(user.lastOpenedWall, successCallbackFn, errorCallbackFn);
+                            var confirm = this.$mdDialog.confirm()
+                                .title('Active wall detected!')
+                                .content('You have an active wall already open. Choose an option below:')
+                                .ok('Continue with existing')
+                                .cancel('Create new');
+                            this.$mdDialog.show(confirm).then(() => {
+                                //continue
+                                this.requestWall(user.lastOpenedWall, successCallbackFn, errorCallbackFn);
+                            }, () => {
+                                //start new and close old
+                                //TODO: close wall on server first and create new one
+                                this.createWall(successCallbackFn, errorCallbackFn);
+                            });
                         }
                     }, (error) => {
                         //TODO: handle get user error
@@ -355,6 +367,12 @@ module TalkwallApp {
         setQuestion(newIndex, successCallbackFn, errorCallbackFn): void {
             var previous_question_id = 'none', control = 'none';
 
+            //if no more questions
+            if (this.wall.questions.length === 0) {
+                console.log('--> setQuestion: no more questions ...');
+                this.question = null;
+            }
+
             // If true, we are changing questions
             if (this.question !== null && this.wall.questions.indexOf(this.question) !== newIndex) {
                 previous_question_id = this.question._id;
@@ -367,7 +385,7 @@ module TalkwallApp {
 
             // Now set the question if we have it available on the client.
             // If not, we will poll anyway, until notification arrives from server of teacher moving to a question
-            if (newIndex !== -1) {
+            if (newIndex !== -1 && this.wall.questions.length > 0) {
                 this.question = this.wall.questions[newIndex];
                 this.currentQuestionIndex = newIndex;
             }
@@ -509,14 +527,28 @@ module TalkwallApp {
                 });
         }
 
-        deleteQuestion(question: Question): void {
-            for (var i = 0; i < this.wall.questions.length; i++) {
-                if (this.wall.questions[i]._id === question._id) {
-                    this.wall.questions.splice(i, 1);
-                }
-            }
-
-            //TODO: persist this to the server
+        deleteQuestion(question: Question, successCallbackFn, errorCallbackFn): void {
+            //first check if there are existing message for that question
+            this.$http.get(this.urlService.getHost() + '/messages/' + question._id)
+                .success((data) => {
+                    console.log('--> DataService deleteQuestion: getMessages success');
+                    let resultKey = 'result';
+                    if (data[resultKey].length === 0) {
+                        for (var i = 0; i < this.wall.questions.length; i++) {
+                            if (this.wall.questions[i]._id === question._id) {
+                                this.wall.questions.splice(i, 1);
+                            }
+                        }
+                        successCallbackFn(200);
+                        //TODO: persist this to the server
+                    } else {
+                        successCallbackFn(401);
+                    }
+                })
+                .catch((error) => {
+                    console.log('--> DataService deleteQuestion: getMessages failure: ' + error);
+                    errorCallbackFn(error);
+                });
         }
 
         //generate a new message on server with _id and returns it
@@ -553,14 +585,16 @@ module TalkwallApp {
         }
 
         getMessages(): void {
-            this.$http.get(this.urlService.getHost() + '/messages/' + this.question._id)
-                .success((data) => {
-                    let resultKey = 'result';
-                    this.question.messages = data[resultKey];
-                })
-                .catch((error) => {
-                    console.log('--> DataService: getMessages failure: ' + error);
-                });
+            if (this.question !== null) {
+                this.$http.get(this.urlService.getHost() + '/messages/' + this.question._id)
+                    .success((data) => {
+                        let resultKey = 'result';
+                        this.question.messages = data[resultKey];
+                    })
+                    .catch((error) => {
+                        console.log('--> DataService: getMessages failure: ' + error);
+                    });
+            }
         }
 
         //update a new on server and return it
