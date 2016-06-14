@@ -25,7 +25,7 @@ module TalkwallApp {
 		/**
 		 * Post a new question
 		 */
-		postQuestion(): void;
+		postQuestion(update: boolean): void;
         /**
          * Get question at index
          * @param index wall.questions Index of the question being selected
@@ -141,21 +141,36 @@ module TalkwallApp {
 			}
 		}
 
-		postQuestion(): void {
-
-			this.dataService.addQuestion(
-				(success) => {
-					//set to the new question if none
-					if (this.dataService.getQuestion() === null) {
-						this.setQuestion(0);
+		postQuestion(update: boolean): void {
+			if (update) {
+				this.dataService.updateQuestion(
+					(success) => {
+						//set to the new question if none
+						if (this.dataService.getQuestion() === null) {
+							this.setQuestion(0);
+						}
+						//clear the question to edit ...
+						this.dataService.setQuestionToEdit(new Question(''));
+					},
+					function(error) {
+						//TODO: handle question retrieval error
 					}
-					//clear the question to edit ...
-					this.dataService.setQuestionToEdit(new Question(''));
-				},
-				function(error) {
-					//TODO: handle question retrieval error
-				}
-			);
+				);
+			} else {
+				this.dataService.addQuestion(
+					(success) => {
+						//set to the new question if none
+						if (this.dataService.getQuestion() === null) {
+							this.setQuestion(0);
+						}
+						//clear the question to edit ...
+						this.dataService.setQuestionToEdit(new Question(''));
+					},
+					function(error) {
+						//TODO: handle question retrieval error
+					}
+				);
+			}
 		}
 	}
 }

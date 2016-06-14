@@ -98,14 +98,15 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#addquestion" class="tsd-kind-icon">add<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#checkauthentication" class="tsd-kind-icon">check<wbr>Authentication</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#createwall" class="tsd-kind-icon">create<wbr>Wall</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#deletequestion" class="tsd-kind-icon">delete<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getboarddivsize" class="tsd-kind-icon">get<wbr>Board<wbr>Div<wbr>Size</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getclientwall" class="tsd-kind-icon">get<wbr>Client<wbr>Wall</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getmessagetoedit" class="tsd-kind-icon">get<wbr>Message<wbr>ToEdit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getmessages" class="tsd-kind-icon">get<wbr>Messages</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getnickname" class="tsd-kind-icon">get<wbr>Nickname</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getquestion" class="tsd-kind-icon">get<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getquestiontoedit" class="tsd-kind-icon">get<wbr>Question<wbr>ToEdit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getwall" class="tsd-kind-icon">get<wbr>Wall</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#joinwall" class="tsd-kind-icon">join<wbr>Wall</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#requestpoll" class="tsd-kind-icon">request<wbr>Poll</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#requestuser" class="tsd-kind-icon">request<wbr>User</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#requestwall" class="tsd-kind-icon">request<wbr>Wall</a></li>
@@ -116,6 +117,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#startpolling" class="tsd-kind-icon">start<wbr>Polling</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#stoppolling" class="tsd-kind-icon">stop<wbr>Polling</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#updatemessage" class="tsd-kind-icon">update<wbr>Message</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#updatequestion" class="tsd-kind-icon">update<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#updatewall" class="tsd-kind-icon">update<wbr>Wall</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#userisauthorised" class="tsd-kind-icon">user<wbr>IsAuthorised</a></li>
 							</ul>
@@ -422,6 +424,81 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="deletequestion" class="tsd-anchor"></a>
+					<h3>delete<wbr>Question</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">delete<wbr>Question<span class="tsd-signature-symbol">(</span>question<span class="tsd-signature-symbol">: </span><a href="../classes/_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a>, sFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, eFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L137">services/dataservice.ts:137</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>delete a question</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>question: <a href="../classes/_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>to be deleted</p>
+									</div>
+								</li>
+								<li>
+									<h5>sFunc: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>code: <span class="tsd-signature-type">number</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5>eFunc: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>error: <span class="tsd-signature-type">object</span></h5>
+															<ul class="tsd-parameters">
+															</ul>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="getboarddivsize" class="tsd-anchor"></a>
 					<h3>get<wbr>Board<wbr>Div<wbr>Size</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -431,7 +508,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L135">services/dataservice.ts:135</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L146">services/dataservice.ts:146</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -447,6 +524,86 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="getclientwall" class="tsd-anchor"></a>
+					<h3>get<wbr>Client<wbr>Wall</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Client<wbr>Wall<span class="tsd-signature-symbol">(</span>joinModel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, sFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, eFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L69">services/dataservice.ts:69</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>join a wall</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>joinModel: <span class="tsd-signature-type">object</span></h5>
+									<ul class="tsd-parameters">
+									</ul>
+								</li>
+								<li>
+									<h5>sFunc: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>success callback</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>success<span class="tsd-signature-symbol">: </span><a href="../classes/_models_models_.talkwallapp.wall.html" class="tsd-signature-type">Wall</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>success: <a href="../classes/_models_models_.talkwallapp.wall.html" class="tsd-signature-type">Wall</a></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5>eFunc: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>error callback</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>error: <span class="tsd-signature-type">object</span></h5>
+															<ul class="tsd-parameters">
+															</ul>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="getmessagetoedit" class="tsd-anchor"></a>
 					<h3>get<wbr>Message<wbr>ToEdit</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -456,7 +613,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L149">services/dataservice.ts:149</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L160">services/dataservice.ts:160</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -478,7 +635,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L130">services/dataservice.ts:130</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L141">services/dataservice.ts:141</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -578,86 +735,6 @@
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../classes/_models_models_.talkwallapp.wall.html" class="tsd-signature-type">Wall</a></h4>
 							<p>the current wall</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="joinwall" class="tsd-anchor"></a>
-					<h3>join<wbr>Wall</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">join<wbr>Wall<span class="tsd-signature-symbol">(</span>joinModel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, sFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, eFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L69">services/dataservice.ts:69</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>join a wall</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>joinModel: <span class="tsd-signature-type">object</span></h5>
-									<ul class="tsd-parameters">
-									</ul>
-								</li>
-								<li>
-									<h5>sFunc: <span class="tsd-signature-type">function</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>success callback</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-siganture">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>success<span class="tsd-signature-symbol">: </span><a href="../classes/_models_models_.talkwallapp.wall.html" class="tsd-signature-type">Wall</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-parameters-title">Parameters</h4>
-													<ul class="tsd-parameters">
-														<li>
-															<h5>success: <a href="../classes/_models_models_.talkwallapp.wall.html" class="tsd-signature-type">Wall</a></h5>
-														</li>
-													</ul>
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-								<li>
-									<h5>eFunc: <span class="tsd-signature-type">function</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>error callback</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-siganture">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-parameters-title">Parameters</h4>
-													<ul class="tsd-parameters">
-														<li>
-															<h5>error: <span class="tsd-signature-type">object</span></h5>
-															<ul class="tsd-parameters">
-															</ul>
-														</li>
-													</ul>
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -902,7 +979,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L140">services/dataservice.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L151">services/dataservice.ts:151</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -935,7 +1012,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L145">services/dataservice.ts:145</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L156">services/dataservice.ts:156</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1058,7 +1135,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L153">services/dataservice.ts:153</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L164">services/dataservice.ts:164</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1089,7 +1166,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L157">services/dataservice.ts:157</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L168">services/dataservice.ts:168</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1117,6 +1194,81 @@
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>update a message on the feed</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sFunc: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>success callback</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>success<span class="tsd-signature-symbol">: </span><a href="../classes/_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>success: <a href="../classes/_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5>eFunc: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>error callback</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>error: <span class="tsd-signature-type">object</span></h5>
+															<ul class="tsd-parameters">
+															</ul>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="updatequestion" class="tsd-anchor"></a>
+					<h3>update<wbr>Question</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Question<span class="tsd-signature-symbol">(</span>sFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, eFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L132">services/dataservice.ts:132</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>update a question</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1369,7 +1521,13 @@
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#createwall" class="tsd-kind-icon">create<wbr>Wall</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_services_dataservice_.talkwallapp.idataservice.html#deletequestion" class="tsd-kind-icon">delete<wbr>Question</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#getboarddivsize" class="tsd-kind-icon">get<wbr>Board<wbr>Div<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_services_dataservice_.talkwallapp.idataservice.html#getclientwall" class="tsd-kind-icon">get<wbr>Client<wbr>Wall</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#getmessagetoedit" class="tsd-kind-icon">get<wbr>Message<wbr>ToEdit</a>
@@ -1388,9 +1546,6 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#getwall" class="tsd-kind-icon">get<wbr>Wall</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_services_dataservice_.talkwallapp.idataservice.html#joinwall" class="tsd-kind-icon">join<wbr>Wall</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#requestpoll" class="tsd-kind-icon">request<wbr>Poll</a>
@@ -1421,6 +1576,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#updatemessage" class="tsd-kind-icon">update<wbr>Message</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_services_dataservice_.talkwallapp.idataservice.html#updatequestion" class="tsd-kind-icon">update<wbr>Question</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#updatewall" class="tsd-kind-icon">update<wbr>Wall</a>
