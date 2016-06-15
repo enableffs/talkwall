@@ -1,4 +1,4 @@
-<div layout="column">
+<div layout="column" ng-cloak>
 	<div layout="row" flex="none">
 		<div class="feedMessage-messageControl" layout="column" ng-show="feedMessageC.showControls" layout-align="center center">
 			<div layout="row">
@@ -34,7 +34,7 @@
 				{{ feedMessageC.message.text }}
 			</div>
 			<div layout="row" layout-align="end center">
-				<span class="feedMessage-nicknameChip" ng-repeat="origin in feedMessageC.message.origin.reverse()">{{ origin.nickname }}</span>
+				<span class="feedMessage-nicknameChip" ng-repeat="origin in feedMessageC.originReversed">{{ origin.nickname }}</span>
 			</div>
 		</div>
 
