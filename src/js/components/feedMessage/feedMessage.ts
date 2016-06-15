@@ -11,6 +11,7 @@ module TalkwallApp {
 
 		private message: Message;
 		public showControls: boolean = false;
+		private originReversed: Array<{}> = new Array();
 
 		constructor(
 			private isolatedScope: FeedMessageDirectiveScope,
@@ -19,13 +20,10 @@ module TalkwallApp {
 			private utilityService: UtilityService,
 			public $timeout: ITimeoutService) {
 			this.message = isolatedScope.data;
-		};
-
-		/**
-		 * init
-		 */
-		activate(): void {
-			console.log('--> FeedMessageController activated');
+			this.originReversed = this.message.origin.reverse();
+			if (this.message.board === undefined) {
+				this.message.board = {};
+			}
 			this.message.isPinned = false;
 			if (this.message.board[this.dataService.getNickname()] !== undefined) {
 				this.message.isSelected = true;
@@ -35,7 +33,7 @@ module TalkwallApp {
 			} else {
 				this.message.isSelected = false;
 			}
-		}
+		};
 
 		deleteMessage(): void {
             this.dataService.setMessageToEdit(this.message);
