@@ -2,6 +2,7 @@
   "MENUPAGE_BUTTON_PARTICIPATE": "Delta",
   "MENUPAGE_BUTTON_CREATE": "Opprett",
   "MENUPAGE_PARTICIPATEDRAWER_HEADING": "Skriv inn PIN-koden og navn",
+  "TALKWALL_CLOSED_MESSAGE": "Dette talkwall er stengt. Takk for at du deltar!",
   "MENUPAGE_PARTICIPATEDRAWER_PIN": "PIN-koden",
   "MENUPAGE_PARTICIPATEDRAWER_NAME": "Navn",
   "MENUPAGE_CREATEDRAWER_HEADING": "Du kan logge på Samtavla med følgene tjenester",
