@@ -243,9 +243,9 @@ rename it to Talkwall
 		* ~~layout~~
 		* sidepanel-left
 			* "Messages" tab
-				* zoom
+				* ~~zoom~~
 					* ~~larger side panel~~
-					* apply larger fonts
+					* ~~apply larger fonts~~
 				* message feed
 					* ~~white footer to allow graphical position of the (+) button (so that it doesn't cover a message)~~
 					* ~~latest message at the bottom (no auto scroll, keep position)~~
