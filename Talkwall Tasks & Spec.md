@@ -276,7 +276,7 @@ rename it to Talkwall
 				* ~~adds a message to the feed and dismisses the bottom-sheet~~
 		* sidepanel-right ("slack style", one panel open at a time)
 			* ORGANIZER -> "Join with PIN" panel
-				* as today (dynamic update of participants count based on polling)
+				* ~~as today (dynamic update of participants count based on polling)~~
 			* ORGANIZER -> "Edit tasks" panel
 				* ~~List of exisiting tasks (by default empty list)~~
 					* ~~task has slide control to edit, delete~~
@@ -287,8 +287,8 @@ rename it to Talkwall
 			* ORGANIZER -> "Close Talkwall" panel
 				* ~~text that explaind the effects of closing~~
 				* Clients receive an instruction to disconnect based on polling
-					* dialog thanking for participation
-					* ok, takes back to landing page
+					* ~~dialog thanking for participation~~
+					* ~~ok, takes back to landing page~~
 				* Send email to organiser with link to URL (report page rich text or HTML)
 					* page [https://github.com/engagelab/talkwall/blob/master/export%20spec.md]
 		* message "on-wall"
