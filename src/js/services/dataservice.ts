@@ -206,12 +206,6 @@ module TalkwallApp {
                      private $mdMedia: IMedia) {
             this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
             console.log('--> DataService started ...');
-
-            $window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
-                $http.get(this.urlService.getHost() +
-                    '/disconnect/' + this.getNickname() + '/' + this.wall.pin + '/' + this.question._id);
-            };
-
         }
 
 
@@ -258,6 +252,13 @@ module TalkwallApp {
                 // Fall through..
                 successCallbackFn();
             }
+
+            // Set up listener for disconnect
+            var handle = this;
+            this.$window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
+                handle.$http.get(handle.urlService.getHost() +
+                    '/disconnect/' + handle.getNickname() + '/' + handle.wall.pin + '/' + handle.question._id);
+            };
         }
 
         requestUser(successCallbackFn, errorCallbackFn): void {
@@ -319,23 +320,23 @@ module TalkwallApp {
 
         // For non-authorised users
         getClientWall(joinModel, successCallbackFn, errorCallbackFn): void {
-            this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin)
-                .success((data) => {
-                    let resultKey = 'result';
-                    if (data[resultKey] === 204) {
+            this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin).then(
+                (success) => {
+                    let resultKey = 'result', dataKey = 'data', statusKey = 'status';
+                    if (success[statusKey] === 204) {
                         this.wall.closed = true;
                         this.stopPolling();
                         this.showClosingDialog();
                     } else {
-                        this.wall = data[resultKey];
+                        this.wall = success[dataKey][resultKey];
                         this.studentNickname = joinModel.nickname;
                         console.log('--> DataService: getWall success');
                     }
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.wall);
                     }
-                })
-                .catch((error) => {
+                },
+                (error) => {
                     // Close client wall if wall was closed by teacher
                     this.wall.closed = true;
                     this.stopPolling();
@@ -680,9 +681,10 @@ module TalkwallApp {
 
         // Stop the polling timer
         stopPolling() {
+            var handle = this;
             if (angular.isDefined(this.timerHandle)) {
-                this.$interval.cancel(this.timerHandle);
-                this.timerHandle = undefined;
+                handle.$interval.cancel(handle.timerHandle);
+                handle.timerHandle = undefined;
             }
         }
 
@@ -782,16 +784,18 @@ module TalkwallApp {
         showClosingDialog() : void {
             //detects if the device is small
             var useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+            var handle = this;
             //show the dialog
             this.$mdDialog.show({
                     controller: CloseController,
                     controllerAs: 'closeC',
                     templateUrl: 'js/components/close/close.html',
                     parent: angular.element(document.body),
-                    clickOutsideToClose: true
+                    clickOutsideToClose: false
                 })
-                .then(function() {
+                .then(function(answer) {
                     console.log('--> ClosingController: answered');
+                    handle.$window.location.href = handle.urlService.getHost() + '/#/';
                 }, function() {
                     //dialog dismissed
                     console.log('--> LandingController: dismissed');

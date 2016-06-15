@@ -7,6 +7,9 @@ module TalkwallApp {
 	export class CloseController {
 		static $inject = ['$mdDialog'];
 
+		private theanswer = {
+			answered: true
+		};
 		constructor(
 			private $mdDialog: IDialogService) {
 			console.log('--> LoginController: started: ');
@@ -33,7 +36,7 @@ module TalkwallApp {
 		 * @aparam answer aa a string
 		 */
 		answer(): void {
-			this.$mdDialog.hide("response data");
+			this.$mdDialog.hide(this.theanswer);
 		};
 	}
 }
