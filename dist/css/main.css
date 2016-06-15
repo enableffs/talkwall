@@ -316,6 +316,10 @@ md-content {
   width: 75% !important;
 }
 
+.wall-sidemenuLarge md-content {
+  font-size: 3em !important;
+}
+
 .wall-topToolbar {
   min-height: 64px;
   max-height: 64px;
