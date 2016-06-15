@@ -207,9 +207,10 @@ module TalkwallApp {
             this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
             console.log('--> DataService started ...');
 
+            var handle = this;
             $window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
-                $http.get(this.urlService.getHost() +
-                    '/disconnect/' + this.getNickname() + '/' + this.wall.pin + '/' + this.question._id);
+                $http.get(handle.urlService.getHost() +
+                    '/disconnect/' + handle.getNickname() + '/' + handle.wall.pin + '/' + handle.question._id);
             };
 
         }
