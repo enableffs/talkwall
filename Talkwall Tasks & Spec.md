@@ -249,13 +249,13 @@ rename it to Talkwall
 				* message feed
 					* ~~white footer to allow graphical position of the (+) button (so that it doesn't cover a message)~~
 					* ~~latest message at the bottom (no auto scroll, keep position)~~
-					* message
+					* ~~message~~
 						* ~~show text (3 lines that fits 140 characters)~~
-						* history (chips). chips have a fixed size, with "...". fit as many chips has possible on one line (+ '...' if it goes beyond)
+						* ~~history (chips). chips have a fixed size, with "...". fit as many chips has possible on one line (+ '...' if it goes beyond)~~
 						* controllbar
 							* ~~select (place on wall) / deselect (removes from wall)~~
 								* ~~keep random placement around the center~~
-							* ~~edit (should open the text in the edit pane)~~
+							* edit (should open the text in the edit pane)~~
 								* if not owner of the message, create a copy, inherit history and metadata, and appends to the message feed. keep originator message ID.
 							* ~~delete (remove from list not from DB)~~
 						* ~~selected message inherits 'light' orange background~~
