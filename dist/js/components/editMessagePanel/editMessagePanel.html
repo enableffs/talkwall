@@ -4,7 +4,7 @@
 			<label>Edit message</label>
 			<textarea ng-model="editMessageC.messageToEdit.text" md-maxlength="140" maxlength="140" rows="5" md-select-on-focus></textarea>
 		</md-input-container>
-		<md-button ng-disabled="editMessageC.messageToEdit.text === ''" class="md-fab editMessage-validateButton" ng-click="editMessageC.answer(editMessageC.messageToEdit)">
+		<md-button aria-label="Post message" ng-disabled="editMessageC.messageToEdit.text === ''" class="md-fab editMessage-validateButton" ng-click="editMessageC.answer(editMessageC.messageToEdit)">
 			<md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
 		</md-button>
 	</div>

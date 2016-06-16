@@ -239,7 +239,15 @@ md-content {
   padding-right: 4px;
   margin-left: 5px;
   font-size: .8em;
-  max-height: 19px;
+  height: 20px;
+  min-height: 20px;
+  max-height: 20px;
+  max-width: 80px !important;
+  min-width: 60px !important;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .feedMessage-messageBody {

@@ -20,7 +20,9 @@ module TalkwallApp {
 			private utilityService: UtilityService,
 			public $timeout: ITimeoutService) {
 			this.message = isolatedScope.data;
-			this.originReversed = this.message.origin.reverse();
+			if (this.message.origin !== undefined) {
+				this.originReversed = this.message.origin.reverse();
+			}
 			if (this.message.board === undefined) {
 				this.message.board = {};
 			}
