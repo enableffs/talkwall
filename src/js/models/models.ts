@@ -25,6 +25,7 @@ module TalkwallApp {
         _id: string;
         createdAt: Date;
         label: string;
+        grid: string;
         messages: Array<Message>;
     }
 
@@ -32,11 +33,13 @@ module TalkwallApp {
         _id: string;
         createdAt: Date;
         label: string;
+        grid: string;
         messages: Array<Message>;
         showControls: boolean;
 
         constructor(label: string) {
             this.label = label;
+            this.grid = 'none';
             this.messages = [];
             this.showControls = false;
         }

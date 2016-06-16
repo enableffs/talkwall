@@ -4,7 +4,8 @@ exports.Constants = {
     WALL_EXPIRATION_SECONDS: 2592000, // 1 month
     TOKEN_EXPIRATION: 86400, //24hrs
     MINIMUM_PIN: 1000,
-    MAXIMUM_PIN: 9999
+    MAXIMUM_PIN: 9999,
+    POLL_USER_EXPIRY_TIME: 10000  // 10 seconds
 };
 
 exports.StatusMessages = {

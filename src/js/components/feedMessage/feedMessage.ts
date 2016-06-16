@@ -6,33 +6,46 @@
 module TalkwallApp {
 	"use strict";
 	import ITimeoutService = angular.ITimeoutService;
-	class FeedMessageController {
-		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$timeout'];
+
+    export interface IFeedMessageController {
+        deleteMessage(): void;
+        editMessage(): void;
+        toggleSelectMessage(): void;
+        togglePinMessage(): void;
+    }
+
+	class FeedMessageController implements IFeedMessageController {
+		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$timeout', '$window'];
 
 		private message: Message;
 		public showControls: boolean = false;
-		private originReversed: Array<{}> = new Array();
+		private originReversed: Array<{}> = [];
 
 		constructor(
 			private isolatedScope: FeedMessageDirectiveScope,
 			public dataService: DataService,
 			public $document: ng.IDocumentService,
 			private utilityService: UtilityService,
-			public $timeout: ITimeoutService) {
-			this.message = isolatedScope.data;
-			this.originReversed = this.message.origin.reverse();
-			if (this.message.board === undefined) {
-				this.message.board = {};
-			}
-			this.message.isPinned = false;
-			if (this.message.board[this.dataService.getNickname()] !== undefined) {
-				this.message.isSelected = true;
-				if (this.message.board[this.dataService.getNickname()].pinned === true) {
-					this.message.isPinned = false;
-				}
-			} else {
-				this.message.isSelected = false;
-			}
+			public $timeout: ITimeoutService,
+			public $window: ng.IWindowService) {
+
+            this.message = isolatedScope.data;
+
+            if (typeof this.message.origin !== 'undefined') {
+               this.originReversed = this.message.origin.reverse();
+                if (this.message.board === undefined) {
+                    this.message.board = {};
+                }
+                this.message.isPinned = false;
+                if (this.message.board[this.dataService.getNickname()] !== undefined) {
+                    this.message.isSelected = true;
+                    if (this.message.board[this.dataService.getNickname()].pinned === true) {
+                        this.message.isPinned = false;
+                    }
+                } else {
+                    this.message.isSelected = false;
+                }
+            }
 		};
 
 		deleteMessage(): void {
@@ -53,33 +66,22 @@ module TalkwallApp {
 			this.isolatedScope.showEditPanel();
 		}
 
-		selectMessage(): void {
+		toggleSelectMessage(): void {
 			var handle = this;
-			this.message.board[this.dataService.getNickname()] = {
-				xpos: handle.utilityService.getRandomBetween(45, 55) / 100,
-				ypos: handle.utilityService.getRandomBetween(45, 55) / 100,
-				pinned: false
-			};
+            if (this.message.isSelected) {
+                delete this.message.board[this.dataService.getNickname()];
+                this.message.isPinned = false;
+            } else {
+                this.message.board[this.dataService.getNickname()] = {
+                    xpos: handle.utilityService.getRandomBetween(45, 55) / 100,
+                    ypos: handle.utilityService.getRandomBetween(45, 55) / 100,
+                    pinned: false
+                };
+            }
 			this.dataService.setMessageToEdit(this.message);
 			this.dataService.updateMessage(
 				function() {
-					handle.message.isSelected = true;
-					handle.dataService.setMessageToEdit(null);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				}
-			);
-		}
-
-		unselectMessage(): void {
-			var handle = this;
-			delete this.message.board[this.dataService.getNickname()];
-			this.message.isPinned = false;
-			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage(
-				function() {
-					handle.message.isSelected = false;
+					handle.message.isSelected = !handle.message.isSelected;
 					handle.dataService.setMessageToEdit(null);
 				},
 				function(error: {}) {
@@ -87,13 +89,14 @@ module TalkwallApp {
 				});
 		}
 
-		pinMessage(): void {
+		togglePinMessage(): void {
 			var handle = this;
-			this.message.board[this.dataService.getNickname()].pinned = true;
+			this.message.board[this.dataService.getNickname()].pinned
+                = !this.message.board[this.dataService.getNickname()].pinned;
 			this.dataService.setMessageToEdit(this.message);
 			this.dataService.updateMessage(
 				function() {
-					handle.message.isPinned = true;
+					handle.message.isPinned = !handle.message.isPinned;
 					handle.dataService.setMessageToEdit(null);
 				},
 				function(error: {}) {
@@ -102,26 +105,12 @@ module TalkwallApp {
 			);
 		}
 
-		unpinMessage(): void {
-			var handle = this;
-			this.message.board[this.dataService.getNickname()].pinned = false;
-			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage(
-				function() {
-					handle.message.isPinned = false;
-					handle.dataService.setMessageToEdit(null);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				}
-			);
-		}
 	}
 
 	function linker(isolatedScope: FeedMessageDirectiveScope , element: ng.IAugmentedJQuery,
 	                attributes: ng.IAttributes, ctrl: FeedMessageController) {
 		let viewWidthKey = 'VIEW_WIDTH', viewHeightKey = 'VIEW_HEIGHT';
-		let changedTouchesKey = 'changedTouches';
+		let changedTouchesKey = 'changedTouches', touchEventKey = 'TouchEvent';
 		var startX = 0, startY = 0;
 
 		if (isolatedScope.onBoard === 'true') {
@@ -141,7 +130,7 @@ module TalkwallApp {
 				messageWidth = element.prop('offsetWidth');
 				messageHeight = element.prop('offsetHeight');
 
-				if (event instanceof TouchEvent) {
+				if (ctrl.$window[touchEventKey] && event.originalEvent instanceof TouchEvent) {
 					// Handling the touchstart event
 					var touchobj = event[changedTouchesKey][0];
 					startX = touchobj.clientX;
@@ -208,6 +197,7 @@ module TalkwallApp {
 			ctrl.$document.off('touchmove', touchmove);
 			ctrl.$document.off('touchend', touchend);
 		}
+
 	}
 
 	//isolated scope interface

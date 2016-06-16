@@ -215,9 +215,7 @@ md-content {
 }
 
 .feedMessage-showControlButton {
-  width: 40px !important;
   height: 40px !important;
-  max-width: 40px !important;
   min-width: 40px !important;
   max-height: 40px !important;
 }
@@ -407,6 +405,10 @@ md-content {
   left: 110px;
   z-index: 900 !important;
   background-color: #FF7700 !important;
+}
+
+.wall-gridButtonSelected {
+  background-color: #FF7700;
 }
 
 .wall-mainArea {
