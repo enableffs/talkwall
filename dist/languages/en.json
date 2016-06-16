@@ -2,6 +2,7 @@
   "MENUPAGE_BUTTON_PARTICIPATE": "Join",
   "MENUPAGE_BUTTON_CREATE": "Create",
   "MENUPAGE_PARTICIPATEDRAWER_HEADING": "Enter the PIN code and name",
+  "TALKWALL_CLOSED_MESSAGE": "This talkwall is closed. Thank you for participating!",
   "MENUPAGE_PARTICIPATEDRAWER_PIN": "PIN code",
   "MENUPAGE_PARTICIPATEDRAWER_NAME": "Name",
   "MENUPAGE_CREATEDRAWER_HEADING": "You may log in to this talkwall using one of the following",

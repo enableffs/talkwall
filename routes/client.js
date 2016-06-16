@@ -44,7 +44,8 @@ exports.poll = function(req, res) {
     }
 
     // Return an update to the user
-    var update = mm.getUpdate(req.params.wall_id, req.params.question_id, req.params.nickname);
+    var isTeacher = req.params.nickname === 'teacher';
+    var update = mm.getUpdate(req.params.wall_id, req.params.question_id, req.params.nickname, isTeacher);
     return res.status(common.StatusMessages.POLL_SUCCESS.status)
         .json({message: common.StatusMessages.POLL_SUCCESS.message, result: update});
 
@@ -130,8 +131,8 @@ exports.disconnectWall = function(req, res) {
                 }
                 else {
                     // Remove nickname from the wall users list (message manager)
-                    mm.removeFromQuestion(req.params.wall_id, req.params.question_id, req.params.nickname);
-                    mm.removeFromWall(req.params.wall_id, req.params.nickname);
+                    mm.removeFromQuestion(wall._id, req.params.question_id, req.params.nickname);
+                    mm.removeFromWall(wall._id, req.params.nickname);
                     return res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
                         message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message, result: wall});
                 }
@@ -142,51 +143,6 @@ exports.disconnectWall = function(req, res) {
         }
     });
 };
-
-/**
- * @api {get} /question Get question details including all current messages.  Adds user to the polling list.
- * @apiName getQuestion
- * @apiGroup non-authorised
- *
- * @apiParam {String} wall_id ID of the wall to get
- * @apiParam {String} question_id ID of the question to get
- * @apiParam {String} previous_question_id ID of the previous question to assisat removal from polling
- * @apiParam {String} nickname Connecting client's nickname
- *
- * @apiSuccess {Question} question Found question
- */
-/*
-exports.getQuestion = function(req, res) {
-
-    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
-        || typeof req.params.question_id === 'undefined' || req.params.question_id == null
-        || typeof req.params.previous_question_id === 'undefined' || req.params.previous_question_id == null
-        || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
-            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
-    }
-
-    // get a question and add the client nickname to the question polling list (message manager)
-    // we also populate all messages into the question
-    var query = Question.findOne({
-        _id : req.params.question_id
-    }).populate('messages');
-
-    query.exec(function(error, question) {
-        if(error) {
-            return res.status(common.StatusMessages.GET_ERROR.status).json({
-                message: common.StatusMessages.GET_ERROR.message, result: error});
-        }
-        else {
-            mm.removeFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname);
-            mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname);
-            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
-                message: common.StatusMessages.GET_SUCCESS.message, result: question});
-        }
-    });
-
-};
-*/
 
 /**
  * @api {post} /message Create a new message and add it to the Question
@@ -229,7 +185,7 @@ exports.createMessage = function(req, res) {
                     Wall.findOneAndUpdate({
                         '_id': wall_id,
                         'questions._id': req.body.message.question_id
-                    }, { $push: { "questions.$.messages" : message }}, function(error, wall) {
+                    }, { $push: { "questions.$.messages" : message}, $addToSet: { "questions.$.participants" : req.body.nickname }}, function(error, wall) {
                         if(error) {
                             return res.status(common.StatusMessages.CREATE_ERROR.status).json({
                                 message: common.StatusMessages.CREATE_ERROR.message

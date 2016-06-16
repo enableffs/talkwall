@@ -3,6 +3,8 @@
  * It also notifies a client of change of status
  */
 
+var common = require('../config/common.js');
+
 var Mm = function() {
     this.data = {};
 
@@ -32,15 +34,13 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
             status: {
                 last_update: Date.now(),
                 teacher_question_id: 'none',
-                connected_nicknames: []
+                connected_nicknames: {}
             },
             messages: {}
         };
     }
-    // Add the nickname to the connected users list, if not already there
-    if (this.data[wall_id].status['connected_nicknames'].indexOf(nickname) === -1) {
-        this.data[wall_id].status['connected_nicknames'].push(nickname);
-    }
+    // Add the nickname and timestamp to the connected users list, if not already there
+    this.data[wall_id].status['connected_nicknames'][nickname] = Date.now();
 
     // Create a message list for this user for a particular question
     if (question_id !== 'none') {
@@ -135,8 +135,21 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
  * @param {string} wall_id
  * @param {string} question_id           can be 'none' if requesting only status
  * @param {string} nickname              the particular calling user's nickname
+ * @param {boolean} isTeacher            set to true if the caller is a teacher (admin)
  */
-Mm.prototype.getUpdate = function(wall_id, question_id, nickname) {
+Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
+
+    var nicknames = this.data[wall_id].status['connected_nicknames'];
+
+    // If I am the teacher, check for disconnected users as well
+    if (isTeacher) {
+        var timeNow = Date.now();
+        for (var key in nicknames) {
+            if ( nicknames.hasOwnProperty(key) && (timeNow - nicknames[key] > common.Constants.POLL_USER_EXPIRY_TIME)) {
+                delete nicknames[key];
+            }
+        }
+    }
 
     var messages = [];
     if(question_id !== 'none') {
@@ -144,6 +157,9 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname) {
         // Reset my own update data
         this.data[wall_id].messages[question_id][nickname] = [];
     }
+
+    // Update my poll timestamp
+    nicknames[nickname] = Date.now();
 
     // Reference to my pending updates and any change to status
     return {

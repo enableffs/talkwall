@@ -138,6 +138,10 @@ module TalkwallApp {
          */
         deleteQuestion(question: Question, sFunc: (code: number) => void, eFunc: (error: {}) => void): void;
         /**
+         * get the index of the current question
+         */
+        getCurrentQuestionIndex(): number;
+        /**
          * get all current messages on the feed for this question
          */
         getMessages(): void;
@@ -182,7 +186,7 @@ module TalkwallApp {
         private questionToEdit: Question = new Question('');
         private phoneMode: boolean = false;
 
-        private timerHandle;
+        private timerHandle = null;
 
         //for dev only
         private studentNickname: string = null;
@@ -254,11 +258,31 @@ module TalkwallApp {
             }
 
             // Set up listener for disconnect
+            this.$window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
+                var url = this.urlService.getHost() + '/';
+                this.$http.get(url + 'disconnect/' + this.getNickname() + '/' + this.wall.pin + '/' + this.question._id)
+                    .then(function () {
+                        this.$window.location.href = url;
+                });
+            };
+
+            /*
+            // Alternative method for disconnect - causes a browser dialog to show and allows time for disconnect request
             var handle = this;
             this.$window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
-                handle.$http.get(handle.urlService.getHost() +
-                    '/disconnect/' + handle.getNickname() + '/' + handle.wall.pin + '/' + handle.question._id);
+                var x = logout();
+                return x;
             };
+
+            function logout() {
+                var url = handle.urlService.getHost() +
+                    '/disconnect/' + handle.getNickname() + '/' + handle.wall.pin + '/' + handle.question._id;
+                handle.$window.location.href = handle.urlService.getHost() + '/';
+                handle.$http.get(url).then(function() { console.log('disconnect sent'); } );
+                return 'Are you sure you want to close Talkwall?';
+            }
+            */
+
         }
 
         requestUser(successCallbackFn, errorCallbackFn): void {
@@ -323,8 +347,12 @@ module TalkwallApp {
             this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin).then(
                 (success) => {
                     let resultKey = 'result', dataKey = 'data', statusKey = 'status';
+
+                    // The wall is closed
                     if (success[statusKey] === 204) {
-                        this.wall.closed = true;
+                        if (this.wall !== null) {
+                            this.wall.closed = true;
+                        }
                         this.stopPolling();
                         this.showClosingDialog();
                     } else {
@@ -397,6 +425,7 @@ module TalkwallApp {
             if (newIndex !== -1 && this.wall.questions.length > 0) {
                 this.question = this.wall.questions[newIndex];
                 this.currentQuestionIndex = newIndex;
+                this.questionToEdit.grid = this.question.grid;
             }
 
             // Get the whole message list if we are 'new' or 'changing'
@@ -409,8 +438,9 @@ module TalkwallApp {
             }
 
             // Start polling regardless of the question existing, to enable poll notifications
-            this.stopPolling();
-            this.startPolling(previous_question_id, control);
+            if (this.timerHandle === null) {
+                this.startPolling(previous_question_id, control);
+            }
 
             if (typeof successCallbackFn === "function") {
                 successCallbackFn(this.wall);
@@ -631,22 +661,6 @@ module TalkwallApp {
                 });
         }
 
-        /*
-         deleteMessage(successCallbackFn, errorCallbackFn): void {
-         //update message on server with _id and returns it
-         // this.$http.put('message.json')
-         //on response, update the feed
-         /*let idKey = '_id';
-         for (var i = 0; i < this.question.messageFeed.length; i++) {
-         if (this.question.messageFeed[i][idKey] === message._id) {
-         this.question.messageFeed.splice(i, 1);
-         this.question.messageFeed.splice(i, 0, message);
-         }
-         }
-         //if we get a 200 response we are happy, nothing to do
-         successCallbackFn();
-         }
-         */
 
         setBoardDivSize(newSize: any): void {
             console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));
@@ -662,33 +676,26 @@ module TalkwallApp {
         // 'previous_question_id' can be 'none' if not changing questions
         // 'control' - 'none' is a regular poll, 'new' is the first poll, 'change' we are changing questions
         startPolling(previous_question_id: string, control: string) {
-            // Don't allow more than one timer
             var handle = this;
-            if ( angular.isDefined(this.timerHandle) ) {
-                return;
+            function requestThePoll() {
+                handle.requestPoll('none', 'none', null, null);
             }
 
             // Make a special poll request without delay, then set up regular polling
-            this.requestPoll(previous_question_id, control, (success) => {
+            this.requestPoll(previous_question_id, control, null, null);
 
-                // Begin further requests at time intervals
-                handle.timerHandle = handle.$interval(() => {
-                    handle.requestPoll('none', 'none', null, null);
-                }, 5000);
+            // Begin further requests at time intervals
+            if (this.timerHandle === null) {
+                this.timerHandle = this.$interval(requestThePoll, 5000);
+            }
 
-            }, null);
         }
 
         // Stop the polling timer
         stopPolling() {
-            var handle = this;
-            if (angular.isDefined(this.timerHandle)) {
-                handle.$interval.cancel(handle.timerHandle);
-                handle.timerHandle = undefined;
-            }
+            this.$interval.cancel(this.timerHandle);
+            this.timerHandle = null;
         }
-
-
 
         // Process updated messages retrieved on the poll response
         processUpdatedMessages(pollUpdateObject: PollUpdate) {
@@ -696,7 +703,12 @@ module TalkwallApp {
             // Status updates
 
             // Update participant list
-            this.participants = pollUpdateObject.status.connected_nicknames;
+            this.participants = Object.keys(pollUpdateObject.status.connected_nicknames);
+
+            // We should not be here! Go back to the landing page
+            if (this.participants.indexOf(this.getNickname()) === -1) {
+                this.$window.location.href = this.urlService.getHost() + '/';
+            }
 
             // Run on client connections only - receive status updates from teacher
             if (!this.userAuthorised && pollUpdateObject.status.last_update > this.last_update) {
@@ -718,6 +730,7 @@ module TalkwallApp {
 
             // Message updates
 
+
             pollUpdateObject.messages.forEach((updated_message) => {
                 var old_message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.question);
                 if ( old_message !== null) {                            // Message exists and needs to be updated
@@ -729,57 +742,6 @@ module TalkwallApp {
             });
         }
 
-        /*
-         processUpdatedMessages(pollUpdateObject: PollUpdate) {
-
-         // Status updates
-
-         // Update participant list
-         this.participants = pollUpdateObject.status.connected_nicknames;
-
-         // Run on client connections only - receive status updates from teacher
-         if (!this.userAuthorised) {
-         // Change questions if directed by the teacher, or re-request the questions if updated by teacher
-         // Run this check also if there is no current question
-         var poll_teacher_question_id = pollUpdateObject.status.commands_to_server.teacher_question_id;
-         if (poll_teacher_question_id !== this.mytTeachersQuestionID || this.currentQuestionIndex === -1) {
-         var question_index = this.utilityService.getQuestionIndexFromWallById(poll_teacher_question_id, this.wall);
-         if (question_index !== -1) {
-         this.mytTeachersQuestionID = poll_teacher_question_id;
-         this.setQuestion(question_index, null, null);
-         } else {     // Teacher has created a new question the client does not have!
-         // So refresh the wall and come back here to setQuestion()
-         var joinModel = {
-         nickname: this.getNickname(),
-         pin: this.wall.pin
-         };
-         this.getClientWall(joinModel, null, null);
-         // The polling cycle will pick up the quesiton on next cycle
-         }
-         }
-
-         // Close wall if closed by teacher
-         if (pollUpdateObject.status.commands_to_server.wall_closed) {
-         this.stopPolling();
-         this.wall.pin = '0000';
-         this.wall.closed = true;
-         this.showClosingDialog();
-         }
-         }
-
-         // Message updates
-
-         pollUpdateObject.messages.forEach((updated_message) => {
-         var old_message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.question);
-         if ( old_message !== null) {                            // Message exists and needs to be updated
-         // this.utilityService.removeNull(updated_message);
-         angular.extend(old_message, updated_message);
-         } else {                                            // Message is new and needs to be added to the list
-         this.question.messages.push(updated_message);
-         }
-         });
-         }
-         */
 
         showClosingDialog() : void {
             //detects if the device is small

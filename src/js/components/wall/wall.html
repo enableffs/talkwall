@@ -87,9 +87,9 @@
 
 				<!-- left sidenav people's screen feed -->
 				<md-list ng-if="!wallC.feedView">
-					<md-list-item ng-repeat="participant in wallC.dataService.participants">
+					<md-list-item ng-repeat="nickname in wallC.dataService.participants">
 						<md-icon md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
-						<p>{{ participant }}</p>
+						<p>{{ nickname }}</p>
 						<md-divider></md-divider>
 					</md-list-item>
 				</md-list>
@@ -156,13 +156,21 @@
 						<div layout="column">
 							<span>Background</span>
 							<div layout="row">
-								<md-button flex><img src="images/back011.png" aria-hidden="true" width="100%" /></md-button>
-								<md-button flex><img src="images/back022.png" aria-hidden="true" width="100%" /></md-button>
-								<md-button flex><img src="images/back033.png" aria-hidden="true" width="100%" /></md-button>
-								<md-button flex><img src="images/back044.png" aria-hidden="true" width="100%" /></md-button>
+								<md-button flex ng-click="wallC.setGrid('none')">
+                                    <img src="images/back011.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.getQuestionToEdit().grid === 'none'}" />
+                                </md-button>
+								<md-button flex ng-click="wallC.setGrid('horizontal')">
+                                    <img src="images/back022.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.getQuestionToEdit().grid === 'horizontal'}"/>
+                                </md-button>
+								<md-button flex ng-click="wallC.setGrid('vertical')">
+                                    <img src="images/back033.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.getQuestionToEdit().grid === 'vertical'}"/>
+                                </md-button>
+								<md-button flex ng-click="wallC.setGrid('both')">
+                                    <img src="images/back044.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.getQuestionToEdit().grid === 'both'}"/>
+                                </md-button>
 							</div>
-							<md-button ng-if="wallC.dataService.getQuestionToEdit()._id === undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.dataService.getQuestionToEdit().label === ''" ng-click="wallC.postQuestion(false)">Add</md-button>
-							<md-button ng-if="wallC.dataService.getQuestionToEdit()._id !== undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="wallC.dataService.getQuestionToEdit().label === ''" ng-click="wallC.postQuestion(true)">Save</md-button>
+							<md-button ng-if="wallC.dataService.getQuestionToEdit()._id === undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(false)">Add</md-button>
+							<md-button ng-if="wallC.dataService.getQuestionToEdit()._id !== undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(true)">Save</md-button>
 						</div>
 					</div>
 				</section>
@@ -191,7 +199,11 @@
 		<!-- main content of the wall -->
 		<div flex class="wall-mainArea">
 
-			<div watch-board-size style="position: absolute; top: 64px; left: 0; bottom: 0; right: 0; background-color: #333333">
+			<div watch-board-size style="position: absolute; top: 64px; left: 0; bottom: 0; right: 0;" ng-style="{'background-color' : wallC.backgroundColour }">
+				<hr ng-show="wallC.dataService.getQuestion().grid === 'vertical' || wallC.dataService.getQuestion().grid === 'both'"
+                    width="1" size="{{wallC.dataService.getBoardDivSize()['VIEW_HEIGHT']}}" ng-style="wallC.getGridStyle('vertical')">
+				<hr ng-show="wallC.dataService.getQuestion().grid === 'horizontal' || wallC.dataService.getQuestion().grid === 'both'"
+                    width="{{wallC.dataService.getBoardDivSize()['VIEW_WIDTH']}}" size="3" ng-style="wallC.getGridStyle('horizontal')">
 				<div feed-message
 					 ng-repeat="message in wallC.dataService.getQuestion().messages"
 					 data="message" on-board="true"

@@ -1,4 +1,5 @@
 /// <reference path="../../_references.ts"/>
+/// <reference path="../../app.constants.ts"/>
 /// <reference path="../../services/urlservice.ts"/>
 /// <reference path="../../services/dataservice.ts"/>
 /// <reference path="../editMessagePanel/editMessagePanel.ts"/>
@@ -31,22 +32,40 @@ module TalkwallApp {
          * @param index wall.questions Index of the question being selected
          */
         setQuestion(index: number): void;
+		/**
+		 * Get question at index
+		 * @param type 'horizontal' or 'vertical'
+		 */
+		getGridStyle(type: string): {};
+        /**
+         * Check if question has been edited
+         */
+        questionToEditDirty(): boolean;
+        /**
+         * Change the grid type
+         */
+        setGrid(type: string): void;
 	}
 
 	export class WallController implements IWallControllerService {
-		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', 'URLService', '$window'];
+		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', 'URLService', '$window', 'TalkwallConstants'];
 		private magnified: boolean = false;
 		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
 
+		private backgroundColour: string;
+		private complementaryColour: string;
+        private savedGridType: string = 'none';
+
         constructor(
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService,
 			private urlService: IURLService,
-			private $window: IWindowService) {
+			private $window: IWindowService,
+			private constants: ITalkwallConstants) {
 			console.log('--> WallController: started: ');
 
 
@@ -72,7 +91,14 @@ module TalkwallApp {
         setQuestion(index) {
 	        this.dataService.setQuestion(index,
 		        () => {
-			        //success
+					let bgColourKey = 'BACKGROUND_COLOURS', cpColourKey = 'COMPLEMENTARY_COLOURS';
+			        this.backgroundColour
+						= this.constants.constants[bgColourKey][index];
+                    this.complementaryColour
+                        = this.constants.constants[cpColourKey][index];
+                    if ( this.dataService.getCurrentQuestionIndex() !== -1 ) {
+                        this.savedGridType = this.dataService.getQuestion().grid;
+                    }
 		        },
 		        function() {
 			        //error
@@ -84,11 +110,43 @@ module TalkwallApp {
 			this.dataService.closeWallNow();
 		}
 
+        setGrid(type): void {
+            this.dataService.getQuestionToEdit().grid = type;
+        }
+
+        questionToEditDirty() {
+            return (this.dataService.getQuestionToEdit().label !== this.dataService.getQuestion().label
+                && this.dataService.getQuestionToEdit().label !== '')
+                || typeof this.dataService.getQuestionToEdit()._id !== 'undefined';
+        }
+
+		getGridStyle(type): {} {
+            let heightKey = 'VIEW_HEIGHT', widthKey = 'VIEW_WIDTH';
+			if (type === 'horizontal') {
+				return {
+                    top : Math.floor(this.dataService.getBoardDivSize()[heightKey] / 2) + 'px',
+                    position : 'absolute',
+                    borderColor : this.complementaryColour,
+                    backgroundColor : this.complementaryColour,
+                    margin: 0
+                };
+			} else {
+				return {
+                    left : Math.floor(this.dataService.getBoardDivSize()[widthKey] / 2) + 'px',
+                    position : 'absolute',
+                    borderColor : this.complementaryColour,
+                    backgroundColor : this.complementaryColour,
+                    margin: 0
+                };
+			}
+		}
+
 		showMessageEditor(newMessage: boolean): void {
 			var handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(new Message());
 			}
+            this.dataService.stopPolling();
             this.$mdSidenav('left').open();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
@@ -110,9 +168,11 @@ module TalkwallApp {
                 } else {
                     handle.dataService.updateMessage( null, null);
                 }
+                handle.dataService.startPolling('none', 'none');
 			}, function() {
 				//dialog dismissed
 				console.log('--> WallController: dismissed');
+                handle.dataService.startPolling('none', 'none');
 			});
 		}
 
