@@ -5,7 +5,6 @@
 
 module TalkwallApp {
 	"use strict";
-	import ITimeoutService = angular.ITimeoutService;
 
     export interface IFeedMessageController {
         deleteMessage(): void;
@@ -15,24 +14,21 @@ module TalkwallApp {
     }
 
 	class FeedMessageController implements IFeedMessageController {
-		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$timeout', '$window'];
+		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window'];
 
 		private message: Message;
-		public showControls: boolean = false;
-		private originReversed: Array<{}> = [];
+		private showControls: boolean = false;
 
 		constructor(
 			private isolatedScope: FeedMessageDirectiveScope,
 			public dataService: DataService,
 			public $document: ng.IDocumentService,
 			private utilityService: UtilityService,
-			public $timeout: ITimeoutService,
 			public $window: ng.IWindowService) {
 
             this.message = isolatedScope.data;
 
             if (typeof this.message.origin !== 'undefined') {
-               this.originReversed = this.message.origin.reverse();
                 if (this.message.board === undefined) {
                     this.message.board = {};
                 }
@@ -40,7 +36,7 @@ module TalkwallApp {
                 if (this.message.board[this.dataService.getNickname()] !== undefined) {
                     this.message.isSelected = true;
                     if (this.message.board[this.dataService.getNickname()].pinned === true) {
-                        this.message.isPinned = false;
+                        this.message.isPinned = true;
                     }
                 } else {
                     this.message.isSelected = false;
@@ -49,28 +45,25 @@ module TalkwallApp {
 		};
 
 		deleteMessage(): void {
-            this.dataService.setMessageToEdit(this.message);
-            this.message.deleted = true;
-			this.dataService.updateMessage(
-				function() {
-					//success delete
-				},
-				function(error: {}) {
-					//TODO: handle message delete error
-				}
-			);
+			//check if authenticated or author
+			if (this.message.creator === this.dataService.getNickname() || this.dataService.userIsAuthorised()) {
+				this.message.deleted = true;
+				this.persistMessage();
+			}
 		}
 
 		editMessage(): void {
-			this.dataService.setMessageToEdit(this.message);
-			this.isolatedScope.showEditPanel();
+			if (this.message.creator === this.dataService.getNickname()) {
+				this.dataService.setMessageToEdit(this.message);
+				this.isolatedScope.showEditPanel();
+				this.showControls = false;
+			}
 		}
 
 		toggleSelectMessage(): void {
 			var handle = this;
             if (this.message.isSelected) {
                 delete this.message.board[this.dataService.getNickname()];
-                this.message.isPinned = false;
             } else {
                 this.message.board[this.dataService.getNickname()] = {
                     xpos: handle.utilityService.getRandomBetween(45, 55) / 100,
@@ -78,31 +71,19 @@ module TalkwallApp {
                     pinned: false
                 };
             }
-			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage(
-				function() {
-					handle.message.isSelected = !handle.message.isSelected;
-					handle.dataService.setMessageToEdit(null);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				});
+			this.persistMessage();
 		}
 
 		togglePinMessage(): void {
 			var handle = this;
 			this.message.board[this.dataService.getNickname()].pinned
                 = !this.message.board[this.dataService.getNickname()].pinned;
+			this.persistMessage();
+		}
+
+		persistMessage(): void {
 			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage(
-				function() {
-					handle.message.isPinned = !handle.message.isPinned;
-					handle.dataService.setMessageToEdit(null);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				}
-			);
+			this.dataService.updateMessage();
 		}
 
 	}
@@ -112,6 +93,9 @@ module TalkwallApp {
 		let viewWidthKey = 'VIEW_WIDTH', viewHeightKey = 'VIEW_HEIGHT';
 		let changedTouchesKey = 'changedTouches', touchEventKey = 'TouchEvent';
 		var startX = 0, startY = 0;
+		var absStartX = 0, absStartY = 0;
+		var diffX = 0, diffY = 0;
+		var persistPosition: boolean = false;
 
 		if (isolatedScope.onBoard === 'true') {
 			var messageWidth = element.prop('offsetWidth');
@@ -135,12 +119,16 @@ module TalkwallApp {
 					var touchobj = event[changedTouchesKey][0];
 					startX = touchobj.clientX;
 					startY = touchobj.clientY;
+					absStartX = touchobj.pageX;
+					absStartY = touchobj.pageY;
 					ctrl.$document.on('touchmove', touchmove);
 					ctrl.$document.on('touchend', touchend);
 				} else if (event instanceof MouseEvent) {
 					// Handling the mousedown event
-					startX = event.screenX - (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * currentSize[viewWidthKey]);
-					startY = event.screenY - (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * currentSize[viewHeightKey]);
+					absStartX = event.screenX;
+					absStartY = event.screenY;
+					startX = absStartX - (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * currentSize[viewWidthKey]);
+					startY = absStartY - (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * currentSize[viewHeightKey]);
 					ctrl.$document.on('mousemove', mousemove);
 					ctrl.$document.on('mouseup', mouseup);
 				}
@@ -148,6 +136,12 @@ module TalkwallApp {
 		}
 
 		function mousemove(event) {
+			diffX = event.screenX - absStartX;
+			diffY = event.screenY - absStartY;
+			//will only persist if move greater than a 5*5px box
+			if (diffX >= 5 || diffX <= -5 || diffY >= 5 || diffY <= -5) {
+				persistPosition = true;
+			}
 			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = event.screenX - startX;
 			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = event.screenY - startY;
 			doMove();
@@ -155,6 +149,12 @@ module TalkwallApp {
 
 		function touchmove(event) {
 			var touchobj = event[changedTouchesKey][0];
+			diffX = touchobj.pageX - absStartX;
+			diffY = touchobj.pageY - absStartY;
+			//will only persist if move greater than a 5*5px box
+			if (diffX >= 5 || diffX <= -5 || diffY >= 5 || diffY <= -5) {
+				persistPosition = true;
+			}
 			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = touchobj.pageX - startX;
 			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = touchobj.pageY - startY;
 			doMove();
@@ -191,13 +191,22 @@ module TalkwallApp {
 		function mouseup() {
 			ctrl.$document.off('mousemove', mousemove);
 			ctrl.$document.off('mouseup', mouseup);
+			//only persist if significant move (> 10px)
+			//helps not persisting when clicking on controls only
+			if (persistPosition) {
+				ctrl.persistMessage();
+			}
 		}
 
 		function touchend() {
 			ctrl.$document.off('touchmove', touchmove);
 			ctrl.$document.off('touchend', touchend);
+			//only persist if significant move (> 10px)
+			//helps not persisting when clicking on controls only
+			if (persistPosition) {
+				ctrl.persistMessage();
+			}
 		}
-
 	}
 
 	//isolated scope interface

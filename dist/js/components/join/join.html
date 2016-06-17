@@ -3,7 +3,7 @@
 			<div class="md-toolbar-tools">
 				<h2>{{ 'MENUPAGE_PARTICIPATEDRAWER_HEADING' | translate }}</h2>
 				<span flex></span>
-				<md-button class="md-icon-button" ng-click="joinC.cancel()">
+				<md-button aria-label="Cancel join Talkwall" class="md-icon-button" ng-click="joinC.cancel()">
 					<md-icon md-svg-src="images/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
 				</md-button>
 			</div>
@@ -24,7 +24,7 @@
 				<input ng-model="joinC.joinModel.pin" type="text" required minlength="4" maxlength="4" md-maxlength="4">
 			</md-input-container>
 
-			<md-button class="md-primary md-raised join-menuItem" ng-click="joinC.answer()" aria-label="Join">
+			<md-button aria-label="Join Talkwall" class="md-primary md-raised join-menuItem" ng-click="joinC.answer()" aria-label="Join">
 				Join
 			</md-button>
 
