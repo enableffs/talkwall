@@ -145,6 +145,10 @@ module TalkwallApp {
          */
         getMessages(): void;
         /**
+         * get array of all current participants in this question
+         */
+        getParticipants(): Array<string>;
+        /**
          * get the board dimensions object
          * @return the dimension object
          */
@@ -723,6 +727,9 @@ module TalkwallApp {
             }
         }
 
+        getParticipants(): Array<string> {
+            return this.participants;
+        }
 
         setBoardDivSize(newSize: any): void {
             console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));

@@ -87,12 +87,24 @@
 
 				<!-- left sidenav people's screen feed -->
 				<md-list ng-if="!wallC.feedView">
-					<md-list-item ng-repeat="nickname in wallC.dataService.participants">
-						<md-icon md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
-						<p>{{ nickname }}</p>
+                    <md-list-item>
+                        <md-label flex="80"><p><span ng-if="wallC.userIsChecked()">Un-</span>Select All</p></md-label>
+                        <md-checkbox aria-label="Select All"
+                                     ng-checked="wallC.userIsChecked()"
+                                     ng-click="wallC.toggleAll()">
+                        </md-checkbox>
+                    </md-list-item>
+					<md-list-item ng-repeat="nickname in wallC.dataService.getParticipants()">
+                        <div flex="80">
+                            <md-icon ng-style="{ 'fill' : nickname == 'teacher' ? '#FF7700' : 'black' }" md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
+                            <md-label class="wall-username">{{nickname}}</md-label>
+                        </div>
+                        <md-checkbox class="user-checkbox" ng-checked="wallC.userExists(nickname, selected_users)" ng-click="wallC.userToggle(nickname, selected_users)">
+                        </md-checkbox>
 						<md-divider></md-divider>
 					</md-list-item>
 				</md-list>
+
 			</md-content>
 			<div class="wall-sidenavRightBottomDiv" layout="row" layout-align="center center">
 				<!-- this is to allow the fab button 'show editMessage' to float over the bottom of the sidenav -->
@@ -134,21 +146,62 @@
 					</md-content>
 				</section>
 
+                <!-- Filter by people -->
+                <section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1}">
+                    <md-toolbar ng-click="wallC.toggleRightMenu(2)">
+                        <div flex layout="row" layout-align="start center">
+                            <div flex class="wall-toolbarText" layout-align="center center">Filter by User</div>
+                            <md-icon ng-if="!wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
+                            <md-icon ng-if="wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
+                        </div>
+                    </md-toolbar>
+                    <md-content flex ng-if="wallC.rightMenu2">
+                        <div layout="column" layout-padding>
+
+                            <md-list>
+                                <md-list-item>
+                                    <md-switch class="wall-user-checkbox" ng-model="wallC.userFilterOn" aria-label="User filter activation">Activate</md-switch>
+                                    <md-divider></md-divider>
+                                </md-list-item>
+                                <md-list-item>
+                                    <md-label flex="80"><p><span ng-if="wallC.userIsChecked()">Un-</span>Select All</p></md-label>
+                                    <md-checkbox aria-label="Select All"
+                                                 ng-checked="wallC.userIsChecked()"
+                                                 md-indeterminate="isIndeterminate()"
+                                                 ng-click="wallC.toggleAll()">
+                                    </md-checkbox>
+                                    <md-divider></md-divider>
+                                </md-list-item>
+                                <md-list-item ng-repeat="nickname in wallC.dataService.getParticipants()">
+                                    <div flex="80">
+                                        <md-icon ng-style="{ 'fill' : nickname == 'teacher' ? '#FF7700' : 'black' }" md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
+                                        <md-label class="wall-username">{{nickname}}</md-label>
+                                    </div>
+                                    <md-checkbox class="user-checkbox" ng-checked="wallC.userExists(nickname, selected_users)" ng-click="wallC.userToggle(nickname, selected_users)">
+                                    </md-checkbox>
+                                    <md-divider></md-divider>
+                                </md-list-item>
+                            </md-list>
+
+                        </div>
+                    </md-content>
+                </section>
+
 				<!-- Edit tasks section -->
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2}">
-					<md-toolbar ng-click="wallC.toggleRightMenu(2)">
+					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
 						<div flex layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Edit tasks</div>
-							<md-icon ng-if="!wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
-							<md-icon ng-if="wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-if="!wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-if="wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
-					<md-content flex ng-if="wallC.rightMenu2">
+					<md-content flex ng-if="wallC.rightMenu3">
 						<md-list>
 							<div task ng-repeat="question in wallC.dataService.getWall().questions" data="question" show-edit-panel="wallC.showMessageEditor(false)"></div>
 						</md-list>
 					</md-content>
-					<div ng-if="wallC.rightMenu2" layout="column" class="wall-rightMenuAddTaskPanel">
+					<div ng-if="wallC.rightMenu3" layout="column" class="wall-rightMenuAddTaskPanel">
 						<md-input-container class="md-block">
 							<label>Add task</label>
 							<textarea ng-model="wallC.dataService.getQuestionToEdit().label" rows="5" md-select-on-focus></textarea>
@@ -176,15 +229,15 @@
 				</section>
 
 				<!-- Close talkwall section -->
-				<section ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3}">
-					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
+				<section ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu4}">
+					<md-toolbar ng-click="wallC.toggleRightMenu(4)">
 						<div flex layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Close Talkwall</div>
-							<md-icon ng-if="!wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
-							<md-icon ng-if="wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-if="!wallC.rightMenu4" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-if="wallC.rightMenu4" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
-					<md-content ng-if="wallC.rightMenu3">
+					<md-content ng-if="wallC.rightMenu4">
 						<div layout="column" layout-padding>
 							<div>Some text explaining what happens when one closes a wall will come here shortly.</div>
 							<md-button aria-label="Close current wall" class="md-raised wall-powerOffButton" ng-click="wallC.closeWall()">
@@ -199,17 +252,20 @@
 		<!-- main content of the wall -->
 		<div flex class="wall-mainArea">
 
-			<div watch-board-size style="position: absolute; top: 64px; left: 0; bottom: 0; right: 0;" ng-style="{'background-color' : wallC.dataService.getBackgroundColour() }">
+			<div watch-board-size style="position: absolute; top: 64px; left: 0; bottom: 0; right: 0;" ng-class="wallC.backgroundColour">
 				<hr ng-show="wallC.dataService.getQuestion().grid === 'vertical' || wallC.dataService.getQuestion().grid === 'both'"
                     width="1" size="{{wallC.dataService.getBoardDivSize()['VIEW_HEIGHT']}}" ng-style="wallC.dataService.getGridStyle('vertical')">
 				<hr ng-show="wallC.dataService.getQuestion().grid === 'horizontal' || wallC.dataService.getQuestion().grid === 'both'"
                     width="{{wallC.dataService.getBoardDivSize()['VIEW_WIDTH']}}" size="3" ng-style="wallC.dataService.getGridStyle('horizontal')">
-				<div feed-message
-					 ng-repeat="message in wallC.dataService.getQuestion().messages"
-					 data="message" on-board="true"
-					 show-edit-panel="wallC.showMessageEditor(false)"
-					 ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned, 'fade': message.isSelected }"
-					 ng-if="!message.deleted && message.isSelected && !wallC.dataService.phoneMode"></div>
+                <div ng-repeat="message in wallC.dataService.getQuestion().messages | filter : wallC.messageFilterBySelectedUsers" class="animate-repeat">
+                    <div feed-message
+                         data="message" on-board="true"
+                         show-edit-panel="wallC.showMessageEditor(false)"
+                         ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned }"
+                         ng-if="!message.deleted && message.isSelected && !wallC.dataService.phoneMode">
+                    </div>
+                </div>
+
 			</div>
 
 			<!-- (+) fab button to show the editMessage bottomPane -->

@@ -132,6 +132,7 @@ module TalkwallApp {
 					ctrl.$document.on('mousemove', mousemove);
 					ctrl.$document.on('mouseup', mouseup);
 				}
+                ctrl.dataService.stopPolling();
 			});
 		}
 
@@ -196,6 +197,7 @@ module TalkwallApp {
 			if (persistPosition) {
 				ctrl.persistMessage();
 			}
+            ctrl.dataService.startPolling('none', 'none');
 		}
 
 		function touchend() {
@@ -206,6 +208,7 @@ module TalkwallApp {
 			if (persistPosition) {
 				ctrl.persistMessage();
 			}
+            ctrl.dataService.startPolling('none', 'none');
 		}
 	}
 
