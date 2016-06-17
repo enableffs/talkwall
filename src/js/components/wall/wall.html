@@ -208,7 +208,7 @@
 					 ng-repeat="message in wallC.dataService.getQuestion().messages"
 					 data="message" on-board="true"
 					 show-edit-panel="wallC.showMessageEditor(false)"
-					 ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned}"
+					 ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned, 'fade': message.isSelected }"
 					 ng-if="!message.deleted && message.isSelected && !wallC.dataService.phoneMode"></div>
 				<!-- ng-style="wallC.getLocationPosition($event, message.board[wallC.dataService.getNickname()])" -->
 			</div>
