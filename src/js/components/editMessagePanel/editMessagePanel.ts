@@ -24,6 +24,7 @@ module TalkwallApp {
 		 */
 		hide(response?: any): void {
 			console.log('--> EditMessageController: hide');
+			this.dataService.setMessageToEdit(null);
 			this.$mdBottomSheet.hide();
 		};
 		/**
@@ -32,19 +33,21 @@ module TalkwallApp {
 		 */
 		cancel(response?: any) : void {
 			console.log('--> EditMessageController: cancel');
+			this.dataService.setMessageToEdit(null);
 			this.$mdBottomSheet.cancel();
 		};
 		/**
 		 * answer this dialog
 		 * @aparam answer aa a string
 		 */
-		answer(answer: string): void {
+		answer(answer: boolean): void {
 			console.log('--> EditMessageController: answer: ' + answer);
 			if (answer !== undefined) {
 				this.$mdBottomSheet.hide(answer);
 			} else {
 				this.$mdBottomSheet.cancel();
 			}
+			this.messageToEdit = null;
 		};
 	}
 }

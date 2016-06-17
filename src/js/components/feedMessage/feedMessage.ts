@@ -5,118 +5,79 @@
 
 module TalkwallApp {
 	"use strict";
-	import ITimeoutService = angular.ITimeoutService;
 	class FeedMessageController {
-		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$timeout'];
+		static $inject = ['$scope', 'DataService', '$document', 'UtilityService'];
 
 		private message: Message;
-		public showControls: boolean = false;
+		private showControls: boolean = false;
 		private originReversed: Array<{}> = new Array();
 
 		constructor(
 			private isolatedScope: FeedMessageDirectiveScope,
 			public dataService: DataService,
 			public $document: ng.IDocumentService,
-			private utilityService: UtilityService,
-			public $timeout: ITimeoutService) {
+			private utilityService: UtilityService) {
 			this.message = isolatedScope.data;
-			if (this.message.origin !== undefined) {
-				this.originReversed = this.message.origin.reverse();
-			}
-			if (this.message.board === undefined) {
-				this.message.board = {};
-			}
-			this.message.isPinned = false;
-			if (this.message.board[this.dataService.getNickname()] !== undefined) {
-				this.message.isSelected = true;
-				if (this.message.board[this.dataService.getNickname()].pinned === true) {
-					this.message.isPinned = false;
+			if (this.message !== undefined) {
+				if (this.message.board === undefined) {
+					this.message.board = {};
 				}
-			} else {
-				this.message.isSelected = false;
+				this.message.isPinned = false;
+				if (this.message.board[this.dataService.getNickname()] !== undefined) {
+					this.message.isSelected = true;
+					if (this.message.board[this.dataService.getNickname()].pinned === true) {
+						this.message.isPinned = false;
+					}
+				} else {
+					this.message.isSelected = false;
+				}
 			}
 		};
 
 		deleteMessage(): void {
-            this.dataService.setMessageToEdit(this.message);
-            this.message.deleted = true;
-			this.dataService.updateMessage(
-				function() {
-					//success delete
-				},
-				function(error: {}) {
-					//TODO: handle message delete error
-				}
-			);
+			//check if authenticated or author
+			if (this.message.creator === this.dataService.getNickname() || this.dataService.userIsAuthorised()) {
+				this.message.deleted = true;
+				this.persistMessage();
+			}
 		}
 
 		editMessage(): void {
-			this.dataService.setMessageToEdit(this.message);
-			this.isolatedScope.showEditPanel();
+			if (this.message.creator === this.dataService.getNickname()) {
+				this.dataService.setMessageToEdit(this.message);
+				this.isolatedScope.showEditPanel();
+				this.showControls = false;
+			}
 		}
 
 		selectMessage(): void {
-			var handle = this;
 			this.message.board[this.dataService.getNickname()] = {
-				xpos: handle.utilityService.getRandomBetween(45, 55) / 100,
-				ypos: handle.utilityService.getRandomBetween(45, 55) / 100,
+				xpos: this.utilityService.getRandomBetween(45, 55) / 100,
+				ypos: this.utilityService.getRandomBetween(45, 55) / 100,
 				pinned: false
 			};
-			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage(
-				function() {
-					handle.message.isSelected = true;
-					handle.dataService.setMessageToEdit(null);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				}
-			);
+			this.persistMessage();
 		}
 
 		unselectMessage(): void {
-			var handle = this;
 			delete this.message.board[this.dataService.getNickname()];
 			this.message.isPinned = false;
-			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage(
-				function() {
-					handle.message.isSelected = false;
-					handle.dataService.setMessageToEdit(null);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				});
+			this.persistMessage();
 		}
 
 		pinMessage(): void {
-			var handle = this;
 			this.message.board[this.dataService.getNickname()].pinned = true;
-			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage(
-				function() {
-					handle.message.isPinned = true;
-					handle.dataService.setMessageToEdit(null);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				}
-			);
+			this.persistMessage();
 		}
 
 		unpinMessage(): void {
-			var handle = this;
 			this.message.board[this.dataService.getNickname()].pinned = false;
+			this.persistMessage();
+		}
+
+		persistMessage(): void {
 			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage(
-				function() {
-					handle.message.isPinned = false;
-					handle.dataService.setMessageToEdit(null);
-				},
-				function(error: {}) {
-					//TODO: handle message POST error
-				}
-			);
+			this.dataService.updateMessage();
 		}
 	}
 
@@ -125,6 +86,9 @@ module TalkwallApp {
 		let viewWidthKey = 'VIEW_WIDTH', viewHeightKey = 'VIEW_HEIGHT';
 		let changedTouchesKey = 'changedTouches';
 		var startX = 0, startY = 0;
+		var absStartX = 0, absStartY = 0;
+		var diffX = 0, diffY = 0;
+		var persistPosition: boolean = false;
 
 		if (isolatedScope.onBoard === 'true') {
 			var messageWidth = element.prop('offsetWidth');
@@ -148,12 +112,16 @@ module TalkwallApp {
 					var touchobj = event[changedTouchesKey][0];
 					startX = touchobj.clientX;
 					startY = touchobj.clientY;
+					absStartX = touchobj.pageX;
+					absStartY = touchobj.pageY;
 					ctrl.$document.on('touchmove', touchmove);
 					ctrl.$document.on('touchend', touchend);
 				} else if (event instanceof MouseEvent) {
 					// Handling the mousedown event
-					startX = event.screenX - (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * currentSize[viewWidthKey]);
-					startY = event.screenY - (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * currentSize[viewHeightKey]);
+					absStartX = event.screenX;
+					absStartY = event.screenY;
+					startX = absStartX - (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * currentSize[viewWidthKey]);
+					startY = absStartY - (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * currentSize[viewHeightKey]);
 					ctrl.$document.on('mousemove', mousemove);
 					ctrl.$document.on('mouseup', mouseup);
 				}
@@ -161,6 +129,12 @@ module TalkwallApp {
 		}
 
 		function mousemove(event) {
+			diffX = event.screenX - absStartX;
+			diffY = event.screenY - absStartY;
+			//will only persist if move greater than a 5*5px box
+			if (diffX >= 5 || diffX <= -5 || diffY >= 5 || diffY <= -5) {
+				persistPosition = true;
+			}
 			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = event.screenX - startX;
 			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = event.screenY - startY;
 			doMove();
@@ -168,6 +142,12 @@ module TalkwallApp {
 
 		function touchmove(event) {
 			var touchobj = event[changedTouchesKey][0];
+			diffX = touchobj.pageX - absStartX;
+			diffY = touchobj.pageY - absStartY;
+			//will only persist if move greater than a 5*5px box
+			if (diffX >= 5 || diffX <= -5 || diffY >= 5 || diffY <= -5) {
+				persistPosition = true;
+			}
 			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = touchobj.pageX - startX;
 			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = touchobj.pageY - startY;
 			doMove();
@@ -204,11 +184,21 @@ module TalkwallApp {
 		function mouseup() {
 			ctrl.$document.off('mousemove', mousemove);
 			ctrl.$document.off('mouseup', mouseup);
+			//only persist if significant move (> 10px)
+			//helps not persisting when clicking on controls only
+			if (persistPosition) {
+				ctrl.persistMessage();
+			}
 		}
 
 		function touchend() {
 			ctrl.$document.off('touchmove', touchmove);
 			ctrl.$document.off('touchend', touchend);
+			//only persist if significant move (> 10px)
+			//helps not persisting when clicking on controls only
+			if (persistPosition) {
+				ctrl.persistMessage();
+			}
 		}
 	}
 

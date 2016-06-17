@@ -87,7 +87,7 @@ module TalkwallApp {
 		showMessageEditor(newMessage: boolean): void {
 			var handle = this;
 			if (newMessage) {
-                handle.dataService.setMessageToEdit(new Message());
+                handle.dataService.setMessageToEdit(null);
 			}
             this.$mdSidenav('left').open();
 			this.$mdBottomSheet.show({
@@ -98,17 +98,17 @@ module TalkwallApp {
 				//dialog answered
 				console.log('--> WallController: answer: ' + answer);
 				//post message to server and add returned object to question feed
-                if (newMessage) {
+                if (handle.dataService.getMessageToEdit()._id === undefined) {
                     handle.dataService.addMessage(
                         function () {
                             //success
                         },
                         function (error: {}) {
-                            //TODO: handle message POST error
+                            //TODO: handle message create error
                         }
                     );
                 } else {
-                    handle.dataService.updateMessage( null, null);
+                    handle.dataService.updateMessage();
                 }
 			}, function() {
 				//dialog dismissed
