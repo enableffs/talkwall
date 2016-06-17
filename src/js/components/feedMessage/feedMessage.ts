@@ -5,33 +5,43 @@
 
 module TalkwallApp {
 	"use strict";
-	class FeedMessageController {
-		static $inject = ['$scope', 'DataService', '$document', 'UtilityService'];
+
+    export interface IFeedMessageController {
+        deleteMessage(): void;
+        editMessage(): void;
+        toggleSelectMessage(): void;
+        togglePinMessage(): void;
+    }
+
+	class FeedMessageController implements IFeedMessageController {
+		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window'];
 
 		private message: Message;
 		private showControls: boolean = false;
-		private originReversed: Array<{}> = new Array();
 
 		constructor(
 			private isolatedScope: FeedMessageDirectiveScope,
 			public dataService: DataService,
 			public $document: ng.IDocumentService,
-			private utilityService: UtilityService) {
-			this.message = isolatedScope.data;
-			if (this.message !== undefined) {
-				if (this.message.board === undefined) {
-					this.message.board = {};
-				}
-				this.message.isPinned = false;
-				if (this.message.board[this.dataService.getNickname()] !== undefined) {
-					this.message.isSelected = true;
-					if (this.message.board[this.dataService.getNickname()].pinned === true) {
-						this.message.isPinned = false;
-					}
-				} else {
-					this.message.isSelected = false;
-				}
-			}
+			private utilityService: UtilityService,
+			public $window: ng.IWindowService) {
+
+            this.message = isolatedScope.data;
+
+            if (typeof this.message.origin !== 'undefined') {
+                if (this.message.board === undefined) {
+                    this.message.board = {};
+                }
+                this.message.isPinned = false;
+                if (this.message.board[this.dataService.getNickname()] !== undefined) {
+                    this.message.isSelected = true;
+                    if (this.message.board[this.dataService.getNickname()].pinned === true) {
+                        this.message.isPinned = true;
+                    }
+                } else {
+                    this.message.isSelected = false;
+                }
+            }
 		};
 
 		deleteMessage(): void {
@@ -50,28 +60,24 @@ module TalkwallApp {
 			}
 		}
 
-		selectMessage(): void {
-			this.message.board[this.dataService.getNickname()] = {
-				xpos: this.utilityService.getRandomBetween(45, 55) / 100,
-				ypos: this.utilityService.getRandomBetween(45, 55) / 100,
-				pinned: false
-			};
+		toggleSelectMessage(): void {
+			var handle = this;
+            if (this.message.isSelected) {
+                delete this.message.board[this.dataService.getNickname()];
+            } else {
+                this.message.board[this.dataService.getNickname()] = {
+                    xpos: handle.utilityService.getRandomBetween(45, 55) / 100,
+                    ypos: handle.utilityService.getRandomBetween(45, 55) / 100,
+                    pinned: false
+                };
+            }
 			this.persistMessage();
 		}
 
-		unselectMessage(): void {
-			delete this.message.board[this.dataService.getNickname()];
-			this.message.isPinned = false;
-			this.persistMessage();
-		}
-
-		pinMessage(): void {
-			this.message.board[this.dataService.getNickname()].pinned = true;
-			this.persistMessage();
-		}
-
-		unpinMessage(): void {
-			this.message.board[this.dataService.getNickname()].pinned = false;
+		togglePinMessage(): void {
+			var handle = this;
+			this.message.board[this.dataService.getNickname()].pinned
+                = !this.message.board[this.dataService.getNickname()].pinned;
 			this.persistMessage();
 		}
 
@@ -79,12 +85,13 @@ module TalkwallApp {
 			this.dataService.setMessageToEdit(this.message);
 			this.dataService.updateMessage();
 		}
+
 	}
 
 	function linker(isolatedScope: FeedMessageDirectiveScope , element: ng.IAugmentedJQuery,
 	                attributes: ng.IAttributes, ctrl: FeedMessageController) {
 		let viewWidthKey = 'VIEW_WIDTH', viewHeightKey = 'VIEW_HEIGHT';
-		let changedTouchesKey = 'changedTouches';
+		let changedTouchesKey = 'changedTouches', touchEventKey = 'TouchEvent';
 		var startX = 0, startY = 0;
 		var absStartX = 0, absStartY = 0;
 		var diffX = 0, diffY = 0;
@@ -107,7 +114,7 @@ module TalkwallApp {
 				messageWidth = element.prop('offsetWidth');
 				messageHeight = element.prop('offsetHeight');
 
-				if (event instanceof TouchEvent) {
+				if (ctrl.$window[touchEventKey] && event.originalEvent instanceof TouchEvent) {
 					// Handling the touchstart event
 					var touchobj = event[changedTouchesKey][0];
 					startX = touchobj.clientX;

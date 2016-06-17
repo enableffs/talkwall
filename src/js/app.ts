@@ -1,6 +1,8 @@
 /// <reference path="_references.ts"/>
 /// <reference path="app.config.ts"/>
 
+/// <reference path="app.constants.ts"/>
+
 /// <reference path="services/dataservice.ts"/>
 /// <reference path="services/authenticationservice.ts"/>
 /// <reference path="services/tokenservice.ts"/>
@@ -41,6 +43,7 @@ module TalkwallApp {
 
     angular.module('TalkwallApp', dependencies)
 
+        .constant('TalkwallConstants', TalkwallConstants)
         .config(configApp)
 
         .service('URLService', URLService)

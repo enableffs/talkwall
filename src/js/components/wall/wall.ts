@@ -31,6 +31,14 @@ module TalkwallApp {
          * @param index wall.questions Index of the question being selected
          */
         setQuestion(index: number): void;
+        /**
+         * Check if question has been edited
+         */
+        questionToEditDirty(): boolean;
+        /**
+         * Change the grid type
+         */
+        setGrid(type: string): void;
 	}
 
 	export class WallController implements IWallControllerService {
@@ -40,6 +48,8 @@ module TalkwallApp {
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
+
+        private savedGridType: string = 'none';
 
         constructor(
 			private dataService: DataService,
@@ -72,7 +82,9 @@ module TalkwallApp {
         setQuestion(index) {
 	        this.dataService.setQuestion(index,
 		        () => {
-			        //success
+                    if ( this.dataService.getCurrentQuestionIndex() !== -1 ) {
+                        this.savedGridType = this.dataService.getQuestion().grid;
+                    }
 		        },
 		        function() {
 			        //error
@@ -84,11 +96,22 @@ module TalkwallApp {
 			this.dataService.closeWallNow();
 		}
 
+        setGrid(type): void {
+            this.dataService.getQuestionToEdit().grid = type;
+        }
+
+        questionToEditDirty() {
+            return (this.dataService.getQuestionToEdit().label !== this.dataService.getQuestion().label
+                && this.dataService.getQuestionToEdit().label !== '')
+                || typeof this.dataService.getQuestionToEdit()._id !== 'undefined';
+        }
+
 		showMessageEditor(newMessage: boolean): void {
 			var handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(null);
 			}
+            this.dataService.stopPolling();
             this.$mdSidenav('left').open();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
@@ -110,9 +133,11 @@ module TalkwallApp {
                 } else {
                     handle.dataService.updateMessage();
                 }
+                handle.dataService.startPolling('none', 'none');
 			}, function() {
 				//dialog dismissed
 				console.log('--> WallController: dismissed');
+                handle.dataService.startPolling('none', 'none');
 			});
 		}
 
