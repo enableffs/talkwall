@@ -39,7 +39,7 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
             messages: {}
         };
     }
-    // Add the nickname and timestamp to the connected users list, if not already there
+    // Update the nickname and timestamp to the connected users list
     this.data[wall_id].status['connected_nicknames'][nickname] = Date.now();
 
     // Create a message list for this user for a particular question

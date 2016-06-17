@@ -199,11 +199,11 @@
 		<!-- main content of the wall -->
 		<div flex class="wall-mainArea">
 
-			<div watch-board-size style="position: absolute; top: 64px; left: 0; bottom: 0; right: 0;" ng-style="{'background-color' : wallC.backgroundColour }">
+			<div watch-board-size style="position: absolute; top: 64px; left: 0; bottom: 0; right: 0;" ng-style="{'background-color' : wallC.dataService.getBackgroundColour() }">
 				<hr ng-show="wallC.dataService.getQuestion().grid === 'vertical' || wallC.dataService.getQuestion().grid === 'both'"
-                    width="1" size="{{wallC.dataService.getBoardDivSize()['VIEW_HEIGHT']}}" ng-style="wallC.getGridStyle('vertical')">
+                    width="1" size="{{wallC.dataService.getBoardDivSize()['VIEW_HEIGHT']}}" ng-style="wallC.dataService.getGridStyle('vertical')">
 				<hr ng-show="wallC.dataService.getQuestion().grid === 'horizontal' || wallC.dataService.getQuestion().grid === 'both'"
-                    width="{{wallC.dataService.getBoardDivSize()['VIEW_WIDTH']}}" size="3" ng-style="wallC.getGridStyle('horizontal')">
+                    width="{{wallC.dataService.getBoardDivSize()['VIEW_WIDTH']}}" size="3" ng-style="wallC.dataService.getGridStyle('horizontal')">
 				<div feed-message
 					 ng-repeat="message in wallC.dataService.getQuestion().messages"
 					 data="message" on-board="true"

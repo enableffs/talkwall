@@ -1,4 +1,5 @@
 /// <reference path="../_references.ts"/>
+/// <reference path="../app.constants.ts"/>
 /// <reference path="urlservice.ts"/>
 /// <reference path="authenticationservice.ts"/>
 /// <reference path="utilityservice.ts"/>
@@ -155,7 +156,15 @@ module TalkwallApp {
          * @param dimensions as a JSON object
          */
         setBoardDivSize(dimensions: {}): void;
-
+        /**
+         * get this appropriate background colour for the current question index
+         */
+        getBackgroundColour(): string;
+        /**
+         * get an object to style the grid overlay
+         * @param type 'horizontal' or 'vertical'
+         */
+        getGridStyle(type): {};
         /**
          * set a message as the editable message object
          */
@@ -178,7 +187,7 @@ module TalkwallApp {
 
     export class DataService implements IDataService {
         static $inject = ['$http', '$window', '$routeParams', '$location', '$interval', '$mdDialog', 'UtilityService',
-            'URLService', '$mdMedia'];
+            'URLService', '$mdMedia', 'TalkwallConstants'];
         private user: User = null;
         private wall: Wall = null;
         private question: Question = null;
@@ -207,7 +216,8 @@ module TalkwallApp {
                      private $mdDialog: angular.material.IDialogService,
                      private utilityService: UtilityService,
                      private urlService: IURLService,
-                     private $mdMedia: IMedia) {
+                     private $mdMedia: IMedia,
+                     private constants: ITalkwallConstants) {
             this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
             console.log('--> DataService started ...');
         }
@@ -528,7 +538,11 @@ module TalkwallApp {
                 .success((data) => {
                     let resultKey = 'result';
                     this.wall.questions.push(data[resultKey]);
-                    //this.question = question;
+
+                    // If this was the first question
+                    if (this.wall.questions.length === 0) {
+                        this.setQuestion(0, successCallbackFn, errorCallbackFn);
+                    }
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
@@ -573,13 +587,22 @@ module TalkwallApp {
                     console.log('--> DataService deleteQuestion: getMessages success');
                     let resultKey = 'result';
                     if (data[resultKey].length === 0) {
-                        for (var i = 0; i < this.wall.questions.length; i++) {
-                            if (this.wall.questions[i]._id === question._id) {
-                                this.wall.questions.splice(i, 1);
-                            }
+                        var new_question_index = this.currentQuestionIndex;
+                        var deleted_question_index = this.utilityService.getQuestionIndexFromWallById(question._id, this.wall);
+                        this.wall.questions.splice(deleted_question_index, 1);
+                        if (new_question_index >= deleted_question_index ) {
+                            new_question_index = deleted_question_index - 1;
                         }
-                        successCallbackFn(200);
-                        //TODO: persist this to the server
+                        this.$http.delete(this.urlService.getHost() + '/question/' + this.wall._id + '/' + question._id)
+                            .success((data) => {
+                                if (new_question_index > -1) {
+                                    this.setQuestion(new_question_index, null, null);
+                                }
+                                successCallbackFn(200);
+                            })
+                            .error(() => {
+                                console.log('Error deleting question');
+                            });
                     } else {
                         successCallbackFn(401);
                     }
@@ -670,6 +693,32 @@ module TalkwallApp {
 
         getBoardDivSize() {
             return this.boardDivSize;
+        }
+
+        getBackgroundColour() {
+            let bgColourKey = 'BACKGROUND_COLOURS';
+            return this.constants.constants[bgColourKey][this.currentQuestionIndex];
+        }
+
+        getGridStyle(type): {} {
+            let heightKey = 'VIEW_HEIGHT', widthKey = 'VIEW_WIDTH', cpColourKey = 'COMPLEMENTARY_COLOURS';
+            if (type === 'horizontal') {
+                return {
+                    top : Math.floor(this.getBoardDivSize()[heightKey] / 2) + 'px',
+                    position : 'absolute',
+                    borderColor : this.constants.constants[cpColourKey][this.currentQuestionIndex],
+                    backgroundColor : this.constants.constants[cpColourKey][this.currentQuestionIndex],
+                    margin: 0
+                };
+            } else {
+                return {
+                    left : Math.floor(this.getBoardDivSize()[widthKey] / 2) + 'px',
+                    position : 'absolute',
+                    borderColor : this.constants.constants[cpColourKey][this.currentQuestionIndex],
+                    backgroundColor : this.constants.constants[cpColourKey][this.currentQuestionIndex],
+                    margin: 0
+                };
+            }
         }
 
         //  Run the polling timer

@@ -208,7 +208,7 @@ exports.notifyChangeQuestion = function(req, res) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
-
+    mm.addUser(req.params.wall_id, req.params.question_id, 'teacher');
     mm.putUpdate(req.params.wall_id, req.params.question_id, '', null, true);
     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
         message: common.StatusMessages.UPDATE_SUCCESS.message});
@@ -403,6 +403,36 @@ exports.updateQuestion = function(req, res) {
     })
 };
 
+/**
+ * @api {delete} /question Delete a question
+ * @apiName deleteQuestion
+ * @apiGroup authorised
+ *
+ */
+exports.deleteQuestion = function(req, res) {
+
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
+        || typeof req.params.question_id === 'undefined' || req.params.question_id == null ) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Wall.update(
+        { _id : req.params.wall_id },
+        { $pull: { questions : { _id: req.params.question_id } } },
+        { new: true } );
+
+    query.exec(function(error, wall) {
+        if(error) {
+            return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
+        } else {
+            mm.putUpdate(req.params.wall_id, 'none', '', null, true);
+            return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
+        }
+    })
+};
 
 exports.createTestUser = function() {
 
