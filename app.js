@@ -100,6 +100,7 @@ app.post('/wall',                   jwt({secret: secret.secretToken}),  tokenMan
 app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateWall);
 app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);
 app.put('/question',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateQuestion);
+app.delete('/question/:wall_id/:question_id',           jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.deleteQuestion);
 app.get('/change/:wall_id/:question_id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
 app.get('/close/:wall_id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
 

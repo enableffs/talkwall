@@ -249,7 +249,7 @@ describe('teacher polls for the first time, gets nothing new, but sets the teach
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
-                expect(res.body.result.status.connected_nicknames.length).to.eql(1);
+                expect(res.body.result.status.connected_nicknames[TEACHER_NICKNAME]).to.be.above(0);
                 expect(res.body.result.messages.length).to.eql(0);
                 done();
             });
@@ -263,7 +263,7 @@ describe('second client polls for the first time, gets no messages but gets conn
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
-                expect(res.body.result.status.connected_nicknames.length).to.eql(2);
+                expect(res.body.result.status.connected_nicknames[SECOND_CLIENT_NICKNAME]).to.be.above(0);
                 expect(res.body.result.messages.length).to.eql(0);
                 done();
             });
@@ -277,7 +277,7 @@ describe('first client polls for the first time, gets nothing new', function() {
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
-                expect(res.body.result.status.connected_nicknames.length).to.eql(3);
+                expect(res.body.result.status.connected_nicknames[FIRST_CLIENT_NICKNAME]).to.be.above(0);
                 expect(res.body.result.messages.length).to.eql(0);
                 done();
             });
@@ -327,7 +327,7 @@ describe('first client polls for new data', function() {
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
                 expect(res.body.result.status.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
-                expect(res.body.result.status.connected_nicknames.length).to.eql(3);
+                expect(Object.keys(res.body.result.status.connected_nicknames).length).to.eql(3);
                 expect(res.body.result.messages.length).to.eql(0);
                 done();
             });
@@ -342,7 +342,7 @@ describe('second client polls for new data, gets first clients new data', functi
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
                 expect(res.body.result.status.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
-                expect(res.body.result.status.connected_nicknames.length).to.eql(3);
+                expect(Object.keys(res.body.result.status.connected_nicknames).length).to.eql(3);
                 expect(res.body.result.messages.length).to.eql(1);
                 expect(res.body.result.messages[0].text).to.eql("No one knows");
                 done();
@@ -380,7 +380,7 @@ describe('first client polls for new data again', function() {
                 expect(res.statusCode).to.eql(common.StatusMessages.POLL_SUCCESS.status);
                 expect(res.body.message).to.eql(common.StatusMessages.POLL_SUCCESS.message);
                 expect(res.body.result.status.teacher_question_id).to.eql(FIRST_WALL.questions[0]._id);
-                expect(res.body.result.status.connected_nicknames.length).to.eql(3);
+                expect(Object.keys(res.body.result.status.connected_nicknames).length).to.eql(3);
                 expect(res.body.result.messages.length).to.eql(1);
                 expect(res.body.result.messages[0].board[SECOND_CLIENT_NICKNAME].xpos).to.eql(100);
                 done();
