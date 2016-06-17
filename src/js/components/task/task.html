@@ -2,22 +2,22 @@
 	<div layout="row" flex="none">
 		<div class="task-messageControl" layout="column" ng-show="taskC.question.showControls" layout-align="center start">
 			<div layout="row">
-				<md-button class="task-showControlButton task-close" ng-click="taskC.question.showControls = false">
+				<md-button aria-label="Hide question controls" class="task-showControlButton task-close" ng-click="taskC.question.showControls = false">
 					<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
 				</md-button>
 			</div>
 			<div layout="row">
-				<md-button class="task-showControlButton">
+				<md-button aria-label="Edit question" class="task-showControlButton">
 					<md-icon md-svg-icon="images/ic_mode_edit_orange_24px.svg" ng-click="taskC.editQuestion()"></md-icon>
 				</md-button>
-				<md-button class="task-showControlButton">
+				<md-button aria-label="Delete question" class="task-showControlButton">
 					<md-icon md-svg-icon="images/ic_delete_forever_orange_24px.svg" ng-click="taskC.deleteQuestion($event)"></md-icon>
 				</md-button>
 			</div>
 		</div>
 
-		<div layout="column" ng-show="!taskC.showControls" layout-align="center center">
-			<md-button class="task-showControlButton" ng-click="taskC.question.showControls = true">
+		<div layout="column" aria-label="Show question controls" ng-show="!taskC.showControls" layout-align="center center">
+			<md-button aria-label="Show question controls" class="task-showControlButton" ng-click="taskC.question.showControls = true">
 				<md-icon md-svg-icon="images/ic_menu_grey_24px.svg"></md-icon>
 			</md-button>
 		</div>

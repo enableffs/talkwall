@@ -118,11 +118,9 @@ module TalkwallApp {
          */
         addMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
-         * update a message on the feed
-         * @param sFunc success callback
-         * @param eFunc error callback
+         * update the current message to edit
          */
-        updateMessage(sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        updateMessage(): void;
         /**
          * Force all connected clients to change to this question id
          */
@@ -167,6 +165,7 @@ module TalkwallApp {
         getGridStyle(type): {};
         /**
          * set a message as the editable message object
+         * @param message the message to edit
          */
         setMessageToEdit(message: Message): void;
         /**
@@ -191,7 +190,7 @@ module TalkwallApp {
         private user: User = null;
         private wall: Wall = null;
         private question: Question = null;
-        private messageToEdit: Message = new Message();
+        private messageToEdit: Message;
         private questionToEdit: Question = new Question('');
         private phoneMode: boolean = false;
 
@@ -264,6 +263,7 @@ module TalkwallApp {
                 );
             } else {
                 // Fall through..
+                this.userAuthorised = false;
                 successCallbackFn();
             }
 
@@ -387,7 +387,48 @@ module TalkwallApp {
 
         // Accessor functions for passing messages between directives
         setMessageToEdit(message: Message) {
-            this.messageToEdit = message;
+            if (message === null) {
+                //no message, create a new one
+                this.messageToEdit = new Message();
+                this.messageToEdit.creator = this.getNickname();
+                this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: null});
+                this.messageToEdit.question_id = this.question._id;
+            } else {
+                this.messageToEdit = message;
+                /*if (message.creator !== this.getNickname() && clone) {
+                    //creator != editor, create a copy ...
+                    var cloneMessage: Message = new Message();
+                    cloneMessage.creator = this.getNickname();
+                    cloneMessage.text = message.text;
+                    cloneMessage.deleted = message.deleted;
+                    cloneMessage.isSelected = message.isSelected;
+                    cloneMessage.isPinned = message.isPinned;
+                    //clone the array, if not it references the old messages' one ...
+                    cloneMessage.origin = message.origin.slice(0);
+                    cloneMessage.origin.push({nickname: this.getNickname(), message_id: message._id});
+                    cloneMessage.question_id = this.question._id;
+                    //copy the position if original is on the board
+                    if (message.isSelected) {
+                        cloneMessage.board[this.getNickname()] = message.board[this.getNickname()];
+                        delete message.board[this.getNickname()];
+                        this.messageToEdit = message;
+                        this.updateMessage(
+                            function() {
+                                //success
+                                handle.messageToEdit = cloneMessage;
+                            },
+                            function() {
+                                //error
+                            }
+                        )
+                    } else {
+                        this.messageToEdit = cloneMessage;
+                    }
+                } else {
+                    //creator = editor, do it
+                    this.messageToEdit = message;
+                }*/
+            }
         }
 
         getMessageToEdit(): Message {
@@ -619,11 +660,8 @@ module TalkwallApp {
             if (this.messageToEdit === null) {
                 errorCallbackFn({status: '400', message: "message is not defined"});
             }
-            this.messageToEdit.creator = this.getNickname();
-            this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: null});
-            this.messageToEdit.edits.push({date: this.messageToEdit.createdAt, text: this.messageToEdit.text});
-            this.messageToEdit.question_id = this.question._id;
 
+            this.messageToEdit.edits.push({date: new Date(), text: this.messageToEdit.text});
             this.$http.post(this.urlService.getHost() + '/message', {
                     message: this.messageToEdit,
                     pin: this.wall.pin,
@@ -631,11 +669,10 @@ module TalkwallApp {
                 })
                 .success((data) => {
                     let resultKey = 'result';
-                    this.messageToEdit.createdAt = data[resultKey].createdAt;
-                    this.messageToEdit._id = data[resultKey]._id;
-                    this.question.messages.push(this.messageToEdit);
+                    this.question.messages.push(data[resultKey]);
+                    this.messageToEdit = null;
                     if (typeof successCallbackFn === "function") {
-                        successCallbackFn(this.messageToEdit);
+                        successCallbackFn();
                     }
                 })
                 .catch((error) => {
@@ -660,28 +697,30 @@ module TalkwallApp {
         }
 
         //update a new on server and return it
-        updateMessage(successCallbackFn, errorCallbackFn): void {
-            if (this.messageToEdit === null) {
-                errorCallbackFn({status: '400', message: "message is not defined"});
+        updateMessage(): void {
+            if (this.messageToEdit !== null) {
+                this.$http.put(this.urlService.getHost() + '/message', {
+                        message: this.messageToEdit,
+                        pin: this.wall.pin,
+                        nickname: this.getNickname()
+                    })
+                    .success((data) => {
+                        let resultKey = 'result';
+                        this.setMessageToEdit(null);
+                        //update the messages array with the updated object, so that all references are in turn updated
+                        let idKey = '_id';
+                        for (var i = 0; i < this.question.messages.length; i++) {
+                            if (this.question.messages[i][idKey] === data[resultKey][idKey]) {
+                                this.question.messages.splice(i, 1);
+                                this.question.messages.splice(i, 0, data[resultKey]);
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('--> DataService: updateMessage failure: ' + error);
+                        //TODO: fire a notification with the problem
+                    });
             }
-            this.$http.put(this.urlService.getHost() + '/message', {
-                    message: this.messageToEdit,
-                    pin: this.wall.pin,
-                    nickname: this.getNickname()
-                })
-                .success((data) => {
-                    let resultKey = 'result';
-                    var message = data[resultKey];
-                    if (typeof successCallbackFn === "function") {
-                        successCallbackFn(message);
-                    }
-                })
-                .catch((error) => {
-                    console.log('--> DataService: updateMessage failure: ' + error);
-                    if (typeof errorCallbackFn === "function") {
-                        errorCallbackFn({status: error.status, message: error.message});
-                    }
-                });
         }
 
 
