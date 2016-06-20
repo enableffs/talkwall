@@ -170,7 +170,6 @@ exports.createMessage = function(req, res) {
 
             // Create a new Message with the supplied object, including board properties   *** Not vetted!! :S
             var newMessage = new Message(req.body.message);
-            newMessage.board = {};
             newMessage.save(function (error, message) {
                 if (error) {
                     return res.status(common.StatusMessages.CREATE_ERROR.status).json({

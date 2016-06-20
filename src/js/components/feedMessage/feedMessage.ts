@@ -57,6 +57,11 @@ module TalkwallApp {
 				this.dataService.setMessageToEdit(this.message);
 				this.isolatedScope.showEditPanel();
 				this.showControls = false;
+			} else {
+				this.dataService.setMessageOrigin(this.message);
+				this.dataService.setMessageToEdit(null);
+				this.isolatedScope.showEditPanel();
+				this.showControls = false;
 			}
 		}
 

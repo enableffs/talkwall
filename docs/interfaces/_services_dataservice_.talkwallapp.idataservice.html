@@ -104,6 +104,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getclientwall" class="tsd-kind-icon">get<wbr>Client<wbr>Wall</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getcurrentquestionindex" class="tsd-kind-icon">get<wbr>Current<wbr>Question<wbr>Index</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getgridstyle" class="tsd-kind-icon">get<wbr>Grid<wbr>Style</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getmessageorigin" class="tsd-kind-icon">get<wbr>Message<wbr>Origin</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getmessagetoedit" class="tsd-kind-icon">get<wbr>Message<wbr>ToEdit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getmessages" class="tsd-kind-icon">get<wbr>Messages</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getnickname" class="tsd-kind-icon">get<wbr>Nickname</a></li>
@@ -114,6 +115,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#requestuser" class="tsd-kind-icon">request<wbr>User</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#requestwall" class="tsd-kind-icon">request<wbr>Wall</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#setboarddivsize" class="tsd-kind-icon">set<wbr>Board<wbr>Div<wbr>Size</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#setmessageorigin" class="tsd-kind-icon">set<wbr>Message<wbr>Origin</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#setmessagetoedit" class="tsd-kind-icon">set<wbr>Message<wbr>ToEdit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#setquestion" class="tsd-kind-icon">set<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#setquestiontoedit" class="tsd-kind-icon">set<wbr>Question<wbr>ToEdit</a></li>
@@ -684,6 +686,28 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="getmessageorigin" class="tsd-anchor"></a>
+					<h3>get<wbr>Message<wbr>Origin</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Message<wbr>Origin<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L191">services/dataservice.ts:191</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>retrieve the origin message object</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../classes/_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="getmessagetoedit" class="tsd-anchor"></a>
 					<h3>get<wbr>Message<wbr>ToEdit</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -1076,6 +1100,37 @@
 									</div>
 									<ul class="tsd-parameters">
 									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="setmessageorigin" class="tsd-anchor"></a>
+					<h3>set<wbr>Message<wbr>Origin</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Message<wbr>Origin<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><a href="../classes/_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L187">services/dataservice.ts:187</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>set a message as the editable message object</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>message: <a href="../classes/_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the message to edit</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1572,6 +1627,9 @@
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#getgridstyle" class="tsd-kind-icon">get<wbr>Grid<wbr>Style</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_services_dataservice_.talkwallapp.idataservice.html#getmessageorigin" class="tsd-kind-icon">get<wbr>Message<wbr>Origin</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#getmessagetoedit" class="tsd-kind-icon">get<wbr>Message<wbr>ToEdit</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
@@ -1600,6 +1658,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#setboarddivsize" class="tsd-kind-icon">set<wbr>Board<wbr>Div<wbr>Size</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_services_dataservice_.talkwallapp.idataservice.html#setmessageorigin" class="tsd-kind-icon">set<wbr>Message<wbr>Origin</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#setmessagetoedit" class="tsd-kind-icon">set<wbr>Message<wbr>ToEdit</a>

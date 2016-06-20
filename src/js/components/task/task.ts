@@ -9,6 +9,7 @@ module TalkwallApp {
 		static $inject = ['$scope', 'DataService', '$mdDialog'];
 
 		private question: Question;
+		private showControls: boolean = false;
 
 		constructor(
 			private isolatedScope: TaskDirectiveScope,
