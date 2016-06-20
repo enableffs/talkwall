@@ -184,8 +184,15 @@ module TalkwallApp {
          * pause the polling timer
          */
         stopPolling(): void;
-
-
+        /**
+         * set a message as the editable message object
+         * @param message the message to edit
+         */
+        setMessageOrigin(message: Message): void;
+        /**
+         * retrieve the origin message object
+         */
+        getMessageOrigin(): Message;
     }
 
     export class DataService implements IDataService {
@@ -195,6 +202,8 @@ module TalkwallApp {
         private wall: Wall = null;
         private question: Question = null;
         private messageToEdit: Message;
+        private messageOrigin: Message = null;
+        private updateOrigin: boolean = false;
         private questionToEdit: Question = new Question('');
         private phoneMode: boolean = false;
 
@@ -391,52 +400,44 @@ module TalkwallApp {
 
         // Accessor functions for passing messages between directives
         setMessageToEdit(message: Message) {
-            if (message === null) {
+            if (message === null && this.messageOrigin === null) {
                 //no message, create a new one
                 this.messageToEdit = new Message();
                 this.messageToEdit.creator = this.getNickname();
                 this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: null});
                 this.messageToEdit.question_id = this.question._id;
+            } else if (message === null && this.messageOrigin !== null) {
+                //we have an origin to create the new message, clone it
+                this.messageToEdit = JSON.parse(JSON.stringify(this.messageOrigin));
+                this.messageToEdit.creator = this.getNickname();
+                this.messageToEdit.origin = new Array();
+                //remove the _id of the old one
+                this.messageToEdit._id = undefined;
+                this.messageToEdit.board = {};
+                this.updateOrigin = false;
+                if (this.messageOrigin.board[this.getNickname()] !== undefined) {
+                    this.messageToEdit.edits = new Array();
+                    this.messageToEdit.board[this.getNickname()] = JSON.parse(JSON.stringify(this.messageOrigin.board[this.getNickname()]));
+                    this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: this.messageOrigin._id});
+                    this.updateOrigin = true;
+                } else {
+                    this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: null});
+                }
             } else {
                 this.messageToEdit = message;
-                /*if (message.creator !== this.getNickname() && clone) {
-                    //creator != editor, create a copy ...
-                    var cloneMessage: Message = new Message();
-                    cloneMessage.creator = this.getNickname();
-                    cloneMessage.text = message.text;
-                    cloneMessage.deleted = message.deleted;
-                    cloneMessage.isSelected = message.isSelected;
-                    cloneMessage.isPinned = message.isPinned;
-                    //clone the array, if not it references the old messages' one ...
-                    cloneMessage.origin = message.origin.slice(0);
-                    cloneMessage.origin.push({nickname: this.getNickname(), message_id: message._id});
-                    cloneMessage.question_id = this.question._id;
-                    //copy the position if original is on the board
-                    if (message.isSelected) {
-                        cloneMessage.board[this.getNickname()] = message.board[this.getNickname()];
-                        delete message.board[this.getNickname()];
-                        this.messageToEdit = message;
-                        this.updateMessage(
-                            function() {
-                                //success
-                                handle.messageToEdit = cloneMessage;
-                            },
-                            function() {
-                                //error
-                            }
-                        )
-                    } else {
-                        this.messageToEdit = cloneMessage;
-                    }
-                } else {
-                    //creator = editor, do it
-                    this.messageToEdit = message;
-                }*/
             }
         }
 
         getMessageToEdit(): Message {
             return this.messageToEdit;
+        }
+
+        setMessageOrigin(message: Message): void {
+            this.messageOrigin = message;
+        }
+
+        getMessageOrigin(): Message {
+            return this.messageOrigin;
         }
 
         getCurrentQuestionIndex(): number {
@@ -675,6 +676,39 @@ module TalkwallApp {
                     let resultKey = 'result';
                     this.question.messages.push(data[resultKey]);
                     this.messageToEdit = null;
+                    if (this.updateOrigin) {
+                        //the new cloned message has been posted, remove the nickname from the old one
+                        delete this.messageOrigin.board[this.getNickname()];
+                        //update the orgin message, so it will be removed from the board from the current user
+                        this.$http.put(this.urlService.getHost() + '/message', {
+                            message: this.messageOrigin,
+                            pin: this.wall.pin,
+                            nickname: this.getNickname()
+                        })
+                            .success((data) => {
+                                let resultKey = 'result';
+                                this.setMessageToEdit(null);
+                                this.updateOrigin = false;
+                                if (this.messageOrigin !== null) {
+                                    this.messageOrigin = null;
+                                }
+                                //update the messages array with the updated object, so that all references are in turn updated
+                                let idKey = '_id';
+                                for (var i = 0; i < this.question.messages.length; i++) {
+                                    if (this.question.messages[i][idKey] === data[resultKey][idKey]) {
+                                        this.question.messages.splice(i, 1);
+                                        this.question.messages.splice(i, 0, data[resultKey]);
+                                    }
+                                }
+                            })
+                            .catch((error) => {
+                                console.log('--> DataService: updateMessage failure: ' + error);
+                                //TODO: fire a notification with the problem
+                            });
+                    } else {
+                        //make sure to reset the message origin ...
+                        this.messageOrigin = null;
+                    }
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }

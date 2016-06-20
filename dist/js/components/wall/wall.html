@@ -209,21 +209,21 @@
 						<div layout="column">
 							<span>Background</span>
 							<div layout="row">
-								<md-button flex ng-click="wallC.setGrid('none')">
+								<md-button aria-label="Set grid to none" flex ng-click="wallC.setGrid('none')">
                                     <img src="images/back011.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.getQuestionToEdit().grid === 'none'}" />
                                 </md-button>
-								<md-button flex ng-click="wallC.setGrid('horizontal')">
+								<md-button aria-label="Set grid to horizontal" flex ng-click="wallC.setGrid('horizontal')">
                                     <img src="images/back022.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.getQuestionToEdit().grid === 'horizontal'}"/>
                                 </md-button>
-								<md-button flex ng-click="wallC.setGrid('vertical')">
+								<md-button aria-label="Set grid to vertical" flex ng-click="wallC.setGrid('vertical')">
                                     <img src="images/back033.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.getQuestionToEdit().grid === 'vertical'}"/>
                                 </md-button>
-								<md-button flex ng-click="wallC.setGrid('both')">
+								<md-button aria-label="Set grid to horizontal and vertical" flex ng-click="wallC.setGrid('both')">
                                     <img src="images/back044.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.getQuestionToEdit().grid === 'both'}"/>
                                 </md-button>
 							</div>
-							<md-button ng-if="wallC.dataService.getQuestionToEdit()._id === undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(false)">Add</md-button>
-							<md-button ng-if="wallC.dataService.getQuestionToEdit()._id !== undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(true)">Save</md-button>
+							<md-button aria-label="Add question" ng-if="wallC.dataService.getQuestionToEdit()._id === undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(false)">Add</md-button>
+							<md-button aria-label="Save question" ng-if="wallC.dataService.getQuestionToEdit()._id !== undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(true)">Save</md-button>
 						</div>
 					</div>
 				</section>
