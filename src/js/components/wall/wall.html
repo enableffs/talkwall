@@ -147,12 +147,12 @@
 				</section>
 
                 <!-- Filter by people -->
-                <section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1}">
+                <section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2}">
                     <md-toolbar ng-click="wallC.toggleRightMenu(2)">
                         <div flex layout="row" layout-align="start center">
                             <div flex class="wall-toolbarText" layout-align="center center">Filter by User</div>
-                            <md-icon ng-if="!wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
-                            <md-icon ng-if="wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
+                            <md-icon ng-if="!wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
+                            <md-icon ng-if="wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
                         </div>
                     </md-toolbar>
                     <md-content flex ng-if="wallC.rightMenu2">
@@ -188,7 +188,7 @@
                 </section>
 
 				<!-- Edit tasks section -->
-				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2}">
+				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
 						<div flex layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Edit tasks</div>
