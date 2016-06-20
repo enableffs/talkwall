@@ -6,7 +6,7 @@
 				<md-button aria-label="Open left-side message feed" ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=true;wallC.$mdSidenav('left').open()">
 					<md-icon md-svg-src="images/ic_chat_bubble_outline_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
-				<md-button aria-label="Open left-side participants list" ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.magnified = false;wallC.feedView=false;wallC.$mdSidenav('left').open()">
+				<md-button aria-label="Open left-side participants list" ng-if="wallC.dataService.userIsAuthorised()" ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.magnified = false;wallC.feedView=false;wallC.$mdSidenav('left').open()">
 					<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 			</div>
@@ -52,7 +52,7 @@
 					</md-button>
 				</div>
 			</div>
-			<div hide-xs hide-sm flex="33" layout="row" layout-align="end center">
+			<div ng-if="wallC.dataService.userIsAuthorised()" hide-xs hide-sm flex="33" layout="row" layout-align="end center">
 				<button aria-label="Toggle right-side panel" class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle();wallC.toggleRightMenu(0)">
 					<md-icon ng-show="!wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_menu_orange_24px.svg" aria-hidden="true"></md-icon>
 					<md-icon ng-show="wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
@@ -269,7 +269,7 @@
 			</div>
 
 			<!-- (+) fab button to show the editMessage bottomPane -->
-			<md-button aria-label="Create a new message" ng-if="wallC.dataService.getQuestion() !== null && !wallC.dataService.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true)">
+			<md-button aria-label="Create a new message" ng-if="wallC.dataService.getQuestion() !== null && !wallC.dataService.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.feedView=true; wallC.showMessageEditor(true)">
 				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 			</md-button>
 		</div>

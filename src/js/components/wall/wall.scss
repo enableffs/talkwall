@@ -5,8 +5,12 @@
   width: 75% !important;
 }
 
-.wall-sidemenuLarge md-content {
-  font-size: 3em !important;
+.wall-sidemenuLarge .feedMessage-wordWrap {
+  font-size: 3rem !important;
+}
+
+.wall-sidemenuLarge .feedMessage-nicknameChip {
+  font-size: .8rem !important;
 }
 
 .wall-topToolbar {

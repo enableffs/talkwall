@@ -236,7 +236,7 @@ md-content {
   padding-left: 4px;
   padding-right: 4px;
   margin-left: 5px;
-  font-size: .8em;
+  font-size: .8em !important;
   height: 20px;
   min-height: 20px;
   max-height: 20px;
@@ -323,8 +323,12 @@ md-content {
   width: 75% !important;
 }
 
-.wall-sidemenuLarge md-content {
-  font-size: 3em !important;
+.wall-sidemenuLarge .feedMessage-wordWrap {
+  font-size: 3rem !important;
+}
+
+.wall-sidemenuLarge .feedMessage-nicknameChip {
+  font-size: .8rem !important;
 }
 
 .wall-topToolbar {
