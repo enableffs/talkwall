@@ -410,7 +410,7 @@ module TalkwallApp {
                 //we have an origin to create the new message, clone it
                 this.messageToEdit = JSON.parse(JSON.stringify(this.messageOrigin));
                 this.messageToEdit.creator = this.getNickname();
-                this.messageToEdit.origin = new Array();
+                this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: this.messageOrigin._id});
                 //remove the _id of the old one
                 this.messageToEdit._id = undefined;
                 this.messageToEdit.board = {};
@@ -418,10 +418,7 @@ module TalkwallApp {
                 if (this.messageOrigin.board[this.getNickname()] !== undefined) {
                     this.messageToEdit.edits = new Array();
                     this.messageToEdit.board[this.getNickname()] = JSON.parse(JSON.stringify(this.messageOrigin.board[this.getNickname()]));
-                    this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: this.messageOrigin._id});
                     this.updateOrigin = true;
-                } else {
-                    this.messageToEdit.origin.push({nickname: this.messageToEdit.creator, message_id: null});
                 }
             } else {
                 this.messageToEdit = message;

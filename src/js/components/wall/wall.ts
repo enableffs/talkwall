@@ -122,9 +122,13 @@ module TalkwallApp {
         }
 
         questionToEditDirty() {
-            return (this.dataService.getQuestionToEdit().label !== this.dataService.getQuestion().label
-                && this.dataService.getQuestionToEdit().label !== '')
-                || typeof this.dataService.getQuestionToEdit()._id !== 'undefined';
+	        if (this.dataService.getQuestionToEdit() === null || this.dataService.getQuestion() === null) {
+		        return true;
+	        } else {
+	            return (this.dataService.getQuestionToEdit().label !== this.dataService.getQuestion().label
+	                && this.dataService.getQuestionToEdit().label !== '')
+	                || typeof this.dataService.getQuestionToEdit()._id !== 'undefined';
+	        }
         }
 
         // Functions for connected users panel
@@ -183,6 +187,7 @@ module TalkwallApp {
 			}, function() {
 				//dialog dismissed
 				console.log('--> WallController: dismissed');
+				handle.dataService.setMessageOrigin(null);
                 handle.dataService.startPolling('none', 'none');
 			});
 		}
