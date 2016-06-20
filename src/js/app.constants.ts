@@ -10,8 +10,12 @@ module TalkwallApp {
     export class TalkwallConstants {
         public static get constants() {
             return {
-                BACKGROUND_COLOURS: ["#5E7E98", "#666666", "#6D8565", "#7A7A7A", "#828565", "#858585", "#8EBEE6",
-                    "#998C5F", "#999999", "#ABD19F"],
+
+                /****  Colours animated from wall.scss  References are here  */
+
+                BACKGROUND_COLOURS: ['bg1', 'bg2', 'bg3', 'bg4', 'bg5', 'bg6', 'bg7', 'bg8', 'bg9'],
+                // BACKGROUND_COLOURS: ["#5E7E98", "#666666", "#6D8565", "#7A7A7A", "#828565", "#858585", "#8EBEE6",
+                //    "#998C5F", "#999999", "#ABD19F"],
                 COMPLEMENTARY_COLOURS: ['#FFFFF5', '#FFFFF5', '#FFFFF5', '#FFFFF5', '#FFFFF5', '#FFFFF5', '#FFFFF5',
                     '#FFFFF5', '#FFFFF5', '#FFFFF5']
 

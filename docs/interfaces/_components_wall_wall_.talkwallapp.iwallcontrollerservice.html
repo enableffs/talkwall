@@ -100,7 +100,11 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#setgrid" class="tsd-kind-icon">set<wbr>Grid</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#setquestion" class="tsd-kind-icon">set<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#showmessageeditor" class="tsd-kind-icon">show<wbr>Message<wbr>Editor</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#toggleall" class="tsd-kind-icon">toggle<wbr>All</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglerightmenu" class="tsd-kind-icon">toggle<wbr>Right<wbr>Menu</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#userexists" class="tsd-kind-icon">user<wbr>Exists</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#userischecked" class="tsd-kind-icon">user<wbr>IsChecked</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#usertoggle" class="tsd-kind-icon">user<wbr>Toggle</a></li>
 							</ul>
 						</section>
 					</div>
@@ -268,6 +272,23 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="toggleall" class="tsd-anchor"></a>
+					<h3>toggle<wbr>All</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">toggle<wbr>All<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L46">components/wall/wall.ts:46</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 					<a name="togglerightmenu" class="tsd-anchor"></a>
 					<h3>toggle<wbr>Right<wbr>Menu</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
@@ -289,6 +310,69 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>index: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="userexists" class="tsd-anchor"></a>
+					<h3>user<wbr>Exists</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">user<wbr>Exists<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L43">components/wall/wall.ts:43</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>item: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="userischecked" class="tsd-anchor"></a>
+					<h3>user<wbr>IsChecked</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">user<wbr>IsChecked<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L45">components/wall/wall.ts:45</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="usertoggle" class="tsd-anchor"></a>
+					<h3>user<wbr>Toggle</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">user<wbr>Toggle<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L44">components/wall/wall.ts:44</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>item: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -402,7 +486,19 @@
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#showmessageeditor" class="tsd-kind-icon">show<wbr>Message<wbr>Editor</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#toggleall" class="tsd-kind-icon">toggle<wbr>All</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglerightmenu" class="tsd-kind-icon">toggle<wbr>Right<wbr>Menu</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#userexists" class="tsd-kind-icon">user<wbr>Exists</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#userischecked" class="tsd-kind-icon">user<wbr>IsChecked</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#usertoggle" class="tsd-kind-icon">user<wbr>Toggle</a>
 							</li>
 						</ul>
 					</li>

@@ -39,6 +39,11 @@ module TalkwallApp {
          * Change the grid type
          */
         setGrid(type: string): void;
+
+        userExists(item: string): boolean;
+        userToggle(item: string): void;
+        userIsChecked(): boolean;
+        toggleAll(): void;
 	}
 
 	export class WallController implements IWallControllerService {
@@ -48,8 +53,14 @@ module TalkwallApp {
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
+        private rightMenu4: boolean = false;
 
         private savedGridType: string = 'none';
+		private backgroundColour: string = '';
+        private selected_users: Array<string>;
+
+        public messageFilterBySelectedUsers: (Message) => boolean;
+        private userFilterOn: boolean = false;
 
         constructor(
 			private dataService: DataService,
@@ -59,10 +70,19 @@ module TalkwallApp {
 			private $window: IWindowService) {
 			console.log('--> WallController: started: ');
 
-
+            var self = this;
+            this.selected_users = [];
 			this.dataService.checkAuthentication((success) => {
 				this.activate();
 			}, null);
+
+            this.messageFilterBySelectedUsers = function(message: Message) {
+                if (self.userFilterOn) {
+                    return self.selected_users.indexOf(message.creator) > -1;
+                } else {
+                    return true;
+                }
+            };
 		}
 
 
@@ -73,7 +93,7 @@ module TalkwallApp {
 				var question_index = this.dataService.getWall().questions.length > 0 ? 0 : -1;
 				this.setQuestion(question_index);
 				if (this.dataService.userIsAuthorised()) {
-	                this.rightMenu2 = true;
+	                this.rightMenu3 = true;
 	                this.$mdSidenav('right').open();
 				}
 			}
@@ -84,6 +104,7 @@ module TalkwallApp {
 		        () => {
                     if ( this.dataService.getCurrentQuestionIndex() !== -1 ) {
                         this.savedGridType = this.dataService.getQuestion().grid;
+                        this.backgroundColour = this.dataService.getBackgroundColour();
                     }
 		        },
 		        function() {
@@ -105,6 +126,31 @@ module TalkwallApp {
                 && this.dataService.getQuestionToEdit().label !== '')
                 || typeof this.dataService.getQuestionToEdit()._id !== 'undefined';
         }
+
+        // Functions for connected users panel
+        userExists(item) {
+            return this.selected_users.indexOf(item) > -1;
+        };
+        userToggle(item) {
+            var idx = this.selected_users.indexOf(item);
+            if (idx > -1) {
+                this.selected_users.splice(idx, 1);
+            } else {
+                this.selected_users.push(item);
+            }
+        };
+        userIsChecked() {
+            return this.selected_users.length === this.dataService.getParticipants().length;
+        };
+        toggleAll() {
+            if (this.selected_users.length === this.dataService.getParticipants().length) {
+                this.selected_users = [];
+            } else if (this.selected_users.length === 0 || this.selected_users.length > 0) {
+                this.selected_users = this.dataService.getParticipants().slice(0);
+            }
+        };
+
+
 
 		showMessageEditor(newMessage: boolean): void {
 			var handle = this;
@@ -148,21 +194,32 @@ module TalkwallApp {
 					this.rightMenu1 = !this.rightMenu1;
 					this.rightMenu2 = false;
 					this.rightMenu3 = false;
+                    this.rightMenu4 = false;
 					break;
 				case 2:
 					this.rightMenu1 = false;
 					this.rightMenu2 = !this.rightMenu2;
 					this.rightMenu3 = false;
+                    this.rightMenu4 = false;
+                    this.selected_users = this.dataService.getParticipants().slice(0);
 					break;
 				case 3:
 					this.rightMenu1 = false;
 					this.rightMenu2 = false;
 					this.rightMenu3 = !this.rightMenu3;
+                    this.rightMenu4 = false;
 					break;
+                case 4:
+                    this.rightMenu1 = false;
+                    this.rightMenu2 = false;
+                    this.rightMenu3 = false;
+                    this.rightMenu4 = !this.rightMenu4;
+                    break;
 				default:
 					this.rightMenu1 = false;
 					this.rightMenu2 = false;
 					this.rightMenu3 = false;
+                    this.rightMenu4 = false;
 			}
 		}
 
