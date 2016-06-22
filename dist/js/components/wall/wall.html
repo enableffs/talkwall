@@ -239,8 +239,13 @@
 					</md-toolbar>
 					<md-content ng-if="wallC.rightMenu4">
 						<div layout="column" layout-padding>
-							<div>Some text explaining what happens when one closes a wall will come here shortly.</div>
-							<md-button aria-label="Close current wall" class="md-raised wall-powerOffButton" ng-disabled="wallC.disableClose" ng-click="wallC.closeWall()">
+							<div>Some text explaining what happens when one closes a wall will come here shortly. Please type in below the email address where the wall report will be sent.</div>
+							<md-input-container>
+								<label>Email</label>
+								<input ng-model="wallC.owneremail" type="email">
+							</md-input-container>
+
+							<md-button aria-label="Close current wall" class="md-raised wall-powerOffButton" ng-disabled="wallC.owneremail === undefined" ng-click="wallC.closeWall(wallC.owneremail)">
 								<md-icon md-svg-src="images/ic_power_settings_new_black_24px.svg" aria-hidden="true"></md-icon>
 							</md-button>
 						</div>

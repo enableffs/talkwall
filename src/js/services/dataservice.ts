@@ -5,6 +5,7 @@
 /// <reference path="utilityservice.ts"/>
 /// <reference path="urlservice.ts"/>
 /// <reference path="../components/close/close.ts"/>
+/// <reference path="../components/archive/archive.ts"/>
 /// <reference path="../models/models.ts"/>
 
 module TalkwallApp {
@@ -263,27 +264,36 @@ module TalkwallApp {
                         if (user.lastOpenedWall === null) {
                             this.createWall(successCallbackFn, errorCallbackFn);
                         } else {
-                            var confirm = this.$mdDialog.confirm()
-                                .title('Active wall detected!')
-                                .content('You have an active wall already open. Choose an option below:')
-                                .ok('Continue with existing')
-                                .cancel('Create new');
-                            this.$mdDialog.show(confirm).then(() => {
-                                //continue
-                                this.requestWall(user.lastOpenedWall, successCallbackFn, errorCallbackFn);
-                            }, () => {
-                                //close old and start new
-                                this.$http.get(this.urlService.getHost() + '/close/' + user.lastOpenedWall)
-                                    .success((data) => {
-                                        console.log('--> DataService: close wall success');
-                                        this.createWall(successCallbackFn, errorCallbackFn);
+                            this.$mdDialog.show({
+                                controller: ArchiveWallController,
+                                controllerAs: 'archiveWallC',
+                                templateUrl: 'js/components/archive/archive.html',
+                                parent: angular.element(document.body),
+                                clickOutsideToClose: true
+                            }).then((answer) => {
+                                //dialog answered
+                                console.log('--> DataService: ArchiveWallController: answer: ' + answer);
+                                if (answer === 'continue') {
+                                    this.requestWall(user.lastOpenedWall, successCallbackFn, errorCallbackFn);
+                                } else {
+                                    this.$http.put(this.urlService.getHost() + '/wall/close/' + user.lastOpenedWall, {
+                                        targetEmail: answer
                                     })
-                                    .catch((error) => {
-                                        console.log('--> DataService: close wall failure: ' + error);
-                                        if (typeof errorCallbackFn === "function") {
-                                            errorCallbackFn({status: error.status, message: error.message});
-                                        }
-                                    });
+                                        .success((data) => {
+                                            console.log('--> DataService: close wall success');
+                                            this.createWall(successCallbackFn, errorCallbackFn);
+                                        })
+                                        .catch((error) => {
+                                            console.log('--> DataService: close wall failure: ' + error);
+                                            if (typeof errorCallbackFn === "function") {
+                                                errorCallbackFn({status: error.status, message: error.message});
+                                            }
+                                        });
+                                }
+                            }, () => {
+                                //dialog dismissed
+                                console.log('--> DataService: ArchiveWallController: dismissed');
+                                this.$window.location.href = this.urlService.getHost() + '/#/';
                             });
                         }
                     }, (error) => {
@@ -516,9 +526,10 @@ module TalkwallApp {
             }
         }
 
-        closeWallNow(): void {
+        closeWallNow(targetEmail): void {
             var handle = this;
             this.wall.closed = true;
+            this.wall.targetEmail = targetEmail;
             this.updateWall(function() {
                 handle.$window.location.href = handle.urlService.getHost() + '/#/';
             }, null);

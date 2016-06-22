@@ -20,6 +20,7 @@ module TalkwallApp {
         createdBy: string;
         closed: boolean;
         questions: Array<Question>;
+        targetEmail: string;
     }
 
     export interface IQuestion {

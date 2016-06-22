@@ -105,10 +105,10 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#_window" class="tsd-kind-icon">$window</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#backgroundcolour" class="tsd-kind-icon">background<wbr>Colour</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#dataservice" class="tsd-kind-icon">data<wbr>Service</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#disableclose" class="tsd-kind-icon">disable<wbr>Close</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#feedview" class="tsd-kind-icon">feed<wbr>View</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#magnified" class="tsd-kind-icon">magnified</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#messagefilterbyselectedusers" class="tsd-kind-icon">message<wbr>Filter<wbr>BySelected<wbr>Users</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#owneremail" class="tsd-kind-icon">owneremail</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#rightmenu1" class="tsd-kind-icon">right<wbr>Menu1</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#rightmenu2" class="tsd-kind-icon">right<wbr>Menu2</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_components_wall_wall_.talkwallapp.wallcontroller.html#rightmenu3" class="tsd-kind-icon">right<wbr>Menu3</a></li>
@@ -231,16 +231,6 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="disableclose" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> disable<wbr>Close</h3>
-					<div class="tsd-signature tsd-kind-icon">disable<wbr>Close<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L57">components/wall/wall.ts:57</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="feedview" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> feed<wbr>View</h3>
 					<div class="tsd-signature tsd-kind-icon">feed<wbr>View<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -290,6 +280,16 @@
 							</li>
 						</ul>
 					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="owneremail" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> owneremail</h3>
+					<div class="tsd-signature tsd-kind-icon">owneremail<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L57">components/wall/wall.ts:57</a></li>
+						</ul>
+					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="rightmenu1" class="tsd-anchor"></a>
@@ -406,7 +406,7 @@
 					<a name="closewall" class="tsd-anchor"></a>
 					<h3>close<wbr>Wall</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">close<wbr>Wall<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">close<wbr>Wall<span class="tsd-signature-symbol">(</span>targetEmail<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -415,6 +415,12 @@
 									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L117">components/wall/wall.ts:117</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>targetEmail: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -430,7 +436,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_components_wall_wall_.talkwallapp.iwallcontrollerservice.html">IWallControllerService</a>.<a href="../interfaces/_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#postquestion">postQuestion</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L233">components/wall/wall.ts:233</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L231">components/wall/wall.ts:231</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -518,7 +524,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_components_wall_wall_.talkwallapp.iwallcontrollerservice.html">IWallControllerService</a>.<a href="../interfaces/_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#showmessageeditor">showMessageEditor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L161">components/wall/wall.ts:161</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L159">components/wall/wall.ts:159</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -560,7 +566,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_components_wall_wall_.talkwallapp.iwallcontrollerservice.html">IWallControllerService</a>.<a href="../interfaces/_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglerightmenu">toggleRightMenu</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L197">components/wall/wall.ts:197</a></li>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/components/wall/wall.ts#L195">components/wall/wall.ts:195</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -661,6 +667,9 @@
 						<a href="../modules/_app_run_.html">"app.run"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_archive_archive_.html">"components/archive/archive"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_components_close_close_.html">"components/close/close"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -744,9 +753,6 @@
 								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#dataservice" class="tsd-kind-icon">data<wbr>Service</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#disableclose" class="tsd-kind-icon">disable<wbr>Close</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#feedview" class="tsd-kind-icon">feed<wbr>View</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
@@ -754,6 +760,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#messagefilterbyselectedusers" class="tsd-kind-icon">message<wbr>Filter<wbr>BySelected<wbr>Users</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#owneremail" class="tsd-kind-icon">owneremail</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_components_wall_wall_.talkwallapp.wallcontroller.html#rightmenu1" class="tsd-kind-icon">right<wbr>Menu1</a>

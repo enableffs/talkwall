@@ -163,8 +163,8 @@ exports.updateWall = function(req, res) {
 
             if (wall.closed) {
                 //send an email to the wall creator with the permalink.
-                console.log('--> updateWall: sending export link');
-                sendExportLinkToOwner(wall.createdBy).then(function() {
+                console.log('--> updateWall: sending export link: targetemail: ' + req.body.wall.targetEmail);
+                sendExportLinkToOwner(wall.createdBy, req.body.wall.targetEmail).then(function() {
                     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});                    
                 });
             } else {
@@ -176,7 +176,7 @@ exports.updateWall = function(req, res) {
 };
 
 
-function sendExportLinkToOwner(userid) {
+function sendExportLinkToOwner(userid, targetEmail) {
 
     return new Promise(function(resolve, reject) {
         var userquery = User.findOne({_id: userid});
@@ -198,7 +198,7 @@ function sendExportLinkToOwner(userid) {
 
                 var mail = {
                     from: process.env.POSTMARK_USER,
-                    to: user.defaultEmail,
+                    to: targetEmail,
                     subject: 'Talkwall export',
                     text: 'Your last wall is now closed.\n\nYou can view an exported version of it via this link: '+host+'/#/export?wid='+user.lastOpenedWall+'\n\nThe Talkwall team.',
                     html: 'Your last wall is now closed.<br><br>You can view an exported version of it via this link: <a href="'+host+'/#/export?wid='+user.lastOpenedWall+'">'+host+'/#/export?wid='+user.lastOpenedWall+'</a><br><br>The Visitracker team'
@@ -228,7 +228,7 @@ function sendExportLinkToOwner(userid) {
 
 
 /**
-* @api {get} /close Close a wall
+* @api {put} /wall/close/:wall_id Close a wall
 * @apiName closeWall
 * @apiGroup authorised
 *
@@ -239,6 +239,7 @@ exports.closeWall = function(req, res) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
+
     var query = Wall.findOneAndUpdate({
         _id : req.params.wall_id
     }, {closed: true, pin: '0000'}, { new: true });
@@ -251,7 +252,7 @@ exports.closeWall = function(req, res) {
             redisClient.EXPIRE(wall.pin, 1);
             mm.removeAllFromWall(wall._id);
             console.log('--> closeWall: sending export link');
-            sendExportLinkToOwner(wall.createdBy).then(function() {
+            sendExportLinkToOwner(wall.createdBy, req.body.targetEmail).then(function() {
                 return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                     message: common.StatusMessages.UPDATE_SUCCESS.message});
             });

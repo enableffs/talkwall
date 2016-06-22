@@ -54,7 +54,7 @@ module TalkwallApp {
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
         private rightMenu4: boolean = false;
-		private disableClose: boolean = false;
+		private owneremail: string;
 
         private savedGridType: string = 'none';
 		private backgroundColour: string = '';
@@ -114,9 +114,9 @@ module TalkwallApp {
 	        );
 		}
 
-		closeWall() {
-			this.disableClose = true;
-			this.dataService.closeWallNow();
+		closeWall(targetEmail) {
+			this.dataService.closeWallNow(targetEmail);
+			this.owneremail = undefined;
 		}
 
         setGrid(type): void {
@@ -155,8 +155,6 @@ module TalkwallApp {
                 this.selected_users = this.dataService.getParticipants().slice(0);
             }
         };
-
-
 
 		showMessageEditor(newMessage: boolean): void {
 			var handle = this;
