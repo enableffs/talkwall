@@ -54,6 +54,7 @@ module TalkwallApp {
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
         private rightMenu4: boolean = false;
+		private disableClose: boolean = false;
 
         private savedGridType: string = 'none';
 		private backgroundColour: string = '';
@@ -114,6 +115,7 @@ module TalkwallApp {
 		}
 
 		closeWall() {
+			this.disableClose = true;
 			this.dataService.closeWallNow();
 		}
 

@@ -240,7 +240,7 @@
 					<md-content ng-if="wallC.rightMenu4">
 						<div layout="column" layout-padding>
 							<div>Some text explaining what happens when one closes a wall will come here shortly.</div>
-							<md-button aria-label="Close current wall" class="md-raised wall-powerOffButton" ng-click="wallC.closeWall()">
+							<md-button aria-label="Close current wall" class="md-raised wall-powerOffButton" ng-disabled="wallC.disableClose" ng-click="wallC.closeWall()">
 								<md-icon md-svg-src="images/ic_power_settings_new_black_24px.svg" aria-hidden="true"></md-icon>
 							</md-button>
 						</div>

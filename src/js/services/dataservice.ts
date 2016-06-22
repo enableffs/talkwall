@@ -193,6 +193,13 @@ module TalkwallApp {
          * retrieve the origin message object
          */
         getMessageOrigin(): Message;
+        /**
+         * get the wall to show in export format
+         * @param wallId the wall ID string
+         * @param sFunc success callback
+         * @param eFunc error callback
+         */
+        getExportWall(wallId: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
     }
 
     export class DataService implements IDataService {
@@ -265,9 +272,18 @@ module TalkwallApp {
                                 //continue
                                 this.requestWall(user.lastOpenedWall, successCallbackFn, errorCallbackFn);
                             }, () => {
-                                //start new and close old
-                                //TODO: close wall on server first and create new one
-                                this.createWall(successCallbackFn, errorCallbackFn);
+                                //close old and start new
+                                this.$http.get(this.urlService.getHost() + '/close/' + user.lastOpenedWall)
+                                    .success((data) => {
+                                        console.log('--> DataService: close wall success');
+                                        this.createWall(successCallbackFn, errorCallbackFn);
+                                    })
+                                    .catch((error) => {
+                                        console.log('--> DataService: close wall failure: ' + error);
+                                        if (typeof errorCallbackFn === "function") {
+                                            errorCallbackFn({status: error.status, message: error.message});
+                                        }
+                                    });
                             });
                         }
                     }, (error) => {
@@ -501,8 +517,11 @@ module TalkwallApp {
         }
 
         closeWallNow(): void {
+            var handle = this;
             this.wall.closed = true;
-            this.updateWall(null, null);
+            this.updateWall(function() {
+                handle.$window.location.href = handle.urlService.getHost() + '/#/';
+            }, null);
         }
 
         getNickname(): string {
@@ -887,6 +906,22 @@ module TalkwallApp {
                 }, function() {
                     //dialog dismissed
                     console.log('--> LandingController: dismissed');
+                });
+        }
+
+        getExportWall(wallId, successCallbackFn, errorCallbackFn): void {
+            this.$http.get(this.urlService.getHost() + '/export/' + wallId).then(
+                (success) => {
+                    let resultKey = 'result', dataKey = 'data', statusKey = 'status';
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(success[dataKey][resultKey]);
+                    }
+                },
+                (error) => {
+                    // Close client wall if wall was closed by teacher
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
                 });
         }
     }

@@ -103,6 +103,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getboarddivsize" class="tsd-kind-icon">get<wbr>Board<wbr>Div<wbr>Size</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getclientwall" class="tsd-kind-icon">get<wbr>Client<wbr>Wall</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getcurrentquestionindex" class="tsd-kind-icon">get<wbr>Current<wbr>Question<wbr>Index</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getexportwall" class="tsd-kind-icon">get<wbr>Export<wbr>Wall</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getgridstyle" class="tsd-kind-icon">get<wbr>Grid<wbr>Style</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getmessageorigin" class="tsd-kind-icon">get<wbr>Message<wbr>Origin</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_services_dataservice_.talkwallapp.idataservice.html#getmessagetoedit" class="tsd-kind-icon">get<wbr>Message<wbr>ToEdit</a></li>
@@ -650,6 +651,87 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="getexportwall" class="tsd-anchor"></a>
+					<h3>get<wbr>Export<wbr>Wall</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Export<wbr>Wall<span class="tsd-signature-symbol">(</span>wallId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, sFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, eFunc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/jt151077/talkwall/blob/develop/src/js/services/dataservice.ts#L202">services/dataservice.ts:202</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>get the wall to show in export format</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>wallId: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the wall ID string</p>
+									</div>
+								</li>
+								<li>
+									<h5>sFunc: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>success callback</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>success<span class="tsd-signature-symbol">: </span><a href="../classes/_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>success: <a href="../classes/_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5>eFunc: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>error callback</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>error: <span class="tsd-signature-type">object</span></h5>
+															<ul class="tsd-parameters">
+															</ul>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -1561,6 +1643,9 @@
 						<a href="../modules/_components_editmessagepanel_editmessagepanel_.html">"components/edit<wbr>Message<wbr>Panel/edit<wbr>Message<wbr>Panel"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="../modules/_components_export_export_.html">"components/export/export"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_components_feedmessage_feedmessage_.html">"components/feed<wbr>Message/feed<wbr>Message"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -1645,6 +1730,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#getcurrentquestionindex" class="tsd-kind-icon">get<wbr>Current<wbr>Question<wbr>Index</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_services_dataservice_.talkwallapp.idataservice.html#getexportwall" class="tsd-kind-icon">get<wbr>Export<wbr>Wall</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_services_dataservice_.talkwallapp.idataservice.html#getgridstyle" class="tsd-kind-icon">get<wbr>Grid<wbr>Style</a>

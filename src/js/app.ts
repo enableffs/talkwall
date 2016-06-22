@@ -17,6 +17,7 @@
 /// <reference path="components/login/login.ts"/>
 /// <reference path="components/join/join.ts"/>
 /// <reference path="components/landing/landing.ts"/>
+/// <reference path="components/export/export.ts"/>
 /// <reference path="components/wall/wall.ts"/>
 /// <reference path="components/editMessagePanel/editMessagePanel.ts"/>
 
@@ -59,6 +60,7 @@ module TalkwallApp {
         .controller('JoinController', JoinController)
         .controller('CloseController', CloseController)
         .controller('LandingController', LandingController)
+        .controller('ExportController', ExportController)
         .controller('WallController', WallController)
         .controller('EditMessageController', EditMessageController)
         .run(runApp);
