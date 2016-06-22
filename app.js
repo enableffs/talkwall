@@ -102,7 +102,7 @@ app.post('/question',               jwt({secret: secret.secretToken}),  tokenMan
 app.put('/question',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateQuestion);
 app.delete('/question/:wall_id/:question_id',           jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.deleteQuestion);
 app.get('/change/:wall_id/:question_id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
-app.get('/close/:wall_id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
+app.put('/wall/close/:wall_id',                         jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
 
 /********* client (student / teacher) operations *********/
 app.get('/clientwall/:nickname/:pin',                                                               routes.client.clientWall);
@@ -111,7 +111,7 @@ app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:control', 
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessage);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
-
+app.get('/export/:wallid',                                                                          routes.client.exportWall);
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());
 

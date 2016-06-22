@@ -17,6 +17,8 @@
 /// <reference path="components/login/login.ts"/>
 /// <reference path="components/join/join.ts"/>
 /// <reference path="components/landing/landing.ts"/>
+/// <reference path="components/archive/archive.ts"/>
+/// <reference path="components/export/export.ts"/>
 /// <reference path="components/wall/wall.ts"/>
 /// <reference path="components/editMessagePanel/editMessagePanel.ts"/>
 
@@ -55,10 +57,12 @@ module TalkwallApp {
         .directive('watchBoardSize', WatchBoardSize)
         .directive('feedMessage', FeedMessage)
         .directive('task', Task)
+        .controller('ArchiveWallController', ArchiveWallController)
         .controller('LoginController', LoginController)
         .controller('JoinController', JoinController)
         .controller('CloseController', CloseController)
         .controller('LandingController', LandingController)
+        .controller('ExportController', ExportController)
         .controller('WallController', WallController)
         .controller('EditMessageController', EditMessageController)
         .run(runApp);

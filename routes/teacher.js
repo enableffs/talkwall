@@ -2,6 +2,7 @@
  * Created by richardnesnass on 02/06/16.
  */
 
+var utilities = require('../config/utilities.js');
 var common = require('../config/common');
 var mm = require('../config/message_manager').mm;
 var redisClient = require('../config/redis_database').redisClient;
@@ -159,15 +160,75 @@ exports.updateWall = function(req, res) {
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
             mm.putUpdate(wall._id, 'none', '', null, true);
-            return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
+
+            if (wall.closed) {
+                //send an email to the wall creator with the permalink.
+                console.log('--> updateWall: sending export link: targetemail: ' + req.body.wall.targetEmail);
+                sendExportLinkToOwner(wall.createdBy, req.body.wall.targetEmail).then(function() {
+                    return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});                    
+                });
+            } else {
+                return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                    message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
+            }
         }
-    })
+    });
 };
 
 
+function sendExportLinkToOwner(userid, targetEmail) {
+
+    return new Promise(function(resolve, reject) {
+        var userquery = User.findOne({_id: userid});
+        userquery.exec(function (err, user) {
+            if (err) {
+                //handle error
+                console.log('--> sendExportLinkToOwner: user find error');
+            }
+
+            if (user != null) {
+                console.log('--> user search - got results');
+
+                var host;
+                if (process.env.STATIC_FOLDER === 'src') {
+                    host = 'http://' + process.env.HOST_NAME + ':' + process.env.PORT;
+                } else {
+                    host = 'http://' + process.env.HOST_NAME;
+                }
+
+                var mail = {
+                    from: process.env.POSTMARK_USER,
+                    to: targetEmail,
+                    subject: 'Talkwall export',
+                    text: 'Your last wall is now closed.\n\nYou can view an exported version of it via this link: '+host+'/#/export?wid='+user.lastOpenedWall+'\n\nThe Talkwall team.',
+                    html: 'Your last wall is now closed.<br><br>You can view an exported version of it via this link: <a href="'+host+'/#/export?wid='+user.lastOpenedWall+'">'+host+'/#/export?wid='+user.lastOpenedWall+'</a><br><br>The Visitracker team'
+                };
+
+                //create a promise that holds the send email operation
+                utilities.sendMail(mail).then(function(emailStatus) {
+                    //nullify last wall id
+                    user.lastOpenedWall = null;
+                    user.save(function(error, newUser) {
+                        if (error) {
+                            //handle error
+                            console.log('--> sendExportLinkToOwner: user save error');
+                        }
+                            
+                        resolve();
+                    });
+                });
+            } else {
+                //handle error
+                console.log('--> sendExportLinkToOwner: user null');
+            }
+        });
+
+    });
+}
+
+
 /**
-* @api {get} /close Close a wall
+* @api {put} /wall/close/:wall_id Close a wall
 * @apiName closeWall
 * @apiGroup authorised
 *
@@ -178,6 +239,7 @@ exports.closeWall = function(req, res) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
+
     var query = Wall.findOneAndUpdate({
         _id : req.params.wall_id
     }, {closed: true, pin: '0000'}, { new: true });
@@ -189,8 +251,11 @@ exports.closeWall = function(req, res) {
         } else {
             redisClient.EXPIRE(wall.pin, 1);
             mm.removeAllFromWall(wall._id);
-            return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                message: common.StatusMessages.UPDATE_SUCCESS.message});
+            console.log('--> closeWall: sending export link');
+            sendExportLinkToOwner(wall.createdBy, req.body.targetEmail).then(function() {
+                return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                    message: common.StatusMessages.UPDATE_SUCCESS.message});
+            });
         }
     })
 };

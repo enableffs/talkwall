@@ -96,5 +96,9 @@ exports.StatusMessages = {
     PIN_RETRIEVAL_ERROR: {
         status: 400,
         message: 'Pin retrieval error'
+    },
+    INVITE_EMAIL_SEND_SUCCESS: {
+        status: 200,
+        message: 'An email has been sent to the email address you provided. '
     }
 };

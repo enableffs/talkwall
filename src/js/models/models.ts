@@ -2,6 +2,8 @@
 
 module TalkwallApp {
     "use strict";
+    import MomentStatic = moment.MomentStatic;
+    var moment: MomentStatic;
 
     export class User {
         _id: string;
@@ -18,7 +20,7 @@ module TalkwallApp {
         createdBy: string;
         closed: boolean;
         questions: Array<Question>;
-
+        targetEmail: string;
     }
 
     export interface IQuestion {

@@ -7,6 +7,7 @@ var mm = require('../config/message_manager').mm;
 var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
 var Message = require('../models/message');
+var Promise = require('promise');
 
 /**
  * @api {get} /poll Respond to this call with any changed messages and status
@@ -283,6 +284,82 @@ exports.updateMessage = function(req, res) {
     });
 };
 
+/**
+ * @api {get} /export/:wallid Get a wall to be formatted for export purposes
+ * @apiName exportWall
+ * @apiGroup non-authorised
+ *
+ */
+exports.exportWall = function(req, res) {
+
+    if (typeof req.params.wallid === 'undefined' || req.params.wallid == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Wall.findOne({
+        _id : req.params.wallid
+    });
+    query.select('-pin');
+    query.select('-closed');
+    query.exec(function(error, wall) {
+        if(error) {
+            return res.status(common.StatusMessages.DELETE_ERROR.status).json({
+                message: common.StatusMessages.DELETE_ERROR.message, result: error});
+        }
+        else {
+
+            var expandedResultsPromise = [];
+            wall.questions.forEach(function(question) {    // Collect Fixtures for the user and include in return
+                expandedResultsPromise.push(populateQuestion(question));
+            });
+            Promise.all(expandedResultsPromise).then(function(questionsArray) {
+                wall.questions = questionsArray;
+                return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                    message: common.StatusMessages.GET_SUCCESS.message, result: wall});
+            }).catch(function(err) {
+                return res.status(common.StatusMessages.DB_OPERATION_ERROR.status)
+                    .json({message: common.StatusMessages.DB_OPERATION_ERROR.message});
+            });
+        }
+    });
+};
+
+//function that returns a promise with a populated fixture with views and surveys based on an ID.
+//Note: Only published fixtures will be returned
+function populateQuestion(question) {
+
+    return new Promise(function(resolve, reject) {
+
+        var expandedResultsPromise = [];
+        question.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
+            expandedResultsPromise.push(populateMessage(message));
+        });
+        Promise.all(expandedResultsPromise).then(function(messagesArray) {
+            question.messages = messagesArray;
+            resolve(question);
+        }).catch(function(err) {
+            reject(err);
+        });
+        
+        
+        
+    });
+}
+
+function populateMessage(message) {
+
+    return new Promise(function(resolve, reject) {
+        var query = Message.findOne({_id: message});
+        //query.populate('messages');
+        query.exec(function (err, expandedMessage) {
+            if (err) {
+                reject(err);
+            }
+            resolve(expandedMessage);
+        });
+    });
+}
 
 
 // DATA STRUCURES

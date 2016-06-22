@@ -137,6 +137,10 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
  * @param {boolean} isTeacher            set to true if the caller is a teacher (admin)
  */
 Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
+    
+    if (this.data[wall_id] === undefined) {
+        return null;
+    }
 
     var nicknames = this.data[wall_id].status['connected_nicknames'];
 

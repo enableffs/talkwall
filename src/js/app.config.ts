@@ -17,7 +17,10 @@ module TalkwallApp {
 
         // Routes
         $routeProvider.
-            when('/wall', {
+            when('/export', {
+                templateUrl : 'js/components/export/export.html'
+            })
+            .when('/wall', {
                 templateUrl : 'js/components/wall/wall.html'
             })
             .when('/', {
