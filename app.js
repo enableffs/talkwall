@@ -96,6 +96,7 @@ app.get('/user',                    jwt({secret: secret.secretToken}),  tokenMan
 app.put('/user',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateUser);
 app.get('/walls',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWalls);
 app.get('/wall/:id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWallAuthorised);
+app.get('/wall/:wid/question/:qid/contributors',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getQuestionContributors);
 app.post('/wall',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createWall);
 app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateWall);
 app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);

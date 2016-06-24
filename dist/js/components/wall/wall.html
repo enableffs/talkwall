@@ -3,10 +3,10 @@
 	<md-toolbar class="wall-topToolbar">
 		<div flex layout="row" layout-align="start center">
 			<div hide-xs hide-sm flex="33" layout="row" layout-align="start center">
-				<md-button aria-label="Open left-side message feed" ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.feedView=true;wallC.$mdSidenav('left').open()">
+				<md-button aria-label="Open left-side message feed" ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.showFeed()">
 					<md-icon md-svg-src="images/ic_chat_bubble_outline_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
-				<md-button aria-label="Open left-side participants list" ng-if="wallC.dataService.userIsAuthorised()" ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.magnified = false;wallC.feedView=false;wallC.$mdSidenav('left').open()">
+				<md-button aria-label="Open left-side participants list" ng-if="wallC.dataService.userIsAuthorised()" ng-show="wallC.dataService.getQuestion() !== null" class="md-icon-button" role="button" ng-click="wallC.showScreenContributors()">
 					<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 			</div>
@@ -82,11 +82,11 @@
 			<md-content flex="grow" style="overflow-x: hidden !important;">
 				<!-- left sidenav message feed -->
 				<md-list ng-if="wallC.feedView">
-					<div ng-class="{'feedMessage-messageSelected': message.isSelected}" feed-message on-board="false" ng-repeat="message in wallC.dataService.getQuestion().messages" data="message" show-edit-panel="wallC.showMessageEditor(false)" ng-if="!message.deleted"></div>
+					<div feed-message selected-contributor="{{wallC.dataService.getNickname()}}" on-board="false" ng-repeat="message in wallC.dataService.getQuestion().messages" data="message" show-edit-panel="wallC.showMessageEditor(false)" ng-if="!message.deleted"></div>
 				</md-list>
 
 				<!-- left sidenav people's screen feed -->
-				<md-list ng-if="!wallC.feedView">
+				<!-- md-list ng-if="!wallC.feedView">
                     <md-list-item>
                         <md-label flex="80"><p><span ng-if="wallC.userIsChecked()">Un-</span>Select All</p></md-label>
                         <md-checkbox aria-label="Select All"
@@ -103,7 +103,14 @@
                         </md-checkbox>
 						<md-divider></md-divider>
 					</md-list-item>
-				</md-list>
+				</md-list -->
+
+				<div layout layout-padding="true" ng-if="!wallC.feedView">
+					<md-radio-group ng-model="wallC.selectedContributor" class="md-primary">
+						<md-radio-button ng-repeat="contributor in wallC.dataService.getContributors()"
+										 ng-value="contributor">{{ contributor }}</md-radio-button>
+					</md-radio-group>
+				</div>
 
 			</md-content>
 			<div class="wall-sidenavRightBottomDiv" layout="row" layout-align="center center">
@@ -156,8 +163,7 @@
                         </div>
                     </md-toolbar>
                     <md-content flex ng-if="wallC.rightMenu2">
-                        <div layout="column" layout-padding>
-
+                        <!-- div layout="column" layout-padding>
                             <md-list>
                                 <md-list-item>
                                     <md-switch class="wall-user-checkbox" ng-model="wallC.userFilterOn" aria-label="User filter activation">Activate</md-switch>
@@ -183,7 +189,7 @@
                                 </md-list-item>
                             </md-list>
 
-                        </div>
+                        </div-->
                     </md-content>
                 </section>
 
@@ -262,12 +268,11 @@
                     width="1" size="{{wallC.dataService.getBoardDivSize()['VIEW_HEIGHT']}}" ng-style="wallC.dataService.getGridStyle('vertical')">
 				<hr ng-show="wallC.dataService.getQuestion().grid === 'horizontal' || wallC.dataService.getQuestion().grid === 'both'"
                     width="{{wallC.dataService.getBoardDivSize()['VIEW_WIDTH']}}" size="3" ng-style="wallC.dataService.getGridStyle('horizontal')">
-                <div ng-repeat="message in wallC.dataService.getQuestion().messages | filter : wallC.messageFilterBySelectedUsers" class="animate-repeat">
+                <div ng-repeat="message in wallC.dataService.getQuestion().messages | filter : wallC.messageFilterByContributor" class="animate-repeat">
                     <div feed-message
-                         data="message" on-board="true"
+                         data="message" on-board="true" selected-contributor="{{wallC.selectedContributor}}"
                          show-edit-panel="wallC.showMessageEditor(false)"
-                         ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned }"
-                         ng-if="!message.deleted && message.isSelected && !wallC.dataService.phoneMode">
+                         ng-class="{'feedMessage-messageOnBoardSelected': message.isPinned, 'feedMessage-messageOnBoard': !message.isPinned }">
                     </div>
                 </div>
 

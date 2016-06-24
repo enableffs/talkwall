@@ -1,5 +1,5 @@
-<div layout="column" ng-cloak>
-	<div layout="row" flex="none">
+<div layout="column" ng-cloak >
+	<div layout="row" flex="none" ng-class="{'feedMessage-messageSelected': feedMessageC.isSelected() && feedMessageC.isolatedScope.onBoard === 'false'}">
 		<div class="feedMessage-messageControl" layout="column" ng-show="feedMessageC.showControls" layout-align="center center">
 			<div layout="row">
 				<md-button aria-label="Hide message controls" class="feedMessage-showControlButton feedMessage-close" ng-click="feedMessageC.showControls = false">
@@ -16,9 +16,9 @@
 				</div>
 			</div>
 			<div layout="row">
-				<md-button aria-label="Toggle select message" class="feedMessage-showControlButton" ng-class="{'feedMessage-messageSelected': feedMessageC.message.isSelected}" ng-click="feedMessageC.toggleSelectMessage()">
-					<md-icon ng-show="!feedMessageC.message.isSelected" md-svg-icon="images/ic_lightbulb_outline_orange_24px.svg"></md-icon>
-					<md-icon ng-show="feedMessageC.message.isSelected" md-svg-icon="images/ic_lightbulb_outline_darkgrey_24px.svg"></md-icon>
+				<md-button aria-label="Toggle select message" class="feedMessage-showControlButton" ng-class="{'feedMessage-messageSelected': feedMessageC.isSelected()}" ng-click="feedMessageC.toggleSelectMessage()">
+					<md-icon ng-show="!feedMessageC.isSelected()" md-svg-icon="images/ic_lightbulb_outline_orange_24px.svg"></md-icon>
+					<md-icon ng-show="feedMessageC.isSelected()" md-svg-icon="images/ic_lightbulb_outline_darkgrey_24px.svg"></md-icon>
 				</md-button>
 				<md-button aria-label="Edit message" class="feedMessage-showControlButton" ng-click="feedMessageC.editMessage()">
 					<md-icon md-svg-icon="images/ic_mode_edit_orange_24px.svg"></md-icon>

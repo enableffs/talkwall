@@ -29,6 +29,7 @@ module TalkwallApp {
         label: string;
         grid: string;
         messages: Array<Message>;
+        participants: Array<string>;
     }
 
     export class Question implements IQuestion {
@@ -38,6 +39,7 @@ module TalkwallApp {
         grid: string;
         messages: Array<Message>;
         showControls: boolean;
+        participants: Array<string>;
 
         constructor(label: string) {
             this.label = label;
@@ -55,7 +57,6 @@ module TalkwallApp {
         text: string;
         creator: string;        //nickname
         deleted: boolean;
-        isSelected: boolean;
         isPinned: boolean;
         origin: Array<{
             nickname: string;

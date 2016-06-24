@@ -150,6 +150,10 @@ module TalkwallApp {
          */
         getParticipants(): Array<string>;
         /**
+         * get array of all current participants in this question
+         */
+        getContributors(): Array<string>;
+        /**
          * get the board dimensions object
          * @return the dimension object
          */
@@ -201,6 +205,16 @@ module TalkwallApp {
          * @param eFunc error callback
          */
         getExportWall(wallId: string, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        /**
+         * get the currently authenticated user object
+         * @return the user
+         */
+        getAuthenticatedUser(): User;
+        /**
+         * get the state of whether the site is running on a mobie or not. The is achieved by screen size detection.
+         * @return the state (true => mobile size)
+         */
+        getPhoneMode(): boolean;
     }
 
     export class DataService implements IDataService {
@@ -220,6 +234,7 @@ module TalkwallApp {
         //for dev only
         private studentNickname: string = null;
         private participants: Array<string> = [];
+        private contributors: Array<string> = [];
         private mytTeachersQuestionID: string = '';
         private last_update: number = 0;
         private boardDivSize: {};
@@ -332,6 +347,14 @@ module TalkwallApp {
             }
             */
 
+        }
+
+        getAuthenticatedUser(): User {
+            return this.user;
+        }
+
+        getPhoneMode(): boolean {
+            return this.phoneMode;
         }
 
         requestUser(successCallbackFn, errorCallbackFn): void {
@@ -505,6 +528,8 @@ module TalkwallApp {
                 this.question = this.wall.questions[newIndex];
                 this.currentQuestionIndex = newIndex;
                 this.questionToEdit.grid = this.question.grid;
+                //retrieve participants list
+                this.contributors = this.question.participants;
             }
 
             // Get the whole message list if we are 'new' or 'changing'
@@ -778,6 +803,7 @@ module TalkwallApp {
                             if (this.question.messages[i][idKey] === data[resultKey][idKey]) {
                                 this.question.messages.splice(i, 1);
                                 this.question.messages.splice(i, 0, data[resultKey]);
+                                break;
                             }
                         }
                     })
@@ -790,6 +816,10 @@ module TalkwallApp {
 
         getParticipants(): Array<string> {
             return this.participants;
+        }
+
+        getContributors(): Array<string> {
+            return this.contributors;
         }
 
         setBoardDivSize(newSize: any): void {
@@ -856,14 +886,37 @@ module TalkwallApp {
         // Process updated messages retrieved on the poll response
         processUpdatedMessages(pollUpdateObject: PollUpdate) {
 
-            // Status updates
-
             // Update participant list
             this.participants = Object.keys(pollUpdateObject.status.connected_nicknames);
-
             // We should not be here! Go back to the landing page
             if (this.participants.indexOf(this.getNickname()) === -1) {
                 this.$window.location.href = this.urlService.getHost() + '/';
+            } else {
+                //see whether a participant list refresh is needed
+                if (this.userAuthorised) {
+                    var refreshNeeded: boolean = false;
+                    for (var i = 0; i < this.participants.length; i++) {
+                        if (this.contributors.indexOf(this.participants[i]) === -1) {
+                            //new participant found!
+                            refreshNeeded = true;
+                            break;
+                        }
+                    }
+
+                    if (refreshNeeded && this.wall !== null && this.question !== null) {
+                        this.$http.get(this.urlService.getHost() + '/wall/' +
+                            this.wall._id + '/question/' +
+                            this.question._id + '/contributors')
+                            .success((data) => {
+                                console.log('--> Dataservice: retrievd question particpants success');
+                                let resultKey = 'result';
+                                this.contributors = data[resultKey];
+                            })
+                            .catch((error) => {
+                                console.log('--> Dataservice: retrievd question particpants success: ' + error);
+                            });
+                    }
+                }
             }
 
             // Run on client connections only - receive status updates from teacher
@@ -891,7 +944,15 @@ module TalkwallApp {
                 var old_message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.question);
                 if ( old_message !== null) {                            // Message exists and needs to be updated
                     // this.utilityService.removeNull(updated_message);
-                    angular.extend(old_message, updated_message);
+                    //angular.extend(old_message, updated_message);
+                    let idKey = '_id';
+                    for (var i = 0; i < this.question.messages.length; i++) {
+                        if (this.question.messages[i][idKey] === updated_message._id) {
+                            this.question.messages.splice(i, 1);
+                            this.question.messages.splice(i, 0, updated_message);
+                            break;
+                        }
+                    }
                 } else {                                            // Message is new and needs to be added to the list
                     this.question.messages.push(updated_message);
                 }

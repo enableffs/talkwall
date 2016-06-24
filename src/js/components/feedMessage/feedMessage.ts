@@ -11,6 +11,7 @@ module TalkwallApp {
         editMessage(): void;
         toggleSelectMessage(): void;
         togglePinMessage(): void;
+	    isSelected(): boolean;
     }
 
 	class FeedMessageController implements IFeedMessageController {
@@ -33,16 +34,19 @@ module TalkwallApp {
                     this.message.board = {};
                 }
                 this.message.isPinned = false;
-                if (this.message.board[this.dataService.getNickname()] !== undefined) {
-                    this.message.isSelected = true;
-                    if (this.message.board[this.dataService.getNickname()].pinned === true) {
-                        this.message.isPinned = true;
-                    }
-                } else {
-                    this.message.isSelected = false;
+                if (this.isSelected() && this.message.board[this.isolatedScope.selectedContributor].pinned === true) {
+                    this.message.isPinned = true;
                 }
             }
 		};
+
+		isSelected(): boolean {
+			if (this.message.board !== undefined && this.message.board[this.isolatedScope.selectedContributor] !== undefined) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 
 		deleteMessage(): void {
 			//check if authenticated or author
@@ -66,13 +70,12 @@ module TalkwallApp {
 		}
 
 		toggleSelectMessage(): void {
-			var handle = this;
-            if (this.message.isSelected) {
+			if (this.isSelected()) {
                 delete this.message.board[this.dataService.getNickname()];
             } else {
                 this.message.board[this.dataService.getNickname()] = {
-                    xpos: handle.utilityService.getRandomBetween(45, 55) / 100,
-                    ypos: handle.utilityService.getRandomBetween(45, 55) / 100,
+                    xpos: this.utilityService.getRandomBetween(45, 55) / 100,
+                    ypos: this.utilityService.getRandomBetween(45, 55) / 100,
                     pinned: false
                 };
             }
@@ -102,14 +105,21 @@ module TalkwallApp {
 		var diffX = 0, diffY = 0;
 		var persistPosition: boolean = false;
 
-		if (isolatedScope.onBoard === 'true') {
-			var messageWidth = element.prop('offsetWidth');
-			var messageHeight = element.prop('offsetHeight');
-			var currentSize = ctrl.dataService.getBoardDivSize();
+		var messageWidth = element.prop('offsetWidth');
+		var messageHeight = element.prop('offsetHeight');
+		var currentSize = ctrl.dataService.getBoardDivSize();
 
+		if (isolatedScope.onBoard === 'true') {
+			positionMessage();
+
+			//need a watch here, to refresh the position when the selected contributor changes
+			isolatedScope.$watch('selectedContributor', positionMessage);
+		}
+
+		function positionMessage() {
 			element.css({
-				top: isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * 100 + '%',
-				left: isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * 100 + '%'
+				top: isolatedScope.data.board[isolatedScope.selectedContributor].ypos * 100 + '%',
+				left: isolatedScope.data.board[isolatedScope.selectedContributor].xpos * 100 + '%'
 			});
 
 			element.on('mousedown touchstart', function(event) {
@@ -132,12 +142,12 @@ module TalkwallApp {
 					// Handling the mousedown event
 					absStartX = event.screenX;
 					absStartY = event.screenY;
-					startX = absStartX - (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos * currentSize[viewWidthKey]);
-					startY = absStartY - (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos * currentSize[viewHeightKey]);
+					startX = absStartX - (isolatedScope.data.board[isolatedScope.selectedContributor].xpos * currentSize[viewWidthKey]);
+					startY = absStartY - (isolatedScope.data.board[isolatedScope.selectedContributor].ypos * currentSize[viewHeightKey]);
 					ctrl.$document.on('mousemove', mousemove);
 					ctrl.$document.on('mouseup', mouseup);
 				}
-                ctrl.dataService.stopPolling();
+				ctrl.dataService.stopPolling();
 			});
 		}
 
@@ -148,8 +158,8 @@ module TalkwallApp {
 			if (diffX >= 5 || diffX <= -5 || diffY >= 5 || diffY <= -5) {
 				persistPosition = true;
 			}
-			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = event.screenX - startX;
-			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = event.screenY - startY;
+			isolatedScope.data.board[isolatedScope.selectedContributor].xpos = event.screenX - startX;
+			isolatedScope.data.board[isolatedScope.selectedContributor].ypos = event.screenY - startY;
 			doMove();
 		}
 
@@ -161,37 +171,37 @@ module TalkwallApp {
 			if (diffX >= 5 || diffX <= -5 || diffY >= 5 || diffY <= -5) {
 				persistPosition = true;
 			}
-			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = touchobj.pageX - startX;
-			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = touchobj.pageY - startY;
+			isolatedScope.data.board[isolatedScope.selectedContributor].xpos = touchobj.pageX - startX;
+			isolatedScope.data.board[isolatedScope.selectedContributor].ypos = touchobj.pageY - startY;
 			doMove();
 		}
 
 		function doMove() {
-			if (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos < 0) {
-				isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = 0;
+			if (isolatedScope.data.board[isolatedScope.selectedContributor].xpos < 0) {
+				isolatedScope.data.board[isolatedScope.selectedContributor].xpos = 0;
 			}
 
-			if (isolatedScope.data.board[ctrl.dataService.getNickname()].xpos > (currentSize[viewWidthKey] - messageWidth)) {
-				isolatedScope.data.board[ctrl.dataService.getNickname()].xpos = (currentSize[viewWidthKey] - messageWidth);
+			if (isolatedScope.data.board[isolatedScope.selectedContributor].xpos > (currentSize[viewWidthKey] - messageWidth)) {
+				isolatedScope.data.board[isolatedScope.selectedContributor].xpos = (currentSize[viewWidthKey] - messageWidth);
 			}
 
-			if (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos < 0) {
-				isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = 0;
+			if (isolatedScope.data.board[isolatedScope.selectedContributor].ypos < 0) {
+				isolatedScope.data.board[isolatedScope.selectedContributor].ypos = 0;
 			}
 
-			if (isolatedScope.data.board[ctrl.dataService.getNickname()].ypos > (currentSize[viewHeightKey] - messageHeight)) {
-				isolatedScope.data.board[ctrl.dataService.getNickname()].ypos = (currentSize[viewHeightKey] - messageHeight);
+			if (isolatedScope.data.board[isolatedScope.selectedContributor].ypos > (currentSize[viewHeightKey] - messageHeight)) {
+				isolatedScope.data.board[isolatedScope.selectedContributor].ypos = (currentSize[viewHeightKey] - messageHeight);
 			}
 
 			element.css({
-				top: isolatedScope.data.board[ctrl.dataService.getNickname()].ypos + 'px',
-				left: isolatedScope.data.board[ctrl.dataService.getNickname()].xpos + 'px'
+				top: isolatedScope.data.board[isolatedScope.selectedContributor].ypos + 'px',
+				left: isolatedScope.data.board[isolatedScope.selectedContributor].xpos + 'px'
 			});
 
-			isolatedScope.data.board[ctrl.dataService.getNickname()].xpos =
-				isolatedScope.data.board[ctrl.dataService.getNickname()].xpos / currentSize[viewWidthKey];
-			isolatedScope.data.board[ctrl.dataService.getNickname()].ypos =
-				isolatedScope.data.board[ctrl.dataService.getNickname()].ypos / currentSize[viewHeightKey];
+			isolatedScope.data.board[isolatedScope.selectedContributor].xpos =
+				isolatedScope.data.board[isolatedScope.selectedContributor].xpos / currentSize[viewWidthKey];
+			isolatedScope.data.board[isolatedScope.selectedContributor].ypos =
+				isolatedScope.data.board[isolatedScope.selectedContributor].ypos / currentSize[viewHeightKey];
 		}
 
 		function mouseup() {
@@ -199,7 +209,7 @@ module TalkwallApp {
 			ctrl.$document.off('mouseup', mouseup);
 			//only persist if significant move (> 10px)
 			//helps not persisting when clicking on controls only
-			if (persistPosition) {
+			if (persistPosition && isolatedScope.selectedContributor === ctrl.dataService.getNickname()) {
 				ctrl.persistMessage();
 			}
             ctrl.dataService.startPolling('none', 'none');
@@ -210,7 +220,7 @@ module TalkwallApp {
 			ctrl.$document.off('touchend', touchend);
 			//only persist if significant move (> 10px)
 			//helps not persisting when clicking on controls only
-			if (persistPosition) {
+			if (persistPosition && isolatedScope.selectedContributor === ctrl.dataService.getNickname()) {
 				ctrl.persistMessage();
 			}
             ctrl.dataService.startPolling('none', 'none');
@@ -222,6 +232,7 @@ module TalkwallApp {
 		data: Message;
 		showEditPanel(): void;
 		onBoard: string;
+		selectedContributor: string;
 	}
 
 	//directive declaration
@@ -231,7 +242,8 @@ module TalkwallApp {
 			scope: {
 				data: '=',
 				showEditPanel: "&",
-				onBoard: "@"
+				onBoard: "@",
+				selectedContributor: '@'
 			},
 			templateUrl: 'js/components/feedMessage/feedMessage.html',
 			controller: FeedMessageController,

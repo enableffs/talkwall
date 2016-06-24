@@ -44,6 +44,8 @@ module TalkwallApp {
         userToggle(item: string): void;
         userIsChecked(): boolean;
         toggleAll(): void;
+		showScreenContributors(): void;
+		showFeed(): void;
 	}
 
 	export class WallController implements IWallControllerService {
@@ -54,14 +56,16 @@ module TalkwallApp {
 		private rightMenu2: boolean = false;
 		private rightMenu3: boolean = false;
         private rightMenu4: boolean = false;
-		private owneremail: string;
+		private owneremail: string = undefined;
 
         private savedGridType: string = 'none';
 		private backgroundColour: string = '';
+		private selectedContributor: string;
+
+
         private selected_users: Array<string>;
 
-        public messageFilterBySelectedUsers: (Message) => boolean;
-        private userFilterOn: boolean = false;
+        public messageFilterByContributor: (Message) => boolean;
 
         constructor(
 			private dataService: DataService,
@@ -71,19 +75,10 @@ module TalkwallApp {
 			private $window: IWindowService) {
 			console.log('--> WallController: started: ');
 
-            var self = this;
             this.selected_users = [];
-			this.dataService.checkAuthentication((success) => {
+	        this.dataService.checkAuthentication((success) => {
 				this.activate();
 			}, null);
-
-            this.messageFilterBySelectedUsers = function(message: Message) {
-                if (self.userFilterOn) {
-                    return self.selected_users.indexOf(message.creator) > -1;
-                } else {
-                    return true;
-                }
-            };
 		}
 
 
@@ -97,7 +92,39 @@ module TalkwallApp {
 	                this.rightMenu3 = true;
 	                this.$mdSidenav('right').open();
 				}
+				this.selectedContributor = this.dataService.getNickname();
+
+				if (this.dataService.userIsAuthorised() &&
+					this.dataService.getAuthenticatedUser().defaultEmail !== undefined &&
+					this.dataService.getAuthenticatedUser().defaultEmail !== '') {
+					this.owneremail = this.dataService.getAuthenticatedUser().defaultEmail;
+				}
+
+				var handle = this;
+				this.messageFilterByContributor = function(message: Message) {
+					if (!message.deleted &&
+						!handle.dataService.getPhoneMode() &&
+						message.board !== undefined &&
+						message.board[handle.selectedContributor] !== undefined) {
+						return true;
+					} else {
+						return false;
+					}
+				};
+
 			}
+		}
+
+		showFeed(): void {
+			this.feedView = true;
+			this.selectedContributor = this.dataService.getNickname();
+			this.$mdSidenav('left').open();
+		}
+
+		showScreenContributors(): void {
+			this.magnified = false;
+			this.feedView = false;
+			this.$mdSidenav('left').open();
 		}
 
         setQuestion(index) {
@@ -206,7 +233,7 @@ module TalkwallApp {
 					this.rightMenu2 = !this.rightMenu2;
 					this.rightMenu3 = false;
                     this.rightMenu4 = false;
-                    this.selected_users = this.dataService.getParticipants().slice(0);
+                    //this.selected_users = this.dataService.getParticipants().slice(0);
 					break;
 				case 3:
 					this.rightMenu1 = false;
