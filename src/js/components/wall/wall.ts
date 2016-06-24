@@ -260,7 +260,7 @@ module TalkwallApp {
                 handle.dataService.setMessageToEdit(null);
 			}
             this.dataService.stopPolling();
-            this.$mdSidenav('left').open();
+            this.showFeed();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
 				controllerAs: 'editMessageC',
