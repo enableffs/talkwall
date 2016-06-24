@@ -201,7 +201,7 @@ function sendExportLinkToOwner(userid, targetEmail) {
                     to: targetEmail,
                     subject: 'Talkwall export',
                     text: 'Your last wall is now closed.\n\nYou can view an exported version of it via this link: '+host+'/#/export?wid='+user.lastOpenedWall+'\n\nThe Talkwall team.',
-                    html: 'Your last wall is now closed.<br><br>You can view an exported version of it via this link: <a href="'+host+'/#/export?wid='+user.lastOpenedWall+'">'+host+'/#/export?wid='+user.lastOpenedWall+'</a><br><br>The Visitracker team'
+                    html: 'Your last wall is now closed.<br><br>You can view an exported version of it via this link: <a href="'+host+'/#/export?wid='+user.lastOpenedWall+'">'+host+'/#/export?wid='+user.lastOpenedWall+'</a><br><br>The Talkwall team'
                 };
 
                 //create a promise that holds the send email operation
@@ -390,6 +390,36 @@ exports.getWallAuthorised = function(req, res) {
                     });
                 }
             });
+        }
+    })
+};
+
+exports.getQuestionContributors = function(req, res) {
+    if (typeof req.params.wid === 'undefined' || req.params.wid == null || typeof req.params.qid === 'undefined' || req.params.qid == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Wall.findOne({
+        _id : req.params.wid
+    });
+
+    query.exec(function(error, wall) {
+        if(error) {
+            return res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message, result: error});
+        }
+        else if (wall !== null) {
+            for (var i = 0; i < wall.questions.length; i++) {
+                if ((wall.questions[i]._id).toString() === req.params.qid) {
+                    return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                        message: common.StatusMessages.GET_SUCCESS.message, result: wall.questions[i].participants});
+                    break;
+                }
+            }
+
+            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                message: common.StatusMessages.GET_SUCCESS.message, result: null});
         }
     })
 };

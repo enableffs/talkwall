@@ -1,17 +1,24 @@
 /// <reference path="../../_references.ts"/>
 /// <reference path="../../services/urlservice.ts"/>
+/// <reference path="../../services/dataservice.ts"/>
 
 module TalkwallApp {
 	"use strict";
 	import IDialogService = angular.material.IDialogService;
 	export class ArchiveWallController {
-		static $inject = ['$mdDialog'];
+		static $inject = ['$mdDialog', 'DataService'];
 
 		private showInput: boolean = false;
+		private owneremail: string = undefined;
 
 		constructor(
-			private $mdDialog: IDialogService) {
+			private $mdDialog: IDialogService,
+			private dataService: DataService) {
 			console.log('--> LoginController: started: ');
+
+			if (this.dataService.getAuthenticatedUser().defaultEmail !== undefined && this.dataService.getAuthenticatedUser().defaultEmail !== '') {
+				this.owneremail = this.dataService.getAuthenticatedUser().defaultEmail;
+			}
 		}
 
 		/**
