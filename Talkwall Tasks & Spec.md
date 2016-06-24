@@ -241,8 +241,8 @@ rename it to Talkwall
 		* ~~join pin dialog with nickname (only one nickname allowed)~~
 	* wall
 		* ~~layout~~
-		* sidepanel-left
-			* "Messages" tab
+		* ~~sidepanel-left~~
+			* ~~"Messages" tab~~
 				* ~~zoom~~
 					* ~~larger side panel~~
 					* ~~apply larger fonts~~
@@ -263,13 +263,13 @@ rename it to Talkwall
 				* ~~position bottom left~~
 				* ~~shows a bottom-sheet component~~
 				* ~~slide open message feed if closed~~
-			* "Show screens" tab
-				* client list
-					* client
-						* standard icon (same but for the teacher -> crown)
-						* nickname
-						* select checkbox (selected -> display client's task wall same as teacher's task number)
-					* select all button checks all checkboxes (-> unselect all button, but keep the teacher)
+			* ~~"Show screens" tab~~
+				* ~~client list~~
+					* ~~client~~
+						* ~~standard icon (same but for the teacher -> crown)~~
+						* ~~nickname~~
+						* ~~select checkbox (selected -> display client's task wall same as teacher's task number)~~
+					* ~~select all button checks all checkboxes (-> unselect all button, but keep the teacher)~~
 		* ~~Add message bottom-sheet~~
 			* ~~textarea fixed length 140 char~~
 			* ~~check button~~
