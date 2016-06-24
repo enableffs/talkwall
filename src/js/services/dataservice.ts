@@ -215,6 +215,14 @@ module TalkwallApp {
          * @return the state (true => mobile size)
          */
         getPhoneMode(): boolean;
+        /**
+         * get array of all tags found in the messages for the current question
+         */
+        getTags(): Array<string>;
+        /**
+         * get tag counter object
+         */
+        getTagCounter(): {};
     }
 
     export class DataService implements IDataService {
@@ -235,6 +243,8 @@ module TalkwallApp {
         private studentNickname: string = null;
         private participants: Array<string> = [];
         private contributors: Array<string> = [];
+        private tags: Array<string> = [];
+        private tagCounter: {} = {};
         private mytTeachersQuestionID: string = '';
         private last_update: number = 0;
         private boardDivSize: {};
@@ -779,10 +789,43 @@ module TalkwallApp {
                     .success((data) => {
                         let resultKey = 'result';
                         this.question.messages = data[resultKey];
+                        this.buildTagArray();
                     })
                     .catch((error) => {
                         console.log('--> DataService: getMessages failure: ' + error);
                     });
+            }
+        }
+
+        buildTagArray(): void {
+            var handle = this;
+            this.question.messages.forEach(function (message) {
+                handle.parseMessageForTags(message);
+            });
+        }
+
+        parseMessageForTags(message): void {
+            var handle = this;
+            if (message !== null) {
+                var foundTags = this.utilityService.getPossibleTags(message.text);
+                if (foundTags !== null) {
+                    foundTags.forEach(function (tag) {
+                        if (handle.tags.indexOf(tag) === -1) {
+                            handle.tags.push(tag);
+                            var tid: Array<string> = new Array();
+                            tid.push(message._id);
+                            handle.tagCounter[tag] = tid;
+                        } else {
+                            var tid: Array<string> = handle.tagCounter[tag];
+                            if (tid.indexOf(message._id) === -1) {
+                                tid.push(message._id);
+                                handle.tagCounter[tag] = tid;
+                            }
+                        }
+                    });
+
+                    console.log('--> Dataservice: parseMessageForTags: ' + foundTags);
+                }
             }
         }
 
@@ -803,6 +846,7 @@ module TalkwallApp {
                             if (this.question.messages[i][idKey] === data[resultKey][idKey]) {
                                 this.question.messages.splice(i, 1);
                                 this.question.messages.splice(i, 0, data[resultKey]);
+                                this.parseMessageForTags(data[resultKey]);
                                 break;
                             }
                         }
@@ -820,6 +864,14 @@ module TalkwallApp {
 
         getContributors(): Array<string> {
             return this.contributors;
+        }
+
+        getTags(): Array<string> {
+            return this.tags;
+        }
+
+        getTagCounter(): {} {
+            return this.tagCounter;
         }
 
         setBoardDivSize(newSize: any): void {
@@ -956,6 +1008,7 @@ module TalkwallApp {
                 } else {                                            // Message is new and needs to be added to the list
                     this.question.messages.push(updated_message);
                 }
+                this.parseMessageForTags(updated_message);
             });
         }
 

@@ -1,6 +1,7 @@
 /// <reference path="../../_references.ts"/>
 /// <reference path="../../services/urlservice.ts"/>
 /// <reference path="../../services/dataservice.ts"/>
+/// <reference path="../../services/utilityservice.ts"/>
 /// <reference path="../editMessagePanel/editMessagePanel.ts"/>
 
 module TalkwallApp {
@@ -44,12 +45,18 @@ module TalkwallApp {
         userToggle(item: string): void;
         userIsChecked(): boolean;
         toggleAll(): void;
+
+		tagExists(item: string): boolean;
+		tagToggle(item: string): void;
+		tagIsChecked(): boolean;
+		toggleAllTags(): void;
+
 		showScreenContributors(): void;
 		showFeed(): void;
 	}
 
 	export class WallController implements IWallControllerService {
-		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', 'URLService', '$window'];
+		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', 'URLService', '$window', 'UtilityService'];
 		private magnified: boolean = false;
 		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
@@ -62,20 +69,23 @@ module TalkwallApp {
 		private backgroundColour: string = '';
 		private selectedContributor: string;
 
+        private unselected_users: Array<string>;
+		private unselected_tags: Array<string>;
 
-        private selected_users: Array<string>;
-
-        public messageFilterByContributor: (Message) => boolean;
+        public messageFilterByContributorOnBoard: (Message) => boolean;
+		public messageFilterByAuthorAndTag: (Message) => boolean;
 
         constructor(
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService,
 			private urlService: IURLService,
-			private $window: IWindowService) {
+			private $window: IWindowService,
+			private utilityService: UtilityService) {
 			console.log('--> WallController: started: ');
 
-            this.selected_users = [];
+            this.unselected_users = [];
+	        this.unselected_tags = [];
 	        this.dataService.checkAuthentication((success) => {
 				this.activate();
 			}, null);
@@ -101,17 +111,46 @@ module TalkwallApp {
 				}
 
 				var handle = this;
-				this.messageFilterByContributor = function(message: Message) {
+				//contributor filtering (for messages on the board)
+				this.messageFilterByContributorOnBoard = function(message: Message) {
 					if (!message.deleted &&
 						!handle.dataService.getPhoneMode() &&
 						message.board !== undefined &&
-						message.board[handle.selectedContributor] !== undefined) {
+						message.board[handle.selectedContributor] !== undefined &&
+						handle.unselected_users.indexOf(message.creator) === -1 &&
+						handle.messageTagsNotPresent(message)) {
 						return true;
 					} else {
 						return false;
 					}
 				};
 
+				//author+tag filtering (for messages in the feed)
+				this.messageFilterByAuthorAndTag = function(message: Message) {
+					if (!message.deleted && handle.unselected_users.indexOf(message.creator) === -1 && handle.messageTagsNotPresent(message)) {
+						return true;
+					} else {
+						return false;
+					}
+				};
+
+			}
+		}
+
+		messageTagsNotPresent(message): boolean {
+			var messageTags = this.utilityService.getPossibleTags(message.text);
+			if (messageTags !== null) {
+				var present: boolean = false;
+				for (var i = 0; i < messageTags.length; i++) {
+					if (this.unselected_tags.indexOf(messageTags[i]) === -1) {
+						present = true;
+					}
+				}
+
+				return present;
+
+			} else {
+				return true;
 			}
 		}
 
@@ -160,28 +199,60 @@ module TalkwallApp {
 	        }
         }
 
-        // Functions for connected users panel
+        /**** author filtering ******/
         userExists(item) {
-            return this.selected_users.indexOf(item) > -1;
+            return this.unselected_users.indexOf(item) === -1;
         };
-        userToggle(item) {
-            var idx = this.selected_users.indexOf(item);
+
+		userToggle(item) {
+            var idx = this.unselected_users.indexOf(item);
             if (idx > -1) {
-                this.selected_users.splice(idx, 1);
+                this.unselected_users.splice(idx, 1);
             } else {
-                this.selected_users.push(item);
+                this.unselected_users.push(item);
             }
         };
+
         userIsChecked() {
-            return this.selected_users.length === this.dataService.getParticipants().length;
+            return this.unselected_users.length !== this.dataService.getContributors().length;
         };
+
         toggleAll() {
-            if (this.selected_users.length === this.dataService.getParticipants().length) {
-                this.selected_users = [];
-            } else if (this.selected_users.length === 0 || this.selected_users.length > 0) {
-                this.selected_users = this.dataService.getParticipants().slice(0);
+            if (this.unselected_users.length === this.dataService.getContributors().length) {
+                this.unselected_users = [];
+            } else {
+                this.unselected_users = this.dataService.getContributors().slice(0);
             }
         };
+		/**** author filtering ******/
+
+
+		/**** tag filtering ******/
+		tagExists(item) {
+			return this.unselected_tags.indexOf(item) === -1;
+		};
+
+		tagToggle(item) {
+			var idx = this.unselected_tags.indexOf(item);
+			if (idx > -1) {
+				this.unselected_tags.splice(idx, 1);
+			} else {
+				this.unselected_tags.push(item);
+			}
+		};
+
+		tagIsChecked() {
+			return this.unselected_tags.length !== this.dataService.getTags().length;
+		};
+
+		toggleAllTags() {
+			if (this.unselected_tags.length === this.dataService.getTags().length) {
+				this.unselected_tags = [];
+			} else {
+				this.unselected_tags = this.dataService.getTags().slice(0);
+			}
+		};
+		/**** tag filtering ******/
 
 		showMessageEditor(newMessage: boolean): void {
 			var handle = this;
