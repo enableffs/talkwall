@@ -3,7 +3,6 @@
 module TalkwallApp {
 
     'use strict';
-
     configApp.$inject = ['$translateProvider', '$httpProvider', '$routeProvider'];
 
     /**
@@ -36,5 +35,22 @@ module TalkwallApp {
             prefix: './languages/',
             suffix: '.json'
         });
+
+        var lang = null;
+        let languagesKey: string = 'languages';
+        let langKey: string = 'lang';
+        if (navigator[languagesKey]) {
+            lang = navigator[languagesKey][0];
+        } else {
+            lang = navigator.language || navigator.userLanguage;
+        }
+
+        if (lang.indexOf('no') > -1 || lang.indexOf('nb') > -1) {
+            $translateProvider.preferredLanguage('no');
+            sessionStorage[langKey] = 'no';
+        } else {
+            $translateProvider.preferredLanguage('en');
+            sessionStorage[langKey] = 'en';
+        }
     }
 }

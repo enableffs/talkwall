@@ -15,6 +15,7 @@ module TalkwallApp {
 
 		//vars
 		private customFullscreen;
+		private languageCode: string = 'no';
 
 		constructor(
 			private urlService: IURLService,
@@ -24,7 +25,9 @@ module TalkwallApp {
 			private $window: IWindowService,
 			private dataService: DataService) {
 			console.log('--> LandingController: started');
-			this.$translate.use(this.urlService.getLanguageDomain());
+			let langKey: string = 'lang';
+			this.languageCode = this.$window.sessionStorage[langKey];
+			this.$translate.use(this.languageCode);
 			this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
 		}
 
