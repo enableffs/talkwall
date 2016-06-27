@@ -537,6 +537,7 @@ module TalkwallApp {
             if (newIndex !== -1 && this.wall.questions.length > 0) {
                 this.question = this.wall.questions[newIndex];
                 this.currentQuestionIndex = newIndex;
+                console.log('--> new bgcolor available: ' + this.getBackgroundColour());
                 this.questionToEdit.grid = this.question.grid;
                 //retrieve participants list
                 this.contributors = this.question.participants;
