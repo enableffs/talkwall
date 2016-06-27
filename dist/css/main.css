@@ -651,3 +651,12 @@ md-toolbar:focus,
 button:focus {
   outline: 0 !important;
 }
+
+.md-on {
+  background-color: #FF7700 !important;
+}
+
+md-radio-button.md-default-theme.md-checked .md-off,
+md-radio-button.md-checked .md-off {
+  border-color: #FF7700 !important;
+}

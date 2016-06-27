@@ -65,3 +65,11 @@ button:focus {
   outline:0 !important;
 }
 
+.md-on {
+  background-color: $color-orange !important;
+}
+
+md-radio-button.md-default-theme.md-checked .md-off,
+md-radio-button.md-checked .md-off {
+  border-color: $color-orange !important;
+}

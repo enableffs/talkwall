@@ -17,8 +17,8 @@
 
 				<div flex layout>
 					<div class="landing-centered-button-panel" layout="column" flex layout-align="center center">
-						<img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="landingC.urlService.getLanguageDomain()=='no'">
-						<img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="landingC.urlService.getLanguageDomain()=='en'">
+						<img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="landingC.languageCode=='no'">
+						<img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="landingC.languageCode=='en'">
 						<div class="landing-samtavlaLogo" layout="row" layout-align="center center" layout-margin>
 							<md-button aria-label="Participate to Talkwall" id="joinButton" flex-grow="true" class="md-primary md-raised landing-joinButton" ng-click="landingC.showJoinDialog($event)" aria-label="Delta i Samtavla">{{ 'MENUPAGE_BUTTON_PARTICIPATE' | translate }}</md-button>
 							<md-button aria-label="Create a wall" id="createButton" hide-xs hide-sm flex-grow="true" class="md-primary md-raised landing-createButton" ng-click="landingC.showLoginDialog($event)" aria-label="Opprett en ny samtavla">{{ 'MENUPAGE_BUTTON_CREATE' | translate }}</md-button>
