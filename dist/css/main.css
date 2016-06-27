@@ -413,6 +413,7 @@ md-content {
 .wall-rightMenuSection {
   width: 100%;
   background-color: #D8EDF3;
+  min-height: 64px !important;
 }
 
 .wall-rightMenuFlexOpen {
@@ -422,6 +423,12 @@ md-content {
   flex-direction: column;
   -ms-flex-positive: 1;
   flex-grow: 1;
+}
+
+.wall-rightMenuFlexClosed {
+  min-height: 64px !important;
+  max-height: 64px !important;
+  height: 64px !important;
 }
 
 .wall-rightMenuAddTaskPanel {
@@ -452,7 +459,11 @@ md-content {
 }
 
 .wall-sidenavRightBottomDiv {
+  position: absolute;
+  left: 0px !important;
+  bottom: 0px !important;
   max-height: 70px !important;
+  width: 100% !important;
 }
 
 .wall-showEditMessageButton {
@@ -604,7 +615,9 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
     overflow-x: hidden !important;
   }
   .wall-showEditMessageButtonPhone {
+    z-index: 900 !important;
     background-color: #FF7700 !important;
+    opacity: 0.75;
   }
 }
 
