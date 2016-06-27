@@ -49,12 +49,19 @@
 .wall-rightMenuSection {
   width: 100%;
   background-color: $color-lightblue;
+  min-height: 64px !important;
 }
 
 .wall-rightMenuFlexOpen {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+}
+
+.wall-rightMenuFlexClosed {
+  min-height: 64px !important;
+  max-height: 64px !important;
+  height: 64px !important;
 }
 
 .wall-rightMenuAddTaskPanel {
@@ -85,9 +92,11 @@
 }
 
 .wall-sidenavRightBottomDiv {
-  //height: 70px !important;
-  //min-height: 70px !important;
+  position: absolute;
+  left: 0px !important;
+  bottom: 0px !important;
   max-height: 70px !important;
+  width: 100% !important;
 }
 
 .wall-showEditMessageButton {
@@ -224,8 +233,6 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 
 
 
-
-
 @media all and (max-width: 960px) {
   .wall-question {
     margin-left: 14px;
@@ -240,6 +247,8 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
   }
 
   .wall-showEditMessageButtonPhone {
+    z-index: 900 !important;
     background-color: $color-orange !important;
+    opacity: 0.75;
   }
 }

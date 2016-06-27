@@ -129,7 +129,15 @@ module TalkwallApp {
 				messageWidth = element.prop('offsetWidth');
 				messageHeight = element.prop('offsetHeight');
 
-				if (ctrl.$window[touchEventKey] && event.originalEvent instanceof TouchEvent) {
+				if (event instanceof MouseEvent) {
+					// Handling the mousedown event
+					absStartX = event.screenX;
+					absStartY = event.screenY;
+					startX = absStartX - (isolatedScope.data.board[isolatedScope.selectedContributor].xpos * currentSize[viewWidthKey]);
+					startY = absStartY - (isolatedScope.data.board[isolatedScope.selectedContributor].ypos * currentSize[viewHeightKey]);
+					ctrl.$document.on('mousemove', mousemove);
+					ctrl.$document.on('mouseup', mouseup);
+				} else if (event instanceof TouchEvent) {
 					// Handling the touchstart event
 					var touchobj = event[changedTouchesKey][0];
 					startX = touchobj.clientX;
@@ -138,14 +146,6 @@ module TalkwallApp {
 					absStartY = touchobj.pageY;
 					ctrl.$document.on('touchmove', touchmove);
 					ctrl.$document.on('touchend', touchend);
-				} else if (event instanceof MouseEvent) {
-					// Handling the mousedown event
-					absStartX = event.screenX;
-					absStartY = event.screenY;
-					startX = absStartX - (isolatedScope.data.board[isolatedScope.selectedContributor].xpos * currentSize[viewWidthKey]);
-					startY = absStartY - (isolatedScope.data.board[isolatedScope.selectedContributor].ypos * currentSize[viewHeightKey]);
-					ctrl.$document.on('mousemove', mousemove);
-					ctrl.$document.on('mouseup', mouseup);
 				}
 				ctrl.dataService.stopPolling();
 			});

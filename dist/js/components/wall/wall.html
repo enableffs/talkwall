@@ -98,7 +98,7 @@
 			</md-content>
 			<div class="wall-sidenavRightBottomDiv" layout="row" layout-align="center center">
 				<!-- this is to allow the fab button 'show editMessage' to float over the bottom of the sidenav -->
-				<md-button aria-label="Create a new message" ng-if="wallC.dataService.phoneMode && wallC.dataService.getQuestion() !== null" class="md-fab wall-showEditMessageButtonPhone" ng-click="wallC.showMessageEditor(true)">
+				<md-button aria-label="Create a new message" ng-if="wallC.dataService.getQuestion() !== null && wallC.dataService.phoneMode" class="md-fab wall-showEditMessageButtonPhone" ng-click="wallC.showMessageEditor(true)">
 					<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 				</md-button>
 			</div>
@@ -106,10 +106,10 @@
 
 		<!-- right sidenav of the wall -->
 		<md-sidenav ng-if="!wallC.dataService.phoneMode" md-component-id="right" class="md-sidenav-right wall-sidenav" layout="column">
-			<div flex layout="column">
+			<div layout-fill="true" layout="column" style="overflow: hidden">
 
 				<!-- Join with PIN section -->
-				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1}">
+				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1, 'wall-rightMenuFlexClosed' : !wallC.rightMenu1}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(1)">
 						<div flex layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Join with PIN</div>
@@ -137,7 +137,7 @@
 				</section>
 
                 <!-- Filter by people -->
-                <section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2}">
+                <section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2, 'wall-rightMenuFlexClosed' : !wallC.rightMenu2}">
                     <md-toolbar ng-click="wallC.toggleRightMenu(2)">
                         <div flex layout="row" layout-align="start center">
                             <div flex class="wall-toolbarText" layout-align="center center">Filter</div>
@@ -195,7 +195,7 @@
                 </section>
 
 				<!-- Edit tasks section -->
-				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3}">
+				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3, 'wall-rightMenuFlexClosed' : !wallC.rightMenu3}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
 						<div flex layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Edit tasks</div>
@@ -236,7 +236,7 @@
 				</section>
 
 				<!-- Close talkwall section -->
-				<section ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu4}">
+				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu4, 'wall-rightMenuFlexClosed' : !wallC.rightMenu4}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(4)">
 						<div flex layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Close Talkwall</div>
