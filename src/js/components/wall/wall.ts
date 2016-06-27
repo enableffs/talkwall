@@ -66,7 +66,6 @@ module TalkwallApp {
 		private owneremail: string = undefined;
 
         private savedGridType: string = 'none';
-		private backgroundColour: string = '';
 		private selectedContributor: string;
 
         private unselected_users: Array<string>;
@@ -171,7 +170,6 @@ module TalkwallApp {
 		        () => {
                     if ( this.dataService.getCurrentQuestionIndex() !== -1 ) {
                         this.savedGridType = this.dataService.getQuestion().grid;
-                        this.backgroundColour = this.dataService.getBackgroundColour();
                     }
 		        },
 		        function() {
