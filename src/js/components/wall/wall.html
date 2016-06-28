@@ -117,7 +117,7 @@
 							<md-icon ng-show="wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
-					<md-content layout-fill="true" ng-show="wallC.rightMenu1">
+					<md-content flex-grow="true" ng-show="wallC.rightMenu1">
 						<div layout="column" layout-align="start center" layout-padding>
 							<h3>Participate on this talkwall</h3>
 							<div class="wall-joinRow wall-joinRow1" layout="row">
@@ -145,7 +145,7 @@
                             <md-icon ng-show="wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
                         </div>
                     </md-toolbar>
-                    <md-content layout-fill="true" ng-show="wallC.rightMenu2">
+                    <md-content flex-grow="true" ng-show="wallC.rightMenu2">
                         <div layout="column" layout-padding>
                             <md-list>
                                 <md-list-item>
@@ -203,7 +203,7 @@
 							<md-icon ng-show="wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
-					<md-content layout-fill="true" ng-show="wallC.rightMenu3">
+					<md-content flex-grow="true" ng-show="wallC.rightMenu3">
 						<md-list>
 							<div task ng-repeat="question in wallC.dataService.getWall().questions" data="question" show-edit-panel="wallC.showMessageEditor(false)"></div>
 						</md-list>
