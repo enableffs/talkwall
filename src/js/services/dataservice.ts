@@ -331,9 +331,10 @@ module TalkwallApp {
                 successCallbackFn();
             }
 
+            var handle = this;
             // Set up listener for disconnect
             this.$window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
-                var url = this.urlService.getHost() + '/';
+                var url = handle.urlService.getHost() + '/';
                 this.$http.get(url + 'disconnect/' + this.getNickname() + '/' + this.wall.pin + '/' + this.question._id)
                     .then(function () {
                         this.$window.location.href = url;
