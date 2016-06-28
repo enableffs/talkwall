@@ -423,6 +423,11 @@ md-content {
   min-height: 64px !important;
 }
 
+.wall-rightMenuSection md-toolbar {
+  height: 64px !important;
+  min-height: 64px !important;
+}
+
 .wall-rightMenuFlexOpen {
   display: -ms-flexbox;
   display: flex;
@@ -647,6 +652,10 @@ a, img {
 .hr {
   border: 0;
   border-bottom: 1px solid #c0c0c0;
+}
+
+md-dialog {
+  min-width: 320px !important;
 }
 
 md-toolbar {
