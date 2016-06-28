@@ -111,13 +111,13 @@
 				<!-- Join with PIN section -->
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1, 'wall-rightMenuFlexClosed' : !wallC.rightMenu1}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(1)">
-						<div flex layout="row" layout-align="start center">
+						<div layout-fill="true" layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Join with PIN</div>
-							<md-icon ng-if="!wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
-							<md-icon ng-if="wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-show="!wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-show="wallC.rightMenu1" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
-					<md-content flex ng-if="wallC.rightMenu1">
+					<md-content layout-fill="true" ng-show="wallC.rightMenu1">
 						<div layout="column" layout-align="start center" layout-padding>
 							<h3>Participate on this talkwall</h3>
 							<div class="wall-joinRow wall-joinRow1" layout="row">
@@ -139,13 +139,13 @@
                 <!-- Filter by people -->
                 <section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2, 'wall-rightMenuFlexClosed' : !wallC.rightMenu2}">
                     <md-toolbar ng-click="wallC.toggleRightMenu(2)">
-                        <div flex layout="row" layout-align="start center">
+                        <div layout-fill="true" layout="row" layout-align="start center">
                             <div flex class="wall-toolbarText" layout-align="center center">Filter</div>
-                            <md-icon ng-if="!wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
-                            <md-icon ng-if="wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
+                            <md-icon ng-show="!wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
+                            <md-icon ng-show="wallC.rightMenu2" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
                         </div>
                     </md-toolbar>
-                    <md-content flex ng-if="wallC.rightMenu2">
+                    <md-content layout-fill="true" ng-show="wallC.rightMenu2">
                         <div layout="column" layout-padding>
                             <md-list>
                                 <md-list-item>
@@ -197,18 +197,18 @@
 				<!-- Edit tasks section -->
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3, 'wall-rightMenuFlexClosed' : !wallC.rightMenu3}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
-						<div flex layout="row" layout-align="start center">
+						<div layout-fill="true" layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Edit tasks</div>
-							<md-icon ng-if="!wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
-							<md-icon ng-if="wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-show="!wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-show="wallC.rightMenu3" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
-					<md-content flex ng-if="wallC.rightMenu3">
+					<md-content layout-fill="true" ng-show="wallC.rightMenu3">
 						<md-list>
 							<div task ng-repeat="question in wallC.dataService.getWall().questions" data="question" show-edit-panel="wallC.showMessageEditor(false)"></div>
 						</md-list>
 					</md-content>
-					<div ng-if="wallC.rightMenu3" layout="column" class="wall-rightMenuAddTaskPanel">
+					<div ng-show="wallC.rightMenu3" layout="column" class="wall-rightMenuAddTaskPanel">
 						<md-input-container class="md-block">
 							<label>Add task</label>
 							<textarea ng-model="wallC.dataService.getQuestionToEdit().label" rows="5" md-select-on-focus></textarea>
@@ -238,13 +238,13 @@
 				<!-- Close talkwall section -->
 				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu4, 'wall-rightMenuFlexClosed' : !wallC.rightMenu4}">
 					<md-toolbar ng-click="wallC.toggleRightMenu(4)">
-						<div flex layout="row" layout-align="start center">
+						<div layout-fill="true" layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">Close Talkwall</div>
-							<md-icon ng-if="!wallC.rightMenu4" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
-							<md-icon ng-if="wallC.rightMenu4" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-show="!wallC.rightMenu4" md-svg-src="images/ic_arrow_drop_right_white_24px.svg" aria-hidden="true"></md-icon>
+							<md-icon ng-show="wallC.rightMenu4" md-svg-src="images/ic_arrow_drop_down_white_24px.svg" aria-hidden="true"></md-icon>
 						</div>
 					</md-toolbar>
-					<md-content ng-if="wallC.rightMenu4">
+					<md-content ng-show="wallC.rightMenu4">
 						<div layout="column" layout-padding>
 							<div>Some text explaining what happens when one closes a wall will come here shortly. Please type in below the email address where the wall report will be sent.</div>
 							<md-input-container>
