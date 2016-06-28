@@ -260,6 +260,14 @@ md-content {
   background-color: rgba(255, 119, 0, 0.5);
 }
 
+.feedMessage-messageNotSelected {
+  background-color: white;
+}
+
+.feedMessage-messageNotPinned {
+  background-color: #c0c0c0 !important;
+}
+
 .feedMessage-showControlButton {
   height: 40px !important;
   min-width: 40px !important;
@@ -295,11 +303,10 @@ md-content {
 }
 
 .feedMessage-messageBody {
-  margin: 5px;
+  padding: 5px;
 }
 
 .feedMessage-messageControl {
-  background-color: #c0c0c0;
   width: 112px !important;
   min-width: 112px !important;
   max-width: 112px !important;

@@ -94,6 +94,15 @@ module TalkwallApp {
 			this.dataService.updateMessage();
 		}
 
+		getSelectedClass(): string {
+			if (this.isSelected() && this.isolatedScope.onBoard === 'false') {
+				return 'feedMessage-messageSelected';
+			} else if (this.message.isPinned && this.isolatedScope.onBoard === 'true') {
+				return 'feedMessage-messageSelected';
+			} else {
+				return 'feedMessage-messageNotSelected';
+			}
+		}
 	}
 
 	function linker(isolatedScope: FeedMessageDirectiveScope , element: ng.IAugmentedJQuery,

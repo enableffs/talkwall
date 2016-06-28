@@ -4,6 +4,14 @@
   background-color: rgba(255, 119, 0, 0.5);
 }
 
+.feedMessage-messageNotSelected {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.feedMessage-messageNotPinned {
+  background-color: #c0c0c0 !important
+}
+
 .feedMessage-showControlButton {
   //width: 40px !important;
   height: 40px !important;
@@ -41,11 +49,11 @@
 }
 
 .feedMessage-messageBody {
-  margin: 5px;
+  padding: 5px;
 }
 
 .feedMessage-messageControl {
-  background-color: $color-grey;
+  //background-color: $color-grey;
   width: 112px !important;
   min-width: 112px !important;
   max-width: 112px !important;
