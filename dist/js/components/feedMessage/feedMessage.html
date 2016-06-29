@@ -11,15 +11,15 @@
 				</md-button>
 				<md-button aria-label="Toggle pin message" ng-if="feedMessageC.isolatedScope.onBoard === 'true'" ng-click="feedMessageC.togglePinMessage()" class="feedMessage-showControlButton"
 						   ng-class="{'feedMessage-messageSelected': feedMessageC.message.isPinned && feedMessageC.isolatedScope.onBoard === 'true'}">
-					<md-icon ng-show="!feedMessageC.message.isPinned" md-svg-icon="images/ic_location_on_orange_24px.svg"></md-icon>
-					<md-icon ng-show="feedMessageC.message.isPinned" md-svg-icon="images/ic_location_on_black_24px.svg"></md-icon>
+					<md-icon ng-show="!feedMessageC.message.isPinned" md-svg-icon="images/ic_lightbulb_outline_orange_24px.svg"></md-icon>
+					<md-icon ng-show="feedMessageC.message.isPinned" md-svg-icon="images/ic_lightbulb_outline_darkgrey_24px.svg"></md-icon>
 				</md-button>
 			</div>
 			<div layout="row">
 				<md-button aria-label="Toggle select message" ng-click="feedMessageC.toggleSelectMessage()" class="feedMessage-showControlButton"
 						   ng-class="{'feedMessage-messageSelected': feedMessageC.isSelected()}">
-					<md-icon ng-show="!feedMessageC.isSelected()" md-svg-icon="images/ic_lightbulb_outline_orange_24px.svg"></md-icon>
-					<md-icon ng-show="feedMessageC.isSelected()" md-svg-icon="images/ic_lightbulb_outline_darkgrey_24px.svg"></md-icon>
+					<md-icon ng-show="!feedMessageC.isSelected()" md-svg-icon="images/ic_location_on_orange_24px.svg"></md-icon>
+					<md-icon ng-show="feedMessageC.isSelected()" md-svg-icon="images/ic_location_on_black_24px.svg"></md-icon>
 				</md-button>
 				<md-button aria-label="Edit message" ng-click="feedMessageC.editMessage()" class="feedMessage-showControlButton">
 					<md-icon md-svg-icon="images/ic_mode_edit_orange_24px.svg"></md-icon>
