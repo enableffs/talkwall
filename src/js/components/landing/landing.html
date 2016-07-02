@@ -26,92 +26,78 @@
 					</div>
 				</div>
 			</div>
-			<div class="landing-indexSection1" layout="column" layout-align="start center">
-			<!-- two key sentences about talkwall-->
+
+
+			<!-- two key sentences about talkwall and a video -->		
+			<div class="landing-indexSection1" layout="column" layout-align="space-between center">
+
 				<div class="landing-indexSection1Title">{{ 'MENUPAGE_HEADING_1' | translate }}</div>
-				<div class="landing-indexSection1Desc">{{ 'MENUPAGE_HEADING_2' | translate }}</div>
-				<div style="background-color: #FFFFFF; height: 80px"> </div>
-				<div layout-gt-md="row" layout="column" style="margin-top: 20px">
-					<div flex > </div>
+				<div style="padding-bottom: 20px" class="landing-indexSection1Desc">{{ 'MENUPAGE_HEADING_2' | translate }}</div>
+				<div>
+				    <iframe width="560" height="315" src="https://www.youtube.com/embed/v4CuQEZszYI" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='no'"></iframe>
+				    <iframe width="560" height="315" src="https://www.youtube.com/embed/eXCsA175Ga0" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='en'"></iframe>
+					
+				</div>
+			</div>
+
+			<!-- pointers to teacher resources -->
+			<div layout="row" layout-xs="column" layout-align="space-around end" layout-align-xs="center center">
 					<!-- three links to the digitaliseddialoges site-->
-					<div layout="column" width="200">
+					<div width="200">
 						<a href="#/#index02"><img src="images/index-02.png.svg" width="200"></a>
-						<div layout="column">
+						<div>
 							<div class="landing-indexCardTitle">{{ 'MENUPAGE_THUMB1_TITLE' | translate }}</div>
 							<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB1_BDY' | translate }}</div>
 						</div>
 					</div>
 
-					<div layout="column" width="200">
+					<div width="200">
 						<a href="#/#index03"><img src="images/index-03.png.svg" width="200"></a>
-						<div layout="column">
+						<div>
 							<div class="landing-indexCardTitle">{{ 'MENUPAGE_THUMB2_TITLE' | translate }}</div>
 							<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB2_BDY' | translate }}</div>
 						</div>
 					</div>
 
-					<div layout="column" width="200">
+					<div width="200">
 						<a href="#/#index01"><img src="images/index-01.png.svg" width="200"></a>
-						<div layout="column">
+						<div>
 							<div class="landing-indexCardTitle">{{ 'MENUPAGE_THUMB3_TITLE' | translate }}</div>
 							<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB3_BDY' | translate }}</div>
 						</div>
 					</div>
 
-					<div flex > </div>
-				</div>
 			</div>
-			<div layout="row">
-				<div style="width: 10%; background-color: #FFFFFF; color: #FFFFFF"> </div>
-				<div flex class="hr"></div>
-				<div style="width: 10%; background-color: #FFFFFF; color: #FFFFFF"> </div>
-			</div>
+
 			<!-- statements from users-->
 			<div class="landing-indexSection2" layout="column" layout-align="start center">
 				<div class="landing-indexSection1Desc">{{ 'MENUPAGE_STATEMENT1' | translate }}</div>
 				<div class="landing-indexSection1Desc">{{ 'MENUPAGE_STATEMENT2' | translate }}</div>
 			</div>
 		
-			<div class="landing-indexSection3" layout="column">
-				
 
-			</div>
 
-			<div style="background-color: #000000; padding-bottom: 20px">
-				<div layout="row" layout-xs="column" layout-align="space-around end" layout-align-xs="center center">
+			<div style="background-color: #000000; padding: 20px">
+				<div layout="row" layout-xs="column" layout-align="space-around start" layout-align-xs="center center">
 					
 					<div>
-						<a href="http://www.uv.uio.no/"><img src="images/logouio.png" width="200"></a>
-					</div>
-
-					<div style="margin-top: 20px">
-						<a href="http://www.uv.uio.no/didiac"><img src="images/didiac-logo.png" width="200"></a>
+						<a href="{{ 'MENUPAGE_HREFUIO' | translate }}"><img src="{{ 'MENUPAGE_IMGUIOLOGO' | translate }}" width="200"></a>
 					</div>
 
 					<div>
-						<a href="http://www.nfr.no/"><img src="images/nfr-finnut-en.png" width="200"></a>
+						<a href="{{ 'MENUPAGE_HREFDIDIAC' | translate }}"><img src="images/didiac-logo.png" width="200"></a>
+						<div class="landing-indexSection4Title">{{ 'MENUPAGE_FOOTERH1' | translate }}</div>
+						<div class="landing-indexSection4Desc"><a href="{{ 'MENUPAGE_HREFDIDIAC' | translate }}">{{ 'MENUPAGE_FOOTER1' | translate }}</a> | 
+						<a href="mailto:post@talkwall.net">{{ 'MENUPAGE_FOOTEREMAIL' | translate }}</a></div>
+					</div>
+
+					<div>
+						<a href="{{ 'MENUPAGE_HREFNFR' | translate }}"><img src="{{ 'MENUPAGE_IMGNFRLOGO' | translate }}" width="200"></a>
 					</div>
 			
 				</div>
 
-				
-				<div layout="row" layout-xs="column"  layout-align="space-around end" layout-align-xs="center center">
-				
-					<div style="width: 200px">
-					</div>
-
-					<div style="width: 200px">
-						<div class="landing-indexSection4Title">{{ 'MENUPAGE_FOOTERH1' | translate }}</div>
-						<div class="landing-indexSection4Desc"><a href="http://www.uv.uio.no/didiac">{{ 'MENUPAGE_FOOTER1' | translate }}</div>
-						<div class="landing-indexSection4Desc"><a href="mailto:post@talkwall.net">{{ 'MENUPAGE_FOOTEREMAIL' | translate }}</a></div>
-					</div>
-
-					<div style="width: 200px">
-						<div class="landing-indexSection4Desc"><a href="http://www.nfr.no/">{{ 'MENUPAGE_FOOTER2' | translate }}</a></div>
-					</div>
-				</div>
-
-			</div>
+			</div> 
 
 			</div>
 
