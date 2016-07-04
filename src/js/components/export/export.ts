@@ -50,7 +50,7 @@ module TalkwallApp {
 
 		getFormattedDate(date: Date): string {
 			if (date !== null) {
-				return moment(date).format('MM/DD/YYYY - HH:mm');
+				return moment(date).format('DD/MM/YYYY - HH:mm');
 			}
 		}
 

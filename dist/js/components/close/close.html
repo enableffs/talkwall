@@ -1,15 +1,15 @@
 <md-dialog aria-label="Mango (Fruit)" ng-cloak>
 		<md-toolbar>
 			<div class="md-toolbar-tools">
-				<h2>{{ 'TALKWALL_CLOSED_MESSAGE' | translate }}</h2>
+				<h2>{{ 'CLOSE_HEADING' | translate }}</h2>
 			</div>
 		</md-toolbar>
 		<md-dialog-content layout="column" class="md-padding">
 
-			<span>This Talkwall has been closed</span>
+			<span>{{ 'CLOSE_MESSAGE' | translate }}</span>
 
 			<md-button class="md-primary md-raised join-menuItem" ng-click="closeC.answer()" aria-label="Join">
-				Done
+				{{ 'CLOSE_DONEBTN' | translate }}
 			</md-button>
 
 

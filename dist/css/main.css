@@ -567,52 +567,52 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 
 .bg0,
 .bg0-add.bg0-add-active {
-  background-color: #5E7E98;
+  background-color: #cccccc;
 }
 
 .bg1,
 .bg1-add.bg1-add-active {
-  background-color: #666666;
+  background-color: #4dd0e1;
 }
 
 .bg2,
 .bg2-add.bg2-add-active {
-  background-color: #6D8565;
+  background-color: #fff59d;
 }
 
 .bg3,
 .bg3-add.bg3-add-active {
-  background-color: #7A7A7A;
+  background-color: #b2ebf2;
 }
 
 .bg4,
 .bg4-add.bg4-add-active {
-  background-color: #828565;
+  background-color: #fff59d;
 }
 
 .bg5,
 .bg5-add.bg5-add-active {
-  background-color: #858585;
+  background-color: #26c6da;
 }
 
 .bg6,
 .bg6-add.bg6-add-active {
-  background-color: #8EBEE6;
+  background-color: #ffee58;
 }
 
 .bg7,
 .bg7-add.bg7-add-active {
-  background-color: #998C5F;
+  background-color: #0097a7;
 }
 
 .bg8,
 .bg8-add.bg8-add-active {
-  background-color: #999999;
+  background-color: #ffe0b2;
 }
 
 .bg9,
 .bg9-add.bg9-add-active {
-  background-color: #ABD19F;
+  background-color: #81d4fa;
 }
 
 @media all and (max-width: 960px) {
