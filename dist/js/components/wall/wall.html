@@ -118,18 +118,18 @@
 						</div>
 					</md-toolbar>
 					<md-content flex-grow="true" ng-show="wallC.rightMenu1">
-						<div layout="column" layout-align="start center" layout-padding>
+						<div layout="column" layout-padding>
 							<h3>{{ 'WALL_PARTICIPATE' | translate }}</h3>
 							<div class="wall-joinRow wall-joinRow1" layout="row">
-								<md-icon md-svg-src="images/ic_arrow_forward_grey_24px.svg" aria-hidden="true"></md-icon>
+								<!--<md-icon md-svg-src="images/ic_arrow_forward_grey_24px.svg" aria-hidden="true"></md-icon>-->
 								<span flex>{{ wallC.urlService.getHost() }}</span>
 							</div>
 							<div class="wall-joinRow wall-joinRow2" layout="row">
-								<md-icon md-svg-src="images/ic_arrow_forward_grey_24px.svg" aria-hidden="true"></md-icon>
+								<!--<md-icon md-svg-src="images/ic_arrow_forward_grey_24px.svg" aria-hidden="true"></md-icon>-->
 								<span flex>PIN: {{wallC.dataService.getWall().pin}}</span>
 							</div>
 							<div class="wall-joinRow wall-joinRow3" layout="row">
-								<md-icon md-svg-src="images/ic_people_black_24px.svg" aria-hidden="true"></md-icon>
+								<!--<md-icon md-svg-src="images/ic_people_black_24px.svg" aria-hidden="true"></md-icon>-->
 								<span flex>{{wallC.dataService.participants.length}} {{ 'WALL_NUMBERPARTICIPANTS' | translate }}</span>
 							</div>
 						</div>

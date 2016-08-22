@@ -96,20 +96,18 @@ md-content {
   font-weight: bold;
   font-size: 24px !important;
   color: $color-blue;
-  width: 100%;
+  width: 50%;
   text-align: center;
-  margin-left: 10px;
-  margin-right: 10px;
+  padding: 10px;
 }
 
 .landing-indexSection1Desc {
   font-weight: normal;
-  font-size: 24px !important;
-  color: $color-blue;
-  width: 100%;
+  font-size: 18px !important;
+  color: $color-orange; 
+  width: 50%;
   text-align: center;
-  margin-left: 10px;
-  margin-right: 10px;
+  padding: 10px;
 }
 
 .landing-indexCardTitle {
