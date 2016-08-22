@@ -18,7 +18,7 @@
   min-height: 64px;
   max-height: 64px;
   height: 64px;
-  background-color: #00BCD4 !important;
+  background-color: #0096a9 !important;
 }
 
 .export-messageArea {
@@ -105,7 +105,7 @@
 }
 
 .landing-arrow svg path {
-  fill: #00BCD4;
+  fill: #0096a9;
 }
 
 md-content {
@@ -155,28 +155,26 @@ md-content {
 .landing-indexSection1Title {
   font-weight: bold;
   font-size: 24px !important;
-  color: #00BCD4;
-  width: 100%;
+  color: #0096a9;
+  width: 50%;
   text-align: center;
-  margin-left: 10px;
-  margin-right: 10px;
+  padding: 10px;
 }
 
 .landing-indexSection1Desc {
   font-weight: normal;
-  font-size: 24px !important;
-  color: #00BCD4;
-  width: 100%;
+  font-size: 18px !important;
+  color: #FF7700;
+  width: 50%;
   text-align: center;
-  margin-left: 10px;
-  margin-right: 10px;
+  padding: 10px;
 }
 
 .landing-indexCardTitle {
   margin-top: 20px;
   font-size: 14px !important;
   font-weight: bold;
-  width: 150px !important;
+  width: 200px !important;
   text-wrap: normal;
   margin-left: 40px;
 }
@@ -185,7 +183,7 @@ md-content {
   font-size: 14px !important;
   font-weight: normal;
   resize: none;
-  width: 150px !important;
+  width: 200px !important;
   text-wrap: normal;
   margin-left: 40px;
 }
@@ -198,7 +196,7 @@ md-content {
   margin: 10px;
   font-weight: normal;
   font-size: 24px !important;
-  color: #00BCD4;
+  color: #0096a9;
   text-align: left;
 }
 
@@ -231,13 +229,13 @@ md-content {
   font-weight: normal;
   font-size: 14px !important;
   text-align: left;
-  color: #00BCD4;
+  color: #0096a9;
   max-width: 200px;
   overflow: hidden !important;
 }
 
 .landing-indexSection4Desc a {
-  color: #00BCD4;
+  color: #0096a9;
 }
 
 .login-menuitem {
@@ -377,7 +375,7 @@ md-content {
 }
 
 .wall-sidemenuLarge .feedMessage-wordWrap {
-  font-size: 3rem !important;
+  font-size: 2.3rem !important;
 }
 
 .wall-sidemenuLarge .feedMessage-nicknameChip {
@@ -508,6 +506,8 @@ md-content {
 }
 
 .wall-joinRow3 {
+  padding-top: 60px;
+  color: #c0c0c0;
   font-size: 1.7em;
 }
 
@@ -567,52 +567,52 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 
 .bg0,
 .bg0-add.bg0-add-active {
-  background-color: #cccccc;
+  background-color: #e0eaf4;
 }
 
 .bg1,
 .bg1-add.bg1-add-active {
-  background-color: #4dd0e1;
+  background-color: #26c6da;
 }
 
 .bg2,
 .bg2-add.bg2-add-active {
-  background-color: #fff59d;
+  background-color: #40bf80;
 }
 
 .bg3,
 .bg3-add.bg3-add-active {
-  background-color: #b2ebf2;
+  background-color: #66c0ca;
 }
 
 .bg4,
 .bg4-add.bg4-add-active {
-  background-color: #fff59d;
+  background-color: #53c68c;
 }
 
 .bg5,
 .bg5-add.bg5-add-active {
-  background-color: #26c6da;
+  background-color: #759add;
 }
 
 .bg6,
 .bg6-add.bg6-add-active {
-  background-color: #ffee58;
+  background-color: #66cc99;
 }
 
 .bg7,
 .bg7-add.bg7-add-active {
-  background-color: #0097a7;
+  background-color: #26c6da;
 }
 
 .bg8,
 .bg8-add.bg8-add-active {
-  background-color: #ffe0b2;
+  background-color: #79d2a6;
 }
 
 .bg9,
 .bg9-add.bg9-add-active {
-  background-color: #81d4fa;
+  background-color: #6fa6d0;
 }
 
 @media all and (max-width: 960px) {
@@ -659,7 +659,7 @@ md-dialog {
 }
 
 md-toolbar {
-  background-color: #00BCD4 !important;
+  background-color: #0096a9 !important;
 }
 
 md-backdrop.md-sidenav-backdrop {
