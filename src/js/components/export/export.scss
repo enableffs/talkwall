@@ -1,0 +1,47 @@
+@import "../../../scss/colors";
+
+.export-topToolbar {
+  min-height: 64px;
+  max-height: 64px;
+  height: 64px;
+  background-color: $color-blue !important;
+}
+
+.export-messageArea {
+  background-color: $color-lightblue;
+  min-height: 200px;
+}
+
+.export-feedMessage {
+  background-color: $color-white !important;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px !important;
+}
+
+.export-nicknameChip {
+  background-color: $color-lightblue;
+  border-radius: 10px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  margin-left: 5px;
+  font-size: .8em !important;
+  height: 20px;
+  min-height: 20px;
+  max-height: 20px;
+  max-width: 80px !important;
+  min-width: 60px !important;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.export-messageOnBoardSelected {
+  background-color: rgba(255, 119, 0, 0.5) !important;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px !important;
+}

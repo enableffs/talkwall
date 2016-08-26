@@ -1,0 +1,261 @@
+@import "../../../scss/colors";
+
+.wall-sidemenuLarge {
+  max-width: 100% !important;
+  width: 75% !important;
+}
+
+.wall-sidemenuLarge .feedMessage-wordWrap {
+  font-size: 2.3rem !important;
+}
+
+.wall-sidemenuLarge .feedMessage-nicknameChip {
+  font-size: .8rem !important;
+}
+
+.wall-topToolbar {
+  min-height: 64px;
+  max-height: 64px;
+  height: 64px;
+  background-color: $color-lightblue !important;
+}
+
+.wall-question {
+  color: $color-darkgrey;
+}
+
+.wall-question div,
+.wall-question {
+  max-height: 50px !important;
+  overflow:hidden;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+}
+
+.wall-question-index {
+  background-color: $color-black;
+  color: $color-white;
+  font-size: .7em;
+  margin-right: 5px;
+  min-width: 12px;
+  height: 20px;
+}
+
+.wall-sidenav {
+  background-color: rgba(216, 237, 243, 0.5);
+  margin-top: 64px;
+}
+
+.wall-rightMenuSection {
+  width: 100%;
+  background-color: $color-lightblue;
+  min-height: 64px !important;
+}
+
+.wall-rightMenuSection md-toolbar {
+  height: 64px !important;
+  min-height: 64px !important;
+}
+
+.wall-rightMenuFlexOpen {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.wall-rightMenuFlexClosed {
+  min-height: 64px !important;
+  max-height: 64px !important;
+  height: 64px !important;
+}
+
+.wall-rightMenuAddTaskPanel {
+  width: 100%;
+  height: 270px;
+  min-height: 250px;
+  padding: 20px 8px 8px 8px !important;
+}
+
+.wall-rightMenuAddTaskPanel md-input-container {
+  background-color: $color-white !important;
+  margin: 0px 8px 20px 8px !important;
+  max-height: 80px !important;
+}
+
+.wall-rightMenuAddTaskPanel md-input-container textarea {
+  max-height: 80px !important;
+}
+
+.wall-rightMenuAddTaskPanel span {
+  margin-left: 8px !important;
+}
+
+.wall-powerOffButton,
+.wall-addTaskReadyButton {
+  background-color: $color-orange !important;
+  color: $color-white !important;
+}
+
+.wall-sidenavRightBottomDiv {
+  position: absolute;
+  left: 0px !important;
+  bottom: 0px !important;
+  max-height: 70px !important;
+  width: 100% !important;
+}
+
+.wall-showEditMessageButton {
+  position: absolute;
+  bottom: 2px;
+  left: 110px;
+  z-index: 900 !important;
+  background-color: $color-orange !important;
+  opacity: 0.75;
+}
+
+.wall-gridButtonSelected {
+  background-color: $color-orange;
+}
+
+.wall-mainArea {
+  background-color: $color-grey;
+}
+
+.wall-joinRow {
+  width: 100%;
+}
+
+.wall-joinRow1 {
+  font-size: 1.7em;
+}
+
+.wall-joinRow2 {
+  font-size: 3em;
+}
+
+.wall-joinRow3 {
+  padding-top: 60px;
+  color: $color-grey;
+  font-size: 1.7em;
+}
+
+.wall-toolbarText {
+  margin-left: 14px;
+}
+
+.wall-username {
+  margin-left: 20px;
+}
+
+md-checkbox.md-default-theme.md-checked.wall-user-checkbox .md-icon, md-checkbox.md-checked .md-icon  {
+  background-color: $color-orange;
+}
+
+md-switch.md-default-theme.md-checked.wall-user-checkbox .md-thumb, md-switch.md-checked .md-thumb {
+  background-color: $color-orange;
+}
+
+md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-checked .md-bar {
+  background-color: rgba(255,164,129,0.5);
+}
+
+
+/* -------------   ANIMATIONS ----------------- */
+
+/* Messages on board */
+
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+  transition:all linear 1s;
+}
+
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+  opacity:0;
+}
+
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+  opacity:1;
+}
+
+/* Background colours */
+
+.bg0-add, .bg0-remove,
+.bg1-add, .bg1-remove,
+.bg2-add, .bg2-remove,
+.bg3-add, .bg3-remove,
+.bg4-add, .bg4-remove,
+.bg5-add, .bg5-remove,
+.bg6-add, .bg6-remove,
+.bg7-add, .bg7-remove,
+.bg8-add, .bg8-remove,
+.bg9-add, .bg9-remove {
+  transition: background-color 1000ms linear;
+}
+
+.bg0,
+.bg0-add.bg0-add-active {
+  background-color: $color-bg0;
+}
+.bg1,
+.bg1-add.bg1-add-active {
+  background-color: $color-bg1; 
+}
+.bg2,
+.bg2-add.bg2-add-active {
+  background-color: $color-bg2; 
+}
+.bg3,
+.bg3-add.bg3-add-active {
+  background-color: $color-bg3;
+}
+.bg4,
+.bg4-add.bg4-add-active {
+  background-color: $color-bg4;
+}
+.bg5,
+.bg5-add.bg5-add-active {
+  background-color: $color-bg5;
+}
+.bg6,
+.bg6-add.bg6-add-active {
+  background-color: $color-bg6;
+}
+.bg7,
+.bg7-add.bg7-add-active {
+  background-color: $color-bg7;
+}
+.bg8,
+.bg8-add.bg8-add-active {
+  background-color: $color-bg8;
+}
+.bg9,
+.bg9-add.bg9-add-active {
+  background-color: $color-bg9;
+}
+
+
+
+@media all and (max-width: 960px) {
+  .wall-question {
+    margin-left: 14px;
+  }
+
+  .wall-sidenav {
+    min-width: 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .wall-showEditMessageButtonPhone {
+    z-index: 900 !important;
+    background-color: $color-orange !important;
+    opacity: 0.75;
+  }
+}

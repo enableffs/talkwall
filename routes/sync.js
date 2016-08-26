@@ -16,4 +16,4 @@ exports.ping = function() {
     return function (req, res) {
         return res.status(common.StatusMessages.PING_OK.status).json({message: common.StatusMessages.PING_OK.message});
     }
-}
+};

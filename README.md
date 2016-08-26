@@ -1,7 +1,7 @@
 # Talkwall
 Talkwall (Samtavla v3) in Typescript (alias DiDiac)
 
-To get start, follow the steps below:
+To get started, follow the steps below:
 ~~~
 -> install nodejs + npm (latest - min V6.2) => https://nodejs.org/en/
 -> install and run mongodb locally. create an empty database called 'talkwall'

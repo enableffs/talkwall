@@ -1,0 +1,85 @@
+@import "../../../scss/colors";
+
+.feedMessage-messageSelected {
+  background-color: rgba(255, 119, 0, 0.5);
+}
+
+.feedMessage-messageNotSelected {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.feedMessage-messageNotPinned {
+  background-color: #c0c0c0 !important
+}
+
+.feedMessage-showControlButton {
+  //width: 40px !important;
+  height: 40px !important;
+  //max-width: 40px !important;
+  min-width: 40px !important;
+  max-height: 40px !important;
+}
+
+.feedMessage-textMargin {
+  margin-left: 10px !important;
+}
+
+.feedMessage-close {
+  background-color: $color-white !important;
+}
+
+.feedMessage-nicknameChip {
+  background-color: $color-lightblue;
+  border-radius: 10px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  margin-left: 5px;
+  font-size: .8em !important;
+  height: 20px;
+  min-height: 20px;
+  max-height: 20px;
+  max-width: 80px !important;
+  min-width: 60px !important;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.feedMessage-messageBody {
+  padding: 5px;
+}
+
+.feedMessage-messageControl {
+  //background-color: $color-grey;
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+}
+
+.feedMessage-wordWrap {
+  width: 100%;
+  overflow: hidden;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.feedMessage-messageOnBoard {
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: $color-white !important;
+  position: absolute !important;
+  cursor: move;
+}
+
+.feedMessage-messageOnBoardSelected {
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: rgba(255, 119, 0, 0.5) !important;
+  position: absolute !important;
+  cursor: move;
+}

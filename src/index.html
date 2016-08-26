@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="en" ng-app="SamtavlaApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="en" ng-app="SamtavlaApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="en" ng-app="SamtavlaApp" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html lang="en" ng-app="SamtavlaApp" class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html lang="en" ng-app="TalkwallApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="TalkwallApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="TalkwallApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="TalkwallApp" class="no-js"> <!--<![endif]-->
 
 <head>
     <base href="/">
-    <title>Samtavla</title>
+    <title>TalkwallApp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
 
     <!-- Styles -->
+    <link rel="stylesheet" href="/angular-material/angular-material.min.css">
     <link rel="stylesheet" href="css/main.css">
 
     <!-- Framework libraries -->
@@ -18,15 +19,20 @@
     <script type="text/javascript" src="/angular-route/angular-route.min.js"></script>
     <script type="text/javascript" src="/angular-animate/angular-animate.min.js"></script>
     <script type="text/javascript" src="/angular-aria/angular-aria.min.js"></script>
+    <script type="text/javascript" src="/angular-material/angular-material.min.js"></script>
     <script type="text/javascript" src="/angular-translate/angular-translate.min.js"></script>
     <script type="text/javascript" src="/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+    <script type="text/javascript" src="/moment/moment.js"></script>
 </head>
 
-<body>
-        <div class="ng-view"></div>
+<body layout="row" >
+    <div layout flex ng-view></div>
 </body>
 
 <!-- Application files  -->
+<script type="text/javascript" src="js/app.constants.js"></script>
+<script type="text/javascript" src="js/directives/autoresize.js"></script>
+<script type="text/javascript" src="js/directives/watchboardsize.js"></script>
 <script type="text/javascript" src="js/models/models.js"></script>
 <script type="text/javascript" src="js/services/utilityservice.js"></script>
 <script type="text/javascript" src="js/services/tokenservice.js"></script>
@@ -35,6 +41,18 @@
 <script type="text/javascript" src="js/services/dataservice.js"></script>
 <script type="text/javascript" src="js/app.config.js"></script>
 <script type="text/javascript" src="js/app.run.js"></script>
+<script type="text/javascript" src="js/components/login/login.js"></script>
+<script type="text/javascript" src="js/components/join/join.js"></script>
+<script type="text/javascript" src="js/components/close/close.js"></script>
+<script type="text/javascript" src="js/components/landing/landing.js"></script>
+<script type="text/javascript" src="js/components/archive/archive.js"></script>
+<script type="text/javascript" src="js/components/export/export.js"></script>
+<script type="text/javascript" src="js/components/wall/wall.js"></script>
+<script type="text/javascript" src="js/components/editMessagePanel/editMessagePanel.js"></script>
+<script type="text/javascript" src="js/components/feedMessage/feedMessage.js"></script>
+<script type="text/javascript" src="js/components/task/task.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
+
+<!--script type="text/javascript" src="js/output.js"></script-->
 
 </html>

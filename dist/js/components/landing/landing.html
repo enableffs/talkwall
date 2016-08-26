@@ -1,0 +1,101 @@
+<div layout flex ng-controller="LandingController as landingC">
+	<div flex layout id="landing-main">
+		<md-content flex md-scroll-y>
+			<div ng-style="{'height': windowHeight+'px', 'width': windowWidth+'px', 'background-color': '#00BCD4'}" autoresize="" layout>
+				<div class="landing-betalabel" ng-click="showBetaMessage()"><img src="../images/beta_icon.png"></div>
+				<div flex class="landing-cloud-background" layout="column">
+					<div flex></div>
+					<img src="../images/cloud.svg">
+					<div class="landing-arrow-footer" layout="column">
+						<div layout="column" flex layout-align="start center">
+							<div class="landing-arrow">
+								<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div flex layout>
+					<div class="landing-centered-button-panel" layout="column" flex layout-align="center center">
+						<img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="landingC.languageCode=='no'">
+						<img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="landingC.languageCode=='en'">
+						<div class="landing-samtavlaLogo" layout="row" layout-align="center center" layout-margin>
+							<md-button aria-label="Participate to Talkwall" id="joinButton" flex-grow="true" class="md-primary md-raised landing-joinButton" ng-click="landingC.showJoinDialog($event)" aria-label="Delta i Samtavla">{{ 'MENUPAGE_BUTTON_PARTICIPATE' | translate }}</md-button>
+							<md-button aria-label="Create a wall" id="createButton" hide-xs hide-sm flex-grow="true" class="md-primary md-raised landing-createButton" ng-click="landingC.showLoginDialog($event)" aria-label="Opprett en ny samtavla">{{ 'MENUPAGE_BUTTON_CREATE' | translate }}</md-button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- two key sentences about talkwall and a video -->		
+			<div class="landing-indexSection1" layout="column" layout-align="space-between center">
+
+				<div class="landing-indexSection1Title">{{ 'MENUPAGE_HEADING_1' | translate }}</div>
+				<div style="padding-bottom: 20px" class="landing-indexSection1Desc">{{ 'MENUPAGE_HEADING_2' | translate }}</div>
+				<!--<div>
+				    <iframe width="560" height="315" src="https://www.youtube.com/embed/v4CuQEZszYI" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='no'"></iframe>
+				    <iframe width="560" height="315" src="https://www.youtube.com/embed/eXCsA175Ga0" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='en'"></iframe>
+					
+				</div>-->
+			</div>
+
+			<!-- pointers to teacher resources: three links to the digitaliseddialoges site
+			<div layout="row" layout-xs="column" layout-align="space-around start" layout-align-xs="center center">
+					<div>
+						<img src="images/index-03.png.svg">
+					</div>
+					<div>
+						<div class="landing-indexCardTitle"><a href="http://digitaliseddialogues.no/design-for-dialogue" target="_blank">{{ 'MENUPAGE_THUMB1_TITLE' | translate }}</a></div>
+						<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB1_BDY' | translate }}</div>
+						
+					</div>
+
+					<div>
+						<div class="landing-indexCardTitle"><a href="http://digitaliseddialogues.no/how-to-use-talkwall" target="_blank">{{ 'MENUPAGE_THUMB2_TITLE' | translate }}</a></div>
+						<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB2_BDY' | translate }}</div>
+						
+					</div>
+
+					<div>
+						<div class="landing-indexCardTitle"><a href="http://digitaliseddialogues.no/lesson-plans-and-inspiration" target="_blank">{{ 'MENUPAGE_THUMB3_TITLE' | translate }}</a>
+						</div>
+						<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB3_BDY' | translate }}</div>
+						
+					</div>
+
+			</div>-->
+
+			<!-- statements from users-->
+			<div class="landing-indexSection2" layout="column" layout-align="start center">
+				<div class="landing-indexSection1Desc">{{ 'MENUPAGE_STATEMENT1' | translate }}</div>
+				<div class="landing-indexSection1Desc">{{ 'MENUPAGE_STATEMENT2' | translate }}</div>
+			</div>
+		
+
+
+			<div style="background-color: #000000; padding: 20px">
+				<div layout="row" layout-xs="column" layout-align="space-around start" layout-align-xs="center center">
+					
+					<div>
+						<a href="{{ 'MENUPAGE_HREFUIO' | translate }}"" target="_blank"><img src="{{'MENUPAGE_IMGUIOLOGO' | translate }}" width="200"></a><br/><br/>
+						<a href="https://www.educ.cam.ac.uk/" target="_blank"><img src="/images/logo-uoc.png" width="150"></a>
+					</div>
+
+					<div flex="33">
+						<div class="landing-indexSection4Desc">{{ 'MENUPAGE_FOOTER1' | translate }}</div>
+						<div class="landing-indexSection4Title"><a href="{{ 'MENUPAGE_HREFDIDIAC' | translate }}"" target="_blank">{{ 'MENUPAGE_FOOTERH1' | translate }}</a> | 
+						<a href="mailto:post@talkwall.net">{{ 'MENUPAGE_FOOTEREMAIL' | translate }}</a></div>
+					</div>
+
+					<div>
+						<a href="{{ 'MENUPAGE_HREFNFR' | translate }}"" target="_blank"><img src="{{ 'MENUPAGE_IMGNFRLOGO' | translate }}" width="200"></a>
+					</div>
+			
+				</div>
+
+			</div>
+
+		</md-content>
+	</div>
+</div>

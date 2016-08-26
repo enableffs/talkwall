@@ -1,18 +1,23 @@
 {
-  "name": "samtavla-ts",
+  "name": "talkwall",
   "version": "0.1.0",
   "authors": [
     "Jeremy Toussaint <jeremyt@uv.uio.no>",
     "Richard Nesnass <richarne@uv.uio.no>"
   ],
   "private": true,
-  "description": "Samtavla application",
+  "description": "Talkwall application",
   "dependencies": {
-    "angular": "1.5.0",
-    "angular-route": "1.5.0",
-    "angular-aria": "1.5.0",
-    "angular-animate": "1.5.0",
-    "angular-translate": "~2.9.0",
-    "angular-translate-loader-static-files": "~2.9.0"
+    "angular": "1.5.5",
+    "angular-route": "1.5.5",
+    "angular-aria": "1.5.5",
+    "angular-animate": "1.5.5",
+    "angular-translate": "~2.11.0",
+    "angular-translate-loader-static-files": "~2.11.0",
+    "angular-material": "^1.0.7",
+    "moment": "^2.13.0"
+  },
+  "resolutions": {
+    "angular": "1.5.5"
   }
 }
