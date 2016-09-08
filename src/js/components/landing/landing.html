@@ -1,3 +1,4 @@
+<link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet"> 
 <div layout flex ng-controller="LandingController as landingC">
 	<div flex layout id="landing-main">
 		<md-content flex md-scroll-y>
@@ -9,7 +10,7 @@
 					<div class="landing-arrow-footer" layout="column">
 						<div layout="column" flex layout-align="start center">
 							<div class="landing-arrow">
-								<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>
+								<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></path></svg>
 							</div>
 						</div>
 					</div>
@@ -28,74 +29,97 @@
 			</div>
 
 
-			<!-- two key sentences about talkwall and a video -->		
-			<div class="landing-indexSection1" layout="column" layout-align="space-between center">
+			<!-- arrow down -->		
 
-				<div class="landing-indexSection1Title">{{ 'MENUPAGE_HEADING_1' | translate }}</div>
-				<div style="padding-bottom: 20px" class="landing-indexSection1Desc">{{ 'MENUPAGE_HEADING_2' | translate }}</div>
-				<!--<div>
-				    <iframe width="560" height="315" src="https://www.youtube.com/embed/v4CuQEZszYI" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='no'"></iframe>
-				    <iframe width="560" height="315" src="https://www.youtube.com/embed/eXCsA175Ga0" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='en'"></iframe>
+			<div class="landing-under" layout="column" layout-align="space-around center">
+
+				<!-- digitalised dialogues illustration -->		
+
+				<div class="landing-illustration" layout="column" layout-align="start center">
+					<div>
+						<a href="{{ 'MENUPAGE_DD_HREF' | translate }}"><img alt="Digitalised-dialogue" src="/images/Digitalised-dialogue.svg"></a>
+					</div>
+
+					<!-- white skies -->	
+					<img src="/images/cloudz.svg">
+				</div>
+
+
+				<!-- Digitalised dialoges title and subtitle -->		
+
+				<div class="landing-title"><h1>{{ 'MENUPAGE_HEADING_1' | translate }}</h1></div>
+				<div class="landing-subtitle"><h2>{{ 'MENUPAGE_HEADING_2' | translate }}</h2></div>
+
+				<!-- video -->		
+				<div>
+					<iframe width="560" height="315" src="https://www.youtube.com/embed/v4CuQEZszYI" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='no'"></iframe>
+					<iframe width="560" height="315" src="https://www.youtube.com/embed/eXCsA175Ga0" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='en'"></iframe>
 					
-				</div>-->
+				</div>
 			</div>
 
-			<!-- pointers to teacher resources: three links to the digitaliseddialoges site
-			<div layout="row" layout-xs="column" layout-align="space-around start" layout-align-xs="center center">
-					<div>
-						<img src="images/index-03.png.svg">
-					</div>
-					<div>
-						<div class="landing-indexCardTitle"><a href="http://digitaliseddialogues.no/design-for-dialogue" target="_blank">{{ 'MENUPAGE_THUMB1_TITLE' | translate }}</a></div>
-						<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB1_BDY' | translate }}</div>
-						
-					</div>
+			<!-- respond - question - share -->		
+			<div class="landing-rqs-row" layout="row" layout-xs="column" layout-align="space-around start" layout-align-xs="center center">
 
+				<div class="landing-rqs" flex="noshrink" >
+					<h2>{{ 'MENUPAGE_Q_TITLE' | translate }}</h2>
+					<img alt="designanddialogue" src="/images/Question.svg">
 					<div>
-						<div class="landing-indexCardTitle"><a href="http://digitaliseddialogues.no/how-to-use-talkwall" target="_blank">{{ 'MENUPAGE_THUMB2_TITLE' | translate }}</a></div>
-						<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB2_BDY' | translate }}</div>
-						
+						<p>{{ 'MENUPAGE_Q_BDY' | translate }}</p>
+						<p><a href="{{ 'MENUPAGE_Q_HREF' | translate }}">{{ 'MENUPAGE_Q_REF' | translate }}</a></p>
 					</div>
-
+				</div>
+				<div class="landing-rqs" flex="noshrink" >
+					<h2>{{ 'MENUPAGE_R_TITLE' | translate }}</h2>
+					<img alt="designanddialogue" src="/images/Answer.svg">
 					<div>
-						<div class="landing-indexCardTitle"><a href="http://digitaliseddialogues.no/lesson-plans-and-inspiration" target="_blank">{{ 'MENUPAGE_THUMB3_TITLE' | translate }}</a>
-						</div>
-						<div class="landing-indexCardDesc">{{ 'MENUPAGE_THUMB3_BDY' | translate }}</div>
-						
+						<p>{{ 'MENUPAGE_R_BDY' | translate }}</p>
+						<p><a href="{{ 'MENUPAGE_R_HREF' | translate }}">{{ 'MENUPAGE_R_REF' | translate }}</a></p>
 					</div>
+				</div>
+				<div class="landing-rqs" flex="noshrink" >
+					<h2>{{ 'MENUPAGE_S_TITLE' | translate }}</h2>
+					<img alt="designanddialogue" src="/images/Sharing.svg">
+					<div>
+						<p>{{ 'MENUPAGE_S_BDY' | translate }}</p>
+						<p><a href="{{ 'MENUPAGE_S_HREF' | translate }}">{{ 'MENUPAGE_S_REF' | translate }}</a></p>
+					</div>
+				</div>
+			</div>
+			
 
-			</div>-->
 
 			<!-- statements from users-->
-			<div class="landing-indexSection2" layout="column" layout-align="start center">
-				<div class="landing-indexSection1Desc">{{ 'MENUPAGE_STATEMENT1' | translate }}</div>
-				<div class="landing-indexSection1Desc">{{ 'MENUPAGE_STATEMENT2' | translate }}</div>
+			<div class="landing-statements" layout="column" layout-align="center center">
+				<div class="landing-statements-line"></div>
+				<div><h1>{{ 'MENUPAGE_STATEMENT1' | translate }}</h1></div>
+				<div><h1>{{ 'MENUPAGE_STATEMENT2' | translate }}</h1></div>
 			</div>
-		
 
+			<!-- footer -->		
 
-			<div style="background-color: #000000; padding: 20px">
-				<div layout="row" layout-xs="column" layout-align="space-around start" layout-align-xs="center center">
-					
-					<div>
-						<a href="{{ 'MENUPAGE_HREFUIO' | translate }}"" target="_blank"><img src="{{'MENUPAGE_IMGUIOLOGO' | translate }}" width="200"></a><br/><br/>
-						<a href="https://www.educ.cam.ac.uk/" target="_blank"><img src="/images/logo-uoc.png" width="150"></a>
+		<div class="landing-footer">
+			<div layout="row" layout-xs="column" layout-align="space-around start" layout-align-xs="center center">
+
+				<div>
+					<a href="{{ 'MENUPAGE_HREFUIO' | translate }}"" target="_blank"><img src="{{'MENUPAGE_IMGUIOLOGO' | translate }}" width="200"></a><br/><br/>
+					<a href="https://www.educ.cam.ac.uk/" target="_blank"><img src="/images/logo-uoc.png" width="150"></a>
+				</div>
+
+				<div flex="33">
+					<div class="landing-footer-about"><a href="{{ 'MENUPAGE_HREFDIDIAC' | translate }}"" target="_blank">{{ 'MENUPAGE_FOOTER_ABOUT' | translate }}</a> | 
+						<a href="mailto:post@talkwall.net">{{ 'MENUPAGE_FOOTEREMAIL' | translate }}</a>
 					</div>
+				</div>
 
-					<div flex="33">
-						<div class="landing-indexSection4Desc">{{ 'MENUPAGE_FOOTER1' | translate }}</div>
-						<div class="landing-indexSection4Title"><a href="{{ 'MENUPAGE_HREFDIDIAC' | translate }}"" target="_blank">{{ 'MENUPAGE_FOOTERH1' | translate }}</a> | 
-						<a href="mailto:post@talkwall.net">{{ 'MENUPAGE_FOOTEREMAIL' | translate }}</a></div>
-					</div>
-
-					<div>
-						<a href="{{ 'MENUPAGE_HREFNFR' | translate }}"" target="_blank"><img src="{{ 'MENUPAGE_IMGNFRLOGO' | translate }}" width="200"></a>
-					</div>
-			
+				<div>
+					<a href="{{ 'MENUPAGE_HREFNFR' | translate }}"" target="_blank"><img src="{{ 'MENUPAGE_IMGNFRLOGO' | translate }}" width="200"></a>
 				</div>
 
 			</div>
 
-		</md-content>
-	</div>
+		</div>
+
+	</md-content>
+</div>
 </div>
