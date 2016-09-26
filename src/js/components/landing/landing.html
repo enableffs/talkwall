@@ -2,29 +2,29 @@
 <div layout flex ng-controller="LandingController as landingC">
 	<div flex layout id="landing-main">
 		<md-content flex md-scroll-y>
-			<div ng-style="{'height': windowHeight+'px', 'width': windowWidth+'px', 'background-color': '#00BCD4'}" autoresize="" layout>
+			<div ng-style="{'width': windowWidth+'px', 'background-color': '#00BCD4'}" style="height: 800px; position: relative;" autoresize="" layout>
 				<div class="landing-betalabel" ng-click="showBetaMessage()"><img src="../images/beta_icon.png"></div>
-				<div flex class="landing-cloud-background" layout="column">
-					<div flex></div>
-					<img src="/images/cloud.svg">
-					<div class="landing-arrow-footer" layout="column">
-						<div layout="column" flex layout-align="start center">
-							<div class="landing-arrow">
-								<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></path></svg>
+
+					<div class="landing-centered-button-panel" layout="column" flex layout-align="start center">
+						<div style="z-index: 100; margin-top: 100px;">
+							<img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="landingC.languageCode=='no'">
+							<img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="landingC.languageCode=='en'">
+							<div class="landing-samtavlaLogo" layout="row" layout-align="center center" layout-margin>
+								<md-button aria-label="Participate to Talkwall" id="joinButton" flex-grow="true" class="md-primary md-raised landing-joinButton" ng-click="landingC.showJoinDialog($event)" aria-label="Delta i Samtavla">{{ 'MENUPAGE_BUTTON_PARTICIPATE' | translate }}</md-button>
+								<md-button aria-label="Create a wall" id="createButton" hide-xs hide-sm flex-grow="true" class="md-primary md-raised landing-createButton" ng-click="landingC.showLoginDialog($event)" aria-label="Opprett en ny samtavla">{{ 'MENUPAGE_BUTTON_CREATE' | translate }}</md-button>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				<div flex layout>
-					<div class="landing-centered-button-panel" layout="column" flex layout-align="center center">
-						<img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="landingC.languageCode=='no'">
-						<img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="landingC.languageCode=='en'">
-						<div class="landing-samtavlaLogo" layout="row" layout-align="center center" layout-margin>
-							<md-button aria-label="Participate to Talkwall" id="joinButton" flex-grow="true" class="md-primary md-raised landing-joinButton" ng-click="landingC.showJoinDialog($event)" aria-label="Delta i Samtavla">{{ 'MENUPAGE_BUTTON_PARTICIPATE' | translate }}</md-button>
-							<md-button aria-label="Create a wall" id="createButton" hide-xs hide-sm flex-grow="true" class="md-primary md-raised landing-createButton" ng-click="landingC.showLoginDialog($event)" aria-label="Opprett en ny samtavla">{{ 'MENUPAGE_BUTTON_CREATE' | translate }}</md-button>
-						</div>
-					</div>
+				<img src="../images/cloud.svg" class="landing-cloud-background">
+
+			</div>
+
+			<div class="landing-arrow">
+				<div flex layout="column" layout-align="start center">
+					<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+						<path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path>
+					</svg>
 				</div>
 			</div>
 
@@ -41,7 +41,7 @@
 					</div>
 
 					<!-- white skies -->	
-					<img src="/images/cloudz.svg">
+					<img src="/images/cloudz.svg" style="width: 100%;">
 				</div>
 
 
