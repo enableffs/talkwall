@@ -78,9 +78,10 @@
 }
 
 .landing-cloud-background {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  -ms-flex: 1 100%;
+  flex: 1 100%;
+  -ms-flex-item-align: end;
+  align-self: flex-end;
 }
 
 .landing-arrow-footer {
@@ -104,8 +105,16 @@ md-content {
 }
 
 .landing-centered-button-panel {
-  position: relative;
-  height: 100%;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.landing-clouds {
+  position: absolute;
+  bottom: -10px;
+  width: 100%;
 }
 
 .landing-createButton,
@@ -124,7 +133,7 @@ md-content {
 }
 
 .landing-samtavlaLogo {
-  width: 300px !important;
+  /* width: 300px !important;*/
 }
 
 .landing-illustration {
@@ -205,6 +214,17 @@ md-content {
   text-align: left;
   color: #FFFFFF;
   overflow: hidden !important;
+}
+
+.ie9 img[src*=".svg"] {
+  width: 100%;
+}
+
+/* 2 */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  img[src*=".svg"] {
+    width: 100%;
+  }
 }
 
 .login-menuitem {

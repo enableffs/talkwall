@@ -67,5 +67,6 @@
   "WALL_SAVEBTN": "Save",
   "WALL_SELECTALL": "select all",
   "WALL_SELECTWALLS": "Participants' walls",
-  "WALL_UN": "un"
+  "WALL_UN": "un",
+   "NO_TAG": "No Tag"
 }

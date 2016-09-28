@@ -226,8 +226,8 @@ module TalkwallApp {
     }
 
     export class DataService implements IDataService {
-        static $inject = ['$http', '$window', '$routeParams', '$location', '$interval', '$mdDialog', 'UtilityService',
-            'URLService', '$mdMedia', 'TalkwallConstants'];
+        static $inject = ['$http', '$window', '$routeParams', '$location', '$interval', '$mdDialog', '$translate',
+            'UtilityService', 'URLService', '$mdMedia', 'TalkwallConstants'];
         private user: User = null;
         private wall: Wall = null;
         private question: Question = null;
@@ -251,7 +251,7 @@ module TalkwallApp {
         private userAuthorised = false;
         private customFullscreen;
         private currentQuestionIndex: number = -1;
-
+        private noTag = 'no tag';
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
@@ -259,12 +259,17 @@ module TalkwallApp {
                      private $location: ILocationService,
                      private $interval: ng.IIntervalService,
                      private $mdDialog: angular.material.IDialogService,
+                     private $translate: angular.translate.ITranslateService,
                      private utilityService: UtilityService,
                      private urlService: IURLService,
                      private $mdMedia: IMedia,
                      private constants: ITalkwallConstants) {
             this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
             console.log('--> DataService started ...');
+
+            $translate('NO_TAG').then((translation) => {
+                this.noTag = translation;
+            });
         }
 
 
@@ -553,6 +558,9 @@ module TalkwallApp {
                 }
             }
 
+            // Re-do the hashtag list
+            this.buildTagArray();
+
             // Start polling regardless of the question existing, to enable poll notifications
             if (this.timerHandle === null) {
                 this.startPolling(previous_question_id, control);
@@ -739,6 +747,7 @@ module TalkwallApp {
                 .success((data) => {
                     let resultKey = 'result';
                     this.question.messages.push(data[resultKey]);
+                    this.parseMessageForTags(data[resultKey]);
                     this.messageToEdit = null;
                     if (this.updateOrigin) {
                         //the new cloned message has been posted, remove the nickname from the old one
@@ -801,8 +810,12 @@ module TalkwallApp {
 
         buildTagArray(): void {
             var handle = this;
-            this.question.messages.forEach(function (message) {
-                handle.parseMessageForTags(message);
+            this.tagCounter = {};
+            this.tags = [];
+            this.question.messages.forEach(function (message: Message) {
+                if (!message.deleted) {
+                    handle.parseMessageForTags(message);
+                }
             });
         }
 
@@ -814,7 +827,7 @@ module TalkwallApp {
                     foundTags.forEach(function (tag) {
                         if (handle.tags.indexOf(tag) === -1) {
                             handle.tags.push(tag);
-                            var tid: Array<string> = new Array();
+                            var tid: Array<string> = [];
                             tid.push(message._id);
                             handle.tagCounter[tag] = tid;
                         } else {
@@ -827,11 +840,18 @@ module TalkwallApp {
                     });
 
                     console.log('--> Dataservice: parseMessageForTags: ' + foundTags);
+                } else {    // Add the message to 'no tag' item
+                    if (handle.tags.indexOf(this.noTag) === -1) {
+                        handle.tags.push(this.noTag);
+                        handle.tagCounter[this.noTag] = [message._id];
+                    } else {
+                        handle.tagCounter[this.noTag].push(message._id);
+                    }
                 }
             }
         }
 
-        //update a new on server and return it
+        //update message on server and return it
         updateMessage(): void {
             if (this.messageToEdit !== null) {
                 this.$http.put(this.urlService.getHost() + '/message', {

@@ -106,6 +106,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#_mddialog" class="tsd-kind-icon">$md<wbr>Dialog</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#_mdmedia" class="tsd-kind-icon">$md<wbr>Media</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#_routeparams" class="tsd-kind-icon">$route<wbr>Params</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#_translate" class="tsd-kind-icon">$translate</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#_window" class="tsd-kind-icon">$window</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#boarddivsize" class="tsd-kind-icon">board<wbr>Div<wbr>Size</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#constants" class="tsd-kind-icon">constants</a></li>
@@ -116,6 +117,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#messageorigin" class="tsd-kind-icon">message<wbr>Origin</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#messagetoedit" class="tsd-kind-icon">message<wbr>ToEdit</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#mytteachersquestionid" class="tsd-kind-icon">myt<wbr>Teachers<wbr>QuestionID</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#notag" class="tsd-kind-icon">no<wbr>Tag</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#participants" class="tsd-kind-icon">participants</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#phonemode" class="tsd-kind-icon">phone<wbr>Mode</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_services_dataservice_.talkwallapp.dataservice.html#question" class="tsd-kind-icon">question</a></li>
@@ -191,13 +193,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Data<wbr>Service<span class="tsd-signature-symbol">(</span>$http<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IHttpService</span>, $window<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IWindowService</span>, $routeParams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IRouteParamsService</span>, $location<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ILocationService</span>, $interval<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IIntervalService</span>, $mdDialog<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IDialogService</span>, utilityService<span class="tsd-signature-symbol">: </span><a href="_services_utilityservice_.talkwallapp.utilityservice.html" class="tsd-signature-type">UtilityService</a>, urlService<span class="tsd-signature-symbol">: </span><a href="../interfaces/_services_urlservice_.talkwallapp.iurlservice.html" class="tsd-signature-type">IURLService</a>, $mdMedia<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IMedia</span>, constants<span class="tsd-signature-symbol">: </span><a href="../interfaces/_app_constants_.talkwallapp.italkwallconstants.html" class="tsd-signature-type">ITalkwallConstants</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Data<wbr>Service<span class="tsd-signature-symbol">(</span>$http<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IHttpService</span>, $window<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IWindowService</span>, $routeParams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IRouteParamsService</span>, $location<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ILocationService</span>, $interval<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ng.IIntervalService</span>, $mdDialog<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IDialogService</span>, $translate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ITranslateService</span>, utilityService<span class="tsd-signature-symbol">: </span><a href="_services_utilityservice_.talkwallapp.utilityservice.html" class="tsd-signature-type">UtilityService</a>, urlService<span class="tsd-signature-symbol">: </span><a href="../interfaces/_services_urlservice_.talkwallapp.iurlservice.html" class="tsd-signature-type">IURLService</a>, $mdMedia<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IMedia</span>, constants<span class="tsd-signature-symbol">: </span><a href="../interfaces/_app_constants_.talkwallapp.italkwallconstants.html" class="tsd-signature-type">ITalkwallConstants</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_services_dataservice_.talkwallapp.dataservice.html" class="tsd-signature-type">DataService</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L253">services/dataservice.ts:253</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L254">services/dataservice.ts:254</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -219,6 +221,9 @@
 								</li>
 								<li>
 									<h5>$mdDialog: <span class="tsd-signature-type">IDialogService</span></h5>
+								</li>
+								<li>
+									<h5>$translate: <span class="tsd-signature-type">ITranslateService</span></h5>
 								</li>
 								<li>
 									<h5>utilityService: <a href="_services_utilityservice_.talkwallapp.utilityservice.html" class="tsd-signature-type">UtilityService</a></h5>
@@ -286,7 +291,7 @@
 					<div class="tsd-signature tsd-kind-icon">$md<wbr>Media<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">IMedia</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L264">services/dataservice.ts:264</a></li>
+							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L265">services/dataservice.ts:265</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -297,6 +302,16 @@
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L258">services/dataservice.ts:258</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="_translate" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> $translate</h3>
+					<div class="tsd-signature tsd-kind-icon">$translate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ITranslateService</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L262">services/dataservice.ts:262</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -331,7 +346,7 @@
 					<div class="tsd-signature tsd-kind-icon">constants<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_app_constants_.talkwallapp.italkwallconstants.html" class="tsd-signature-type">ITalkwallConstants</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L265">services/dataservice.ts:265</a></li>
+							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L266">services/dataservice.ts:266</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -402,6 +417,16 @@
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L248">services/dataservice.ts:248</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="notag" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> no<wbr>Tag</h3>
+					<div class="tsd-signature tsd-kind-icon">no<wbr>Tag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L254">services/dataservice.ts:254</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -506,7 +531,7 @@
 					<div class="tsd-signature tsd-kind-icon">url<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_services_urlservice_.talkwallapp.iurlservice.html" class="tsd-signature-type">IURLService</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L263">services/dataservice.ts:263</a></li>
+							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L264">services/dataservice.ts:264</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -536,7 +561,7 @@
 					<div class="tsd-signature tsd-kind-icon">utility<wbr>Service<span class="tsd-signature-symbol">:</span> <a href="_services_utilityservice_.talkwallapp.utilityservice.html" class="tsd-signature-type">UtilityService</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L262">services/dataservice.ts:262</a></li>
+							<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L263">services/dataservice.ts:263</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -573,7 +598,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L727">services/dataservice.ts:727</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L735">services/dataservice.ts:735</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -599,7 +624,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L646">services/dataservice.ts:646</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L654">services/dataservice.ts:654</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -625,7 +650,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L802">services/dataservice.ts:802</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L811">services/dataservice.ts:811</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -642,7 +667,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L273">services/dataservice.ts:273</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L278">services/dataservice.ts:278</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -668,7 +693,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L566">services/dataservice.ts:566</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L574">services/dataservice.ts:574</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -691,7 +716,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L410">services/dataservice.ts:410</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L415">services/dataservice.ts:415</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -717,7 +742,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L693">services/dataservice.ts:693</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L701">services/dataservice.ts:701</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -747,7 +772,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getauthenticateduser">getAuthenticatedUser</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L363">services/dataservice.ts:363</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L368">services/dataservice.ts:368</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_models_models_.talkwallapp.user.html" class="tsd-signature-type">User</a></h4>
@@ -765,7 +790,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getbackgroundcolour">getBackgroundColour</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L889">services/dataservice.ts:889</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L909">services/dataservice.ts:909</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -783,7 +808,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getboarddivsize">getBoardDivSize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L885">services/dataservice.ts:885</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L905">services/dataservice.ts:905</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
@@ -802,7 +827,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L429">services/dataservice.ts:429</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L434">services/dataservice.ts:434</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -832,7 +857,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getcontributors">getContributors</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L867">services/dataservice.ts:867</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L887">services/dataservice.ts:887</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -850,7 +875,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getcurrentquestionindex">getCurrentQuestionIndex</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L500">services/dataservice.ts:500</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L505">services/dataservice.ts:505</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -867,7 +892,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L1039">services/dataservice.ts:1039</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L1059">services/dataservice.ts:1059</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -897,7 +922,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getgridstyle">getGridStyle</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L894">services/dataservice.ts:894</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L914">services/dataservice.ts:914</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -923,7 +948,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getmessageorigin">getMessageOrigin</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L496">services/dataservice.ts:496</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L501">services/dataservice.ts:501</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></h4>
@@ -941,7 +966,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getmessagetoedit">getMessageToEdit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L488">services/dataservice.ts:488</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L493">services/dataservice.ts:493</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_models_models_.talkwallapp.message.html" class="tsd-signature-type">Message</a></h4>
@@ -959,7 +984,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getmessages">getMessages</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L788">services/dataservice.ts:788</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L797">services/dataservice.ts:797</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -977,7 +1002,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getnickname">getNickname</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L575">services/dataservice.ts:575</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L583">services/dataservice.ts:583</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -995,7 +1020,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getparticipants">getParticipants</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L863">services/dataservice.ts:863</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L883">services/dataservice.ts:883</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1013,7 +1038,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getphonemode">getPhoneMode</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L367">services/dataservice.ts:367</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L372">services/dataservice.ts:372</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1031,7 +1056,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getquestion">getQuestion</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L512">services/dataservice.ts:512</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L517">services/dataservice.ts:517</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a></h4>
@@ -1049,7 +1074,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getquestiontoedit">getQuestionToEdit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L637">services/dataservice.ts:637</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L645">services/dataservice.ts:645</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_models_models_.talkwallapp.question.html" class="tsd-signature-type">Question</a></h4>
@@ -1067,7 +1092,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#gettagcounter">getTagCounter</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L875">services/dataservice.ts:875</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L895">services/dataservice.ts:895</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
@@ -1087,7 +1112,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#gettags">getTags</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L871">services/dataservice.ts:871</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L891">services/dataservice.ts:891</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1105,7 +1130,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#getwall">getWall</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L508">services/dataservice.ts:508</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L513">services/dataservice.ts:513</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="_models_models_.talkwallapp.wall.html" class="tsd-signature-type">Wall</a></h4>
@@ -1122,7 +1147,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L600">services/dataservice.ts:600</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L608">services/dataservice.ts:608</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1148,7 +1173,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L809">services/dataservice.ts:809</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L822">services/dataservice.ts:822</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1171,7 +1196,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L941">services/dataservice.ts:941</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L961">services/dataservice.ts:961</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1194,7 +1219,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L616">services/dataservice.ts:616</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L624">services/dataservice.ts:624</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1226,7 +1251,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L371">services/dataservice.ts:371</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L376">services/dataservice.ts:376</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1252,7 +1277,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L391">services/dataservice.ts:391</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L396">services/dataservice.ts:396</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1281,7 +1306,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L879">services/dataservice.ts:879</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L899">services/dataservice.ts:899</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1305,7 +1330,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#setmessageorigin">setMessageOrigin</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L492">services/dataservice.ts:492</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L497">services/dataservice.ts:497</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1329,7 +1354,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#setmessagetoedit">setMessageToEdit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L462">services/dataservice.ts:462</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L467">services/dataservice.ts:467</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1352,7 +1377,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L517">services/dataservice.ts:517</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L522">services/dataservice.ts:522</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1382,7 +1407,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#setquestiontoedit">setQuestionToEdit</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L641">services/dataservice.ts:641</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L649">services/dataservice.ts:649</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1405,7 +1430,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L1018">services/dataservice.ts:1018</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L1038">services/dataservice.ts:1038</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1423,7 +1448,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#startpolling">startPolling</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L918">services/dataservice.ts:918</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L938">services/dataservice.ts:938</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1450,7 +1475,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#stoppolling">stopPolling</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L935">services/dataservice.ts:935</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L955">services/dataservice.ts:955</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1468,7 +1493,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#updatemessage">updateMessage</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L835">services/dataservice.ts:835</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L855">services/dataservice.ts:855</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1485,7 +1510,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L669">services/dataservice.ts:669</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L677">services/dataservice.ts:677</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1511,7 +1536,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L583">services/dataservice.ts:583</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L591">services/dataservice.ts:591</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1538,7 +1563,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html">IDataService</a>.<a href="../interfaces/_services_dataservice_.talkwallapp.idataservice.html#userisauthorised">userIsAuthorised</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L504">services/dataservice.ts:504</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/services/dataservice.ts#L509">services/dataservice.ts:509</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1658,6 +1683,9 @@
 								<a href="_services_dataservice_.talkwallapp.dataservice.html#_routeparams" class="tsd-kind-icon">$route<wbr>Params</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_services_dataservice_.talkwallapp.dataservice.html#_translate" class="tsd-kind-icon">$translate</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_services_dataservice_.talkwallapp.dataservice.html#_window" class="tsd-kind-icon">$window</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
@@ -1686,6 +1714,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_services_dataservice_.talkwallapp.dataservice.html#mytteachersquestionid" class="tsd-kind-icon">myt<wbr>Teachers<wbr>QuestionID</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_services_dataservice_.talkwallapp.dataservice.html#notag" class="tsd-kind-icon">no<wbr>Tag</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_services_dataservice_.talkwallapp.dataservice.html#participants" class="tsd-kind-icon">participants</a>
