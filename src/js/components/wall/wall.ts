@@ -56,7 +56,7 @@ module TalkwallApp {
 	}
 
 	export class WallController implements IWallControllerService {
-		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', 'URLService', '$window', 'UtilityService'];
+		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', 'URLService', '$window', 'UtilityService'];
 		private magnified: boolean = false;
 		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
@@ -74,14 +74,21 @@ module TalkwallApp {
         public messageFilterByContributorOnBoard: (Message) => boolean;
 		public messageFilterByAuthorAndTag: (Message) => boolean;
 
+        private noTag = 'no tag';
+
         constructor(
 			private dataService: DataService,
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService,
+			private $translate: angular.translate.ITranslateService,
 			private urlService: IURLService,
 			private $window: IWindowService,
 			private utilityService: UtilityService) {
 			console.log('--> WallController: started: ');
+
+            $translate('NO_TAG').then( (translation) => {
+                this.noTag = translation;
+            });
 
             this.unselected_users = [];
 	        this.unselected_tags = [];
@@ -145,11 +152,10 @@ module TalkwallApp {
 						present = true;
 					}
 				}
-
 				return present;
 
 			} else {
-				return true;
+				return this.unselected_tags.indexOf(this.noTag) === -1;
 			}
 		}
 

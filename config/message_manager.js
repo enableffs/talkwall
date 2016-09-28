@@ -106,6 +106,10 @@ Mm.prototype.removeAllFromWall = function(wall_id) {
  */
 Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_messages, status_update) {
 
+    if (typeof this.data[wall_id] === 'undefined') {
+        return;
+    }
+
     // Make note of my changes in other users' lists on the same question
     if (edited_messages !== null && edited_messages.length > 0) {
         var messages = this.data[wall_id].messages[question_id];
@@ -138,7 +142,7 @@ Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_message
  */
 Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
     
-    if (this.data[wall_id] === undefined) {
+    if (typeof this.data[wall_id] === 'undefined') {
         return null;
     }
 
@@ -155,7 +159,7 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
     }
 
     var messages = [];
-    if(question_id !== 'none') {
+    if(question_id !== 'none' && typeof this.data[wall_id].messages[question_id][nickname] !== 'undefined') {
         messages = this.data[wall_id].messages[question_id][nickname];
         // Reset my own update data
         this.data[wall_id].messages[question_id][nickname] = [];
