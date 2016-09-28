@@ -114,6 +114,7 @@ md-content {
 .landing-clouds {
   position: absolute;
   bottom: -10px;
+  left: 0;
   width: 100%;
 }
 
