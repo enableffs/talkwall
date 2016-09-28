@@ -401,7 +401,7 @@ describe('second user disconnects from wall', function() {
 
 describe('authorised user closes wall by dedicated route call', function() {
     it('should return update success status', function(done){
-        superagent.get(baseurl+'/close/' + FIRST_WALL._id)
+        superagent.put(baseurl+'/wall/close/' + FIRST_WALL._id)
             .set('Authorization', 'Bearer '+ TEACHER_TOKEN)
             .end(function(e,res) {
                 expect(res.statusCode).to.eql(common.StatusMessages.UPDATE_SUCCESS.status);
