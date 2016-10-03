@@ -58,7 +58,7 @@
   "WALL_EMAIL": "Epost",
   "WALL_FILTER": "Filter",
   "WALL_FILTERBYCREATOR": "Filtrer etter bidragsyter",
-  "WALL_FILTERBYTAG": "Filtrer etter #emnetagg",
+  "WALL_FILTERBYTAG": "Filtrer etter #hashtag",
   "WALL_JOINWITHPIN": "Delta med PIN",
   "WALL_MESSAGES": "Bidrag",
   "WALL_NOQUESTION": "Legg til oppgavetekst!",
@@ -68,5 +68,5 @@
   "WALL_SELECTALL": "velg alle",
   "WALL_SELECTWALLS": "Deltagernes tavler",
   "WALL_UN": "ikke ",
-  "NO_TAG": "Uten #emnetagg"
+    "NO_TAG": "Uten Tag"
 }
