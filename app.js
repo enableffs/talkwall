@@ -5,6 +5,7 @@
  *
  *
  */
+require('newrelic');
 
 /********* load environment variables locally *********/
 var dotenv = require('dotenv');
