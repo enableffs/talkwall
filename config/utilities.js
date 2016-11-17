@@ -23,11 +23,11 @@ exports.sendMail = function(mail) {
     return new prom(function (resolve) {
 
         //avoid sending emails all the time when testing
-        /*if(process.env.STATIC_FOLDER === 'src') {
+        if(process.env.STATIC_FOLDER === 'src') {
             console.log('sendMail (src) | From: '+mail.from+' | To: '+mail.to+' | TextBody: '+mail.text);
             resolve({code: 200, message: 'OK'});
         }
-        else {*/
+        else {
             var client = new postmark.Client(process.env.POSTMARK_API_KEY);
 
             client.sendEmail({
@@ -44,6 +44,6 @@ exports.sendMail = function(mail) {
                     resolve({code: 200, message: common.StatusMessages.INVITE_EMAIL_SEND_SUCCESS.status});
                 }
             });
-        //}
+        }
     });
 };

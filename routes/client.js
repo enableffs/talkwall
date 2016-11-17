@@ -167,7 +167,7 @@ exports.createMessage = function(req, res) {
                 message: common.StatusMessages.PIN_RETRIEVAL_ERROR.message
             });
         }
-        if (wall_id !== null) {
+        if (typeof wall_id !== 'undefined' && wall_id !== null) {
 
             // Create a new Message with the supplied object, including board properties   *** Not vetted!! :S
             var newMessage = new Message(req.body.message);

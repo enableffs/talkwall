@@ -19,7 +19,7 @@
 				<div flex="grow" layout layout-align="center center" flex="grow">
 					<div layout="row" ng-if="wallC.dataService.getQuestion() !== null" layout-align="center center">
 						<div class="wall-question-index" layout layout-align="center center">{{ wallC.dataService.getCurrentQuestionIndex() + 1}}</div>
-						<div>{{wallC.dataService.getQuestion().label}}</div>
+						<div style="margin-left: 10px;">{{wallC.dataService.getQuestion().label}}</div>
 					</div>
 					<div layout="row" ng-if="wallC.dataService.getQuestion() === null" layout-align="center center">
 						{{ 'WALL_NOQUESTION' | translate }}

@@ -1,4 +1,4 @@
-<md-dialog aria-label="Login dialog" ng-cloak>
+<md-dialog aria-label="Login dialog" ng-cloak style="z-index: 200; height: 300px;">
 
 		<md-toolbar>
 			<div class="md-toolbar-tools">
@@ -9,36 +9,36 @@
 				</md-button>
 			</div>
 		</md-toolbar>
-		<md-dialog-content layout="column">
+		<md-dialog-content flex layout="column">
 				<md-button class="loginMenuItem" ng-click="loginC.answer('/auth/google')" aria-label="Login med Google">
-					<div flex layout="row" layout-padding>
-						<div>
-							<img ng-src="images/google.svg" width="40px">
+					<div layout="row" layout-padding>
+						<div style="width: 40px;">
+							<img ng-src="images/google.svg">
 						</div>
-						<div flex layout="row">
-							<div flex layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_GOOGLE' | translate }}</div>
+						<div layout="row">
+							<div layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_GOOGLE' | translate }}</div>
 						</div>
 					</div>
 				</md-button>
 
 				<md-button class="loginMenuItem" ng-click="loginC.answer('/auth/facebook')" aria-label="Login med Facebook">
-					<div flex layout="row" layout-padding>
-						<div>
-							<img ng-src="images/facebook.svg" width="40px">
+					<div layout="row" layout-padding>
+						<div style="width: 40px;">
+							<img ng-src="images/facebook.svg">
 						</div>
-						<div flex layout="row">
-							<div flex layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_FACEBOOK' | translate }}</div>
+						<div layout="row">
+							<div layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_FACEBOOK' | translate }}</div>
 						</div>
 					</div>
 				</md-button>
 
 				<md-button class="loginMenuItem" ng-click="loginC.hide()" disabled="true" aria-label="Login med Feide">
-					<div flex layout="row" layout-padding>
-						<div>
+					<div layout="row" layout-padding>
+						<div style="width: 40px;">
 							<img ng-src="images/nokkelhull-48px.png" width="40px">
 						</div>
-						<div flex layout="row">
-							<div flex layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_FEIDE' | translate }}</div>
+						<div layout="row">
+							<div layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_FEIDE' | translate }}</div>
 						</div>
 					</div>
 				</md-button>

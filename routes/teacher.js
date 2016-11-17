@@ -366,29 +366,32 @@ exports.getWallAuthorised = function(req, res) {
                 message: common.StatusMessages.GET_ERROR.message, result: error});
         }
         else if (wall !== null) {
-            if (wall.pin === '0000') {    // Reallocate a pin to this wall if it was previously expired
-                // Find a pin that is not already used
-                var newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
-                while (redisClient.exists(newPin) === 1) {
-                    newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
+            redisClient.get(wall.pin, function(error, redis_wall_id) {
+                if(redis_wall_id === null || wall.pin === '0000') {
+                    // Pin has expired while we were away or deliberately - Reallocate a pin to this wall
+                    // Find a pin that is not already used
+                    var newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
+                    while (redisClient.exists(newPin) === 1) {
+                        newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
+                    }
+                    redisClient.set(newPin, wall._id);
+                    redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
+                    wall.pin = newPin;
+                    wall.save();
                 }
-                redisClient.set(newPin, wall._id);
-                redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
-                wall.pin = newPin;
-                wall.save();
-            }
-            User.findOneAndUpdate({_id: req.user.id}, {lastOpenedWall: wall.id}, function (error, user) {
-                if (error) {
-                    return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                        message: common.StatusMessages.UPDATE_ERROR.message, result: error
-                    });
-                } else {
-                    mm.addUser(wall._id, '', user.nickname);
-                    mm.putUpdate(wall.id, 'none', '', null, true);
-                    return res.status(common.StatusMessages.GET_SUCCESS.status).json({
-                        message: common.StatusMessages.GET_SUCCESS.message, result: wall
-                    });
-                }
+                User.findOneAndUpdate({_id: req.user.id}, {lastOpenedWall: wall.id}, function (error, user) {
+                    if (error) {
+                        return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                            message: common.StatusMessages.UPDATE_ERROR.message, result: error
+                        });
+                    } else {
+                        mm.addUser(wall._id, '', user.nickname);
+                        mm.putUpdate(wall.id, 'none', '', null, true);
+                        return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                            message: common.StatusMessages.GET_SUCCESS.message, result: wall
+                        });
+                    }
+                });
             });
         }
     })
