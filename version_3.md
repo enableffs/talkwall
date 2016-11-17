@@ -78,7 +78,7 @@ X contributions, Y tasks: <start of task 1 wording>
 
 ### Right side panel
 * Remove email field on closing panel. 
-* Add toggle: lock/unlock -> set session as locked
+* Add toggle: lock/unlock -> set session as locked -> this disconnects all connected users
 * Close just return to organize panel.
 
 ## PRI #2: Organisers can add organisers
