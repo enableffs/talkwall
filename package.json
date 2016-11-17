@@ -20,6 +20,7 @@
     "postinstall": "bower cache clean && bower install"
   },
   "dependencies": {
+    "@risingstack/trace": "^2.33.0",
     "async": "^1.5.2",
     "bcrypt": "0.8.6",
     "body-parser": "1.15.1",
