@@ -1,5 +1,5 @@
 # Talkwall
-Talkwall (Samtavla v3) in Typescript (alias DiDiac)
+Talkwall (Samtavla v3) in Typescript (alias DiDiAC)
 
 To get started, follow the steps below:
 ~~~
