@@ -622,11 +622,14 @@ module TalkwallApp {
 
         // Set previousQuestionIndex if we are changing questions. Else set it to -1
         requestPoll(previousQuestionId, control, successCallbackFn, errorCallbackFn): void {
-            var question_id = 'none';
+            let question_id = 'none', pollRoute = '/poll/';
             if (this.question !== null) {
                 question_id = this.question._id;
             }
-            this.$http.get(this.urlService.getHost() + '/poll/' + this.getNickname() + '/' + this.wall._id +
+            if (this.userAuthorised) {
+                pollRoute = '/pollteacher/';
+            }
+            this.$http.get(this.urlService.getHost() + pollRoute + this.getNickname() + '/' + this.wall._id +
                     '/' + question_id + '/' + previousQuestionId + '/' + control)
                 .success((data) => {
                     let resultKey = 'result';

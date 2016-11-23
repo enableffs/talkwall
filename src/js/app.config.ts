@@ -42,7 +42,7 @@ module TalkwallApp {
         if (navigator[languagesKey]) {
             lang = navigator[languagesKey][0];
         } else {
-            lang = navigator.language || navigator.userLanguage;
+            lang = navigator.language || navigator['userLanguage'];
         }
 
         if (lang.indexOf('no') > -1 || lang.indexOf('nb') > -1) {

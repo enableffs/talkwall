@@ -6,7 +6,6 @@
  *
  */
 require('newrelic');
-require('@risingstack/trace');
 
 /********* load environment variables locally *********/
 var dotenv = require('dotenv');
@@ -111,10 +110,12 @@ app.put('/wall/close/:wall_id',                         jwt({secret: secret.secr
 app.get('/clientwall/:nickname/:pin',                                                               routes.client.clientWall);
 app.get('/disconnect/:nickname/:pin/:question_id',                                                  routes.client.disconnectWall);
 app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:control',                     routes.client.poll);
+app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:control',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,           routes.teacher.poll);
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessage);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
 app.get('/export/:wallid',                                                                          routes.client.exportWall);
+
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());
 

@@ -101,7 +101,7 @@ Mm.prototype.removeAllFromWall = function(wall_id) {
  * @param {string} wall_id
  * @param {string} question_id                      question_id can be 'none' if the teacher has not changed questions
  * @param {string} nickname                         the particular calling user
- * @param {Array<Message>} edited_messages          the message objects edited by the calling user
+ * @param {Array<Message>} edited_messages          the message objects edited by the calling user. null if no changes
  * @param {boolean} status_update                   wall status has changed (true | false).
  */
 Mm.prototype.putUpdate = function(wall_id, question_id, nickname, edited_messages, status_update) {
@@ -148,7 +148,7 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
 
     var nicknames = this.data[wall_id].status['connected_nicknames'];
 
-    // If I am the teacher, check for disconnected users as well
+    // If I am a teacher, check for disconnected users as well
     if (isTeacher) {
         var timeNow = Date.now();
         for (var key in nicknames) {

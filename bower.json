@@ -1,6 +1,6 @@
 {
   "name": "talkwall",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "authors": [
     "Jeremy Toussaint <jeremyt@uv.uio.no>",
     "Richard Nesnass <richarne@uv.uio.no>"
@@ -8,16 +8,16 @@
   "private": true,
   "description": "Talkwall application",
   "dependencies": {
-    "angular": "1.5.5",
-    "angular-route": "1.5.5",
-    "angular-aria": "1.5.5",
-    "angular-animate": "1.5.5",
-    "angular-translate": "~2.11.0",
-    "angular-translate-loader-static-files": "~2.11.0",
-    "angular-material": "^1.1.1",
-    "moment": "^2.13.0"
+    "angular": "1.5.8",
+    "angular-route": "1.5.8",
+    "angular-aria": "1.5.8",
+    "angular-animate": "1.5.8",
+    "angular-translate": "2.11.0",
+    "angular-translate-loader-static-files": "2.11.0",
+    "angular-material": "1.1.1",
+    "moment": "2.16.0"
   },
   "resolutions": {
-    "angular": "1.5.5"
+    "angular": "1.5.8"
   }
 }
