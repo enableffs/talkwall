@@ -3,7 +3,7 @@
 module TalkwallApp {
     "use strict";
     import MomentStatic = moment.MomentStatic;
-    var moment: MomentStatic;
+    let moment: MomentStatic;
 
     export class User {
         _id: string;
@@ -74,6 +74,14 @@ module TalkwallApp {
             this.origin = [];
             this.edits = [];
             this.board = {};
+        }
+
+        updateMe(newMessage: {}) {
+            this.text = newMessage['text'];
+            this.origin = newMessage['origin'];
+            this.edits = newMessage['edits'];
+            this.board = newMessage['board'];
+            this.deleted = newMessage['deleted'];
         }
     }
 

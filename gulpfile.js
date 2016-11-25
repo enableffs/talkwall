@@ -51,6 +51,22 @@ var sassOptions = {
     outputStyle: 'expanded'
 };
 
+/*
+var tsProject = ts.createProject({
+    "compilerOptions": {
+        "declaration": false,
+        "sourceMap": true,
+        "module": "commonjs",
+        "target": "ES5",
+        "outFile": 'output.js'
+    },
+    "exclude": [
+        "node_modules",
+        "wwwroot"
+    ]
+});
+*/
+
 function showError (error) {
     console.log(error.toString());
     this.emit('end');
@@ -77,21 +93,31 @@ gulp.task('sass', function() {
 
 gulp.task("ts-lint", function() {
     return gulp.src(config.src.ts)
-        .pipe(tslint())
-        .pipe(tslint.report("verbose"))
+        .pipe(tslint({
+            formatter: "prose"
+        }))
+        .pipe(tslint.report({
+            summarizeFailureOutput: true
+        }))
 });
 
 
 gulp.task("typescripts", function () {
     return gulp.src(config.src.ts)
-        .pipe(ts(tsProject))
+        .pipe(ts({
+            "noImplicitAny": false,
+            "outFile": "output.js",
+            "module": "commonjs",
+            "target": "es5",
+            "sourceMap": false
+        }))
         .pipe(gulp.dest('src/js/'));
 });
 
 
 gulp.task('javascripts', function() {
     return gulp.src('src/js/output.js')
-        .pipe(concat('main.min.js'))
+        .pipe(rename('main.min.js'))
         .pipe(gulp.dest(config.dist.js));
 });
 
@@ -134,15 +160,6 @@ gulp.task('copy-fonts', function () {
     return gulp.src(config.src.fonts)
         .pipe(gulp.dest(config.dist.fonts))
 });
-
-var tsProject = ts.createProject({
-    declaration: false,
-    sortOutput: true,
-    module: "commonjs",
-    target: "ES5",
-    out: 'output.js'
-});
-
 
 
 gulp.task('svg-store', function () {
@@ -218,6 +235,6 @@ gulp.task("typedoc", function() {
 
 
 gulp.task('css', gulp.series('sass'));
-gulp.task('dev', gulp.series('sass', 'ts-lint', 'typescripts', 'javascripts'));
+gulp.task('dev', gulp.series('sass', 'typescripts', 'javascripts'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));

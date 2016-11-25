@@ -35,9 +35,9 @@ module TalkwallApp {
 		 * display an advanced dialog for the login, and catches it's events
 		 */
 		showLoginDialog(ev) : void {
-			var handle = this;
+			let handle = this;
 			//detects if the device is small
-			var useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+			let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
 			//show the dialog
 			this.$mdDialog.show({
 				controller: LoginController,
@@ -61,9 +61,9 @@ module TalkwallApp {
 		 * display dialog for joining with pin and nickname
 		 */
 		showJoinDialog(ev) : void {
-			var handle = this;
+			let handle = this;
 			//detects if the device is small
-			var useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+			let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
 			//show the dialog
 			this.$mdDialog.show({
 					controller: JoinController,
