@@ -269,11 +269,12 @@ exports.closeWall = function(req, res) {
 exports.notifyChangeQuestion = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
-    || typeof req.params.question_id === 'undefined' || req.params.question_id == null) {
+    || typeof req.params.question_id === 'undefined' || req.params.question_id == null
+    || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
-    mm.addUser(req.params.wall_id, req.params.question_id, 'teacher');
+    mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     mm.putUpdate(req.params.wall_id, req.params.question_id, '', null, true);
     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
         message: common.StatusMessages.UPDATE_SUCCESS.message});
@@ -577,10 +578,10 @@ exports.poll = function(req, res) {
     if (req.params.control === 'change' && req.params.previous_question_id !== 'none') {
         // We are changing questions, so remove the user from previous question and add them to the new one
         mm.removeFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname);
-        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname);
+        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     } else if (req.params.control === 'new') {
         // We are entering for the first time, so add the user
-        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname);
+        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     }
 
     // Return an update to the user

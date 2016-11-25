@@ -22,8 +22,9 @@ var Mm = function() {
  * @param {string} wall_id
  * @param {string} question_id (can be 'none')
  * @param {string} nickname
+ * @param {boolean} isTeacher
  */
-Mm.prototype.addUser = function(wall_id, question_id, nickname) {
+Mm.prototype.addUser = function(wall_id, question_id, nickname, isTeacher) {
 
     // If question_id === 'none', add this nickname to the wall's connected_nicknames
     // If question_id !== 'none', also add this nickname to the question's polling 'messages' list
@@ -34,13 +35,21 @@ Mm.prototype.addUser = function(wall_id, question_id, nickname) {
             status: {
                 last_update: Date.now(),
                 teacher_question_id: 'none',
+                teacher_nickname: '',
                 connected_nicknames: {}
             },
             messages: {}
         };
     }
+
+    // Note which nickname belongs to the teacher
+    if(isTeacher) {
+        this.data[wall_id].status.teacher_nickname = nickname;
+    }
+
     // Update the nickname and timestamp to the connected users list
-    this.data[wall_id].status['connected_nicknames'][nickname] = Date.now();
+    this.data[wall_id].status.connected_nicknames[nickname] = Date.now();
+
 
     // Create a message list for this user for a particular question
     if (question_id !== 'none') {
@@ -146,7 +155,7 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
         return null;
     }
 
-    var nicknames = this.data[wall_id].status['connected_nicknames'];
+    var nicknames = this.data[wall_id].status.connected_nicknames;
 
     // If I am a teacher, check for disconnected users as well
     if (isTeacher) {
