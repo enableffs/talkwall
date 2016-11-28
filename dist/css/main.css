@@ -621,13 +621,13 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 }
 
 html, body {
-  overflow: hidden;
   height: 100%;
+  width: 100%;
+  overflow: auto;
 }
 
 body {
   margin: 0;
-  adding: 0;
   font-family: 'RobotoDraft', Arial, sans-serif;
 }
 
