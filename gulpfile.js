@@ -107,7 +107,6 @@ gulp.task("typescripts", function () {
         .pipe(ts({
             "noImplicitAny": false,
             "outFile": "output.js",
-            "module": "commonjs",
             "target": "es5",
             "sourceMap": false
         }))

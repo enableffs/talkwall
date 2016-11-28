@@ -3,7 +3,6 @@
 module TalkwallApp {
     "use strict";
     import MomentStatic = moment.MomentStatic;
-    let moment: MomentStatic;
 
     export class User {
         _id: string;
@@ -49,8 +48,11 @@ module TalkwallApp {
         }
     }
 
+    export interface IMessage {
+        updateMe(newMessage: {}): Message;
+    }
 
-    export class Message {
+    export class Message implements IMessage {
         _id: string;
         question_id: string;
         createdAt: Date;
@@ -58,14 +60,8 @@ module TalkwallApp {
         creator: string;        //nickname
         deleted: boolean;
         isPinned: boolean;
-        origin: Array<{
-            nickname: string;
-            message_id: string;
-        }>;
-        edits: Array<{
-            date: Date;
-            text: string;
-        }>;
+        origin: {}[];
+        edits: {}[];
         board: {};
         constructor() {
             this.createdAt = new Date();
@@ -77,11 +73,17 @@ module TalkwallApp {
         }
 
         updateMe(newMessage: {}) {
+            this._id = newMessage['_id'];
+            this.createdAt = newMessage['createdAt'];
+            this.deleted = newMessage['deleted'];
+            this.creator = newMessage['creator'];
             this.text = newMessage['text'];
             this.origin = newMessage['origin'];
             this.edits = newMessage['edits'];
             this.board = newMessage['board'];
-            this.deleted = newMessage['deleted'];
+            this.question_id = newMessage['question_id'];
+
+            return this;
         }
     }
 
@@ -95,7 +97,7 @@ module TalkwallApp {
         messages: Array<Message>;
 
         // set status to PollUpdate('', false) to prevent any status update on server
-        constructor(question_id, close_wall) {
+        constructor(question_id) {
             this.status = {
                 last_update: Date.now(),
                 teacher_question_id: question_id,

@@ -73,11 +73,11 @@ module TalkwallApp {
 
         // Return the Question for the given question ID
         getMessageFromQuestionById (id: string, question: Question) : Message {
-            for (var i = 0; i < question.messages.length; i++) {
-                if (question.messages[i]._id === id) {
-                    return question.messages[i];
+            question.messages.forEach((m) => {
+                if (m._id === id) {
+                    return m;
                 }
-            }
+            });
             return null;
         };
 
