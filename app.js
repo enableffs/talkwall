@@ -8,8 +8,7 @@
 require('newrelic');
 
 /********* load environment variables locally *********/
-var dotenv = require('dotenv');
-dotenv.load();
+require('dotenv').config();
 
 /********* port config for heroku deploy *********/
 var port = process.env.PORT;
