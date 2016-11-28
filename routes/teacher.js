@@ -269,11 +269,12 @@ exports.closeWall = function(req, res) {
 exports.notifyChangeQuestion = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
-    || typeof req.params.question_id === 'undefined' || req.params.question_id == null) {
+    || typeof req.params.question_id === 'undefined' || req.params.question_id == null
+    || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
-    mm.addUser(req.params.wall_id, req.params.question_id, 'teacher');
+    mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     mm.putUpdate(req.params.wall_id, req.params.question_id, '', null, true);
     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
         message: common.StatusMessages.UPDATE_SUCCESS.message});
@@ -385,7 +386,7 @@ exports.getWallAuthorised = function(req, res) {
                             message: common.StatusMessages.UPDATE_ERROR.message, result: error
                         });
                     } else {
-                        mm.addUser(wall._id, '', user.nickname);
+                        mm.addUser(wall._id, '', user.nickname + '\u2665' + user.defaultEmail); // '\u2665' is an uncommon character used to delimit the nickname from the teachers email address
                         mm.putUpdate(wall.id, 'none', '', null, true);
                         return res.status(common.StatusMessages.GET_SUCCESS.status).json({
                             message: common.StatusMessages.GET_SUCCESS.message, result: wall
@@ -417,7 +418,6 @@ exports.getQuestionContributors = function(req, res) {
                 if ((wall.questions[i]._id).toString() === req.params.qid) {
                     return res.status(common.StatusMessages.GET_SUCCESS.status).json({
                         message: common.StatusMessages.GET_SUCCESS.message, result: wall.questions[i].participants});
-                    break;
                 }
             }
 
@@ -546,4 +546,47 @@ exports.createTestUser = function() {
             console.log("*** Test User already exists");
         }
     })
+};
+
+
+/**
+ * @api {get} /poll Respond to this call with any changed messages and status
+ *
+ * @apiName poll
+ * @apiGroup non-authorised
+ *
+ * @apiParam {String} wall_id ID of the wall to get
+ * @apiParam {String} question_id ID of the question to get.
+ *                      Can be 'none' if we are only polling for status
+ * @apiParam {String} previous_question_id ID of the previous question to assist removal from polling when changing question
+ *                      Can be 'none' if not changing questions.
+ * @apiParam {String} nickname Connecting client's nickname
+ * @apiParam {String} control type of poll ('new', 'change', 'poll')
+ *
+ */
+exports.poll = function(req, res) {
+
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
+        || typeof req.params.question_id === 'undefined' || req.params.question_id == null
+        || typeof req.params.previous_question_id === 'undefined' || req.params.previous_question_id == null
+        || typeof req.params.nickname === 'undefined' || req.params.nickname == null
+        || typeof req.params.control === 'undefined' || req.params.control == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    if (req.params.control === 'change' && req.params.previous_question_id !== 'none') {
+        // We are changing questions, so remove the user from previous question and add them to the new one
+        mm.removeFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname);
+        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
+    } else if (req.params.control === 'new') {
+        // We are entering for the first time, so add the user
+        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
+    }
+
+    // Return an update to the user
+    var update = mm.getUpdate(req.params.wall_id, req.params.question_id, req.params.nickname, true);
+    return res.status(common.StatusMessages.POLL_SUCCESS.status)
+        .json({message: common.StatusMessages.POLL_SUCCESS.message, result: update});
+
 };

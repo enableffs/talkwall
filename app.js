@@ -5,6 +5,7 @@
  *
  *
  */
+require('newrelic');
 
 /********* load environment variables locally *********/
 var dotenv = require('dotenv');
@@ -18,7 +19,8 @@ var express = require('express');
 var mongoose = require('mongoose');
 var async = require('async');
 var morgan = require('morgan');
-var Promise = require('promise');
+mongoose.Promise = global.Promise;
+//var Promise = require('promise');
 var jwt = require('express-jwt');
 var bodyParser = require('body-parser');
 var tokenManager = require('./config/token_manager');
@@ -102,17 +104,19 @@ app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenMan
 app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);
 app.put('/question',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateQuestion);
 app.delete('/question/:wall_id/:question_id',           jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.deleteQuestion);
-app.get('/change/:wall_id/:question_id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
+app.get('/change/:nickname/:wall_id/:question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
 app.put('/wall/close/:wall_id',                         jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
 
 /********* client (student / teacher) operations *********/
 app.get('/clientwall/:nickname/:pin',                                                               routes.client.clientWall);
 app.get('/disconnect/:nickname/:pin/:question_id',                                                  routes.client.disconnectWall);
 app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:control',                     routes.client.poll);
+app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:control',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,           routes.teacher.poll);
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessage);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
 app.get('/export/:wallid',                                                                          routes.client.exportWall);
+
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());
 

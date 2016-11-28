@@ -92,7 +92,7 @@ module TalkwallApp {
 
             this.unselected_users = [];
 	        this.unselected_tags = [];
-	        this.dataService.checkAuthentication((success) => {
+	        this.dataService.checkAuthentication(() => {
 				this.activate();
 			}, null);
 		}
@@ -102,52 +102,44 @@ module TalkwallApp {
 			if (this.dataService.getWall() === null) {
 				this.$window.location.href = this.urlService.getHost() + '/#/';
 			} else {
-				var question_index = this.dataService.getWall().questions.length > 0 ? 0 : -1;
+				let question_index = this.dataService.getWall().questions.length > 0 ? 0 : -1;
 				this.setQuestion(question_index);
-				if (this.dataService.userIsAuthorised()) {
+				if (this.dataService.data.status.authorised) {
 	                this.rightMenu3 = true;
 	                this.$mdSidenav('right').open();
 				}
-				this.selectedContributor = this.dataService.getNickname();
+				this.selectedContributor = this.dataService.data.status.nickname;
 
-				if (this.dataService.userIsAuthorised() &&
+				if (this.dataService.data.status.authorised &&
 					this.dataService.getAuthenticatedUser().defaultEmail !== undefined &&
 					this.dataService.getAuthenticatedUser().defaultEmail !== '') {
 					this.owneremail = this.dataService.getAuthenticatedUser().defaultEmail;
 				}
 
-				var handle = this;
+				let handle = this;
 				//contributor filtering (for messages on the board)
 				this.messageFilterByContributorOnBoard = function(message: Message) {
-					if (!message.deleted &&
-						!handle.dataService.getPhoneMode() &&
+					return (!message.deleted &&
+						!handle.dataService.data.status.phoneMode &&
 						message.board !== undefined &&
 						message.board[handle.selectedContributor] !== undefined &&
 						handle.unselected_users.indexOf(message.creator) === -1 &&
-						handle.messageTagsNotPresent(message)) {
-						return true;
-					} else {
-						return false;
-					}
+						handle.messageTagsNotPresent(message));
 				};
 
 				//author+tag filtering (for messages in the feed)
 				this.messageFilterByAuthorAndTag = function(message: Message) {
-					if (!message.deleted && handle.unselected_users.indexOf(message.creator) === -1 && handle.messageTagsNotPresent(message)) {
-						return true;
-					} else {
-						return false;
-					}
+					return (!message.deleted && handle.unselected_users.indexOf(message.creator) === -1 && handle.messageTagsNotPresent(message));
 				};
 
 			}
 		}
 
 		messageTagsNotPresent(message): boolean {
-			var messageTags = this.utilityService.getPossibleTags(message.text);
+			let messageTags = this.utilityService.getPossibleTags(message.text);
 			if (messageTags !== null) {
-				var present: boolean = false;
-				for (var i = 0; i < messageTags.length; i++) {
+				let present: boolean = false;
+				for (let i = 0; i < messageTags.length; i++) {
 					if (this.unselected_tags.indexOf(messageTags[i]) === -1) {
 						present = true;
 					}
@@ -161,7 +153,7 @@ module TalkwallApp {
 
 		showFeed(): void {
 			this.feedView = true;
-			this.selectedContributor = this.dataService.getNickname();
+			this.selectedContributor = this.dataService.data.status.nickname;
 			this.$mdSidenav('left').open();
 		}
 
@@ -174,8 +166,8 @@ module TalkwallApp {
         setQuestion(index) {
 	        this.dataService.setQuestion(index,
 		        () => {
-                    if ( this.dataService.getCurrentQuestionIndex() !== -1 ) {
-                        this.savedGridType = this.dataService.getQuestion().grid;
+                    if ( this.dataService.data.status.currentQuestionIndex !== -1 ) {
+                        this.savedGridType = this.dataService.data.question.grid;
                     }
 		        },
 		        function() {
@@ -190,16 +182,16 @@ module TalkwallApp {
 		}
 
         setGrid(type): void {
-            this.dataService.getQuestionToEdit().grid = type;
+            this.dataService.data.status.questionToEdit.grid = type;
         }
 
         questionToEditDirty() {
-	        if (this.dataService.getQuestionToEdit() === null || this.dataService.getQuestion() === null) {
+	        if (this.dataService.data.status.questionToEdit === null || this.dataService.data.question === null) {
 		        return true;
 	        } else {
-	            return (this.dataService.getQuestionToEdit().label !== this.dataService.getQuestion().label
-	                && this.dataService.getQuestionToEdit().label !== '')
-	                || typeof this.dataService.getQuestionToEdit()._id !== 'undefined';
+	            return (this.dataService.data.status.questionToEdit.label !== this.dataService.data.question.label
+	                && this.dataService.data.status.questionToEdit.label !== '')
+	                || typeof this.dataService.data.status.questionToEdit._id !== 'undefined';
 	        }
         }
 
@@ -209,7 +201,7 @@ module TalkwallApp {
         };
 
 		userToggle(item) {
-            var idx = this.unselected_users.indexOf(item);
+            let idx = this.unselected_users.indexOf(item);
             if (idx > -1) {
                 this.unselected_users.splice(idx, 1);
             } else {
@@ -218,14 +210,14 @@ module TalkwallApp {
         };
 
         userIsChecked() {
-            return this.unselected_users.length !== this.dataService.getContributors().length;
+            return this.unselected_users.length !== this.dataService.data.status.participants.length;
         };
 
         toggleAll() {
-            if (this.unselected_users.length === this.dataService.getContributors().length) {
+            if (this.unselected_users.length === this.dataService.data.status.participants.length) {
                 this.unselected_users = [];
             } else {
-                this.unselected_users = this.dataService.getContributors().slice(0);
+                this.unselected_users = this.dataService.data.status.participants.slice(0);
             }
         };
 		/**** author filtering ******/
@@ -237,7 +229,7 @@ module TalkwallApp {
 		};
 
 		tagToggle(item) {
-			var idx = this.unselected_tags.indexOf(item);
+			let idx = this.unselected_tags.indexOf(item);
 			if (idx > -1) {
 				this.unselected_tags.splice(idx, 1);
 			} else {
@@ -246,20 +238,20 @@ module TalkwallApp {
 		};
 
 		tagIsChecked() {
-			return this.unselected_tags.length !== this.dataService.getTags().length;
+			return this.unselected_tags.length !== this.dataService.data.status.tags.length;
 		};
 
 		toggleAllTags() {
-			if (this.unselected_tags.length === this.dataService.getTags().length) {
+			if (this.unselected_tags.length === this.dataService.data.status.tags.length) {
 				this.unselected_tags = [];
 			} else {
-				this.unselected_tags = this.dataService.getTags().slice(0);
+				this.unselected_tags = this.dataService.data.status.tags.slice(0);
 			}
 		};
 		/**** tag filtering ******/
 
 		showMessageEditor(newMessage: boolean): void {
-			var handle = this;
+			let handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(null);
 			}
@@ -278,7 +270,7 @@ module TalkwallApp {
                         function () {
                             //success
                         },
-                        function (error: {}) {
+                        function () {
                             //TODO: handle message create error
                         }
                     );
@@ -333,29 +325,29 @@ module TalkwallApp {
 		postQuestion(update: boolean): void {
 			if (update) {
 				this.dataService.updateQuestion(
-					(success) => {
+					() => {
 						//set to the new question if none
-						if (this.dataService.getQuestion() === null) {
+						if (this.dataService.data.question === null) {
 							this.setQuestion(0);
 						}
 						//clear the question to edit ...
 						this.dataService.setQuestionToEdit(new Question(''));
 					},
-					function(error) {
+					() => {
 						//TODO: handle question retrieval error
 					}
 				);
 			} else {
 				this.dataService.addQuestion(
-					(success) => {
+					() => {
 						//set to the new question if none
-						if (this.dataService.getQuestion() === null) {
+						if (this.dataService.data.question === null) {
 							this.setQuestion(0);
 						}
 						//clear the question to edit ...
 						this.dataService.setQuestionToEdit(new Question(''));
 					},
-					function(error) {
+					() => {
 						//TODO: handle question retrieval error
 					}
 				);

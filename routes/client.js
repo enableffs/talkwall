@@ -38,15 +38,14 @@ exports.poll = function(req, res) {
     if (req.params.control === 'change' && req.params.previous_question_id !== 'none') {
         // We are changing questions, so remove the user from previous question and add them to the new one
         mm.removeFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname);
-        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname);
+        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, false);
     } else if (req.params.control === 'new') {
         // We are entering for the first time, so add the user
-        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname);
+        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, false);
     }
 
     // Return an update to the user
-    var isTeacher = req.params.nickname === 'teacher';
-    var update = mm.getUpdate(req.params.wall_id, req.params.question_id, req.params.nickname, isTeacher);
+    var update = mm.getUpdate(req.params.wall_id, req.params.question_id, req.params.nickname, false);
     return res.status(common.StatusMessages.POLL_SUCCESS.status)
         .json({message: common.StatusMessages.POLL_SUCCESS.message, result: update});
 
