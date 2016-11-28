@@ -1,0 +1,36 @@
+<md-dialog aria-label="Archive dialog" ng-cloak>
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+			<h2>{{ 'ARCHIVE_ACTIVEWALL' | translate }}</h2>
+			<span flex></span>
+			<md-button aria-label="Cancel login" class="md-icon-button" ng-click="loginC.cancel()">
+				<md-icon md-svg-src="images/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+			</md-button>
+		</div>
+	</md-toolbar>
+
+	<md-dialog-content layout="row" layout-padding="true">
+		<p ng-show="!archiveWallC.showInput">{{ 'ARCHIVE_EXPLAINATIONONE' | translate }}
+			<br>{{ 'ARCHIVE_EXPLAINATIONTWO' | translate }}</p>
+		<div ng-show="archiveWallC.showInput" layout="column">
+			<div>{{ 'ARCHIVE_PROVIDEEMAIL' | translate }}</div>
+			<md-input-container flex>
+				<label>{{ 'ARCHIVE_EMAIL' | translate }}</label>
+				<input ng-model="archiveWallC.owneremail" type="email">
+			</md-input-container>
+		</div>
+	</md-dialog-content>
+
+	<md-dialog-actions layout="row">
+		<span flex></span>
+		<md-button ng-show="!archiveWallC.showInput" ng-click="archiveWallC.showInput = true">
+			{{ 'ARCHIVE_CREATENEW' | translate }}
+		</md-button>
+		<md-button ng-show="!archiveWallC.showInput" ng-click="archiveWallC.answer('continue')">
+			{{ 'ARCHIVE_CONTINUTEEXISTING' | translate }}
+		</md-button>
+		<md-button ng-show="archiveWallC.showInput" ng-disabled="archiveWallC.owneremail === undefined" ng-click="archiveWallC.answer(archiveWallC.owneremail)">
+			{{ 'ARCHIVE_OK' | translate }}
+		</md-button>
+	</md-dialog-actions>
+</md-dialog>
