@@ -71,14 +71,15 @@ module TalkwallApp {
             }
         }
 
-        // Return the Question for the given question ID
+        // Return the Message from a Question for the given message ID and question
         getMessageFromQuestionById (id: string, question: Question) : Message {
+            let message: Message = null;
             question.messages.forEach((m) => {
                 if (m._id === id) {
-                    return m;
+                    message = m;
                 }
             });
-            return null;
+            return message;
         };
 
         // Return the index of the given question ID on a wall
