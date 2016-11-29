@@ -43,15 +43,16 @@ module TalkwallApp {
 				controller: LoginController,
 				controllerAs: 'loginC',
 				templateUrl: 'js/components/login/login.html',
-				parent: angular.element(document.body),
 				targetEvent: ev,
 				clickOutsideToClose: true
 			})
-			.then(function(answer) {
+			.then((answer) => {
+				this.$window.blur();
 				//dialog answered
 				console.log('--> LandingController: answer: ' + answer);
 				handle.$window.location.href = handle.urlService.getHost() + answer;
-			}, function() {
+			}, () => {
+				this.$window.blur();
 				//dialog dismissed
 				console.log('--> LandingController: dismissed');
 			});
@@ -73,11 +74,13 @@ module TalkwallApp {
 					targetEvent: ev,
 					clickOutsideToClose: true
 				})
-				.then(function(joinModel) {
+				.then((joinModel) => {
+					this.$window.blur();
 					handle.dataService.getClientWall(joinModel, () => {
 						handle.$window.location.href = handle.urlService.getHost() + '/#/wall';
 					}, null);
-				}, function() {
+				}, () => {
+					this.$window.blur();
 					//dialog dismissed
 					console.log('--> LandingController: dismissed');
 				});

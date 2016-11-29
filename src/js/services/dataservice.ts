@@ -880,18 +880,17 @@ module TalkwallApp {
                     pin: this.data.wall.pin,
                     nickname: this.data.status.nickname
                 })
-                    .success((data) => {
+                    .then((data) => {
                         let resultKey = 'result'; let idKey = '_id';
                         this.setMessageToEdit(null);
                         //update the messages array with the updated object, so that all references are in turn updated
                         this.data.question.messages.forEach((m: Message) => {
-                            if (m._id === data[resultKey][idKey]) {
-                                m.updateMe(data[resultKey]);
-                                this.parseMessageForTags(data[resultKey]);
+                            if (m._id === data.data[resultKey][idKey]) {
+                                m.updateMe(data.data[resultKey]);
+                                this.parseMessageForTags(data.data[resultKey]);
                             }
                         })
-                    })
-                    .catch((error) => {
+                    }, (error) => {
                         console.log('--> DataService: updateMessage failure: ' + error);
                         //TODO: fire a notification with the problem
                     });

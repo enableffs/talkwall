@@ -54,6 +54,7 @@
     "expect": "^1.20.0",
     "expect.js": "^0.3.1",
     "gulp": "git+https://git@github.com/gulpjs/gulp.git#4.0",
+    "gulp-cli": "^1.2.x",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-cheerio": "^0.6.2",
     "gulp-concat": "^2.6.0",

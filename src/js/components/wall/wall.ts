@@ -255,15 +255,18 @@ module TalkwallApp {
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(null);
 			}
+
             this.dataService.stopPolling();
             this.showFeed();
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
 				controllerAs: 'editMessageC',
+				clickOutsideToClose: false,
 				templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
-			}).then(function(answer) {
+			}).then((answer) => {
 				//dialog answered
 				console.log('--> WallController: answer: ' + answer);
+				this.$window.document.activeElement['blur']();
 				//post message to server and add returned object to question feed
                 if (handle.dataService.getMessageToEdit()._id === undefined) {
                     handle.dataService.addMessage(
@@ -278,8 +281,9 @@ module TalkwallApp {
                     handle.dataService.updateMessage();
                 }
                 handle.dataService.startPolling('none', 'none');
-			}, function() {
+			}, () => {
 				//dialog dismissed
+				this.$window.document.activeElement['blur']();
 				console.log('--> WallController: dismissed');
 				handle.dataService.setMessageOrigin(null);
                 handle.dataService.startPolling('none', 'none');

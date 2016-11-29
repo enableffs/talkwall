@@ -35,7 +35,7 @@ module TalkwallApp {
 							handle.$mdDialog.alert()
 								.clickOutsideToClose(true)
 								.title('Question not deleted')
-								.content('This question contains messages and cannot be deleted anymore.')
+								.textContent('This question contains messages and cannot be deleted anymore.')
 								.ok('OK')
 						);
 					} else {
