@@ -563,7 +563,7 @@ module TalkwallApp {
             // Now set the question if we have it available on the client.
             // If not, we will poll anyway, until notification arrives from server of teacher moving to a question
             if (newIndex !== -1 && this.data.wall.questions.length > 0) {
-                this.data.question = this.data.wall.questions[newIndex];
+                this.data.question = new Question("").updateMe(this.data.wall.questions[newIndex]);
                 this.data.status.currentQuestionIndex = newIndex;
                 console.log('--> new bgcolor available: ' + this.getBackgroundColour());
                 this.data.status.questionToEdit.grid = this.data.question.grid;
@@ -786,12 +786,11 @@ module TalkwallApp {
                                 }
                                 //update the messages array with the updated object, so that all references are in turn updated
                                 let idKey = '_id';
-                                for (let i = 0; i < this.data.question.messages.length; i++) {
-                                    if (this.data.question.messages[i][idKey] === data[resultKey][idKey]) {
-                                        this.data.question.messages.splice(i, 1);
-                                        this.data.question.messages.splice(i, 0, data[resultKey]);
+                                this.data.question.messages.forEach((m) => {
+                                    if (m._id === data[resultKey][idKey]) {
+                                        m.updateMe(data[resultKey]);
                                     }
-                                }
+                                });
                             })
                             .catch((error) => {
                                 console.log('--> DataService: updateMessage failure: ' + error);
@@ -817,6 +816,7 @@ module TalkwallApp {
             if (this.data.question !== null) {
                 this.$http.get(this.urlService.getHost() + '/messages/' + this.data.question._id)
                     .success((data) => {
+                        this.data.question.messages = [];
                         let resultKey = 'result';
                         data[resultKey].forEach((m) => {
                             this.data.question.messages.push(new Message().updateMe(m));
@@ -1020,16 +1020,11 @@ module TalkwallApp {
 
             pollUpdateObject.messages.forEach((updated_message) => {
                 let old_message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.data.question);
-                if ( old_message !== null) {                            // Message exists and needs to be updated
-                    // this.utilityService.removeNull(updated_message);
-                    //angular.extend(old_message, updated_message);
-
-                    this.data.question.messages.forEach((m) => {
-                        if (m._id === updated_message._id) {
-                            m.updateMe(updated_message);
-                        }
-                    })
-                } else {                                            // Message is new and needs to be added to the list
+                if ( old_message !== null) {
+                    // Message exists and needs to be updated
+                    old_message.updateMe(updated_message);
+                } else {
+                    // Message is new and needs to be added to the list
                     this.data.question.messages.push(new Message().updateMe(updated_message));
                 }
                 this.parseMessageForTags(updated_message);
