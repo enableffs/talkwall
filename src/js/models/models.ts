@@ -29,6 +29,8 @@ module TalkwallApp {
         grid: string;
         messages: Array<Message>;
         participants: Array<string>;
+
+        updateMe(newQuestion: {}): Question;
     }
 
     export class Question implements IQuestion {
@@ -45,6 +47,16 @@ module TalkwallApp {
             this.grid = 'none';
             this.messages = [];
             this.showControls = false;
+        }
+
+        updateMe(newQuestion: {}): Question {
+            this._id = newQuestion['_id'];
+            this.createdAt = newQuestion['createdAt'];
+            this.label = newQuestion['label'];
+            this.grid = newQuestion['grid'];
+            this.participants = newQuestion['participants'];
+
+            return this;
         }
     }
 
@@ -78,9 +90,15 @@ module TalkwallApp {
             this.deleted = newMessage['deleted'];
             this.creator = newMessage['creator'];
             this.text = newMessage['text'];
-            this.origin = newMessage['origin'];
-            this.edits = newMessage['edits'];
-            this.board = newMessage['board'];
+            if (typeof newMessage['origin'] !== 'undefined' && newMessage['origin'] !== null) {
+                this.origin = newMessage['origin'];
+            }
+            if (typeof newMessage['edits'] !== 'undefined' && newMessage['edits'] !== null) {
+                this.edits = newMessage['edits'];
+            }
+            if (typeof newMessage['board'] !== 'undefined' && newMessage['board'] !== null) {
+                this.board = newMessage['board'];
+            }
             this.question_id = newMessage['question_id'];
 
             return this;
