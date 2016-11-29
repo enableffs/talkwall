@@ -5,17 +5,26 @@
 module TalkwallApp {
 	"use strict";
 	import IBottomSheetService = angular.material.IBottomSheetService;
+	import IDocumentService = angular.IDocumentService;
+	import ITimeoutService = angular.ITimeoutService;
 	export class EditMessageController {
-		static $inject = ['$mdBottomSheet', 'DataService'];
+		static $inject = ['$mdBottomSheet', '$document', '$timeout', 'DataService'];
 
 		private messageToEdit: Message;
+		private boxHook = null;
 
 		constructor(
 			private $mdBottomSheet: IBottomSheetService,
+			private $document: IDocumentService,
+			private $timeout: ITimeoutService,
 			private dataService: DataService) {
 			console.log('--> EditMessageController: started: ');
 
 			this.messageToEdit = dataService.getMessageToEdit();
+
+			this.$timeout(() => {
+				this.$document[0].activeElement['focus']();
+			}, 100);
 		}
 
 		/**
@@ -25,6 +34,7 @@ module TalkwallApp {
 		hide(response?: any): void {
 			console.log('--> EditMessageController: hide');
 			this.dataService.setMessageToEdit(null);
+			this.$document[0].activeElement['blur']();
 			this.$mdBottomSheet.hide();
 		};
 		/**
@@ -34,6 +44,7 @@ module TalkwallApp {
 		cancel(response?: any) : void {
 			console.log('--> EditMessageController: cancel');
 			this.dataService.setMessageToEdit(null);
+			this.$document[0].activeElement['blur']();
 			this.$mdBottomSheet.cancel();
 		};
 		/**
@@ -42,6 +53,7 @@ module TalkwallApp {
 		 */
 		answer(answer: boolean): void {
 			console.log('--> EditMessageController: answer: ' + answer);
+			this.$document[0].activeElement['blur']();
 			if (answer !== undefined) {
 				this.$mdBottomSheet.hide(answer);
 			} else {
