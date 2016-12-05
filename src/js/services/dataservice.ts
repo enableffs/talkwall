@@ -120,7 +120,7 @@ module TalkwallApp {
         /**
          * update the current message to edit
          */
-        updateMessage(): void;
+        updateMessage(directMessage: Message): void;
         /**
          * Force all connected clients to change to this question id
          */
@@ -176,6 +176,10 @@ module TalkwallApp {
          * @param message the message to edit
          */
         setMessageToEdit(message: Message): void;
+        /**
+         * clear the temporary editable message object
+         */
+        clearMessageToEdit(): void;
         /**
          * retrieve the editable message object
          */
@@ -516,6 +520,10 @@ module TalkwallApp {
             } else {
                 this.data.status.messageToEdit = message;
             }
+        }
+
+        clearMessageToEdit() {
+            this.data.status.messageToEdit = null;
         }
 
         getMessageToEdit(): Message {
@@ -873,16 +881,24 @@ module TalkwallApp {
         }
 
         //update message on server and return it
-        updateMessage(): void {
-            if (this.data.status.messageToEdit !== null) {
+        updateMessage(directMessage): void {
+            let message = null;
+
+            if(typeof directMessage !== 'undefined' && directMessage !== null) {
+                message = directMessage;
+            } else {
+                message = this.data.status.messageToEdit;
+                this.clearMessageToEdit();
+            }
+
+            if (message !== null) {
                 this.$http.put(this.urlService.getHost() + '/message', {
-                    message: this.data.status.messageToEdit,
+                    message: message,
                     pin: this.data.wall.pin,
                     nickname: this.data.status.nickname
                 })
                     .then((data) => {
                         let resultKey = 'result'; let idKey = '_id';
-                        this.setMessageToEdit(null);
                         //update the messages array with the updated object, so that all references are in turn updated
                         this.data.question.messages.forEach((m: Message) => {
                             if (m._id === data.data[resultKey][idKey]) {
@@ -892,6 +908,7 @@ module TalkwallApp {
                         })
                     }, (error) => {
                         console.log('--> DataService: updateMessage failure: ' + error);
+                        this.data.status.messageToEdit = message;
                         //TODO: fire a notification with the problem
                     });
             }

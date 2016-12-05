@@ -31,12 +31,14 @@ module TalkwallApp {
 		 * hide this dialog (see angular.material.IDialogService)
 		 * @aparam response a possible reponse
 		 */
+		/*
 		hide(response?: any): void {
 			console.log('--> EditMessageController: hide');
 			this.dataService.setMessageToEdit(null);
 			this.$document[0].activeElement['blur']();
 			this.$mdBottomSheet.hide();
 		};
+		*/
 		/**
 		 * cancel this dialog (see angular.material.IDialogService)
 		 * @aparam response a possible reponse
@@ -51,14 +53,10 @@ module TalkwallApp {
 		 * answer this dialog
 		 * @aparam answer aa a string
 		 */
-		answer(answer: boolean): void {
-			console.log('--> EditMessageController: answer: ' + answer);
+		answer(): void {
+			console.log('--> EditMessageController: answered: ');
 			this.$document[0].activeElement['blur']();
-			if (answer !== undefined) {
-				this.$mdBottomSheet.hide(answer);
-			} else {
-				this.$mdBottomSheet.cancel();
-			}
+			this.$mdBottomSheet.hide();
 			this.messageToEdit = null;
 		};
 	}

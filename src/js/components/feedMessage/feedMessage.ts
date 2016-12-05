@@ -79,19 +79,19 @@ module TalkwallApp {
 		togglePinMessage(): void {
 			this.message.board[this.dataService.data.status.nickname].pinned
                 = !this.message.board[this.dataService.data.status.nickname].pinned;
+			this.message.isPinned = this.message.board[this.dataService.data.status.nickname].pinned;
 			this.persistMessage();
 		}
 
 		persistMessage(): void {
-			this.dataService.setMessageToEdit(this.message);
-			this.dataService.updateMessage();
+			this.dataService.updateMessage(this.message);
 		}
 
 		getSelectedClass(): string {
 			if (this.isSelected() && this.isolatedScope.onBoard === 'false') {
 				return 'feedMessage-messageSelected';
 			} else if (this.message.isPinned && this.isolatedScope.onBoard === 'true') {
-				return 'feedMessage-messageSelected';
+				return 'feedMessage-messageOnBoardSelected';
 			} else {
 				return 'feedMessage-messageNotSelected';
 			}

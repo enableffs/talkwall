@@ -272,8 +272,7 @@
                 <div ng-repeat="message in wallC.dataService.data.question.messages | filter : wallC.messageFilterByContributorOnBoard" class="animate-repeat">
                     <div feed-message
                          data="message" on-board="true" selected-contributor="{{wallC.selectedContributor}}"
-                         show-edit-panel="wallC.showMessageEditor(false)" class="feedMessage-messageOnBoard"
-                         ng-class="{'feedMessage-messageOnBoardSelected': message.board[wallC.dataService.data.status.nickname].pinned }">
+                         show-edit-panel="wallC.showMessageEditor(false)" class="feedMessage-messageOnBoard">
                     </div>
                 </div>
 
