@@ -1,5 +1,7 @@
 <div layout="column">
 	<div layout="row" flex="none">
+
+		<!-- Mesage control sub section -->
 		<div layout="column" ng-if="feedMessageC.showControls" layout-align="center center" class="feedMessage-messageControl">
 			<div layout="row">
 				<md-button aria-label="Hide message controls" ng-click="feedMessageC.showControls = false" class="feedMessage-showControlButton feedMessage-messageNotSelected">
@@ -27,14 +29,16 @@
 			</div>
 		</div>
 
+		<!-- Mesage control activator -->
 		<div layout="column" ng-if="!feedMessageC.showControls" layout-align="center center" ng-class="feedMessageC.getSelectedClass()">
 			<md-button aria-label="Show message controls" ng-show="!feedMessageC.showControls" ng-click="feedMessageC.showControls = true" class="feedMessage-showControlButton">
 				<md-icon md-svg-icon="images/ic_menu_grey_24px.svg"></md-icon>
 			</md-button>
 		</div>
 
-
-		<div layout="column" layout-align="space-between none" flex-grow="true" class="feedMessage-messageBody feedMessage-wordWrap" ng-class="feedMessageC.getSelectedClass()">
+		<!-- Mesage text content -->
+		<div layout="column" layout-align="space-between none" flex-grow="true" class="feedMessage-messageBody feedMessage-wordWrap" ng-class="feedMessageC.getSelectedClass()"
+			 ng-class="{'feedMessage-messageOnBoardSelected': feedMessageC.message.board[feedMessageC.dataService.data.status.nickname].pinned }">
 			<div layout="column" flex="none" class="feedMessage-wordWrap">
 				{{ feedMessageC.message.text }}
 			</div>

@@ -10,6 +10,11 @@
   color: #FFFFFF !important;
 }
 
+.editMessage-cancelButton {
+  background-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
 .editMessage-editContainer {
   margin: 30px !important;
 }

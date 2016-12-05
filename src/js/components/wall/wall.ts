@@ -263,29 +263,33 @@ module TalkwallApp {
 				controllerAs: 'editMessageC',
 				clickOutsideToClose: false,
 				templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
-			}).then((answer) => {
+			}).then(() => {
 				//dialog answered
-				console.log('--> WallController: answer: ' + answer);
 				this.$window.document.activeElement['blur']();
 				//post message to server and add returned object to question feed
-                if (handle.dataService.getMessageToEdit()._id === undefined) {
-                    handle.dataService.addMessage(
-                        function () {
-                            //success
-                        },
-                        function () {
-                            //TODO: handle message create error
-                        }
-                    );
-                } else {
-                    handle.dataService.updateMessage();
-                }
+				let message = handle.dataService.getMessageToEdit();
+				if(message !== null) {
+					if (typeof message._id === 'undefined') {
+						console.log('--> WallController: Edit message - created');
+						handle.dataService.addMessage(
+							function () {
+								//success
+							},
+							function () {
+								//TODO: handle message create error
+							}
+						);
+					} else {
+						console.log('--> WallController: Edit message - edited');
+						handle.dataService.updateMessage(message);
+					}
+				}
                 handle.dataService.startPolling('none', 'none');
 			}, () => {
 				//dialog dismissed
 				this.$window.document.activeElement['blur']();
-				console.log('--> WallController: dismissed');
-				handle.dataService.setMessageOrigin(null);
+				console.log('--> WallController: Edit message dismissed');
+				handle.dataService.clearMessageToEdit();
                 handle.dataService.startPolling('none', 'none');
 			});
 		}
