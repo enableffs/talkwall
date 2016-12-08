@@ -41,12 +41,15 @@ module TalkwallApp {
         messages: Array<Message>;
         showControls: boolean;
         participants: Array<string>;
+        isNew: boolean;
 
         constructor(label: string) {
             this.label = label;
             this.grid = 'none';
             this.messages = [];
             this.showControls = false;
+            this.createdAt = new Date();
+            this.isNew = false;
         }
 
         updateMe(newQuestion: {}): Question {

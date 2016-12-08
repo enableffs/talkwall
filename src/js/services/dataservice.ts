@@ -285,7 +285,7 @@ module TalkwallApp {
                     authorised: false,
                     nickname: null,
                     participants: [],
-                    questionToEdit: new Question(''),
+                    questionToEdit: null,
                     messageToEdit: null,
                     messageOrigin: null,
                     updateOrigin: false,
@@ -574,7 +574,7 @@ module TalkwallApp {
                 this.data.question = new Question("").updateMe(this.data.wall.questions[newIndex]);
                 this.data.status.currentQuestionIndex = newIndex;
                 console.log('--> new bgcolor available: ' + this.getBackgroundColour());
-                this.data.status.questionToEdit.grid = this.data.question.grid;
+                //this.data.status.questionToEdit.grid = this.data.question.grid;
                 //retrieve participants list
                 this.data.status.participants = this.data.question.participants;
                 // Re-do the hashtag list
@@ -680,9 +680,9 @@ module TalkwallApp {
         //generate a new question on server with _id and returns it
         addQuestion(successCallbackFn, errorCallbackFn): void {
             this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.data.wall._id, question: this.data.status.questionToEdit})
-                .success((data) => {
+                .then((response) => {
                     let resultKey = 'result';
-                    this.data.wall.questions.push(data[resultKey]);
+                    this.data.wall.questions.push(response.data[resultKey]);
 
                     // If this was the first question
                     if (this.data.wall.questions.length === 0) {
@@ -691,8 +691,7 @@ module TalkwallApp {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: getQuestion failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});

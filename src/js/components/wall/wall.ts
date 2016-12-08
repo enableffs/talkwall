@@ -24,9 +24,13 @@ module TalkwallApp {
 		 */
 		toggleRightMenu(index: number): void;
 		/**
-		 * Post a new question
+		 * Add a new question
 		 */
-		postQuestion(update: boolean): void;
+		addQuestion(): void;
+		/**
+		 * Update a question
+		 */
+		saveQuestion(): void;
         /**
          * Get question at index
          * @param index wall.questions Index of the question being selected
@@ -330,22 +334,13 @@ module TalkwallApp {
 			}
 		}
 
-		postQuestion(update: boolean): void {
-			if (update) {
-				this.dataService.updateQuestion(
-					() => {
-						//set to the new question if none
-						if (this.dataService.data.question === null) {
-							this.setQuestion(0);
-						}
-						//clear the question to edit ...
-						this.dataService.setQuestionToEdit(new Question(''));
-					},
-					() => {
-						//TODO: handle question retrieval error
-					}
-				);
-			} else {
+		addQuestion(): void {
+			this.dataService.data.status.questionToEdit = new Question('');
+			this.dataService.data.status.questionToEdit.isNew = true;
+		}
+
+		saveQuestion(): void {
+			if(this.dataService.data.status.questionToEdit.isNew) {
 				this.dataService.addQuestion(
 					() => {
 						//set to the new question if none
@@ -353,7 +348,21 @@ module TalkwallApp {
 							this.setQuestion(0);
 						}
 						//clear the question to edit ...
-						this.dataService.setQuestionToEdit(new Question(''));
+						this.dataService.setQuestionToEdit(null);
+					},
+					() => {
+						//TODO: handle question retrieval error
+					}
+				);
+			} else {
+				this.dataService.updateQuestion(
+					() => {
+						//set to the new question if none
+						if (this.dataService.data.question === null) {
+							this.setQuestion(0);
+						}
+						//clear the question to edit ...
+						this.dataService.setQuestionToEdit(null);
 					},
 					() => {
 						//TODO: handle question retrieval error
@@ -361,5 +370,7 @@ module TalkwallApp {
 				);
 			}
 		}
+
+
 	}
 }

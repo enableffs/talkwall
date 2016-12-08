@@ -209,11 +209,12 @@
 						</md-list>
 					</md-content>
 					<div ng-show="wallC.rightMenu3" layout="column" class="wall-rightMenuAddTaskPanel">
-						<md-input-container class="md-block">
-							<label>{{ 'WALL_ADDTASK' | translate }}</label>
+						<md-button aria-label="Add question" ng-show="wallC.dataService.data.status.questionToEdit === null" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.addQuestion()">{{ 'WALL_ADDBTN' | translate }}</md-button>
+						<md-input-container class="md-block" ng-show="wallC.dataService.data.status.questionToEdit !== null">
+							<label>{{ 'WALL_TASKNAME' | translate }}</label>
 							<textarea ng-model="wallC.dataService.data.status.questionToEdit.label" rows="5" md-select-on-focus></textarea>
 						</md-input-container>
-						<div layout="column">
+						<div layout="column" ng-if="wallC.dataService.data.status.questionToEdit !== null">
 							<span>{{ 'WALL_BACKGROUND' | translate }}</span>
 							<div layout="row">
 								<md-button aria-label="Set grid to none" flex ng-click="wallC.setGrid('none')">
@@ -229,8 +230,8 @@
                                     <img src="images/back044.png" aria-hidden="true" width="100%" ng-class="{'wall-gridButtonSelected': wallC.dataService.data.status.questionToEdit.grid === 'both'}"/>
                                 </md-button>
 							</div>
-							<md-button aria-label="Add question" ng-if="wallC.dataService.data.status.questionToEdit._id === undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(false)">{{ 'WALL_ADDBTN' | translate }}</md-button>
-							<md-button aria-label="Save question" ng-if="wallC.dataService.data.status.questionToEdit._id !== undefined" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(true)">{{ 'WALL_SAVEBTN' | translate }}</md-button>
+							<!--md-button aria-label="Add question" ng-if="wallC.dataService.data.status.questionToEdit === null" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.postQuestion(false)">{{ 'WALL_ADDBTN' | translate }}</md-button-->
+							<md-button aria-label="Save question" ng-if="wallC.dataService.data.status.questionToEdit !== null" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.saveQuestion()">{{ 'WALL_SAVEBTN' | translate }}</md-button>
 						</div>
 					</div>
 				</section>
