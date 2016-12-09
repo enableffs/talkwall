@@ -43,6 +43,11 @@ module TalkwallApp {
         // userIsAuthorised(): boolean;
 
         /**
+         *
+         * @param callback to activate a Wall refresh
+         */
+        setRefreshCallback(callback: () => void): void;
+        /**
          * establish authentication status
          */
         checkAuthentication(sFunc: (success: {}) => void, eFunc: (error: {}) => void): void;
@@ -233,6 +238,7 @@ module TalkwallApp {
             'UtilityService', 'URLService', '$mdMedia', 'TalkwallConstants'];
 
         private timerHandle = null;
+        private refreshCallback = null;
 
         /*  New Version 3 data structure to improve binding between multiple views and this DataService */
 
@@ -254,7 +260,8 @@ module TalkwallApp {
                 tags: Array<string>,
                 tagCounter: {},
                 boardDivSize: {},
-                last_update: number
+                last_update: number,
+                touchControl: boolean
             }
         };
 
@@ -285,7 +292,7 @@ module TalkwallApp {
                     authorised: false,
                     nickname: null,
                     participants: [],
-                    questionToEdit: new Question(''),
+                    questionToEdit: null,
                     messageToEdit: null,
                     messageOrigin: null,
                     updateOrigin: false,
@@ -295,7 +302,8 @@ module TalkwallApp {
                     tags: [],
                     tagCounter: {},
                     boardDivSize: {},
-                    last_update: 0
+                    last_update: 0,
+                    touchControl: false
                 }
             };
 
@@ -308,6 +316,9 @@ module TalkwallApp {
             });
         }
 
+        setRefreshCallback(callback): void {
+            this.refreshCallback = callback;
+        }
 
         // Remove token string from the address bar. Then, if authorised, get the user model and the most recent wall
         // Otherwise, follow on back to where we came from..
@@ -408,15 +419,14 @@ module TalkwallApp {
         requestUser(successCallbackFn, errorCallbackFn): void {
             //this will return the correct user from the service, based on the req.user object.
             this.$http.get(this.urlService.getHost() + '/user')
-                .success((data) => {
+                .then((result) => {
                     let resultKey = 'result';
-                    this.data.user = data[resultKey];
+                    this.data.user = result.data[resultKey];
                     console.log('--> DataService: getUser success');
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.data.user);
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: getUser failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
@@ -428,14 +438,13 @@ module TalkwallApp {
         requestWall(wallId, successCallbackFn, errorCallbackFn): void {
             //return the previous wall with a the existing PIN from REDIS (if expired return true)
             this.$http.get(this.urlService.getHost() + '/wall/' + wallId)
-                .success((data) => {
+                .then((result) => {
                     let resultKey = 'result';
-                    this.data.wall = data[resultKey];
+                    this.data.wall = result.data[resultKey];
                     console.log('--> DataService: getWall success');
                     let question_index = this.data.wall.questions.length > 0 ? 0 : -1;
                     this.setQuestion(question_index, successCallbackFn, errorCallbackFn);
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: getWall failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
@@ -446,15 +455,14 @@ module TalkwallApp {
         // For authorised users only
         createWall(successCallbackFn, errorCallbackFn): void {
             this.$http.post(this.urlService.getHost() + '/wall', {label: "New Wall: " + new Date().toDateString()})
-                .success((data) => {
+                .then((result) => {
                     let resultKey = 'result';
-                    this.data.wall = data[resultKey];
+                    this.data.wall = result.data[resultKey];
                     console.log('--> DataService: getWall success');
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.data.wall);
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: getWall failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
@@ -464,8 +472,8 @@ module TalkwallApp {
 
         // For non-authorised users
         getClientWall(joinModel, successCallbackFn, errorCallbackFn): void {
-            this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin).then(
-                (success) => {
+            this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin)
+                .then((success) => {
                     let resultKey = 'result', dataKey = 'data', statusKey = 'status';
 
                     // The wall is closed
@@ -483,8 +491,7 @@ module TalkwallApp {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.data.wall);
                     }
-                },
-                (error) => {
+                }, (error) => {
                     // Close client wall if wall was closed by teacher
                     this.data.wall.closed = true;
                     this.stopPolling();
@@ -574,9 +581,9 @@ module TalkwallApp {
                 this.data.question = new Question("").updateMe(this.data.wall.questions[newIndex]);
                 this.data.status.currentQuestionIndex = newIndex;
                 console.log('--> new bgcolor available: ' + this.getBackgroundColour());
-                this.data.status.questionToEdit.grid = this.data.question.grid;
+                //this.data.status.questionToEdit.grid = this.data.question.grid;
                 //retrieve participants list
-                this.data.status.participants = this.data.question.participants;
+                this.data.status.contributors = this.data.question.contributors;
                 // Re-do the hashtag list
                 this.buildTagArray();
             }
@@ -619,12 +626,11 @@ module TalkwallApp {
             this.$http.put(this.urlService.getHost() + '/wall', {
                 wall: this.data.wall
             })
-                .success(() => {
+                .then(() => {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: getQuestion failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
@@ -634,12 +640,11 @@ module TalkwallApp {
 
         notifyChangedQuestion(successCallbackFn, errorCallbackFn): void {
             this.$http.get(this.urlService.getHost() + '/change/' + this.data.status.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
-                .success(() => {
+                .then(() => {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: notifyChangedQuestion failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
@@ -658,14 +663,13 @@ module TalkwallApp {
             }
             this.$http.get(this.urlService.getHost() + pollRoute + this.data.status.nickname + '/' + this.data.wall._id +
                 '/' + question_id + '/' + previousQuestionId + '/' + control)
-                .success((data) => {
+                .then((result) => {
                     let resultKey = 'result';
-                    this.processUpdatedMessages(data[resultKey]);
+                    this.processUpdatedMessages(result.data[resultKey]);
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
@@ -680,9 +684,9 @@ module TalkwallApp {
         //generate a new question on server with _id and returns it
         addQuestion(successCallbackFn, errorCallbackFn): void {
             this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.data.wall._id, question: this.data.status.questionToEdit})
-                .success((data) => {
+                .then((response) => {
                     let resultKey = 'result';
-                    this.data.wall.questions.push(data[resultKey]);
+                    this.data.wall.questions.push(response.data[resultKey]);
 
                     // If this was the first question
                     if (this.data.wall.questions.length === 0) {
@@ -691,8 +695,7 @@ module TalkwallApp {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: getQuestion failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
@@ -700,7 +703,6 @@ module TalkwallApp {
                 });
         }
 
-        //update a new on server and return it
         updateQuestion(successCallbackFn, errorCallbackFn): void {
             if (this.data.status.questionToEdit === null) {
                 errorCallbackFn({status: '400', message: "question is not defined"});
@@ -710,28 +712,30 @@ module TalkwallApp {
                 wall_id: this.data.wall._id,
                 question: this.data.status.questionToEdit
             })
-                .success(() => {
+                .then(() => {
                     console.log('updating the question');
+                    if(this.data.status.questionToEdit._id === this.data.question._id) {
+                        this.data.question.updateMe(this.data.status.questionToEdit);
+                    }
                     this.data.status.questionToEdit.showControls = false;
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: updateQuestion failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
-                });
+                })
         }
 
         deleteQuestion(question: Question, successCallbackFn, errorCallbackFn): void {
             //first check if there are existing message for that question
             this.$http.get(this.urlService.getHost() + '/messages/' + question._id)
-                .success((data) => {
+                .then((result) => {
                     console.log('--> DataService deleteQuestion: getMessages success');
                     let resultKey = 'result';
-                    if (data[resultKey].length === 0) {
+                    if (result.data[resultKey].length === 0) {
                         let new_question_index = this.data.status.currentQuestionIndex;
                         let deleted_question_index = this.utilityService.getQuestionIndexFromWallById(question._id, this.data.wall);
                         this.data.wall.questions.splice(deleted_question_index, 1);
@@ -739,20 +743,18 @@ module TalkwallApp {
                             new_question_index = deleted_question_index - 1;
                         }
                         this.$http.delete(this.urlService.getHost() + '/question/' + this.data.wall._id + '/' + question._id)
-                            .success(() => {
+                            .then(() => {
                                 if (new_question_index > -1) {
                                     this.setQuestion(new_question_index, null, null);
                                 }
                                 successCallbackFn(200);
-                            })
-                            .error(() => {
+                            }, () => {
                                 console.log('Error deleting question');
                             });
                     } else {
                         successCallbackFn(401);
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService deleteQuestion: getMessages failure: ' + error);
                     errorCallbackFn(error);
                 });
@@ -770,11 +772,10 @@ module TalkwallApp {
                 message: this.data.status.messageToEdit,
                 pin: this.data.wall.pin,
                 nickname: nickname
-            })
-                .success((data) => {
+            }).then((result) => {
                     let resultKey = 'result';
-                    this.data.question.messages.push(new Message().updateMe(data[resultKey]));
-                    this.parseMessageForTags(data[resultKey]);
+                    this.data.question.messages.push(new Message().updateMe(result.data[resultKey]));
+                    this.parseMessageForTags(result.data[resultKey]);
                     this.data.status.messageToEdit = null;
                     if (this.data.status.updateOrigin) {
                         //the new cloned message has been posted, remove the nickname from the old one
@@ -785,7 +786,7 @@ module TalkwallApp {
                             pin: this.data.wall.pin,
                             nickname: this.data.status.nickname
                         })
-                            .success((data) => {
+                            .then((data) => {
                                 let resultKey = 'result';
                                 this.setMessageToEdit(null);
                                 this.data.status.updateOrigin = false;
@@ -799,8 +800,7 @@ module TalkwallApp {
                                         m.updateMe(data[resultKey]);
                                     }
                                 });
-                            })
-                            .catch((error) => {
+                            }, (error) => {
                                 console.log('--> DataService: updateMessage failure: ' + error);
                                 //TODO: fire a notification with the problem
                             });
@@ -811,8 +811,7 @@ module TalkwallApp {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
-                })
-                .catch((error) => {
+                }, (error) => {
                     console.log('--> DataService: getQuestion failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
@@ -823,16 +822,15 @@ module TalkwallApp {
         getMessages(): void {
             if (this.data.question !== null) {
                 this.$http.get(this.urlService.getHost() + '/messages/' + this.data.question._id)
-                    .success((data) => {
+                    .then((result) => {
                         this.data.question.messages = [];
                         let resultKey = 'result';
-                        data[resultKey].forEach((m) => {
+                        result.data[resultKey].forEach((m) => {
                             this.data.question.messages.push(new Message().updateMe(m));
                         });
 
                         this.buildTagArray();
-                    })
-                    .catch((error) => {
+                    }, (error) => {
                         console.log('--> DataService: getMessages failure: ' + error);
                     });
             }
@@ -985,7 +983,10 @@ module TalkwallApp {
             // We should not be here! Go back to the landing page
             if (this.data.status.participants.indexOf(this.data.status.nickname) === -1) {
                 this.$window.location.href = this.urlService.getHost() + '/';
-            } else {
+            }
+
+            /*
+            else {
                 //see whether a participant list refresh is needed
                 if (this.data.status.authorised) {
                     let refreshNeeded: boolean = false;
@@ -1001,17 +1002,17 @@ module TalkwallApp {
                         this.$http.get(this.urlService.getHost() + '/wall/' +
                             this.data.wall._id + '/question/' +
                             this.data.question._id + '/contributors')
-                            .success((data) => {
+                            .then((data) => {
                                 console.log('--> Dataservice: retrievd question particpants success');
                                 let resultKey = 'result';
                                 this.data.status.participants = data[resultKey];
-                            })
-                            .catch((error) => {
+                            }, (error) => {
                                 console.log('--> Dataservice: retrievd question particpants success: ' + error);
                             });
                     }
                 }
             }
+            */
 
             // Run on client connections only - receive status updates from teacher
             if (!this.data.status.authorised && pollUpdateObject.status.last_update > this.data.status.last_update) {
@@ -1032,18 +1033,33 @@ module TalkwallApp {
             }
 
             // Message updates
-
-
             pollUpdateObject.messages.forEach((updated_message) => {
-                let old_message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.data.question);
-                if ( old_message !== null) {
+                let message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.data.question);
+                if ( message !== null) {
                     // Message exists and needs to be updated
-                    old_message.updateMe(updated_message);
+                    message.updateMe(updated_message);
                 } else {
-                    // Message is new and needs to be added to the list
-                    this.data.question.messages.push(new Message().updateMe(updated_message));
+                    message = new Message().updateMe(updated_message);
+                    this.data.question.messages.push(message);
                 }
-                this.parseMessageForTags(updated_message);
+                if(message.deleted) {
+                    let counter = 0;
+                    for(let i = 0; i < this.data.question.messages.length; i++) {
+                        if (this.data.question.messages[i].creator === message.creator) {
+                            counter++;
+                        }
+                    }
+                    if (counter === 1) {
+                        // This was the last message from its contributor, so remove from contributor list
+                        this.data.status.contributors.splice(this.data.status.contributors.indexOf(message.creator), 1);
+                    }
+                } else {
+                    if (this.data.status.contributors.indexOf(updated_message.creator) === -1) {
+                        this.data.status.contributors.push(updated_message.creator);
+                    }
+                    this.parseMessageForTags(updated_message);
+                }
+                //this.refreshCallback();
             });
         }
 

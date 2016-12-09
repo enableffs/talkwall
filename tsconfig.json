@@ -6,5 +6,9 @@
   },
   "exclude": [
     "node_modules"
+  ],
+  "filesGlob": [
+    "./typings/**/*.ts",
+    "./src/js/**/*.ts"
   ]
 }

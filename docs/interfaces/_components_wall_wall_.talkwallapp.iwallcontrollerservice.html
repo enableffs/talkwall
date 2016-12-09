@@ -94,8 +94,12 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#activate" class="tsd-kind-icon">activate</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#postquestion" class="tsd-kind-icon">post<wbr>Question</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#addquestion" class="tsd-kind-icon">add<wbr>Question</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#contributorexists" class="tsd-kind-icon">contributor<wbr>Exists</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#contributorischecked" class="tsd-kind-icon">contributor<wbr>IsChecked</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#contributortoggle" class="tsd-kind-icon">contributor<wbr>Toggle</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#questiontoeditdirty" class="tsd-kind-icon">question<wbr>ToEdit<wbr>Dirty</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#savequestion" class="tsd-kind-icon">save<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#setgrid" class="tsd-kind-icon">set<wbr>Grid</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#setquestion" class="tsd-kind-icon">set<wbr>Question</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#showfeed" class="tsd-kind-icon">show<wbr>Feed</a></li>
@@ -104,12 +108,9 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#tagexists" class="tsd-kind-icon">tag<wbr>Exists</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#tagischecked" class="tsd-kind-icon">tag<wbr>IsChecked</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#tagtoggle" class="tsd-kind-icon">tag<wbr>Toggle</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#toggleall" class="tsd-kind-icon">toggle<wbr>All</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#toggleallcontributors" class="tsd-kind-icon">toggle<wbr>All<wbr>Contributors</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglealltags" class="tsd-kind-icon">toggle<wbr>All<wbr>Tags</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglerightmenu" class="tsd-kind-icon">toggle<wbr>Right<wbr>Menu</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#userexists" class="tsd-kind-icon">user<wbr>Exists</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#userischecked" class="tsd-kind-icon">user<wbr>IsChecked</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#usertoggle" class="tsd-kind-icon">user<wbr>Toggle</a></li>
 							</ul>
 						</section>
 					</div>
@@ -127,7 +128,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L17">components/wall/wall.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L17">components/wall/wall.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -140,27 +141,84 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="postquestion" class="tsd-anchor"></a>
-					<h3>post<wbr>Question</h3>
+					<a name="addquestion" class="tsd-anchor"></a>
+					<h3>add<wbr>Question</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">post<wbr>Question<span class="tsd-signature-symbol">(</span>update<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Question<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L29">components/wall/wall.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L29">components/wall/wall.ts:29</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Post a new question</p>
+									<p>Add a new question</p>
 								</div>
 							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="contributorexists" class="tsd-anchor"></a>
+					<h3>contributor<wbr>Exists</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">contributor<wbr>Exists<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L48">components/wall/wall.ts:48</a></li>
+								</ul>
+							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>update: <span class="tsd-signature-type">boolean</span></h5>
+									<h5>item: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="contributorischecked" class="tsd-anchor"></a>
+					<h3>contributor<wbr>IsChecked</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">contributor<wbr>IsChecked<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L50">components/wall/wall.ts:50</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="contributortoggle" class="tsd-anchor"></a>
+					<h3>contributor<wbr>Toggle</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">contributor<wbr>Toggle<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L49">components/wall/wall.ts:49</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>item: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -177,7 +235,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L38">components/wall/wall.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L42">components/wall/wall.ts:42</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -186,6 +244,28 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="savequestion" class="tsd-anchor"></a>
+					<h3>save<wbr>Question</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">save<wbr>Question<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L33">components/wall/wall.ts:33</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Update a question</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -199,7 +279,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L42">components/wall/wall.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L46">components/wall/wall.ts:46</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -227,7 +307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L34">components/wall/wall.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L38">components/wall/wall.ts:38</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -258,7 +338,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L55">components/wall/wall.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L59">components/wall/wall.ts:59</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -275,7 +355,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L21">components/wall/wall.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L21">components/wall/wall.ts:21</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -303,7 +383,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L54">components/wall/wall.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L58">components/wall/wall.ts:58</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -320,7 +400,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L49">components/wall/wall.ts:49</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L53">components/wall/wall.ts:53</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -343,7 +423,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L51">components/wall/wall.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L55">components/wall/wall.ts:55</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -360,7 +440,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L50">components/wall/wall.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L54">components/wall/wall.ts:54</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -374,16 +454,16 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="toggleall" class="tsd-anchor"></a>
-					<h3>toggle<wbr>All</h3>
+					<a name="toggleallcontributors" class="tsd-anchor"></a>
+					<h3>toggle<wbr>All<wbr>Contributors</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">toggle<wbr>All<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">toggle<wbr>All<wbr>Contributors<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L47">components/wall/wall.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L51">components/wall/wall.ts:51</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -400,7 +480,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L52">components/wall/wall.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L56">components/wall/wall.ts:56</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -417,7 +497,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L25">components/wall/wall.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/3d16299/src/js/components/wall/wall.ts#L25">components/wall/wall.ts:25</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -429,69 +509,6 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>index: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="userexists" class="tsd-anchor"></a>
-					<h3>user<wbr>Exists</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">user<wbr>Exists<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L44">components/wall/wall.ts:44</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>item: <span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="userischecked" class="tsd-anchor"></a>
-					<h3>user<wbr>IsChecked</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">user<wbr>IsChecked<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L46">components/wall/wall.ts:46</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="usertoggle" class="tsd-anchor"></a>
-					<h3>user<wbr>Toggle</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">user<wbr>Toggle<span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/6fb9ac2/src/js/components/wall/wall.ts#L45">components/wall/wall.ts:45</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>item: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -596,10 +613,22 @@
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#activate" class="tsd-kind-icon">activate</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#postquestion" class="tsd-kind-icon">post<wbr>Question</a>
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#addquestion" class="tsd-kind-icon">add<wbr>Question</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#contributorexists" class="tsd-kind-icon">contributor<wbr>Exists</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#contributorischecked" class="tsd-kind-icon">contributor<wbr>IsChecked</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#contributortoggle" class="tsd-kind-icon">contributor<wbr>Toggle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#questiontoeditdirty" class="tsd-kind-icon">question<wbr>ToEdit<wbr>Dirty</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#savequestion" class="tsd-kind-icon">save<wbr>Question</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#setgrid" class="tsd-kind-icon">set<wbr>Grid</a>
@@ -626,22 +655,13 @@
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#tagtoggle" class="tsd-kind-icon">tag<wbr>Toggle</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#toggleall" class="tsd-kind-icon">toggle<wbr>All</a>
+								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#toggleallcontributors" class="tsd-kind-icon">toggle<wbr>All<wbr>Contributors</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglealltags" class="tsd-kind-icon">toggle<wbr>All<wbr>Tags</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#togglerightmenu" class="tsd-kind-icon">toggle<wbr>Right<wbr>Menu</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#userexists" class="tsd-kind-icon">user<wbr>Exists</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#userischecked" class="tsd-kind-icon">user<wbr>IsChecked</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_components_wall_wall_.talkwallapp.iwallcontrollerservice.html#usertoggle" class="tsd-kind-icon">user<wbr>Toggle</a>
 							</li>
 						</ul>
 					</li>

@@ -9,15 +9,15 @@ module TalkwallApp {
     export interface IFeedMessageController {
         deleteMessage(): void;
         editMessage(): void;
-        toggleSelectMessage(): void;
         togglePinMessage(): void;
-	    isSelected(): boolean;
+        toggleHighlightMessage(): void;
+	    isPinned(): boolean;
     }
 
 	class FeedMessageController implements IFeedMessageController {
 		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window'];
 
-		private message: Message;
+		public message: Message;
 		private showControls: boolean = false;
 
 		constructor(
@@ -33,20 +33,20 @@ module TalkwallApp {
                 if (this.message.board === undefined) {
                     this.message.board = {};
                 }
-                this.message.isPinned = false;
-				this.message.isPinned = (this.isSelected() && this.message.board[this.isolatedScope.selectedContributor].pinned === true);
+                this.message.isHighlighted = false;
+				this.message.isHighlighted = (this.isPinned() && this.message.board[this.isolatedScope.selectedParticipant].highlighted);
             }
 		};
 
-		isSelected(): boolean {
-			return (this.message.board !== undefined && this.message.board[this.isolatedScope.selectedContributor] !== undefined);
+		isPinned(): boolean {
+			return (typeof this.message.board !== 'undefined' && typeof this.message.board[this.isolatedScope.selectedParticipant] !== 'undefined');
 		}
 
 		deleteMessage(): void {
 			//check if authenticated or author
 			if (this.message.creator === this.dataService.data.status.nickname || this.dataService.data.status.authorised) {
 				this.message.deleted = true;
-				this.persistMessage();
+				this.dataService.updateMessage(this.message);
 			}
 		}
 
@@ -63,34 +63,36 @@ module TalkwallApp {
 			}
 		}
 
-		toggleSelectMessage(): void {
-			if (this.isSelected()) {
+		togglePinMessage(): void {
+			if (this.isPinned()) {
                 delete this.message.board[this.dataService.data.status.nickname];
             } else {
-                this.message.board[this.dataService.data.status.nickname] = {
-                    xpos: this.utilityService.getRandomBetween(45, 55) / 100,
-                    ypos: this.utilityService.getRandomBetween(45, 55) / 100,
-                    pinned: false
-                };
-            }
-			this.persistMessage();
-		}
-
-		togglePinMessage(): void {
-			this.message.board[this.dataService.data.status.nickname].pinned
-                = !this.message.board[this.dataService.data.status.nickname].pinned;
-			this.message.isPinned = this.message.board[this.dataService.data.status.nickname].pinned;
-			this.persistMessage();
-		}
-
-		persistMessage(): void {
+                this.message.board[this.dataService.data.status.nickname] = new Nickname(
+                    this.utilityService.getRandomBetween(45, 55) / 100,
+                    this.utilityService.getRandomBetween(45, 55) / 100,
+                    false
+				)
+			}
 			this.dataService.updateMessage(this.message);
 		}
 
-		getSelectedClass(): string {
-			if (this.isSelected() && this.isolatedScope.onBoard === 'false') {
+		toggleHighlightMessage(): void {
+			this.message.board[this.dataService.data.status.nickname].highlighted
+                = !this.message.board[this.dataService.data.status.nickname].highlighted;
+			this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
+			this.dataService.updateMessage(this.message);
+		}
+
+		persistPosition(x, y): void {
+			this.message.board[this.isolatedScope.selectedParticipant].xpos = x;
+			this.message.board[this.isolatedScope.selectedParticipant].ypos = y;
+			this.dataService.updateMessage(this.message);
+		}
+
+		getPinnedClass(): string {
+			if (this.isPinned() && this.isolatedScope.onBoard === 'false') {
 				return 'feedMessage-messageSelected';
-			} else if (this.message.isPinned && this.isolatedScope.onBoard === 'true') {
+			} else if (this.isolatedScope.onBoard === 'true' && this.message.board[this.isolatedScope.selectedParticipant].highlighted) {
 				return 'feedMessage-messageOnBoardSelected';
 			} else {
 				return 'feedMessage-messageNotSelected';
@@ -101,29 +103,30 @@ module TalkwallApp {
 	function linker(isolatedScope: FeedMessageDirectiveScope , element: ng.IAugmentedJQuery,
 	                attributes: ng.IAttributes, ctrl: FeedMessageController) {
 		let viewWidthKey = 'VIEW_WIDTH', viewHeightKey = 'VIEW_HEIGHT';
-		let changedTouchesKey = 'changedTouches'; // touchEventKey = 'TouchEvent';
-		let startX = 0, startY = 0;
-		let absStartX = 0, absStartY = 0;
-		let diffX = 0, diffY = 0;
-		let newX = 0, newY = 0;
-		let persistPosition: boolean = false;
 
 		let messageWidth = element.prop('offsetWidth');
 		let messageHeight = element.prop('offsetHeight');
 		let currentSize = ctrl.dataService.data.status.boardDivSize;
 
+		let offset = null;
+		let participant = null;
+
 		if (isolatedScope.onBoard === 'true') {
 			positionMessage();
+			//need a watch here, to refresh the position when the selected contributor or message position changes
+			isolatedScope.$watch(() => { return ctrl.message.board[isolatedScope.selectedParticipant] }, (newValue) => { positionCSS() }, true);
+		}
 
-			//need a watch here, to refresh the position when the selected contributor changes
-			isolatedScope.$watch('selectedContributor', positionMessage);
+		function positionCSS() {
+			participant = ctrl.message.board[isolatedScope.selectedParticipant];
+			element.css({
+				top: participant.ypos * 100 + '%',
+				left: participant.xpos * 100 + '%'
+			});
 		}
 
 		function positionMessage() {
-			element.css({
-				top: isolatedScope.data.board[isolatedScope.selectedContributor].ypos * 100 + '%',
-				left: isolatedScope.data.board[isolatedScope.selectedContributor].xpos * 100 + '%'
-			});
+			//positionCSS();
 
 			element.on('mousedown touchstart', function(event) {
 				// Prevent default dragging of selected content
@@ -131,105 +134,88 @@ module TalkwallApp {
 				currentSize = ctrl.dataService.data.status.boardDivSize;
 				messageWidth = element.prop('offsetWidth');
 				messageHeight = element.prop('offsetHeight');
-				persistPosition = false;
 
 				if (event instanceof MouseEvent) {
-					// Handling the mousedown event
-					absStartX = event.screenX;
-					absStartY = event.screenY;
-					startX = absStartX - (isolatedScope.data.board[isolatedScope.selectedContributor].xpos * currentSize[viewWidthKey]);
-					startY = absStartY - (isolatedScope.data.board[isolatedScope.selectedContributor].ypos * currentSize[viewHeightKey]);
+					offset = {
+						x: event.pageX - element.prop('offsetLeft'),
+						y: event.pageY - element.prop('offsetTop'),
+						originalX: event.pageX,
+						originalY: event.pageY
+					};
 					ctrl.$document.on('mousemove', mousemove);
 					ctrl.$document.on('mouseup', mouseup);
 				} else if (event instanceof TouchEvent) {
-					// Handling the touchstart event
-					let touchobj = event[changedTouchesKey][0];
-					startX = touchobj.clientX;
-					startY = touchobj.clientY;
-					absStartX = touchobj.pageX;
-					absStartY = touchobj.pageY;
-					ctrl.$document.on('touchmove', touchmove);
-					ctrl.$document.on('touchend', touchend);
+					offset = {
+						x: event['changedTouches'][0].pageX - element.prop('offsetLeft'),
+						y: event['changedTouches'][0].pageY - element.prop('offsetTop'),
+						originalX: event.pageX,
+						originalY: event.pageY
+					};
+					element.on('touchmove', touchmove);
+					element.on('touchend', touchend);
 				}
 				ctrl.dataService.stopPolling();
 			});
 		}
 
 		function mousemove(event) {
-			diffX = event.screenX - absStartX;
-			diffY = event.screenY - absStartY;
-			//will only persist if move greater than a 5*5px box
-			if (diffX >= 5 || diffX <= -5 || diffY >= 5 || diffY <= -5) {
-				persistPosition = true;
-			}
-			isolatedScope.data.board[isolatedScope.selectedContributor].xpos = event.screenX - startX;
-			isolatedScope.data.board[isolatedScope.selectedContributor].ypos = event.screenY - startY;
+			participant.xpos = event.pageX - offset.x;
+			participant.ypos = event.pageY - offset.y;
 			doMove();
 		}
 
 		function touchmove(event) {
-			let touchobj = event[changedTouchesKey][0];
-			diffX = touchobj.pageX - absStartX;
-			diffY = touchobj.pageY - absStartY;
-			newX = touchobj.pageX - startX;
-			newY = touchobj.pageY - startY;
-			//will only persist if move greater than a 5*5px box
-			if ((diffX >= 5 || diffX <= -5 || diffY >= 5 || diffY <= -5) && (newX >= 0 && newY >= 0))  {
-				persistPosition = true;
-			}
-			isolatedScope.data.board[isolatedScope.selectedContributor].xpos = newX;
-			isolatedScope.data.board[isolatedScope.selectedContributor].ypos = newY;
+			event.preventDefault();
+			participant.xpos = event['changedTouches'][0].pageX - offset.x;
+			participant.ypos = event['changedTouches'][0].pageY - offset.y;
 			doMove();
 		}
 
 		function doMove() {
-			if (isolatedScope.data.board[isolatedScope.selectedContributor].xpos < 0) {
-				isolatedScope.data.board[isolatedScope.selectedContributor].xpos = 0;
+			if (participant.xpos < 0) {
+				participant.xpos = 0;
 			}
-
-			if (isolatedScope.data.board[isolatedScope.selectedContributor].xpos > (currentSize[viewWidthKey] - messageWidth)) {
-				isolatedScope.data.board[isolatedScope.selectedContributor].xpos = (currentSize[viewWidthKey] - messageWidth);
+			if (participant.xpos > (currentSize[viewWidthKey] - messageWidth)) {
+				participant.xpos = (currentSize[viewWidthKey] - messageWidth);
 			}
-
-			if (isolatedScope.data.board[isolatedScope.selectedContributor].ypos < 0) {
-				isolatedScope.data.board[isolatedScope.selectedContributor].ypos = 0;
+			if (participant.ypos < 0) {
+				participant.ypos = 0;
 			}
-
-			if (isolatedScope.data.board[isolatedScope.selectedContributor].ypos > (currentSize[viewHeightKey] - messageHeight)) {
-				isolatedScope.data.board[isolatedScope.selectedContributor].ypos = (currentSize[viewHeightKey] - messageHeight);
+			if (participant.ypos > (currentSize[viewHeightKey] - messageHeight)) {
+				participant.ypos = (currentSize[viewHeightKey] - messageHeight);
 			}
-
 			element.css({
-				top: isolatedScope.data.board[isolatedScope.selectedContributor].ypos + 'px',
-				left: isolatedScope.data.board[isolatedScope.selectedContributor].xpos + 'px'
+				top: participant.ypos + 'px',
+				left: participant.xpos + 'px'
 			});
-
-			isolatedScope.data.board[isolatedScope.selectedContributor].xpos =
-				isolatedScope.data.board[isolatedScope.selectedContributor].xpos / currentSize[viewWidthKey];
-			isolatedScope.data.board[isolatedScope.selectedContributor].ypos =
-				isolatedScope.data.board[isolatedScope.selectedContributor].ypos / currentSize[viewHeightKey];
+			participant.xpos = participant.xpos / currentSize[viewWidthKey];
+			participant.ypos = participant.ypos / currentSize[viewHeightKey];
 		}
 
-		function mouseup() {
+		function mouseup(event) {
 			ctrl.$document.off('mousemove', mousemove);
 			ctrl.$document.off('mouseup', mouseup);
-			//only persist if significant move (> 10px)
-			//helps not persisting when clicking on controls only
-			if (persistPosition && isolatedScope.selectedContributor === ctrl.dataService.data.status.nickname) {
-				ctrl.persistMessage();
+			let diffX = offset.originalX - event.pageX;
+			let diffY = offset.originalY - event.pageY;
+			//will only persist if move greater than a 10 * 10px box
+			if ( (diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
+				//ctrl.message.board[isolatedScope.selectedParticipant] = participant;
+				ctrl.persistPosition(participant.xpos, participant.ypos);
 			}
             ctrl.dataService.startPolling('none', 'none');
 		}
 
-		function touchend() {
-			ctrl.$document.off('touchmove', touchmove);
-			ctrl.$document.off('touchend', touchend);
-			//only persist if significant move (> 10px)
-			//helps not persisting when clicking on controls only
-			if (persistPosition && isolatedScope.selectedContributor === ctrl.dataService.data.status.nickname) {
-				ctrl.persistMessage();
+		function touchend(event) {
+			event.preventDefault();
+			element.off('touchmove', touchmove);
+			element.off('touchend', touchend);
+			let diffX = offset.originalX - event.pageX;
+			let diffY = offset.originalY - event.pageY;
+			//will only persist if move greater than a 10 * 10px box
+			if ( (diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
+				ctrl.persistPosition(participant.xpos, participant.ypos);
 			}
-            ctrl.dataService.startPolling('none', 'none');
+			ctrl.dataService.startPolling('none', 'none');
 		}
 	}
 
@@ -238,7 +224,7 @@ module TalkwallApp {
 		data: Message;
 		showEditPanel(): void;
 		onBoard: string;
-		selectedContributor: string;
+		selectedParticipant: string;
 	}
 
 	//directive declaration
@@ -249,7 +235,7 @@ module TalkwallApp {
 				data: '=',
 				showEditPanel: "&",
 				onBoard: "@",
-				selectedContributor: '@'
+				selectedParticipant: '@'
 			},
 			templateUrl: 'js/components/feedMessage/feedMessage.html',
 			controller: FeedMessageController,
