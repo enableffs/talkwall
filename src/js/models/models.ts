@@ -28,7 +28,7 @@ module TalkwallApp {
         label: string;
         grid: string;
         messages: Array<Message>;
-        participants: Array<string>;
+        contributors: Array<string>;
 
         updateMe(newQuestion: {}): Question;
     }
@@ -40,13 +40,16 @@ module TalkwallApp {
         grid: string;
         messages: Array<Message>;
         showControls: boolean;
-        participants: Array<string>;
+        contributors: Array<string>;
+        isNew: boolean;
 
         constructor(label: string) {
             this.label = label;
             this.grid = 'none';
             this.messages = [];
             this.showControls = false;
+            this.createdAt = new Date();
+            this.isNew = false;
         }
 
         updateMe(newQuestion: {}): Question {
@@ -54,9 +57,30 @@ module TalkwallApp {
             this.createdAt = newQuestion['createdAt'];
             this.label = newQuestion['label'];
             this.grid = newQuestion['grid'];
-            this.participants = newQuestion['participants'];
+            this.contributors = newQuestion['contributors'];
 
             return this;
+        }
+    }
+
+
+    /* Sub classes for Message */
+
+    export class Nickname {
+        xpos: number;
+        ypos: number;
+        highlighted: boolean;
+
+        constructor(x, y, highlighted) {
+            this.xpos = x;
+            this.ypos = y;
+            this.highlighted = highlighted;
+        }
+
+        updateMe(x, y, highlighted) {
+            this.xpos = x;
+            this.ypos = y;
+            this.highlighted = highlighted;
         }
     }
 
@@ -71,10 +95,11 @@ module TalkwallApp {
         text: string;
         creator: string;        //nickname
         deleted: boolean;
-        isPinned: boolean;
+        isHighlighted: boolean;  // dynamic local attribute - not stored at server
         origin: {}[];
         edits: {}[];
-        board: {};
+        board: { [nickname: string] : Nickname };
+
         constructor() {
             this.createdAt = new Date();
             this.deleted = false;
@@ -90,18 +115,55 @@ module TalkwallApp {
             this.deleted = newMessage['deleted'];
             this.creator = newMessage['creator'];
             this.text = newMessage['text'];
+            this.updateSubsections(newMessage);
+            this.question_id = newMessage['question_id'];
+
             if (typeof newMessage['origin'] !== 'undefined' && newMessage['origin'] !== null) {
                 this.origin = newMessage['origin'];
             }
+
             if (typeof newMessage['edits'] !== 'undefined' && newMessage['edits'] !== null) {
                 this.edits = newMessage['edits'];
             }
-            if (typeof newMessage['board'] !== 'undefined' && newMessage['board'] !== null) {
-                this.board = newMessage['board'];
-            }
-            this.question_id = newMessage['question_id'];
 
             return this;
+        }
+
+        private updateSubsections(newMessage) {
+            if (typeof newMessage['board'] !== 'undefined' && newMessage['board'] !== null) {
+                for (let nickname in newMessage['board']) {
+                    if(newMessage['board'].hasOwnProperty(nickname)) {
+
+                        // Update an existing nickname
+                        if(this.board.hasOwnProperty(nickname)) {
+                            this.board[nickname].updateMe(
+                                newMessage['board'][nickname]['xpos'],
+                                newMessage['board'][nickname]['ypos'],
+                                newMessage['board'][nickname]['highlighted']);
+                        }
+                        // Create a new nickname
+                        else {
+                            this.board[nickname] = new Nickname(
+                                newMessage['board'][nickname]['xpos'],
+                                newMessage['board'][nickname]['ypos'],
+                                newMessage['board'][nickname]['highlighted']);
+                        }
+                    }
+                }
+                // Remove nicknames no longer in the updated message
+                for (let nickname in this.board) {
+                    if(this.board.hasOwnProperty(nickname) && !newMessage['board'].hasOwnProperty(nickname)) {
+                        delete this.board[nickname];
+                    }
+                }
+            // Remove all nicknames
+            } else {
+                for (let nickname in this.board) {
+                    if(this.board.hasOwnProperty(nickname)) {
+                        delete this.board[nickname];
+                    }
+                }
+            }
         }
     }
 

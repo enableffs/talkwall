@@ -398,6 +398,7 @@ exports.getWallAuthorised = function(req, res) {
     })
 };
 
+
 exports.getQuestionContributors = function(req, res) {
     if (typeof req.params.wid === 'undefined' || req.params.wid == null || typeof req.params.qid === 'undefined' || req.params.qid == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
@@ -417,7 +418,7 @@ exports.getQuestionContributors = function(req, res) {
             for (var i = 0; i < wall.questions.length; i++) {
                 if ((wall.questions[i]._id).toString() === req.params.qid) {
                     return res.status(common.StatusMessages.GET_SUCCESS.status).json({
-                        message: common.StatusMessages.GET_SUCCESS.message, result: wall.questions[i].participants});
+                        message: common.StatusMessages.GET_SUCCESS.message, result: wall.questions[i].contributors});
                 }
             }
 

@@ -27,7 +27,7 @@ var messageSchema = Schema({
             nickname: {                         here, 'nickname' should be dynamically allocated
                 xpos:   { type: Number },
                 ypos:   { type: Number },
-                pinned: { type: Boolean, default: false }
+                highlighted: { type: Boolean, default: false }
             }
         }
 
