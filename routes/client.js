@@ -184,7 +184,7 @@ exports.createMessage = function(req, res) {
                     Wall.findOneAndUpdate({
                         '_id': wall_id,
                         'questions._id': req.body.message.question_id
-                    }, { $push: { "questions.$.messages" : message}, $addToSet: { "questions.$.participants" : req.body.nickname }}, function(error, wall) {
+                    }, { $push: { "questions.$.messages" : message}, $addToSet: { "questions.$.contributors" : req.body.nickname }}, function(error, wall) {
                         if(error) {
                             return res.status(common.StatusMessages.CREATE_ERROR.status).json({
                                 message: common.StatusMessages.CREATE_ERROR.message
