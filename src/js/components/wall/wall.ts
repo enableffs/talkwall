@@ -9,6 +9,7 @@ module TalkwallApp {
 	import IBottomSheetService = angular.material.IBottomSheetService;
 	import ISidenavService = angular.material.ISidenavService;
 	import IWindowService = angular.IWindowService;
+	import IScope = angular.IScope;
 
 	export interface IWallControllerService {
 		/**
@@ -18,7 +19,7 @@ module TalkwallApp {
 		/**
 		 * Pop up bottom sheet to edit messages. Slide out left sidenav also
 		 */
-		showMessageEditor(newMessage: boolean): void;
+		showMessageEditor(newMessage: boolean, event: Event): void;
 		/**
 		 * Toggles which right menu should be open
 		 */
@@ -60,7 +61,7 @@ module TalkwallApp {
 	}
 
 	export class WallController implements IWallControllerService {
-		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$timeout', 'URLService', '$window', 'UtilityService'];
+		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 		private magnified: boolean = false;
 		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
@@ -85,6 +86,7 @@ module TalkwallApp {
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService,
 			private $translate: angular.translate.ITranslateService,
+			private $scope: IScope,
 			private $timeout: angular.ITimeoutService,
 			private urlService: IURLService,
 			private $window: IWindowService,
@@ -121,6 +123,14 @@ module TalkwallApp {
 	                this.$mdSidenav('right').open();
 				}
 				this.selectedParticipant = this.dataService.data.status.nickname;
+				this.dataService.data.status.selectedParticipant = this.selectedParticipant;
+
+				this.$scope.$watch(() => { return this.selectedParticipant }, (newVar, oldVar) => {
+					if(newVar !== oldVar) {
+						this.dataService.data.status.selectedParticipant = newVar;
+						this.dataService.refreshBoardMessages();
+					}
+				}, true);
 
 				if (this.dataService.data.status.authorised &&
 					this.dataService.getAuthenticatedUser().defaultEmail !== undefined &&
@@ -133,8 +143,8 @@ module TalkwallApp {
 				this.messageFilterByContributorOnBoard = function(message: Message) {
 					return (!message.deleted &&
 						!handle.dataService.data.status.phoneMode &&
-						message.board !== undefined &&
-						message.board[handle.selectedParticipant] !== undefined &&
+						typeof message.board !== 'undefined' &&
+						typeof message.board[handle.selectedParticipant] !== 'undefined' &&
 						handle.unselected_contributors.indexOf(message.creator) === -1 &&
 						handle.messageTagsNotPresent(message));
 				};
@@ -166,6 +176,7 @@ module TalkwallApp {
 		showFeed(): void {
 			this.feedView = true;
 			this.selectedParticipant = this.dataService.data.status.nickname;
+			this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 			this.$mdSidenav('left').open();
 		}
 
@@ -262,7 +273,7 @@ module TalkwallApp {
 		};
 		/**** end tag filtering ******/
 
-		showMessageEditor(newMessage: boolean): void {
+		showMessageEditor(newMessage: boolean, event): void {
 			let handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(null);

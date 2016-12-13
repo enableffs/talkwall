@@ -282,7 +282,7 @@
 			</div>
 
 			<!-- (+) fab button to show the editMessage bottomPane -->
-			<md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && !wallC.dataService.data.status.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true)">
+			<md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && !wallC.dataService.data.status.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true, $event)">
 				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 			</md-button>
 		</div>

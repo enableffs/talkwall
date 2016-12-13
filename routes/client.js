@@ -178,7 +178,7 @@ exports.createMessage = function(req, res) {
                 }
                 else {
                     // Update the message manager to notify other clients
-                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], false);
+                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, message, false);
 
                     // Update the question with this new message, and return
                     Wall.findOneAndUpdate({
@@ -268,7 +268,7 @@ exports.updateMessage = function(req, res) {
                     });
                 } else {
                     // Update the message manager to notify other clients
-                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, [message], false);
+                    mm.putUpdate(wall_id, req.body.message.question_id, req.body.nickname, message, false);
 
                     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                         message: common.StatusMessages.UPDATE_SUCCESS.message, result: message

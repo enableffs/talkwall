@@ -16,6 +16,7 @@ module TalkwallApp {
     import IPromise = angular.IPromise;
     import IMedia = angular.material.IMedia;
     import IScope = angular.IScope;
+    import IRootScopeService = angular.IRootScopeService;
 
     export interface IDataService {
 
@@ -207,6 +208,10 @@ module TalkwallApp {
          */
         getMessageOrigin(): Message;
         /**
+         * refresh the message CSS as displayed on the board
+         */
+        refreshBoardMessages(): void;
+        /**
          * get the wall to show in export format
          * @param wallId the wall ID string
          * @param sFunc success callback
@@ -234,7 +239,7 @@ module TalkwallApp {
     }
 
     export class DataService implements IDataService {
-        static $inject = ['$http', '$window', '$routeParams', '$location', '$interval', '$mdDialog', '$translate',
+        static $inject = ['$http', '$window', '$routeParams', '$rootScope', '$location', '$interval', '$mdDialog', '$translate',
             'UtilityService', 'URLService', '$mdMedia', 'TalkwallConstants'];
 
         private timerHandle = null;
@@ -250,6 +255,7 @@ module TalkwallApp {
                 authorised: boolean;
                 nickname: string;
                 participants: Array<string>;
+                selectedParticipant: string;
                 questionToEdit: Question,
                 messageToEdit: Message,
                 messageOrigin: Message,
@@ -274,6 +280,7 @@ module TalkwallApp {
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
                      private $routeParams: IRouteParamsService,
+                     private $rootScope: IRootScopeService,
                      private $location: ILocationService,
                      private $interval: ng.IIntervalService,
                      private $mdDialog: angular.material.IDialogService,
@@ -292,6 +299,7 @@ module TalkwallApp {
                     authorised: false,
                     nickname: null,
                     participants: [],
+                    selectedParticipant: null,
                     questionToEdit: null,
                     messageToEdit: null,
                     messageOrigin: null,
@@ -508,22 +516,15 @@ module TalkwallApp {
                 //no message, create a new one
                 this.data.status.messageToEdit = new Message();
                 this.data.status.messageToEdit.creator = this.data.status.nickname;
-                this.data.status.messageToEdit.origin.push({nickname: this.data.status.messageToEdit.creator, message_id: null});
+                this.data.status.messageToEdit.origin.push({nickname: this.data.status.nickname, message_id: null});
                 this.data.status.messageToEdit.question_id = this.data.question._id;
             } else if (message === null && this.data.status.messageOrigin !== null) {
                 //we have an origin to create the new message, clone it
-                this.data.status.messageToEdit = JSON.parse(JSON.stringify(this.data.status.messageOrigin));
-                this.data.status.messageToEdit.creator = this.data.status.nickname;
-                this.data.status.messageToEdit.origin.push({nickname: this.data.status.messageToEdit.creator, message_id: this.data.status.messageOrigin._id});
-                //remove the _id of the old one
-                this.data.status.messageToEdit._id = undefined;
-                this.data.status.messageToEdit.board = {};
-                this.data.status.updateOrigin = false;
-                if (this.data.status.messageOrigin.board[this.data.status.nickname] !== undefined) {
-                    this.data.status.messageToEdit.edits = [];
-                    this.data.status.messageToEdit.board[this.data.status.nickname] = JSON.parse(JSON.stringify(this.data.status.messageOrigin.board[this.data.status.nickname]));
-                    this.data.status.updateOrigin = true;
-                }
+
+                //this.data.status.messageToEdit = JSON.parse(JSON.stringify(this.data.status.messageOrigin));
+
+                this.data.status.messageToEdit = new Message().createFromOrigin(this.data.status.messageOrigin, this.data.status.nickname);
+                this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.status.nickname] !== 'undefined';
             } else {
                 this.data.status.messageToEdit = message;
             }
@@ -830,6 +831,7 @@ module TalkwallApp {
                         });
 
                         this.buildTagArray();
+                        this.refreshBoardMessages();
                     }, (error) => {
                         console.log('--> DataService: getMessages failure: ' + error);
                     });
@@ -1059,10 +1061,14 @@ module TalkwallApp {
                     }
                     this.parseMessageForTags(updated_message);
                 }
+                this.refreshBoardMessages();
                 //this.refreshCallback();
             });
         }
 
+        refreshBoardMessages(): void {
+            this.$rootScope.$broadcast('talkwallMessageUpdate', this.data.status.selectedParticipant);
+        }
 
         showClosingDialog() : void {
             //detects if the device is small

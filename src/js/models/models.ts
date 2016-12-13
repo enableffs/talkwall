@@ -107,6 +107,32 @@ module TalkwallApp {
             this.origin = [];
             this.edits = [];
             this.board = {};
+            this.isHighlighted = false;
+        }
+
+        createFromOrigin(originMessage: Message, newNickname) {
+
+            // no _id until sent to server
+
+            this.text = originMessage.text;
+            this.creator = newNickname;
+            this.question_id = originMessage.question_id;
+
+            originMessage.origin.forEach((origin) => {
+                this.origin.push(origin);
+            });
+            this.origin.push({nickname: newNickname, message_id: originMessage._id});
+            this.origin.reverse();
+
+            if (typeof originMessage.board[newNickname] !== 'undefined') {
+                this.board[newNickname] = new Nickname(
+                    originMessage.board['xpos'],
+                    originMessage.board['ypos'],
+                    originMessage.board['highlighted']
+                );
+            }
+
+            return this;
         }
 
         updateMe(newMessage: {}) {
