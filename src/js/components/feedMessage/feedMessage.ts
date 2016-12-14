@@ -46,7 +46,7 @@ module TalkwallApp {
 			//check if authenticated or author
 			if (this.message.creator === this.dataService.data.status.nickname || this.dataService.data.status.authorised) {
 				this.message.deleted = true;
-				this.dataService.updateMessage(this.message);
+				this.dataService.updateMessages([this.message], 'edit');
 			}
 		}
 
@@ -73,20 +73,20 @@ module TalkwallApp {
                     false
 				)
 			}
-			this.dataService.updateMessage(this.message);
+			this.dataService.updateMessages([this.message], 'position');
 		}
 
 		toggleHighlightMessage(): void {
 			this.message.board[this.dataService.data.status.nickname].highlighted
                 = !this.message.board[this.dataService.data.status.nickname].highlighted;
 			this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
-			this.dataService.updateMessage(this.message);
+			this.dataService.updateMessages([this.message], 'none');
 		}
 
 		persistPosition(xPercentage, yPercentage): void {
 			this.message.board[this.isolatedScope.selectedParticipant].xpos = xPercentage;
 			this.message.board[this.isolatedScope.selectedParticipant].ypos = yPercentage;
-			this.dataService.updateMessage(this.message);
+			this.dataService.updateMessages([this.message], 'position');
 		}
 
 		getPinnedClass(): string {
@@ -167,6 +167,7 @@ module TalkwallApp {
 					element.on('touchend', touchend);
 				}
 				ctrl.dataService.stopPolling();
+				ctrl.dataService.restrictRequests();
 			});
 		}
 

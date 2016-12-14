@@ -96,8 +96,8 @@ app.get('/auth/localapikey',        passport.authenticate('localapikey'),       
 app.get('/user',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getUser);
 app.put('/user',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateUser);
 app.get('/walls',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWalls);
-app.get('/wall/:id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWallAuthorised);
-app.get('/wall/:wid/question/:qid/contributors',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getQuestionContributors);
+app.get('/wall/:id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWall);
+app.get('/wall/:wall_id/question/:question_id/contributors',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getQuestionContributors);
 app.post('/wall',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createWall);
 app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateWall);
 app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);
@@ -105,16 +105,19 @@ app.put('/question',                jwt({secret: secret.secretToken}),  tokenMan
 app.delete('/question/:wall_id/:question_id',           jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.deleteQuestion);
 app.get('/change/:nickname/:wall_id/:question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
 app.put('/wall/close/:wall_id',                         jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
+app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,  routes.teacher.poll);
+app.get('/disconnectteacher/:nickname/:wall_id/:question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.disconnectWall);
+app.post('/messageteacher',                                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.createMessage);
+app.put('/messageteacher',                                     jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.updateMessage);
 
-/********* client (student / teacher) operations *********/
-app.get('/clientwall/:nickname/:pin',                                                               routes.client.clientWall);
-app.get('/disconnect/:nickname/:pin/:question_id',                                                  routes.client.disconnectWall);
-app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:control',                     routes.client.poll);
-app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:control',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,           routes.teacher.poll);
+/********* student / teacher operations *********/
+app.get('/clientwall/:nickname/:pin',                                                               routes.client.getWall);
+app.get('/disconnect/:nickname/:wall_id/:question_id',                                                  routes.client.disconnectWall);
+app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',                     routes.client.poll);
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessage);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
-app.get('/export/:wallid',                                                                          routes.client.exportWall);
+app.get('/export/:wall_id',                                                                          routes.client.exportWall);
 
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());

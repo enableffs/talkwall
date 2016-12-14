@@ -153,9 +153,9 @@
                                     <h3>{{ 'WALL_FILTERBYCREATOR' | translate }}</h3>
                                 </md-list-item>
                                 <md-list-item>
-                                    <md-label flex="80"><p><span ng-if="wallC.contributorIsChecked()">{{ 'WALL_UN' | translate }}</span>{{ 'WALL_SELECTALL' | translate }}</p></md-label>
+                                    <md-label flex="80"><p><span ng-if="wallC.aContributorIsChecked()">{{ 'WALL_UN' | translate }}</span>{{ 'WALL_SELECTALL' | translate }}</p></md-label>
                                     <md-checkbox aria-label="Select All"
-                                                 ng-checked="wallC.contributorIsChecked()"
+                                                 ng-checked="wallC.aContributorIsChecked()"
                                                  ng-click="wallC.toggleAllContributors()">
                                     </md-checkbox>
                                     <md-divider></md-divider>

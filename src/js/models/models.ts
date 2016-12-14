@@ -141,8 +141,18 @@ module TalkwallApp {
             this.deleted = newMessage['deleted'];
             this.creator = newMessage['creator'];
             this.text = newMessage['text'];
-            this.updateSubsections(newMessage);
             this.question_id = newMessage['question_id'];
+
+            if (typeof newMessage['board'] !== 'undefined' && newMessage['board'] !== null) {
+                this.updateBoard(newMessage['board']);
+            } else {
+                // Remove all nicknames
+                for (let nickname in this.board) {
+                    if(this.board.hasOwnProperty(nickname)) {
+                        delete this.board[nickname];
+                    }
+                }
+            }
 
             if (typeof newMessage['origin'] !== 'undefined' && newMessage['origin'] !== null) {
                 this.origin = newMessage['origin'];
@@ -155,61 +165,89 @@ module TalkwallApp {
             return this;
         }
 
-        private updateSubsections(newMessage) {
-            if (typeof newMessage['board'] !== 'undefined' && newMessage['board'] !== null) {
-                for (let nickname in newMessage['board']) {
-                    if(newMessage['board'].hasOwnProperty(nickname)) {
+        updateBoard(newBoard) {
+            for (let nickname in newBoard) {
+                if(newBoard.hasOwnProperty(nickname)) {
 
-                        // Update an existing nickname
-                        if(this.board.hasOwnProperty(nickname)) {
-                            this.board[nickname].updateMe(
-                                newMessage['board'][nickname]['xpos'],
-                                newMessage['board'][nickname]['ypos'],
-                                newMessage['board'][nickname]['highlighted']);
-                        }
-                        // Create a new nickname
-                        else {
-                            this.board[nickname] = new Nickname(
-                                newMessage['board'][nickname]['xpos'],
-                                newMessage['board'][nickname]['ypos'],
-                                newMessage['board'][nickname]['highlighted']);
-                        }
-                    }
-                }
-                // Remove nicknames no longer in the updated message
-                for (let nickname in this.board) {
-                    if(this.board.hasOwnProperty(nickname) && !newMessage['board'].hasOwnProperty(nickname)) {
-                        delete this.board[nickname];
-                    }
-                }
-            // Remove all nicknames
-            } else {
-                for (let nickname in this.board) {
+                    // Update an existing nickname
                     if(this.board.hasOwnProperty(nickname)) {
-                        delete this.board[nickname];
+                        this.board[nickname].updateMe(
+                            newBoard[nickname]['xpos'],
+                            newBoard[nickname]['ypos'],
+                            newBoard[nickname]['highlighted']);
+                    }
+                    // Create a new nickname
+                    else {
+                        this.board[nickname] = new Nickname(
+                            newBoard[nickname]['xpos'],
+                            newBoard[nickname]['ypos'],
+                            newBoard[nickname]['highlighted']);
                     }
                 }
             }
+            // Remove nicknames no longer in the updated message
+            for (let nickname in this.board) {
+                if(this.board.hasOwnProperty(nickname) && !newBoard.hasOwnProperty(nickname)) {
+                    delete this.board[nickname];
+                }
+            }
         }
+    }
+
+
+    // Queues contain only the modifiable data needed
+
+    export class UpdatedQueueItem {
+        board: { [nickname: string] : {
+                xpos: number;
+                ypos: number;
+                highlighted: boolean;
+            }
+        };
+        text: string;
+        deleted: boolean;
+        updateType: string;         // 'edit' , 'position' or 'mixed'
+    }
+
+    export class CreatedQueueItem {
+        createdAt: Date;
+        creator: string;
+        origin: Array<{
+            nickname: String,
+            message_id: String
+        }>;
+        board: { [nickname: string] : {
+            xpos: number,
+            ypos: number,
+            highlighted: boolean
+        } };
+        text: string;
+        deleted: boolean;
     }
 
     // Class used to send and respond with status & message updates through polling
     export class PollUpdate {
         status: {
             last_update: number;
-            teacher_question_id: string;
-            connected_nicknames: Array<string>;
+            teacher_current_question: string;
+            teacher_nickname: string;
+            connected_students: Array<string>;
+            connection_count: number;
         };
-        messages: Array<Message>;
+        created: { [message_id: string] : CreatedQueueItem };
+        updated: { [message_id: string] : UpdatedQueueItem };
 
         // set status to PollUpdate('', false) to prevent any status update on server
         constructor(question_id) {
             this.status = {
                 last_update: Date.now(),
-                teacher_question_id: question_id,
-                connected_nicknames: [],
+                teacher_current_question: question_id,
+                teacher_nickname: '',
+                connected_students: [],
+                connection_count: 0
             };
-            this.messages = [];
+            this.created = {};
+            this.updated = {};
         }
     }
 }
