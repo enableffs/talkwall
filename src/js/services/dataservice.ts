@@ -879,7 +879,7 @@ module TalkwallApp {
         parseMessageForTags(message): void {
             if (message !== null) {
                 let foundTags = this.utilityService.getPossibleTags(message.text);
-                if (foundTags !== null) {
+                if (foundTags.length > 0) {
                     foundTags.forEach((tag) => {
                         if (this.data.status.tags.indexOf(tag) === -1) {
                             this.data.status.tags.push(tag);

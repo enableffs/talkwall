@@ -78,7 +78,27 @@ var Mm = function() {
 
 */
 
+Mm.prototype.pruneWalls = function() {
 
+    // If the wall is not used in a long time, this will clean its message manager from memory
+    var self = this;
+    var terminationCheck = function() {
+        for (var wall_id in self.data.walls) {
+            if (self.data.walls.hasOwnProperty(wall_id)) {
+                var timeNow = Date.now();
+                if (timeNow - self.data.walls[wall_id].status.last_access > (self.data.walls[wall_id].status.idleTerminationTime * 60000)) {
+                    self.removeWall(wall_id);
+                }
+            }
+        }
+
+        setTimeout(function() {
+            terminationCheck();
+        }, common.Constants.TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS * 1000)
+    };
+
+    terminationCheck();
+};
 
 /**
  * Set up the message manager
@@ -110,25 +130,6 @@ Mm.prototype.setup = function(wall_id, nickname) {
     // The first user (only a teacher can run this) goes into the lists
     this.data.walls[wall_id].status.connected_teachers[nickname] = Date.now();
     this.data.total_talkwall_connections++;
-
-    // If the wall is not used in a long time, this will clean its message manager from memory
-    var self = this;
-    var terminationCheck = function() {
-        for (var wall_id in self.data.walls) {
-            if (self.data.walls.hasOwnProperty(wall_id)) {
-                var timeNow = Date.now();
-                if (timeNow - self.data.walls[wall_id].status.last_access > (self.data.walls[wall_id].status.idleTerminationTime * 60000)) {
-                    self.removeWall(wall_id);
-                }
-            }
-        }
-
-        setTimeout(function() {
-            terminationCheck();
-        }, common.Constants.TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS * 1000)
-    };
-
-    terminationCheck();
 
 };
 

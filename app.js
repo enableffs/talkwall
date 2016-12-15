@@ -1,7 +1,7 @@
 /*
  *
  * Main App file App.js
- * @author Jeremy Toussaint
+ * @author Jeremy Toussaint & Richard Nesnass
  *
  *
  */
@@ -20,16 +20,15 @@ var mongoose = require('mongoose');
 var async = require('async');
 var morgan = require('morgan');
 mongoose.Promise = global.Promise;
-//var Promise = require('promise');
 var jwt = require('express-jwt');
 var bodyParser = require('body-parser');
 var tokenManager = require('./config/token_manager');
 var secret = require('./config/secret');
-var methodOverride = require('method-override');
 var passport = require('passport');
 require('./config/passport')(passport);
 var path = require('path');
 var utilities = require('./config/utilities');
+var mm = require('./config/message_manager').mm;
 var app = express();
 
 /********* route includes *********/
@@ -145,6 +144,7 @@ app.use(function (err, req, res, next) {
 var server = app.listen(port);
 console.log('--> talkwall is listening on port: ' + port);
 
+mm.pruneWalls();
 
 process.on('SIGINT', function() {
     server.close();

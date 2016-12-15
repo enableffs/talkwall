@@ -48,19 +48,18 @@ module TalkwallApp {
 				this.message.deleted = true;
 				this.dataService.updateMessages([this.message], 'edit');
 			}
+			this.showControls = false;
 		}
 
 		editMessage(): void {
 			if (this.message.creator === this.dataService.data.status.nickname) {
 				this.dataService.setMessageToEdit(this.message);
-				this.isolatedScope.showEditPanel();
-				this.showControls = false;
 			} else {
 				this.dataService.setMessageOrigin(this.message);
 				this.dataService.setMessageToEdit(null);
-				this.isolatedScope.showEditPanel();
-				this.showControls = false;
 			}
+			this.isolatedScope.showEditPanel();
+			this.showControls = false;
 		}
 
 		togglePinMessage(): void {
@@ -74,6 +73,7 @@ module TalkwallApp {
 				)
 			}
 			this.dataService.updateMessages([this.message], 'position');
+			this.showControls = false;
 		}
 
 		toggleHighlightMessage(): void {
@@ -82,6 +82,7 @@ module TalkwallApp {
 					= !this.message.board[this.dataService.data.status.nickname].highlighted;
 				this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
 				this.dataService.updateMessages([this.message], 'position');
+				this.showControls = false;
 			}
 		}
 

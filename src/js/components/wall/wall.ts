@@ -107,10 +107,6 @@ module TalkwallApp {
 			} else {
 				let question_index = this.dataService.getWall().questions.length > 0 ? 0 : -1;
 				this.setQuestion(question_index);
-				if (this.dataService.data.status.authorised) {
-	                this.rightMenu3 = true;
-	                this.$mdSidenav('right').open();
-				}
 				this.selectedParticipant = this.dataService.data.status.nickname;
 				this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 
@@ -143,12 +139,19 @@ module TalkwallApp {
 					return (!message.deleted && handle.dataService.data.status.unselected_contributors.indexOf(message.creator) === -1 && handle.messageTagsNotPresent(message));
 				};
 
+				this.$timeout(() => {
+					this.showFeed();
+					if (this.dataService.data.status.authorised) {
+						this.rightMenu1 = true;
+						this.$mdSidenav('right').open();
+					}
+				}, 2000);
 			}
 		}
 
 		messageTagsNotPresent(message): boolean {
 			let messageTags = this.utilityService.getPossibleTags(message.text);
-			if (messageTags !== null) {
+			if (messageTags.length > 0) {
 				let present: boolean = false;
 				for (let i = 0; i < messageTags.length; i++) {
 					if (this.dataService.data.status.unselected_tags.indexOf(messageTags[i]) === -1) {
