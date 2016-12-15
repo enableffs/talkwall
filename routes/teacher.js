@@ -9,7 +9,7 @@ var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
 var User = require('../models/user');
 var Question = require('../models/question');
-
+var Message = require('../models/message');
 
 // Given an integer range, generate a random number within it
 function randomNumberInRange(min, max) {
@@ -270,11 +270,14 @@ exports.notifyChangeQuestion = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
     || typeof req.params.question_id === 'undefined' || req.params.question_id == null
+    || typeof req.params.previous_question_id === 'undefined' || req.params.previous_question_id == null
     || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
-    mm.removeUserFromQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
+    if (req.params.previous_question_id !== 'none') {
+        mm.removeUserFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname, true);
+    }
     mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     mm.statusUpdate(req.params.wall_id, req.params.question_id);
     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
@@ -632,11 +635,11 @@ exports.createMessage = function(req, res) {
 
 /**
  * @api {put} /messageteacher Edit a message by submitting a Message object and pin
- * @apiName updateMessage
+ * @apiName updateMessages
  * @apiGroup authorised
  *
  */
-exports.updateMessage = function(req, res) {
+exports.updateMessages = function(req, res) {
 
     if (typeof req.body.messages === 'undefined' || req.body.messages == null
         || typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
@@ -660,7 +663,7 @@ exports.updateMessage = function(req, res) {
             } else {
                 // Update the message manager to notify other clients
                 if (req.body.controlString !== 'none') {
-                    mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, updated_message, req.body.controlString, true);
+                    mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, true);
                 }
 
                 return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({

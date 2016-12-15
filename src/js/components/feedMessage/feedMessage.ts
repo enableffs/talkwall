@@ -77,10 +77,12 @@ module TalkwallApp {
 		}
 
 		toggleHighlightMessage(): void {
-			this.message.board[this.dataService.data.status.nickname].highlighted
-                = !this.message.board[this.dataService.data.status.nickname].highlighted;
-			this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
-			this.dataService.updateMessages([this.message], 'none');
+			if (this.dataService.data.status.selectedParticipant === this.dataService.data.status.nickname) {
+				this.message.board[this.dataService.data.status.nickname].highlighted
+					= !this.message.board[this.dataService.data.status.nickname].highlighted;
+				this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
+				this.dataService.updateMessages([this.message], 'position');
+			}
 		}
 
 		persistPosition(xPercentage, yPercentage): void {
@@ -218,7 +220,7 @@ module TalkwallApp {
 			}
 			ctrl.$document.off('mousemove', mousemove);
 			ctrl.$document.off('mouseup', mouseup);
-            ctrl.dataService.startPolling('none', 'none');
+            ctrl.dataService.startPolling();
 		}
 
 		function touchend(event) {
@@ -232,7 +234,7 @@ module TalkwallApp {
 			element.off('touchmove', touchmove);
 			element.off('touchend', touchend);
 
-			ctrl.dataService.startPolling('none', 'none');
+			ctrl.dataService.startPolling();
 		}
 
 		if (isolatedScope.onBoard === 'true') {

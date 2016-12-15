@@ -14,6 +14,7 @@ require('dotenv').config();
 var port = process.env.PORT;
 
 /********* loading modules and plugins *********/
+var toobusy = require('toobusy-js');
 var express = require('express');
 var mongoose = require('mongoose');
 var async = require('async');
@@ -82,10 +83,6 @@ app.all('*', function(req, res, next) {
     next();
 });
 
-/********* start the server *********/
-app.listen(port);
-console.log('--> samtavla-services listening on port: ' + port);
-
 /********* callback *********/
 app.get('/auth/facebook',           passport.authenticate('facebook',           { scope : 'email' }));
 app.get('/auth/facebook/callback',  passport.authenticate('facebook'),          routes.callbacks.fbcallback);
@@ -106,19 +103,19 @@ app.put('/wall',                    jwt({secret: secret.secretToken}),  tokenMan
 app.post('/question',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.createQuestion);
 app.put('/question',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateQuestion);
 app.delete('/question/:wall_id/:question_id',           jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.deleteQuestion);
-app.get('/change/:nickname/:wall_id/:question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
+app.get('/change/:nickname/:wall_id/:question_id/:previous_question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
 app.put('/wall/close/:wall_id',                         jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
 app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,  routes.teacher.poll);
 app.get('/disconnectteacher/:nickname/:wall_id/:question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.disconnectWall);
 app.post('/messageteacher',                                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.createMessage);
-app.put('/messageteacher',                                     jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.updateMessage);
+app.put('/messageteacher',                                     jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.updateMessages);
 
 /********* student / teacher operations *********/
 app.get('/clientwall/:nickname/:pin',                                                               routes.client.getWall);
 app.get('/disconnect/:nickname/:wall_id/:question_id',                                                  routes.client.disconnectWall);
 app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',                     routes.client.poll);
 app.post('/message',                                                                                routes.client.createMessage);
-app.put('/message',                                                                                 routes.client.updateMessage);
+app.put('/message',                                                                                 routes.client.updateMessages);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
 app.get('/export/:wall_id',                                                                          routes.client.exportWall);
 
@@ -129,8 +126,29 @@ if(process.env.STATIC_FOLDER === 'src') {   // Only enable this route if we are 
     app.delete('/wall/:id',   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,         routes.teacher.deleteWall);
 }
 
+// middleware which blocks requests when we're too busy
+app.use(function(req, res, next) {
+    if (toobusy()) {
+        res.send(503, "I'm busy right now, sorry.");
+    } else {
+        next();
+    }
+});
+
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401).send('invalid token...');
     }
+});
+
+/********* start the server *********/
+var server = app.listen(port);
+console.log('--> talkwall is listening on port: ' + port);
+
+
+process.on('SIGINT', function() {
+    server.close();
+    // calling .shutdown allows your process to exit normally
+    toobusy.shutdown();
+    process.exit();
 });

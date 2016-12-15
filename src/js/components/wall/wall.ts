@@ -295,13 +295,13 @@ module TalkwallApp {
 						handle.dataService.updateMessages([message], 'edit');
 					}
 				}
-                handle.dataService.startPolling('none', 'none');
+                handle.dataService.startPolling();
 			}, () => {
 				//dialog dismissed
 				this.$window.document.activeElement['blur']();
 				console.log('--> WallController: Edit message dismissed');
 				handle.dataService.clearMessageToEdit();
-                handle.dataService.startPolling('none', 'none');
+                handle.dataService.startPolling();
 			});
 		}
 

@@ -240,8 +240,6 @@ module TalkwallApp {
         static $inject = ['$http', '$window', '$routeParams', '$rootScope', '$location', '$interval', '$timeout', '$mdDialog', '$translate',
             'UtilityService', 'URLService', '$mdMedia', 'TalkwallConstants'];
 
-        private timerHandle = null;
-
         /*  New Version 3 data structure to improve binding between multiple views and this DataService */
 
         readonly data: {
@@ -270,12 +268,14 @@ module TalkwallApp {
                 touchControl: boolean;
                 restrictPositionRequests: boolean;
                 restrictPositionRequestMessages: { [message_id: string ] : Message };
+                idleTerminationTime: number;
             }
         };
 
         private customFullscreen;
         private noTag = 'no tag';
-        private timerhandle = null;
+        private pollingTimerHandle = null;
+        private restrictTimerHandle = null;
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
@@ -316,7 +316,8 @@ module TalkwallApp {
                     last_status_update: 0,
                     touchControl: false,
                     restrictPositionRequests: false,
-                    restrictPositionRequestMessages: {}
+                    restrictPositionRequestMessages: {},
+                    idleTerminationTime: 43200             // One year = 525600 minutes.  One month = 43200 minutes.
                 }
             };
 
@@ -330,13 +331,14 @@ module TalkwallApp {
         }
 
         restrictRequests() {
-            if (this.timerHandle !== null) {
-                this.$timeout.cancel(this.timerhandle);
+            if (this.restrictTimerHandle !== null) {
+                this.$timeout.cancel(this.restrictTimerHandle);
             }
             this.data.status.restrictPositionRequests = true;
-            this.timerhandle = this.$timeout(() => {
+            this.restrictTimerHandle = this.$timeout(() => {
                 this.data.status.restrictPositionRequests = false;
                 this.sendPendingPositionUpdates();
+                console.log('Sending pending position updates');
             }, 3000);
         };
 
@@ -479,12 +481,12 @@ module TalkwallApp {
                 .then((result) => {
                     let resultKey = 'result';
                     this.data.wall = result.data[resultKey];
-                    console.log('--> DataService: getWall success');
+                    console.log('--> DataService: createWall success');
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.data.wall);
                     }
                 }, (error) => {
-                    console.log('--> DataService: getWall failure: ' + error);
+                    console.log('--> DataService: createWall failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
@@ -507,7 +509,7 @@ module TalkwallApp {
                     } else {
                         this.data.wall = success[dataKey][resultKey];
                         this.data.status.nickname = joinModel.nickname;
-                        console.log('--> DataService: getWall success');
+                        console.log('--> DataService: getClientWall success');
                     }
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.data.wall);
@@ -581,7 +583,7 @@ module TalkwallApp {
 
             // If true, we are changing questions
             if (this.data.question !== null
-                && this.utilityService.getQuestionIndexFromWallById(this.data.question._id, this.data.wall) !== newIndex) {
+                && UtilityService.getQuestionIndexFromWallById(this.data.question._id, this.data.wall) !== newIndex) {
 
                 previous_question_id = this.data.question._id;
                 control = 'change';
@@ -596,7 +598,6 @@ module TalkwallApp {
             if (newIndex !== -1 && this.data.wall.questions.length > 0) {
                 this.data.question = new Question("").updateMe(this.data.wall.questions[newIndex]);
                 this.data.status.currentQuestionIndex = newIndex;
-                console.log('--> new bgcolor available: ' + this.getBackgroundColour());
                 this.data.status.contributors = this.data.question.contributors;
                 // Re-do the hashtag list
                 this.buildTagArray();
@@ -607,13 +608,15 @@ module TalkwallApp {
             if (control !== 'none' && this.data.question !== null) {
                 this.getMessages();
                 if (this.data.status.authorised) {
-                    this.notifyChangedQuestion(null, null);
+                    this.notifyChangedQuestion(this.data.question._id, previous_question_id, null, null);
                 }
             }
 
             // Start polling regardless of the question existing, to enable poll notifications
-            if (this.timerHandle === null) {
-                this.startPolling(previous_question_id, control);
+            if (this.pollingTimerHandle === null) {
+                // Make a special poll request without delay, then set up regular polling
+                this.requestPoll(previous_question_id, control, null, null);
+                this.startPolling();
             }
 
             if (typeof successCallbackFn === "function") {
@@ -652,8 +655,8 @@ module TalkwallApp {
                 });
         }
 
-        notifyChangedQuestion(successCallbackFn, errorCallbackFn): void {
-            this.$http.get(this.urlService.getHost() + '/change/' + this.data.status.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
+        notifyChangedQuestion(new_question_id, previous_question_id, successCallbackFn, errorCallbackFn): void {
+            this.$http.get(this.urlService.getHost() + '/change/' + this.data.status.nickname + '/' + this.data.wall._id + '/' + new_question_id + '/' + previous_question_id)
                 .then(() => {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
@@ -666,8 +669,9 @@ module TalkwallApp {
                 });
         }
 
-        // Set previousQuestionIndex if we are changing questions. Else set it to -1
-        // question_id may not be set when we first enter - a request with 'none' as question_id returns only status
+        // 'previousQuestionId' to old question index if we are changing questions. Else set it to -1
+        // 'question_id' - may not be set when we first enter - a request with 'none' as question_id returns only status
+        // 'control' - 'none' is a regular poll, 'new' is the first poll, 'change' we are changing questions
         requestPoll(previousQuestionId, control, successCallbackFn, errorCallbackFn): void {
             let question_id = 'none', pollRoute = '/poll/';
             if (this.data.question !== null) {
@@ -680,7 +684,7 @@ module TalkwallApp {
                 '/' + question_id + '/' + previousQuestionId + '/' + control)
                 .then((result) => {
                     let resultKey = 'result';
-                    console.log('Poll success at ' + Date.now().toString());
+                    console.log('Polled at ' + UtilityService.getFormattedDate(new Date()));
                     if (result.data[resultKey] === null) {
                         console.log('The wall does not exist on server');
                         this.stopPolling();
@@ -760,7 +764,7 @@ module TalkwallApp {
                     let resultKey = 'result';
                     if (result.data[resultKey].length === 0) {
                         let new_question_index = this.data.status.currentQuestionIndex;
-                        let deleted_question_index = this.utilityService.getQuestionIndexFromWallById(question._id, this.data.wall);
+                        let deleted_question_index = UtilityService.getQuestionIndexFromWallById(question._id, this.data.wall);
                         this.data.wall.questions.splice(deleted_question_index, 1);
                         if (new_question_index >= deleted_question_index ) {
                             new_question_index = deleted_question_index - 1;
@@ -805,7 +809,7 @@ module TalkwallApp {
                         //the new cloned message was created from a message on the board, so remove my nickname from the old one
                         delete this.data.status.messageOrigin.board[this.data.status.nickname];
                         this.$http.put(this.urlService.getHost() + clientType, {
-                            message: this.data.status.messageOrigin,
+                            messages: [this.data.status.messageOrigin],
                             wall_id: this.data.wall._id,
                             nickname: this.data.status.nickname,
                             controlString: 'position'
@@ -909,10 +913,12 @@ module TalkwallApp {
             for (let message_id in this.data.status.restrictPositionRequestMessages) {
                 if (this.data.status.restrictPositionRequestMessages.hasOwnProperty(message_id)) {
                     messages.push(this.data.status.restrictPositionRequestMessages[message_id]);
-                    delete this.data.status.restrictPositionRequestMessages[message_id];
                 }
             }
-            this.updateMessages(messages, 'position');
+            this.data.status.restrictPositionRequestMessages = {};
+            if (messages.length > 0) {
+                this.updateMessages(messages, 'position');
+            }
         }
 
         // Update messages on the server
@@ -990,28 +996,23 @@ module TalkwallApp {
         }
 
         //  Run the polling timer
-        // 'previous_question_id' can be 'none' if not changing questions
-        // 'control' - 'none' is a regular poll, 'new' is the first poll, 'change' we are changing questions
-        startPolling(previous_question_id: string, controlString: string) {
+        startPolling() {
             let handle = this;
             function requestThePoll() {
                 handle.requestPoll('none', 'none', null, null);
             }
 
-            // Make a special poll request without delay, then set up regular polling
-            this.requestPoll(previous_question_id, controlString, null, null);
-
             // Begin further requests at time intervals
-            if (this.timerHandle === null) {
-                this.timerHandle = this.$interval(requestThePoll, 5000);
+            if (this.pollingTimerHandle === null) {
+                this.pollingTimerHandle = this.$interval(requestThePoll, this.constants.constants['POLL_INTERVAL_SECONDS'] * 1000);
             }
 
         }
 
         // Stop the polling timer
         stopPolling() {
-            this.$interval.cancel(this.timerHandle);
-            this.timerHandle = null;
+            this.$interval.cancel(this.pollingTimerHandle);
+            this.pollingTimerHandle = null;
         }
 
         // Process updated messages retrieved on the poll response
@@ -1029,6 +1030,7 @@ module TalkwallApp {
             if (this.data.status.authorised) {
                 // Update total number of talkwall users
                 this.data.status.totalOnTalkwall = pollUpdateObject.totalOnTalkwall;
+                this.data.status.idleTerminationTime = pollUpdateObject.status.idleTerminationTime;
             }
 
             // Run on student connections only
@@ -1043,8 +1045,10 @@ module TalkwallApp {
                         // Set a new question if available
                         let new_question_id = pollUpdateObject.status.teacher_current_question;
                         if (new_question_id !== 'none') {
-                            let new_question_index =
-                                this.utilityService.getQuestionIndexFromWallById(new_question_id, this.data.wall);
+                            let new_question_index = UtilityService.getQuestionIndexFromWallById(new_question_id, this.data.wall);
+
+                            // Trigger a question and message update
+                            this.data.question = null;
                             this.setQuestion(new_question_index, null, null);
                         }
 
@@ -1053,26 +1057,27 @@ module TalkwallApp {
             }
 
             // Check that a deleted user is removed the contributor list
+            let self = this;
             function checkAndRemoveDeletedContributor(nickname) {
                 let counter = 0, foundIndex = -1;
-                this.data.status.contributors.forEach((user, index) => {
+                self.data.status.contributors.forEach((user, index) => {
                     if (user === nickname) {
                         foundIndex = index;
                         counter++;
                     }
                 });
                 if (counter === 1) {
-                    this.data.status.contributors.splice(foundIndex, 1);
+                    self.data.status.contributors.splice(foundIndex, 1);
                 }
                 counter = 0; foundIndex = -1;
-                this.data.status.unselected_contributors.forEach((user, index) => {
+                self.data.status.unselected_contributors.forEach((user, index) => {
                     if (user === nickname) {
                         foundIndex = index;
                         counter++;
                     }
                 });
                 if (counter === 1) {
-                    this.data.status.unselected_contributors.splice(foundIndex, 1);
+                    self.data.status.unselected_contributors.splice(foundIndex, 1);
                 }
             }
 
@@ -1090,38 +1095,38 @@ module TalkwallApp {
 
             // Message notifications (updated messages)
             for (let message_id in pollUpdateObject.updated) {
-                let updated_message = pollUpdateObject.updated[message_id];
-                let old_message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
-                if ( old_message !== null) {
+                let update = pollUpdateObject.updated[message_id];
+                let message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
+                if ( message !== null) {
 
                     switch(pollUpdateObject.updated[message_id].updateType) {
 
                         case 'edit':
-                            old_message.text = updated_message.text;
-                            old_message.deleted = updated_message.deleted;
-                            if (old_message.deleted) {
-                                checkAndRemoveDeletedContributor(old_message.creator);
+                            message.text = update.text;
+                            message.deleted = update.deleted;
+                            if (message.deleted) {
+                                checkAndRemoveDeletedContributor(message.creator);
                             }
 
                             break;
 
                         case 'position':
-                            old_message.updateBoard(updated_message.board);
+                            message.updateBoard(update.board);
                             break;
 
                         case 'mixed':
-                            old_message.text = updated_message.text;
-                            old_message.deleted = updated_message.deleted;
-                            if (old_message.deleted) {
-                                checkAndRemoveDeletedContributor(old_message.creator);
+                            message.text = update.text;
+                            message.deleted = update.deleted;
+                            if (message.deleted) {
+                                checkAndRemoveDeletedContributor(message.creator);
                             }
-                            old_message.updateBoard(updated_message.board);
+                            message.updateBoard(update.board);
                             break;
                     }
 
                 }
 
-                this.parseMessageForTags(updated_message);
+                this.parseMessageForTags(message);
                 this.refreshBoardMessages();
             }
         }

@@ -229,11 +229,11 @@ exports.getMessages = function(req, res) {
 
 /**
  * @api {put} /message Edit a message by submitting a Message object and pin
- * @apiName updateMessage
+ * @apiName updateMessages
  * @apiGroup non-authorised
  *
  */
-exports.updateMessage = function(req, res) {
+exports.updateMessages = function(req, res) {
 
     if (typeof req.body.messages === 'undefined' || req.body.messages == null
         || typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
@@ -258,7 +258,7 @@ exports.updateMessage = function(req, res) {
                 } else {
                     // Update the message manager to notify other clients
                     if (req.body.controlString !== 'none') {
-                        mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, updated_message, req.body.controlString, false);
+                        mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, false);
                     }
 
                     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({

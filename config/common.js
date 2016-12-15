@@ -1,13 +1,13 @@
 'use strict';
 
 exports.Constants = {
-    WALL_EXPIRATION_SECONDS: 2592000, // 1 month
+    WALL_EXPIRATION_SECONDS: 2592000, // 1 month                        // Redis expiry time for PIN numbers
     TOKEN_EXPIRATION: 86400, //24hrs
     MINIMUM_PIN: 1000,
     MAXIMUM_PIN: 9999,
-    POLL_USER_EXPIRY_TIME: 1000000,  // 30 seconds = 30000    // test with high value
-    TERMINATE_MESSAGE_MANAGER_SECONDS: 3600,  // 1 hour
-    TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS: 600   // 10 minutes
+    POLL_USER_EXPIRY_TIME_MINUTES: 1,  // 30 seconds = 30000            // Remove a user's MM queue if this idle period is exceeded
+    TERMINATE_MESSAGE_MANAGER_MINUTES: 1440,  // 1440 = 24 hours        // Remove an entire MM wall if this idle period is exceeded
+    TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS: 10   // 600 = 10 minutes   // How often to check for the idle period expiry
 };
 
 exports.StatusMessages = {

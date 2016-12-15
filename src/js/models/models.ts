@@ -49,6 +49,7 @@ module TalkwallApp {
             this.messages = [];
             this.showControls = false;
             this.createdAt = new Date();
+            this.contributors = [];
             this.isNew = false;
         }
 
@@ -57,7 +58,9 @@ module TalkwallApp {
             this.createdAt = newQuestion['createdAt'];
             this.label = newQuestion['label'];
             this.grid = newQuestion['grid'];
-            this.contributors = newQuestion['contributors'];
+            if (typeof newQuestion['contributors'] !== 'undefined' && newQuestion['contributors'] !== null) {
+                this.contributors = newQuestion['contributors'];
+            }
 
             return this;
         }
@@ -230,9 +233,11 @@ module TalkwallApp {
         totalOnTalkwall: number;
         status: {
             last_update: number;
+            last_access: number;
             teacher_current_question: string;
             connected_teachers: Array<string>;
             connected_students: Array<string>;
+            idleTerminationTime: number;
         };
         created: { [message_id: string] : CreatedQueueItem };
         updated: { [message_id: string] : UpdatedQueueItem };
@@ -242,9 +247,11 @@ module TalkwallApp {
             this.totalOnTalkwall = 0;
             this.status = {
                 last_update: Date.now(),
+                last_access: Date.now(),
                 teacher_current_question: question_id,
                 connected_teachers: [],
-                connected_students: []
+                connected_students: [],
+                idleTerminationTime: 0
             };
             this.created = {};
             this.updated = {};

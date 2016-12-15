@@ -95,9 +95,13 @@ Mm.prototype.setup = function(wall_id, nickname) {
         this.data.walls[wall_id] = {
             status: {
                 last_update: Date.now(),
+                last_access: Date.now(),
                 teacher_current_question: '',
                 connected_teachers: {},
-                connected_students: {}
+                connected_students: {},
+
+                // This wall cache will be removed after a period of time (in minutes) without activity
+                idleTerminationTime: common.Constants.TERMINATE_MESSAGE_MANAGER_MINUTES
             },
             questions: {}
         };
@@ -109,20 +113,22 @@ Mm.prototype.setup = function(wall_id, nickname) {
 
     // If the wall is not used in a long time, this will clean its message manager from memory
     var self = this;
-    function terminationCheck() {
+    var terminationCheck = function() {
         for (var wall_id in self.data.walls) {
             if (self.data.walls.hasOwnProperty(wall_id)) {
                 var timeNow = Date.now();
-                if (timeNow - self.data.walls[wall_id].status.last_update > common.Constants.TERMINATE_MESSAGE_MANAGER_SECONDS) {
+                if (timeNow - self.data.walls[wall_id].status.last_access > (self.data.walls[wall_id].status.idleTerminationTime * 60000)) {
                     self.removeWall(wall_id);
                 }
             }
         }
-    }
 
-    setTimeout(function() {
-        terminationCheck();
-    }, common.Constants.TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS)
+        setTimeout(function() {
+            terminationCheck();
+        }, common.Constants.TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS * 1000)
+    };
+
+    terminationCheck();
 
 };
 
@@ -232,7 +238,9 @@ Mm.prototype.removeWall = function(wall_id) {
  * question_id can be 'none' if the teacher wants students to refresh wall (e.g. on wall closure, new question added)
  */
 Mm.prototype.statusUpdate = function(wall_id, question_id) {
-    this.data.walls[wall_id].status.teacher_current_question = question_id;
+    if (question_id !== 'none') {
+        this.data.walls[wall_id].status.teacher_current_question = question_id;
+    }
     this.data.walls[wall_id].status.last_update = Date.now();
 };
 
@@ -249,7 +257,7 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
 Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
 
     // Note that someone is using this wall
-    this.data.walls[wall_id].status.last_update = Date.now();
+    this.data.walls[wall_id].status.last_access = Date.now();
 
     function editUpdate(userQueue) {
 
@@ -376,16 +384,16 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
     var connectedStudents = this.data.walls[wall_id].status.connected_students;
     var connectedTeachers = this.data.walls[wall_id].status.connected_teachers;
 
-    // Check for disconnected users (done on the teacher cycle only)
+    // Check for disconnected users (done on the teacher cycle only). If a user has not been polling, remove their queue.
     if (isTeacher) {
         var timeNow = Date.now();
         for (var student in connectedStudents) {
-            if (connectedStudents.hasOwnProperty(student) && (timeNow - connectedStudents[student] > common.Constants.POLL_USER_EXPIRY_TIME)) {
+            if (connectedStudents.hasOwnProperty(student) && (timeNow - connectedStudents[student] > (common.Constants.POLL_USER_EXPIRY_TIME_MINUTES * 60000))) {
                 this.removeUserFromWall(wall_id, student, false);
             }
         }
         for (var teacher in connectedTeachers) {
-            if (nickname !== teacher && connectedTeachers.hasOwnProperty(teacher) && (timeNow - connectedTeachers[teacher] > common.Constants.POLL_USER_EXPIRY_TIME)) {
+            if (nickname !== teacher && connectedTeachers.hasOwnProperty(teacher) && (timeNow - connectedTeachers[teacher] > (common.Constants.POLL_USER_EXPIRY_TIME_MINUTES * 60000))) {
                 this.removeUserFromWall(wall_id, teacher, true);
             }
         }
@@ -401,7 +409,7 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
                      created[message_id] = queue[nickname][message_id];
                  }
              }
-             queue[nickname] = [];
+             queue[nickname] = {};
          }
 
         queue = this.data.walls[wall_id].questions[question_id].updated;
@@ -412,14 +420,14 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
                     updated[message_id2] = queue[nickname][message_id2];
                 }
             }
-            queue[nickname] = [];
+            queue[nickname] = {};
         }
     }
 
-    // Update my poll timestamp
-    var clientType = isTeacher ? 'connectedTeachers' : 'connectedStudents';
-    if([clientType].hasOwnProperty(nickname)) {
-        [clientType][nickname] = Date.now();
+    // Update my poll timestamp.  If I am not polling I will be removed from the Message Manager.
+    var clientType = isTeacher ? 'connected_teachers' : 'connected_students';
+    if(this.data.walls[wall_id].status[clientType].hasOwnProperty(nickname)) {
+        this.data.walls[wall_id].status[clientType][nickname] = Date.now();
     }
 
     // Return my pending updates and any change to status
