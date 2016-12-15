@@ -429,7 +429,7 @@ exports.getWall = function(req, res) {
                             message: common.StatusMessages.UPDATE_ERROR.message, result: error
                         });
                     } else {
-                        mm.setup(wall._id);
+                        mm.setup(wall._id, user.nickname);
                         //mm.addUserToQuestion(wall._id, '', user.nickname, true);
                         //mm.putUpdate(wall.id, 'none', '', null, true);
                         mm.statusUpdate(wall._id, 'none');
@@ -721,7 +721,7 @@ exports.poll = function(req, res) {
         // We are changing questions, so remove the user from previous question and add them to the new one
         mm.removeUserFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname, true);
         mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
-    } else if (req.params.controlString === 'new') {
+    } else if (req.params.controlString === 'new' && req.params.question_id !== 'none') {
         // We are entering for the first time, so add the user
         mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     }

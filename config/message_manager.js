@@ -6,7 +6,10 @@
 var common = require('../config/common.js');
 
 var Mm = function() {
-    this.data = {};
+    this.data = {
+        walls: {},
+        total_talkwall_connections: 0
+    };
 
     //  data[question][user].messages : Array   contains all messages that have been modified
     //  data[question][user].status : Object    contains any status messages to send to the user
@@ -84,32 +87,40 @@ var Mm = function() {
  *
  * 'teacher/student/everyone' area will reflect 'changed messages' for every nickname except the one making the change
  * @param {string} wall_id
+ * @param {string} nickname
  */
-Mm.prototype.setup = function(wall_id) {
+Mm.prototype.setup = function(wall_id, nickname) {
 
-    if (!this.data.hasOwnProperty(wall_id)) {
-        this.data[wall_id] = {
+    if (!this.data.walls.hasOwnProperty(wall_id)) {
+        this.data.walls[wall_id] = {
             status: {
                 last_update: Date.now(),
                 teacher_current_question: '',
-                teacher_nickname: '',
-                connected_students: {},
-                total_talkwall_connections: 0
+                connected_teachers: {},
+                connected_students: {}
             },
             questions: {}
         };
     }
 
+    // The first user (only a teacher can run this) goes into the lists
+    this.data.walls[wall_id].status.connected_teachers[nickname] = Date.now();
+    this.data.total_talkwall_connections++;
+
     // If the wall is not used in a long time, this will clean its message manager from memory
     var self = this;
-    var terminationCheck = function() {
-        var timeNow = Date.now();
-        if (timeNow - self.status.last_update > common.Constants.TERMINATE_MESSAGE_MANAGER_SECONDS) {
-            this.removeWall(wall_id);
+    function terminationCheck() {
+        for (var wall_id in self.data.walls) {
+            if (self.data.walls.hasOwnProperty(wall_id)) {
+                var timeNow = Date.now();
+                if (timeNow - self.data.walls[wall_id].status.last_update > common.Constants.TERMINATE_MESSAGE_MANAGER_SECONDS) {
+                    self.removeWall(wall_id);
+                }
+            }
         }
-    };
+    }
 
-    timeout(function() {
+    setTimeout(function() {
         terminationCheck();
     }, common.Constants.TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS)
 
@@ -126,39 +137,39 @@ Mm.prototype.setup = function(wall_id) {
 Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeacher) {
 
     // Create the question structure if it doesn't exist
-    if (!this.data[wall_id].questions.hasOwnProperty(question_id)) {
-        this.data[wall_id].questions[question_id] = {
+    if (question_id !== 'none' && !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
+        this.data.walls[wall_id].questions[question_id] = {
             updated: {},
             created: {}
         };
     }
 
-    // Update the connected users
+    // Update the connected user lists
     if (isTeacher) {
-        if (this.data[wall_id].status.teacher_nickname === '') {
-            this.data[wall_id].status.total_talkwall_connections++;
+        if (typeof this.data.walls[wall_id].status.connected_teachers[nickname] === 'undefined') {
+            this.data.total_talkwall_connections++;
         }
-        this.data[wall_id].status.teacher_nickname = nickname;
+        this.data.walls[wall_id].status.connected_teachers[nickname] = Date.now();
     } else {
-        if (typeof this.data[wall_id].status.connected_students[nickname] === 'undefined') {
-            this.data[wall_id].status.total_talkwall_connections++;
+        if (typeof this.data.walls[wall_id].status.connected_students[nickname] === 'undefined') {
+            this.data.total_talkwall_connections++;
         }
-        this.data[wall_id].status.connected_students[nickname] = Date.now();
+        this.data.walls[wall_id].status.connected_students[nickname] = Date.now();
     }
 
-    this.data[wall_id].questions[question_id].updated[nickname] = {};
-    this.data[wall_id].questions[question_id].created[nickname] = {};
+    this.data.walls[wall_id].questions[question_id].updated[nickname] = {};
+    this.data.walls[wall_id].questions[question_id].created[nickname] = {};
 };
 
 /**
- * Check that a student nickname is listed on teh given wall
+ * Check that a student nickname is listed on the given wall
  *
  * @param {string} wall_id
  * @param {string} nickname
  */
 Mm.prototype.studentIsOnWall = function(wall_id, nickname) {
-    return this.data.hasOwnProperty(wall_id)
-        && this.data[wall_id].status.connected_students.hasOwnProperty(nickname);
+    return this.data.walls.hasOwnProperty(wall_id)
+        && this.data.walls[wall_id].status.connected_students.hasOwnProperty(nickname);
 };
 
 
@@ -171,11 +182,13 @@ Mm.prototype.studentIsOnWall = function(wall_id, nickname) {
  * @param {boolean} isTeacher
  */
 Mm.prototype.removeUserFromQuestion = function(wall_id, question_id, nickname, isTeacher) {
-    if (this.data[wall_id].questions[question_id].created.hasOwnProperty(nickname)) {
-        delete this.data[wall_id].questions[question_id].created[nickname];
-    }
-    if (this.data[wall_id].questions[question_id].updated.hasOwnProperty(nickname)) {
-        delete this.data[wall_id].questions[question_id].updated[nickname];
+    if (this.data.walls.hasOwnProperty(wall_id)) {
+        if (this.data.walls[wall_id].questions[question_id].created.hasOwnProperty(nickname)) {
+            delete this.data.walls[wall_id].questions[question_id].created[nickname];
+        }
+        if (this.data.walls[wall_id].questions[question_id].updated.hasOwnProperty(nickname)) {
+            delete this.data.walls[wall_id].questions[question_id].updated[nickname];
+        }
     }
 };
 
@@ -188,14 +201,12 @@ Mm.prototype.removeUserFromQuestion = function(wall_id, question_id, nickname, i
  *
  */
 Mm.prototype.removeUserFromWall = function(wall_id, nickname, isTeacher) {
-    // Remove this nickname from the wall's connected_students
-    if (typeof this.data[wall_id] !== 'undefined') {
-        if (isTeacher) {
-            this.data[wall_id].status.teacher_nickname = '';
-            this.data[wall_id].status.total_talkwall_connections--;
-        } else if (this.data[wall_id].status.connected_students.hasOwnProperty(nickname)) {
-            delete this.data[wall_id].status.connected_students[nickname];
-            this.data[wall_id].status.total_talkwall_connections--;
+    // Remove this nickname from the wall's connected users
+    if (typeof this.data.walls[wall_id] !== 'undefined') {
+        var clientType = isTeacher ? 'connected_teachers' : 'connected_students';
+        if (this.data.walls[wall_id].status[clientType].hasOwnProperty(nickname)) {
+            delete this.data.walls[wall_id].status[clientType][nickname];
+            this.data.total_talkwall_connections--;
         }
     }
 };
@@ -206,8 +217,8 @@ Mm.prototype.removeUserFromWall = function(wall_id, nickname, isTeacher) {
  * @param {string} wall_id
  */
 Mm.prototype.removeWall = function(wall_id) {
-    if (this.data.hasOwnProperty(wall_id)) {
-        delete this.data[wall_id];
+    if (this.data.walls.hasOwnProperty(wall_id)) {
+        delete this.data.walls[wall_id];
     }
 };
 
@@ -221,8 +232,8 @@ Mm.prototype.removeWall = function(wall_id) {
  * question_id can be 'none' if the teacher wants students to refresh wall (e.g. on wall closure, new question added)
  */
 Mm.prototype.statusUpdate = function(wall_id, question_id) {
-    this.data[wall_id].status.teacher_current_question = question_id;
-    this.data[wall_id].status.last_update = Date.now();
+    this.data.walls[wall_id].status.teacher_current_question = question_id;
+    this.data.walls[wall_id].status.last_update = Date.now();
 };
 
 /**
@@ -237,10 +248,8 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  */
 Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
 
-    // Make note of my changes in other users' lists on the same question
-
-    var connectedStudents = this.data[wall_id].status.connected_students;
-    var teacherNickname = this.data[wall_id].status.teacher_nickname;
+    // Note that someone is using this wall
+    this.data.walls[wall_id].status.last_update = Date.now();
 
     function editUpdate(userQueue) {
 
@@ -258,16 +267,24 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         }
     }
 
+    var connectedStudents = this.data.walls[wall_id].status.connected_students;
+    var connectedTeachers = this.data.walls[wall_id].status.connected_teachers;
+
+    // Make note of my changes in other users' lists on the same question
     switch(controlString) {
 
         // Only the originator of a message can make a 'create' ( a new message )
         case 'create':
             for (var student in connectedStudents) {
                 if (student !== nickname && connectedStudents.hasOwnProperty(student)) {
-                    this.data[wall_id].questions[question_id].created[student][updated_message._id] = updated_message;
+                    this.data.walls[wall_id].questions[question_id].created[student][updated_message._id] = updated_message;
                 }
             }
-            this.data[wall_id].questions[question_id].created[teacherNickname][updated_message._id] = updated_message;
+            for (var teacher in connectedTeachers) {
+                if (teacher !== nickname && connectedTeachers.hasOwnProperty(teacher)) {
+                    this.data.walls[wall_id].questions[question_id].created[teacher][updated_message._id] = updated_message;
+                }
+            }
             break;
 
         // Only the originator of a message can make an 'edit' ( change text or mark as deleted )
@@ -280,46 +297,60 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
 
                 // If the nickname is not our own, make a notification
                 if (student2 !== nickname && connectedStudents.hasOwnProperty(student2)) {
-                    userQueue = this.data[wall_id].questions[question_id].updated[student2];
+                    userQueue = this.data.walls[wall_id].questions[question_id].updated[student2];
                     editUpdate(userQueue);
                 }
             }
 
             // Update teacher notification
-            userQueue = this.data[wall_id].questions[question_id].updated[teacherNickname];
-            editUpdate(userQueue);
+            for (var teacher2 in connectedTeachers) {
 
-            // Teacher's update may already have position data, so mark it now as mixed data
-            userQueue[updated_message._id].updateType
-                = userQueue[updated_message._id].updateType === 'position' ? 'mixed' : 'edit';
+                // If the nickname is not our own, make a notification
+                if (teacher2 !== nickname && connectedTeachers.hasOwnProperty(teacher2)) {
+                    userQueue = this.data.walls[wall_id].questions[question_id].updated[teacher2];
+                    editUpdate(userQueue);
+
+                    // Teacher's update may already have position data, so mark it now as mixed data
+                    userQueue[updated_message._id].updateType
+                        = userQueue[updated_message._id].updateType === 'position' ? 'mixed' : 'edit';
+                }
+            }
             break;
 
         // Anyone can report position changes, but only the teacher will see them (spec as at December 2016)
         case 'position':
 
-            var teacherQueue = this.data[wall_id].questions[question_id].updated[teacherNickname];
+            for (var teacher3 in connectedTeachers) {
 
-            // Has an update to this message already been registered?
-            if (teacherQueue.hasOwnProperty(updated_message._id)) {
+                // If the nickname is not our own, make a notification
+                if (teacher3 !== nickname && connectedTeachers.hasOwnProperty(teacher3)) {
+                    userQueue = this.data.walls[wall_id].questions[question_id].updated[teacher3];
 
-                // Check if the updated message contains the nickname (it may have been removed from the board)
-                if (updated_message.board.hasOwnProperty(nickname)) {
-                    teacherQueue[updated_message._id].board[nickname] = updated_message.board[nickname];
-                } else {
-                    delete teacherQueue[updated_message._id].board[nickname];
+                    // Has an update to this message already been registered?
+                    if (userQueue.hasOwnProperty(updated_message._id)) {
+
+                        // Check if the updated message contains this nickname. This request may remove it from the board
+                        if (updated_message.board.hasOwnProperty(nickname)) {
+                            userQueue[updated_message._id].board[nickname] = updated_message.board[nickname];
+                        } else {
+                            delete userQueue[updated_message._id].board[nickname];
+                        }
+
+                        // Teacher's update may already have edit data, so mark it now as mixed data
+                        userQueue[updated_message._id].updateType
+                            = userQueue[updated_message._id].updateType === 'edit' ? 'mixed' : 'position';
+                    } else {
+                        userQueue[updated_message._id] = {
+                            board: updated_message.board,
+                            text: null,
+                            deleted: null,
+                            updateType: 'position'
+                        };
+                    }
+
                 }
-
-                // Teacher's update may already have edit data, so mark it now as mixed data
-                teacherQueue[updated_message._id].updateType
-                    = userQueue[updated_message._id].updateType === 'edit' ? 'mixed' : 'position';
-            } else {
-                teacherQueue[updated_message._id] = {
-                    board: updated_message.board,
-                    text: null,
-                    deleted: null,
-                    updateType: 'position'
-                };
             }
+
 
     }
     
@@ -336,27 +367,33 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
  */
 Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
     
-    if (typeof this.data[wall_id] === 'undefined') {
+    if (typeof this.data.walls[wall_id] === 'undefined') {
         return null;
     }
 
     var created = {};
     var updated = {};
-    var nicknames = this.data[wall_id].status.connected_students;
+    var connectedStudents = this.data.walls[wall_id].status.connected_students;
+    var connectedTeachers = this.data.walls[wall_id].status.connected_teachers;
 
-    // If I am a teacher, check for disconnected users
+    // Check for disconnected users (done on the teacher cycle only)
     if (isTeacher) {
         var timeNow = Date.now();
-        for (var student in nicknames) {
-            if (nickname !== student && nicknames.hasOwnProperty(student) && (timeNow - nicknames[student] > common.Constants.POLL_USER_EXPIRY_TIME)) {
-                this.removeUserFromWall(wall_id, student, isTeacher);
+        for (var student in connectedStudents) {
+            if (connectedStudents.hasOwnProperty(student) && (timeNow - connectedStudents[student] > common.Constants.POLL_USER_EXPIRY_TIME)) {
+                this.removeUserFromWall(wall_id, student, false);
+            }
+        }
+        for (var teacher in connectedTeachers) {
+            if (nickname !== teacher && connectedTeachers.hasOwnProperty(teacher) && (timeNow - connectedTeachers[teacher] > common.Constants.POLL_USER_EXPIRY_TIME)) {
+                this.removeUserFromWall(wall_id, teacher, true);
             }
         }
     }
 
     // Collect any new notifications and clear my queue
     if (question_id !== 'none') {
-        var queue = this.data[wall_id].questions[question_id].created;
+        var queue = this.data.walls[wall_id].questions[question_id].created;
 
          if (queue.hasOwnProperty(nickname)) {
              for (var message_id in queue[nickname]) {
@@ -367,7 +404,7 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
              queue[nickname] = [];
          }
 
-        queue = this.data[wall_id].questions[question_id].updated;
+        queue = this.data.walls[wall_id].questions[question_id].updated;
 
         if (queue.hasOwnProperty(nickname)) {
             for (var message_id2 in queue[nickname]) {
@@ -380,11 +417,15 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
     }
 
     // Update my poll timestamp
-    nicknames[nickname] = Date.now();
+    var clientType = isTeacher ? 'connectedTeachers' : 'connectedStudents';
+    if([clientType].hasOwnProperty(nickname)) {
+        [clientType][nickname] = Date.now();
+    }
 
-    // Reference to my pending updates and any change to status
+    // Return my pending updates and any change to status
     return {
-        status: this.data[wall_id].status,
+        totalOnTalkwall: this.data.total_talkwall_connections,
+        status: this.data.walls[wall_id].status,
         created: created,
         updated: updated
     }

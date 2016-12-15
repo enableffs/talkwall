@@ -39,7 +39,7 @@ exports.poll = function(req, res) {
         // We are changing questions, so remove the user from previous question and add them to the new one
         mm.removeUserFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname, false);
         mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, false);
-    } else if (req.params.controlString === 'new') {
+    } else if (req.params.controlString === 'new' && req.params.question_id !== 'none') {
         // We are entering for the first time, so add the user
         mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, false);
     }
@@ -116,7 +116,7 @@ exports.disconnectWall = function(req, res) {
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    // Check for the pin in Redis. If exists, look up the value == wall ID
+    // Check for the student on the wall
     if(mm.studentIsOnWall(req.params.wall_id, req.params.nickname)) {
         var query = Wall.findOne({
             _id : req.params.wall_id,

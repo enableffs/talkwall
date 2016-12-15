@@ -5,7 +5,7 @@ exports.Constants = {
     TOKEN_EXPIRATION: 86400, //24hrs
     MINIMUM_PIN: 1000,
     MAXIMUM_PIN: 9999,
-    POLL_USER_EXPIRY_TIME: 10000,  // 10 seconds
+    POLL_USER_EXPIRY_TIME: 1000000,  // 30 seconds = 30000    // test with high value
     TERMINATE_MESSAGE_MANAGER_SECONDS: 3600,  // 1 hour
     TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS: 600   // 10 minutes
 };

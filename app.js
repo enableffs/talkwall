@@ -65,8 +65,11 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(morgan('dev'));
 app.use(passport.initialize());
+
+/********* express *********/
 app.use(express.static(path.join(__dirname, process.env.STATIC_FOLDER)));
 app.use(express.static(path.join(__dirname, 'bower_components')));
+
 app.all('*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Credentials', true);
@@ -125,3 +128,9 @@ app.get('/ping',                                                                
 if(process.env.STATIC_FOLDER === 'src') {   // Only enable this route if we are using development .env file
     app.delete('/wall/:id',   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,         routes.teacher.deleteWall);
 }
+
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).send('invalid token...');
+    }
+});

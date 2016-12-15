@@ -227,24 +227,24 @@ module TalkwallApp {
 
     // Class used to send and respond with status & message updates through polling
     export class PollUpdate {
+        totalOnTalkwall: number;
         status: {
             last_update: number;
             teacher_current_question: string;
-            teacher_nickname: string;
+            connected_teachers: Array<string>;
             connected_students: Array<string>;
-            connection_count: number;
         };
         created: { [message_id: string] : CreatedQueueItem };
         updated: { [message_id: string] : UpdatedQueueItem };
 
         // set status to PollUpdate('', false) to prevent any status update on server
         constructor(question_id) {
+            this.totalOnTalkwall = 0;
             this.status = {
                 last_update: Date.now(),
                 teacher_current_question: question_id,
-                teacher_nickname: '',
-                connected_students: [],
-                connection_count: 0
+                connected_teachers: [],
+                connected_students: []
             };
             this.created = {};
             this.updated = {};

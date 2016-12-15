@@ -130,9 +130,9 @@ module.exports = function(passport) {
 
                         // set all of the facebook information in our user model
                         newUser.google.id       = profile.id; // set the users facebook id
-                        newUser.google.token    = accessToken; // we will save the token that facebook provides to the user
+                        newUser.google.token    = accessToken; // we will save the token that google provides to the user
                         newUser.google.name     = profile.displayName; // look at the passport user profile to see how names are returned
-                        newUser.google.email    = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+                        newUser.google.email    = profile.emails[0].value; // google can return multiple emails so we'll take the first
 
                         // save our user to the database
                         newUser.save(function(err) {

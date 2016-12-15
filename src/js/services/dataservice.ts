@@ -252,7 +252,7 @@ module TalkwallApp {
                 authorised: boolean;
                 nickname: string;
                 participants: Array<string>;
-                connection_count: number,
+                totalOnTalkwall: number,
                 selectedParticipant: string;
                 questionToEdit: Question;
                 messageToEdit: Message;
@@ -299,7 +299,7 @@ module TalkwallApp {
                     authorised: false,
                     nickname: null,
                     participants: [],
-                    connection_count: 0,
+                    totalOnTalkwall: 0,
                     selectedParticipant: null,
                     questionToEdit: null,
                     messageToEdit: null,
@@ -580,7 +580,9 @@ module TalkwallApp {
             }
 
             // If true, we are changing questions
-            if (this.data.question !== null && this.data.wall.questions.indexOf(this.data.question) !== newIndex) {
+            if (this.data.question !== null
+                && this.utilityService.getQuestionIndexFromWallById(this.data.question._id, this.data.wall) !== newIndex) {
+
                 previous_question_id = this.data.question._id;
                 control = 'change';
 
@@ -679,7 +681,12 @@ module TalkwallApp {
                 .then((result) => {
                     let resultKey = 'result';
                     console.log('Poll success at ' + Date.now().toString());
-                    this.processUpdatedMessages(result.data[resultKey]);
+                    if (result.data[resultKey] === null) {
+                        console.log('The wall does not exist on server');
+                        this.stopPolling();
+                    } else {
+                        this.processUpdatedMessages(result.data[resultKey]);
+                    }
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
@@ -700,11 +707,12 @@ module TalkwallApp {
         addQuestion(successCallbackFn, errorCallbackFn): void {
             this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.data.wall._id, question: this.data.status.questionToEdit})
                 .then((response) => {
-                    let resultKey = 'result';
+                    let resultKey = 'result', firstQuestion;
+                    firstQuestion = this.data.wall.questions.length === 0;
                     this.data.wall.questions.push(response.data[resultKey]);
 
-                    // If this was the first question
-                    if (this.data.wall.questions.length === 0) {
+                    // If this was the first question, set it
+                    if (firstQuestion) {
                         this.setQuestion(0, successCallbackFn, errorCallbackFn);
                     }
                     if (typeof successCallbackFn === "function") {
@@ -1010,8 +1018,8 @@ module TalkwallApp {
         processUpdatedMessages(pollUpdateObject: PollUpdate) {
 
             // Update participant list
-            this.data.status.participants = Object.keys(pollUpdateObject.status.connected_students);
-            this.data.status.participants.push(pollUpdateObject.status.teacher_nickname);
+            let participants = Object.keys(pollUpdateObject.status.connected_students);
+            this.data.status.participants = participants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
             // We should not be here! Go back to the landing page
             if (this.data.status.participants.indexOf(this.data.status.nickname) === -1) {
                 this.$window.location.href = this.urlService.getHost() + '/';
@@ -1019,8 +1027,8 @@ module TalkwallApp {
 
             // Run on teacher connections only
             if (this.data.status.authorised) {
-                // Status update
-                this.data.status.connection_count = pollUpdateObject.status.connection_count;
+                // Update total number of talkwall users
+                this.data.status.totalOnTalkwall = pollUpdateObject.totalOnTalkwall;
             }
 
             // Run on student connections only
@@ -1077,7 +1085,6 @@ module TalkwallApp {
                 // Check that the user is in the contributor list
                 if(this.data.status.contributors.indexOf(message.creator) === -1) {
                     this.data.status.contributors.push(message.creator);
-                    this.data.status.unselected_contributors.push(message.creator);
                 }
             }
 
