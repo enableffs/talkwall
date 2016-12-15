@@ -6,7 +6,6 @@
  *
  */
 require('newrelic');
-require('@risingstack/trace');
 
 /********* load environment variables locally *********/
 var dotenv = require('dotenv');

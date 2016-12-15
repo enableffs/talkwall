@@ -84,7 +84,7 @@ gulp.task("ts-lint", function() {
 
 gulp.task("typescripts", function () {
     return gulp.src(config.src.ts)
-        .pipe(ts(tsProject))
+        .pipe(tsProject())
         .pipe(gulp.dest('src/js/'));
 });
 
@@ -137,8 +137,6 @@ gulp.task('copy-fonts', function () {
 
 var tsProject = ts.createProject({
     declaration: false,
-    sortOutput: true,
-    module: "commonjs",
     target: "ES5",
     out: 'output.js'
 });
@@ -220,4 +218,4 @@ gulp.task("typedoc", function() {
 gulp.task('css', gulp.series('sass'));
 gulp.task('dev', gulp.series('sass', 'ts-lint', 'typescripts', 'javascripts'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
