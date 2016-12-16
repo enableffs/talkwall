@@ -649,29 +649,35 @@ exports.updateMessages = function(req, res) {
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    for (var m = 0; m < req.body.messages.length; m++) {
-        var message = req.body.messages[m];
-        var query = Message.findOneAndUpdate({
-            _id: message._id
-        }, message, {new: true});
+    var multiUpdatePromise = [];
+    req.body.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
 
-        query.exec(function (error, updated_message) {
-            if (error) {
-                res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                    message: common.StatusMessages.UPDATE_ERROR.message, result: error
-                });
-            } else {
+        var p = new Promise(function(resolve, reject) {
+            var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true});
+
+            query.exec(function (err, updated_message) {
+                if (err) {
+                    reject(err);
+                }
                 // Update the message manager to notify other clients
                 if (req.body.controlString !== 'none') {
-                    mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, true);
+                    mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, false);
                 }
+                resolve(updated_message);
+            });
+        });
+        multiUpdatePromise.push(p);
+    });
 
-                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                    message: common.StatusMessages.UPDATE_SUCCESS.message, result: updated_message
-                });
-            }
-        })
-    }
+    Promise.all(multiUpdatePromise).then(function(messages) {
+        res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+            message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages
+        });
+    }).catch(function(err) {
+        res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+            message: common.StatusMessages.UPDATE_ERROR.message, result: error
+        });
+    });
 
 };
 
