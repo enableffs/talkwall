@@ -16,6 +16,7 @@ module TalkwallApp {
     import IPromise = angular.IPromise;
     import IMedia = angular.material.IMedia;
     import IScope = angular.IScope;
+    import IRootScopeService = angular.IRootScopeService;
 
     export interface IDataService {
 
@@ -41,12 +42,6 @@ module TalkwallApp {
          * @return status as boolean
          */
         // userIsAuthorised(): boolean;
-
-        /**
-         *
-         * @param callback to activate a Wall refresh
-         */
-        setRefreshCallback(callback: () => void): void;
         /**
          * establish authentication status
          */
@@ -81,6 +76,14 @@ module TalkwallApp {
          * @return the current wall
          */
         getWall(): Wall;
+
+        /**
+         *
+         * @param type
+         * @param id
+         * @param diff      Change in position from the previous location
+         */
+        logAnEvent(type, id, diff): void;
         /**
          * get current question
          * @return the current question
@@ -101,7 +104,7 @@ module TalkwallApp {
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        requestPoll(previousQuestionId: string, control: string, sFunc: () => void, eFunc: (error: {}) => void): void;
+        requestPoll(previousQuestionId: string, controlString: string, sFunc: () => void, eFunc: (error: {}) => void): void;
         /**
          * add new question to the wall
          * @param sFunc success callback
@@ -125,7 +128,7 @@ module TalkwallApp {
         /**
          * update the current message to edit
          */
-        updateMessage(directMessage: Message): void;
+        updateMessages(directMessage: Array<Message>, controlString: string): void;
         /**
          * Force all connected clients to change to this question id
          */
@@ -163,6 +166,10 @@ module TalkwallApp {
          */
         /// getBoardDivSize(): {};
         /**
+         * Temporarily prevent the client from sending requests
+         */
+        restrictRequests(): void;
+        /**
          * set the board dimensions object
          * @param dimensions as a JSON object
          */
@@ -192,7 +199,7 @@ module TalkwallApp {
         /**
          * run the polling timer
          */
-        startPolling(previous_question_id: string, control: string): void;
+        startPolling(previous_question_id: string, controlString: string): void;
         /**
          * pause the polling timer
          */
@@ -206,6 +213,10 @@ module TalkwallApp {
          * retrieve the origin message object
          */
         getMessageOrigin(): Message;
+        /**
+         * refresh the message CSS as displayed on the board
+         */
+        refreshBoardMessages(): void;
         /**
          * get the wall to show in export format
          * @param wallId the wall ID string
@@ -234,11 +245,8 @@ module TalkwallApp {
     }
 
     export class DataService implements IDataService {
-        static $inject = ['$http', '$window', '$routeParams', '$location', '$interval', '$mdDialog', '$translate',
+        static $inject = ['$http', '$window', '$routeParams', '$rootScope', '$location', '$interval', '$timeout', '$mdDialog', '$translate',
             'UtilityService', 'URLService', '$mdMedia', 'TalkwallConstants'];
-
-        private timerHandle = null;
-        private refreshCallback = null;
 
         /*  New Version 3 data structure to improve binding between multiple views and this DataService */
 
@@ -250,39 +258,48 @@ module TalkwallApp {
                 authorised: boolean;
                 nickname: string;
                 participants: Array<string>;
-                questionToEdit: Question,
-                messageToEdit: Message,
-                messageOrigin: Message,
-                updateOrigin: boolean,
-                currentQuestionIndex: number,
-                phoneMode: boolean,
-                contributors: Array<string>,
-                tags: Array<string>,
-                tagCounter: {},
-                boardDivSize: {},
-                last_update: number,
-                touchControl: boolean
-            }
+                totalOnTalkwall: number,
+                selectedParticipant: string;
+                questionToEdit: Question;
+                messageToEdit: Message;
+                messageOrigin: Message;
+                updateOrigin: boolean;
+                currentQuestionIndex: number;
+                phoneMode: boolean;
+                contributors: Array<string>;
+                unselected_contributors: Array<string>;
+                tags: Array<string>;
+                unselected_tags: Array<string>;
+                tagCounter: {};
+                boardDivSize: {};
+                last_status_update: number;
+                touchControl: boolean;
+                restrictPositionRequests: boolean;
+                restrictPositionRequestMessages: { [message_id: string ] : Message };
+                idleTerminationTime: number;
+            },
+            log: LogEntry[]
         };
-
-
-
 
         private customFullscreen;
         private noTag = 'no tag';
+        private pollingTimerHandle = null;
+        private restrictTimerHandle = null;
+        private logEventTimeSplit = 5;
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
                      private $routeParams: IRouteParamsService,
+                     private $rootScope: IRootScopeService,
                      private $location: ILocationService,
                      private $interval: ng.IIntervalService,
+                     private $timeout: ng.ITimeoutService,
                      private $mdDialog: angular.material.IDialogService,
                      private $translate: angular.translate.ITranslateService,
                      private utilityService: UtilityService,
                      private urlService: IURLService,
                      private $mdMedia: IMedia,
                      private constants: ITalkwallConstants) {
-
 
             this.data = {
                 user: null,
@@ -292,6 +309,8 @@ module TalkwallApp {
                     authorised: false,
                     nickname: null,
                     participants: [],
+                    totalOnTalkwall: 0,
+                    selectedParticipant: null,
                     questionToEdit: null,
                     messageToEdit: null,
                     messageOrigin: null,
@@ -299,14 +318,19 @@ module TalkwallApp {
                     currentQuestionIndex: -1,
                     phoneMode: false,
                     contributors: [],
+                    unselected_contributors: [],
                     tags: [],
+                    unselected_tags: [],
                     tagCounter: {},
                     boardDivSize: {},
-                    last_update: 0,
-                    touchControl: false
-                }
+                    last_status_update: 0,
+                    touchControl: false,
+                    restrictPositionRequests: false,
+                    restrictPositionRequestMessages: {},
+                    idleTerminationTime: 43200             // One year = 525600 minutes.  One month = 43200 minutes.
+                },
+                log: []
             };
-
 
             this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
             console.log('--> DataService started ...');
@@ -314,11 +338,25 @@ module TalkwallApp {
             $translate('NO_TAG').then((translation) => {
                 this.noTag = translation;
             });
+
         }
 
-        setRefreshCallback(callback): void {
-            this.refreshCallback = callback;
+        logAnEvent(type, id, diff) {
+            this.data.log.push(new LogEntry(type, id, this.data.status.nickname, diff));
         }
+
+        restrictRequests() {
+            if (this.restrictTimerHandle !== null) {
+                this.$timeout.cancel(this.restrictTimerHandle);
+            }
+            this.data.status.restrictPositionRequests = true;
+            this.restrictTimerHandle = this.$timeout(() => {
+                this.data.status.restrictPositionRequests = false;
+                this.sendPendingPositionUpdates();
+                console.log('Sending pending position updates');
+            }, 3000);
+        };
+
 
         // Remove token string from the address bar. Then, if authorised, get the user model and the most recent wall
         // Otherwise, follow on back to where we came from..
@@ -357,16 +395,15 @@ module TalkwallApp {
                                     this.$http.put(this.urlService.getHost() + '/wall/close/' + user.lastOpenedWall, {
                                         targetEmail: answer
                                     })
-                                        .success(() => {
+                                        .then(() => {
                                             console.log('--> DataService: close wall success');
                                             this.createWall(successCallbackFn, errorCallbackFn);
-                                        })
-                                        .catch((error) => {
+                                        }, (error) => {
                                             console.log('--> DataService: close wall failure: ' + error);
                                             if (typeof errorCallbackFn === "function") {
                                                 errorCallbackFn({status: error.status, message: error.message});
                                             }
-                                        });
+                                        })
                                 }
                             }, () => {
                                 //dialog dismissed
@@ -387,7 +424,8 @@ module TalkwallApp {
             // Set up listener for disconnect
             this.$window.onbeforeunload = () => {
                 let url = this.urlService.getHost() + '/';
-                this.$http.get(url + 'disconnect/' + this.data.status.nickname + '/' + this.data.wall.pin + '/' + this.data.question._id)
+                let clientType = this.data.status.authorised ? 'disconnectteacher/' : 'disconnect/';
+                this.$http.get(url + clientType + this.data.status.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
                     .then(function () {
                         this.$window.location.href = url;
                     });
@@ -458,12 +496,12 @@ module TalkwallApp {
                 .then((result) => {
                     let resultKey = 'result';
                     this.data.wall = result.data[resultKey];
-                    console.log('--> DataService: getWall success');
+                    console.log('--> DataService: createWall success');
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.data.wall);
                     }
                 }, (error) => {
-                    console.log('--> DataService: getWall failure: ' + error);
+                    console.log('--> DataService: createWall failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
@@ -486,7 +524,7 @@ module TalkwallApp {
                     } else {
                         this.data.wall = success[dataKey][resultKey];
                         this.data.status.nickname = joinModel.nickname;
-                        console.log('--> DataService: getWall success');
+                        console.log('--> DataService: getClientWall success');
                     }
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.data.wall);
@@ -508,22 +546,15 @@ module TalkwallApp {
                 //no message, create a new one
                 this.data.status.messageToEdit = new Message();
                 this.data.status.messageToEdit.creator = this.data.status.nickname;
-                this.data.status.messageToEdit.origin.push({nickname: this.data.status.messageToEdit.creator, message_id: null});
+                this.data.status.messageToEdit.origin.push({nickname: this.data.status.nickname, message_id: null});
                 this.data.status.messageToEdit.question_id = this.data.question._id;
             } else if (message === null && this.data.status.messageOrigin !== null) {
                 //we have an origin to create the new message, clone it
-                this.data.status.messageToEdit = JSON.parse(JSON.stringify(this.data.status.messageOrigin));
-                this.data.status.messageToEdit.creator = this.data.status.nickname;
-                this.data.status.messageToEdit.origin.push({nickname: this.data.status.messageToEdit.creator, message_id: this.data.status.messageOrigin._id});
-                //remove the _id of the old one
-                this.data.status.messageToEdit._id = undefined;
-                this.data.status.messageToEdit.board = {};
-                this.data.status.updateOrigin = false;
-                if (this.data.status.messageOrigin.board[this.data.status.nickname] !== undefined) {
-                    this.data.status.messageToEdit.edits = [];
-                    this.data.status.messageToEdit.board[this.data.status.nickname] = JSON.parse(JSON.stringify(this.data.status.messageOrigin.board[this.data.status.nickname]));
-                    this.data.status.updateOrigin = true;
-                }
+
+                //this.data.status.messageToEdit = JSON.parse(JSON.stringify(this.data.status.messageOrigin));
+
+                this.data.status.messageToEdit = new Message().createFromOrigin(this.data.status.messageOrigin, this.data.status.nickname);
+                this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.status.nickname] !== 'undefined';
             } else {
                 this.data.status.messageToEdit = message;
             }
@@ -566,7 +597,9 @@ module TalkwallApp {
             }
 
             // If true, we are changing questions
-            if (this.data.question !== null && this.data.wall.questions.indexOf(this.data.question) !== newIndex) {
+            if (this.data.question !== null
+                && UtilityService.getQuestionIndexFromWallById(this.data.question._id, this.data.wall) !== newIndex) {
+
                 previous_question_id = this.data.question._id;
                 control = 'change';
 
@@ -580,9 +613,6 @@ module TalkwallApp {
             if (newIndex !== -1 && this.data.wall.questions.length > 0) {
                 this.data.question = new Question("").updateMe(this.data.wall.questions[newIndex]);
                 this.data.status.currentQuestionIndex = newIndex;
-                console.log('--> new bgcolor available: ' + this.getBackgroundColour());
-                //this.data.status.questionToEdit.grid = this.data.question.grid;
-                //retrieve participants list
                 this.data.status.contributors = this.data.question.contributors;
                 // Re-do the hashtag list
                 this.buildTagArray();
@@ -593,13 +623,15 @@ module TalkwallApp {
             if (control !== 'none' && this.data.question !== null) {
                 this.getMessages();
                 if (this.data.status.authorised) {
-                    this.notifyChangedQuestion(null, null);
+                    this.notifyChangedQuestion(this.data.question._id, previous_question_id, null, null);
                 }
             }
 
             // Start polling regardless of the question existing, to enable poll notifications
-            if (this.timerHandle === null) {
-                this.startPolling(previous_question_id, control);
+            if (this.pollingTimerHandle === null) {
+                // Make a special poll request without delay, then set up regular polling
+                this.requestPoll(previous_question_id, control, null, null);
+                this.startPolling();
             }
 
             if (typeof successCallbackFn === "function") {
@@ -638,8 +670,8 @@ module TalkwallApp {
                 });
         }
 
-        notifyChangedQuestion(successCallbackFn, errorCallbackFn): void {
-            this.$http.get(this.urlService.getHost() + '/change/' + this.data.status.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
+        notifyChangedQuestion(new_question_id, previous_question_id, successCallbackFn, errorCallbackFn): void {
+            this.$http.get(this.urlService.getHost() + '/change/' + this.data.status.nickname + '/' + this.data.wall._id + '/' + new_question_id + '/' + previous_question_id)
                 .then(() => {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
@@ -652,7 +684,9 @@ module TalkwallApp {
                 });
         }
 
-        // Set previousQuestionIndex if we are changing questions. Else set it to -1
+        // 'previousQuestionId' to old question index if we are changing questions. Else set it to -1
+        // 'question_id' - may not be set when we first enter - a request with 'none' as question_id returns only status
+        // 'control' - 'none' is a regular poll, 'new' is the first poll, 'change' we are changing questions
         requestPoll(previousQuestionId, control, successCallbackFn, errorCallbackFn): void {
             let question_id = 'none', pollRoute = '/poll/';
             if (this.data.question !== null) {
@@ -665,11 +699,18 @@ module TalkwallApp {
                 '/' + question_id + '/' + previousQuestionId + '/' + control)
                 .then((result) => {
                     let resultKey = 'result';
-                    this.processUpdatedMessages(result.data[resultKey]);
+                    console.log('Polled at ' + UtilityService.getFormattedDate(new Date()));
+                    if (result.data[resultKey] === null) {
+                        console.log('The wall does not exist on server');
+                        this.stopPolling();
+                    } else {
+                        this.processUpdatedMessages(result.data[resultKey]);
+                    }
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
                     }
                 }, (error) => {
+                    console.log('Poll FAILED at ' + Date.now().toString());
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
@@ -685,11 +726,12 @@ module TalkwallApp {
         addQuestion(successCallbackFn, errorCallbackFn): void {
             this.$http.post(this.urlService.getHost() + '/question', {wall_id: this.data.wall._id, question: this.data.status.questionToEdit})
                 .then((response) => {
-                    let resultKey = 'result';
+                    let resultKey = 'result', firstQuestion;
+                    firstQuestion = this.data.wall.questions.length === 0;
                     this.data.wall.questions.push(response.data[resultKey]);
 
-                    // If this was the first question
-                    if (this.data.wall.questions.length === 0) {
+                    // If this was the first question, set it
+                    if (firstQuestion) {
                         this.setQuestion(0, successCallbackFn, errorCallbackFn);
                     }
                     if (typeof successCallbackFn === "function") {
@@ -737,7 +779,7 @@ module TalkwallApp {
                     let resultKey = 'result';
                     if (result.data[resultKey].length === 0) {
                         let new_question_index = this.data.status.currentQuestionIndex;
-                        let deleted_question_index = this.utilityService.getQuestionIndexFromWallById(question._id, this.data.wall);
+                        let deleted_question_index = UtilityService.getQuestionIndexFromWallById(question._id, this.data.wall);
                         this.data.wall.questions.splice(deleted_question_index, 1);
                         if (new_question_index >= deleted_question_index ) {
                             new_question_index = deleted_question_index - 1;
@@ -768,9 +810,10 @@ module TalkwallApp {
             }
 
             this.data.status.messageToEdit.edits.push({date: new Date(), text: this.data.status.messageToEdit.text});
-            this.$http.post(this.urlService.getHost() + '/message', {
+            let clientType = this.data.status.authorised ? '/messageteacher' : '/message';
+            this.$http.post(this.urlService.getHost() + clientType, {
                 message: this.data.status.messageToEdit,
-                pin: this.data.wall.pin,
+                wall_id: this.data.wall._id,
                 nickname: nickname
             }).then((result) => {
                     let resultKey = 'result';
@@ -778,13 +821,13 @@ module TalkwallApp {
                     this.parseMessageForTags(result.data[resultKey]);
                     this.data.status.messageToEdit = null;
                     if (this.data.status.updateOrigin) {
-                        //the new cloned message has been posted, remove the nickname from the old one
+                        //the new cloned message was created from a message on the board, so remove my nickname from the old one
                         delete this.data.status.messageOrigin.board[this.data.status.nickname];
-                        //update the orgin message, so it will be removed from the board from the current user
-                        this.$http.put(this.urlService.getHost() + '/message', {
-                            message: this.data.status.messageOrigin,
-                            pin: this.data.wall.pin,
-                            nickname: this.data.status.nickname
+                        this.$http.put(this.urlService.getHost() + clientType, {
+                            messages: [this.data.status.messageOrigin],
+                            wall_id: this.data.wall._id,
+                            nickname: this.data.status.nickname,
+                            controlString: 'position'
                         })
                             .then((data) => {
                                 let resultKey = 'result';
@@ -830,6 +873,7 @@ module TalkwallApp {
                         });
 
                         this.buildTagArray();
+                        this.refreshBoardMessages();
                     }, (error) => {
                         console.log('--> DataService: getMessages failure: ' + error);
                     });
@@ -850,7 +894,7 @@ module TalkwallApp {
         parseMessageForTags(message): void {
             if (message !== null) {
                 let foundTags = this.utilityService.getPossibleTags(message.text);
-                if (foundTags !== null) {
+                if (foundTags.length > 0) {
                     foundTags.forEach((tag) => {
                         if (this.data.status.tags.indexOf(tag) === -1) {
                             this.data.status.tags.push(tag);
@@ -878,25 +922,41 @@ module TalkwallApp {
             }
         }
 
-        //update message on server and return it
-        updateMessage(directMessage): void {
-            let message = null;
-
-            if(typeof directMessage !== 'undefined' && directMessage !== null) {
-                message = directMessage;
-            } else {
-                message = this.data.status.messageToEdit;
-                this.clearMessageToEdit();
+        // Convert position updates from dictionary into an array to send to server
+        sendPendingPositionUpdates(): void {
+            let messages = [];
+            for (let message_id in this.data.status.restrictPositionRequestMessages) {
+                if (this.data.status.restrictPositionRequestMessages.hasOwnProperty(message_id)) {
+                    messages.push(this.data.status.restrictPositionRequestMessages[message_id]);
+                }
             }
+            this.data.status.restrictPositionRequestMessages = {};
+            if (messages.length > 0) {
+                this.updateMessages(messages, 'position');
+            }
+        }
 
-            if (message !== null) {
-                this.$http.put(this.urlService.getHost() + '/message', {
-                    message: message,
-                    pin: this.data.wall.pin,
-                    nickname: this.data.status.nickname
+        // Update messages on the server
+        updateMessages(messages: Array<Message>, controlString: string): void {
+
+            // Queue the updated message to be sent later
+            if (this.data.status.restrictPositionRequests && controlString === 'position') {
+                messages.forEach((message) => {
+                    this.data.status.restrictPositionRequestMessages[message._id] = message;
+                });
+            } else {
+                // Send updated messages to the server
+                let clientType = this.data.status.authorised ? '/messageteacher' : '/message';
+                this.$http.put(this.urlService.getHost() + clientType, {
+                    messages: messages,
+                    wall_id: this.data.wall._id,
+                    nickname: this.data.status.nickname,
+                    controlString: controlString
                 })
                     .then((data) => {
                         let resultKey = 'result'; let idKey = '_id';
+                        this.clearMessageToEdit();
+
                         //update the messages array with the updated object, so that all references are in turn updated
                         this.data.question.messages.forEach((m: Message) => {
                             if (m._id === data.data[resultKey][idKey]) {
@@ -906,10 +966,10 @@ module TalkwallApp {
                         })
                     }, (error) => {
                         console.log('--> DataService: updateMessage failure: ' + error);
-                        this.data.status.messageToEdit = message;
-                        //TODO: fire a notification with the problem
+                        //this.data.status.messageToEdit = message;
                     });
             }
+
         }
 
         getParticipants(): Array<string> {
@@ -951,123 +1011,157 @@ module TalkwallApp {
         }
 
         //  Run the polling timer
-        // 'previous_question_id' can be 'none' if not changing questions
-        // 'control' - 'none' is a regular poll, 'new' is the first poll, 'change' we are changing questions
-        startPolling(previous_question_id: string, control: string) {
+        startPolling() {
             let handle = this;
             function requestThePoll() {
                 handle.requestPoll('none', 'none', null, null);
             }
 
-            // Make a special poll request without delay, then set up regular polling
-            this.requestPoll(previous_question_id, control, null, null);
-
             // Begin further requests at time intervals
-            if (this.timerHandle === null) {
-                this.timerHandle = this.$interval(requestThePoll, 5000);
+            if (this.pollingTimerHandle === null) {
+                this.pollingTimerHandle = this.$interval(requestThePoll, this.constants.constants['POLL_INTERVAL_SECONDS'] * 1000);
             }
 
         }
 
         // Stop the polling timer
         stopPolling() {
-            this.$interval.cancel(this.timerHandle);
-            this.timerHandle = null;
+            this.$interval.cancel(this.pollingTimerHandle);
+            this.pollingTimerHandle = null;
         }
 
         // Process updated messages retrieved on the poll response
         processUpdatedMessages(pollUpdateObject: PollUpdate) {
 
             // Update participant list
-            this.data.status.participants = Object.keys(pollUpdateObject.status.connected_nicknames);
+            let participants = Object.keys(pollUpdateObject.status.connected_students);
+            this.data.status.participants = participants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
             // We should not be here! Go back to the landing page
             if (this.data.status.participants.indexOf(this.data.status.nickname) === -1) {
                 this.$window.location.href = this.urlService.getHost() + '/';
             }
 
-            /*
+            // Run on teacher connections only
+            if (this.data.status.authorised) {
+                // Update total number of talkwall users
+                this.data.status.totalOnTalkwall = pollUpdateObject.totalOnTalkwall;
+                this.data.status.idleTerminationTime = pollUpdateObject.status.idleTerminationTime;
+            }
+
+            // Run on student connections only
             else {
-                //see whether a participant list refresh is needed
-                if (this.data.status.authorised) {
-                    let refreshNeeded: boolean = false;
-                    for (let i = 0; i < this.data.status.participants.length; i++) {
-                        if (this.data.status.participants.indexOf(this.data.status.participants[i]) === -1) {
-                            //new participant found!
-                            refreshNeeded = true;
-                            break;
-                        }
-                    }
+                // Status update
+                if (pollUpdateObject.status.last_update > this.data.status.last_status_update) {
+                    this.data.status.last_status_update = pollUpdateObject.status.last_update;
 
-                    if (refreshNeeded && this.data.wall !== null && this.data.question !== null) {
-                        this.$http.get(this.urlService.getHost() + '/wall/' +
-                            this.data.wall._id + '/question/' +
-                            this.data.question._id + '/contributors')
-                            .then((data) => {
-                                console.log('--> Dataservice: retrievd question particpants success');
-                                let resultKey = 'result';
-                                this.data.status.participants = data[resultKey];
-                            }, (error) => {
-                                console.log('--> Dataservice: retrievd question particpants success: ' + error);
-                            });
-                    }
+                    // Refresh the wall
+                    this.getClientWall({nickname: this.data.status.nickname, pin: this.data.wall.pin}, () => {
+
+                        // Set a new question if available
+                        let new_question_id = pollUpdateObject.status.teacher_current_question;
+                        if (new_question_id !== 'none') {
+                            let new_question_index = UtilityService.getQuestionIndexFromWallById(new_question_id, this.data.wall);
+
+                            // Trigger a question and message update
+                            this.data.question = null;
+                            this.setQuestion(new_question_index, null, null);
+                        }
+
+                    }, null);
                 }
             }
-            */
 
-            // Run on client connections only - receive status updates from teacher
-            if (!this.data.status.authorised && pollUpdateObject.status.last_update > this.data.status.last_update) {
-                this.data.status.last_update = pollUpdateObject.status.last_update;
-
-                // Refresh the wall
-                this.getClientWall({ nickname: this.data.status.nickname, pin: this.data.wall.pin}, () => {
-
-                    // Set a new question if available
-                    let new_question_id = pollUpdateObject.status.teacher_question_id;
-                    if (new_question_id !== 'none') {
-                        let new_question_index =
-                            this.utilityService.getQuestionIndexFromWallById(new_question_id, this.data.wall);
-                        this.setQuestion(new_question_index, null, null);
+            // Check that a deleted user is removed the contributor list
+            let self = this;
+            function checkAndRemoveDeletedContributor(nickname) {
+                let counter = 0, foundIndex = -1;
+                self.data.status.contributors.forEach((user, index) => {
+                    if (user === nickname) {
+                        foundIndex = index;
+                        counter++;
                     }
-
-                }, null);
+                });
+                if (counter === 1) {
+                    self.data.status.contributors.splice(foundIndex, 1);
+                }
+                counter = 0; foundIndex = -1;
+                self.data.status.unselected_contributors.forEach((user, index) => {
+                    if (user === nickname) {
+                        foundIndex = index;
+                        counter++;
+                    }
+                });
+                if (counter === 1) {
+                    self.data.status.unselected_contributors.splice(foundIndex, 1);
+                }
             }
 
-            // Message updates
-            pollUpdateObject.messages.forEach((updated_message) => {
-                let message = this.utilityService.getMessageFromQuestionById(updated_message._id, this.data.question);
+            // Message notifications (newly created messages)
+            for (let message_id in pollUpdateObject.created) {
+                let message = new Message().updateMe(pollUpdateObject.created[message_id]);
+                this.data.question.messages.push(message);
+                this.parseMessageForTags(message);
+
+                // Check that the user is in the contributor list
+                if(this.data.status.contributors.indexOf(message.creator) === -1) {
+                    this.data.status.contributors.push(message.creator);
+                }
+            }
+
+            // Message notifications (updated messages)
+            for (let message_id in pollUpdateObject.updated) {
+                let update = pollUpdateObject.updated[message_id];
+                let message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
                 if ( message !== null) {
-                    // Message exists and needs to be updated
-                    message.updateMe(updated_message);
-                } else {
-                    message = new Message().updateMe(updated_message);
-                    this.data.question.messages.push(message);
+
+                    switch(pollUpdateObject.updated[message_id].updateType) {
+
+                        case 'edit':
+                            message.text = update.text;
+                            message.deleted = update.deleted;
+                            if (message.deleted) {
+                                checkAndRemoveDeletedContributor(message.creator);
+                            }
+
+                            break;
+
+                        case 'position':
+                            message.updateBoard(update.board);
+                            break;
+
+                        case 'mixed':
+                            message.text = update.text;
+                            message.deleted = update.deleted;
+                            if (message.deleted) {
+                                checkAndRemoveDeletedContributor(message.creator);
+                            }
+                            message.updateBoard(update.board);
+                            break;
+                    }
+
                 }
-                if(message.deleted) {
-                    let counter = 0;
-                    for(let i = 0; i < this.data.question.messages.length; i++) {
-                        if (this.data.question.messages[i].creator === message.creator) {
-                            counter++;
-                        }
-                    }
-                    if (counter === 1) {
-                        // This was the last message from its contributor, so remove from contributor list
-                        this.data.status.contributors.splice(this.data.status.contributors.indexOf(message.creator), 1);
-                    }
-                } else {
-                    if (this.data.status.contributors.indexOf(updated_message.creator) === -1) {
-                        this.data.status.contributors.push(updated_message.creator);
-                    }
-                    this.parseMessageForTags(updated_message);
-                }
-                //this.refreshCallback();
-            });
+
+                this.parseMessageForTags(message);
+                this.refreshBoardMessages();
+            }
         }
 
+        refreshBoardMessages(): void {
+            this.$rootScope.$broadcast('talkwallMessageUpdate', this.data.status.selectedParticipant);
+        }
 
         showClosingDialog() : void {
             //detects if the device is small
             // let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
-            let handle = this;
+            
+            let disconnect = function() {
+                let url = this.urlService.getHost() + '/#/';
+                this.$http.get(url + 'disconnect/' + this.data.status.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
+                    .then(function () {
+                        this.$window.location.href = url;
+                    });
+            };
+
             //show the dialog
             this.$mdDialog.show({
                 controller: CloseController,
@@ -1078,10 +1172,11 @@ module TalkwallApp {
             })
                 .then(function() {
                     console.log('--> ClosingController: answered');
-                    handle.$window.location.href = handle.urlService.getHost() + '/#/';
+                    disconnect();
                 }, function() {
                     //dialog dismissed
                     console.log('--> LandingController: dismissed');
+                    disconnect();
                 });
         }
 

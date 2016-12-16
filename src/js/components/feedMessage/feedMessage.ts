@@ -46,21 +46,20 @@ module TalkwallApp {
 			//check if authenticated or author
 			if (this.message.creator === this.dataService.data.status.nickname || this.dataService.data.status.authorised) {
 				this.message.deleted = true;
-				this.dataService.updateMessage(this.message);
+				this.dataService.updateMessages([this.message], 'edit');
 			}
+			this.showControls = false;
 		}
 
 		editMessage(): void {
 			if (this.message.creator === this.dataService.data.status.nickname) {
 				this.dataService.setMessageToEdit(this.message);
-				this.isolatedScope.showEditPanel();
-				this.showControls = false;
 			} else {
 				this.dataService.setMessageOrigin(this.message);
 				this.dataService.setMessageToEdit(null);
-				this.isolatedScope.showEditPanel();
-				this.showControls = false;
 			}
+			this.isolatedScope.showEditPanel();
+			this.showControls = false;
 		}
 
 		togglePinMessage(): void {
@@ -73,20 +72,24 @@ module TalkwallApp {
                     false
 				)
 			}
-			this.dataService.updateMessage(this.message);
+			this.dataService.updateMessages([this.message], 'position');
+			this.showControls = false;
 		}
 
 		toggleHighlightMessage(): void {
-			this.message.board[this.dataService.data.status.nickname].highlighted
-                = !this.message.board[this.dataService.data.status.nickname].highlighted;
-			this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
-			this.dataService.updateMessage(this.message);
+			if (this.dataService.data.status.selectedParticipant === this.dataService.data.status.nickname) {
+				this.message.board[this.dataService.data.status.nickname].highlighted
+					= !this.message.board[this.dataService.data.status.nickname].highlighted;
+				this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
+				this.dataService.updateMessages([this.message], 'position');
+				this.showControls = false;
+			}
 		}
 
-		persistPosition(x, y): void {
-			this.message.board[this.isolatedScope.selectedParticipant].xpos = x;
-			this.message.board[this.isolatedScope.selectedParticipant].ypos = y;
-			this.dataService.updateMessage(this.message);
+		persistPosition(xPercentage, yPercentage): void {
+			this.message.board[this.isolatedScope.selectedParticipant].xpos = xPercentage;
+			this.message.board[this.isolatedScope.selectedParticipant].ypos = yPercentage;
+			this.dataService.updateMessages([this.message], 'position');
 		}
 
 		getPinnedClass(): string {
@@ -109,16 +112,27 @@ module TalkwallApp {
 		let currentSize = ctrl.dataService.data.status.boardDivSize;
 
 		let offset = null;
+		let pixelPosition = {x: 0, y: 0};
 		let participant = null;
 
+		/*
 		if (isolatedScope.onBoard === 'true') {
 			positionMessage();
 			//need a watch here, to refresh the position when the selected contributor or message position changes
 			isolatedScope.$watch(() => { return ctrl.message.board[isolatedScope.selectedParticipant] }, (newValue) => { positionCSS() }, true);
 		}
+		*/
 
-		function positionCSS() {
-			participant = ctrl.message.board[isolatedScope.selectedParticipant];
+		isolatedScope.$on("talkwallMessageUpdate", function(event, newParticipant) {
+			if (isolatedScope.onBoard === 'true') {
+				if (typeof ctrl.message.board !== 'undefined' && typeof ctrl.message.board[newParticipant] !== 'undefined') {
+					participant = ctrl.message.board[newParticipant];
+					setMessageCss();
+				}
+			}
+		});
+
+		function setMessageCss() {
 			element.css({
 				top: participant.ypos * 100 + '%',
 				left: participant.xpos * 100 + '%'
@@ -126,7 +140,6 @@ module TalkwallApp {
 		}
 
 		function positionMessage() {
-			//positionCSS();
 
 			element.on('mousedown touchstart', function(event) {
 				// Prevent default dragging of selected content
@@ -145,9 +158,11 @@ module TalkwallApp {
 					ctrl.$document.on('mousemove', mousemove);
 					ctrl.$document.on('mouseup', mouseup);
 				} else if (event instanceof TouchEvent) {
+					let offsetLeft = element.prop('offsetLeft');
+					let offsetRight = element.prop('offsetTop');
 					offset = {
-						x: event['changedTouches'][0].pageX - element.prop('offsetLeft'),
-						y: event['changedTouches'][0].pageY - element.prop('offsetTop'),
+						x: event['targetTouches'][0].pageX - offsetLeft,
+						y: event['targetTouches'][0].pageY - offsetRight,
 						originalX: event.pageX,
 						originalY: event.pageY
 					};
@@ -155,67 +170,78 @@ module TalkwallApp {
 					element.on('touchend', touchend);
 				}
 				ctrl.dataService.stopPolling();
+				ctrl.dataService.restrictRequests();
 			});
 		}
 
 		function mousemove(event) {
-			participant.xpos = event.pageX - offset.x;
-			participant.ypos = event.pageY - offset.y;
+			pixelPosition.x = event.pageX - offset.x;
+			pixelPosition.y = event.pageY - offset.y;
 			doMove();
 		}
 
 		function touchmove(event) {
 			event.preventDefault();
-			participant.xpos = event['changedTouches'][0].pageX - offset.x;
-			participant.ypos = event['changedTouches'][0].pageY - offset.y;
+			pixelPosition.x = event['targetTouches'][0].pageX - offset.x;
+			pixelPosition.y = event['targetTouches'][0].pageY - offset.y;
 			doMove();
 		}
 
 		function doMove() {
-			if (participant.xpos < 0) {
-				participant.xpos = 0;
+			if (pixelPosition.x < 0) {
+				pixelPosition.x = 0;
 			}
-			if (participant.xpos > (currentSize[viewWidthKey] - messageWidth)) {
-				participant.xpos = (currentSize[viewWidthKey] - messageWidth);
+			if (pixelPosition.x > (currentSize[viewWidthKey] - messageWidth)) {
+				pixelPosition.x = (currentSize[viewWidthKey] - messageWidth);
 			}
-			if (participant.ypos < 0) {
-				participant.ypos = 0;
+			if (pixelPosition.y < 0) {
+				pixelPosition.y = 0;
 			}
-			if (participant.ypos > (currentSize[viewHeightKey] - messageHeight)) {
-				participant.ypos = (currentSize[viewHeightKey] - messageHeight);
+			if (pixelPosition.y > (currentSize[viewHeightKey] - messageHeight)) {
+				pixelPosition.y = (currentSize[viewHeightKey] - messageHeight);
 			}
+			/*
 			element.css({
-				top: participant.ypos + 'px',
-				left: participant.xpos + 'px'
+				top: pixelPosition.y + 'px',
+				left: pixelPosition.x + 'px'
 			});
-			participant.xpos = participant.xpos / currentSize[viewWidthKey];
-			participant.ypos = participant.ypos / currentSize[viewHeightKey];
+			*/
+			participant.xpos = pixelPosition.x / currentSize[viewWidthKey];
+			participant.ypos = pixelPosition.y / currentSize[viewHeightKey];
+			setMessageCss();
 		}
 
 		function mouseup(event) {
-			ctrl.$document.off('mousemove', mousemove);
-			ctrl.$document.off('mouseup', mouseup);
 			let diffX = offset.originalX - event.pageX;
 			let diffY = offset.originalY - event.pageY;
 			//will only persist if move greater than a 10 * 10px box
-			if ( (diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
+			if ((diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
 				//ctrl.message.board[isolatedScope.selectedParticipant] = participant;
 				ctrl.persistPosition(participant.xpos, participant.ypos);
 			}
-            ctrl.dataService.startPolling('none', 'none');
+			ctrl.$document.off('mousemove', mousemove);
+			ctrl.$document.off('mouseup', mouseup);
+            ctrl.dataService.startPolling();
 		}
 
 		function touchend(event) {
-			event.preventDefault();
-			element.off('touchmove', touchmove);
-			element.off('touchend', touchend);
 			let diffX = offset.originalX - event.pageX;
 			let diffY = offset.originalY - event.pageY;
 			//will only persist if move greater than a 10 * 10px box
-			if ( (diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
+			if ((diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
 				ctrl.persistPosition(participant.xpos, participant.ypos);
 			}
-			ctrl.dataService.startPolling('none', 'none');
+			event.preventDefault();
+			element.off('touchmove', touchmove);
+			element.off('touchend', touchend);
+
+			ctrl.dataService.startPolling();
+		}
+
+		if (isolatedScope.onBoard === 'true') {
+			participant = ctrl.message.board[isolatedScope.selectedParticipant];
+			positionMessage();
+			setMessageCss();
 		}
 	}
 

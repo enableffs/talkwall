@@ -9,6 +9,7 @@ module TalkwallApp {
 	import IBottomSheetService = angular.material.IBottomSheetService;
 	import ISidenavService = angular.material.ISidenavService;
 	import IWindowService = angular.IWindowService;
+	import IScope = angular.IScope;
 
 	export interface IWallControllerService {
 		/**
@@ -18,7 +19,7 @@ module TalkwallApp {
 		/**
 		 * Pop up bottom sheet to edit messages. Slide out left sidenav also
 		 */
-		showMessageEditor(newMessage: boolean): void;
+		showMessageEditor(newMessage: boolean, event: Event): void;
 		/**
 		 * Toggles which right menu should be open
 		 */
@@ -47,7 +48,7 @@ module TalkwallApp {
 
         contributorExists(item: string): boolean;
 		contributorToggle(item: string): void;
-		contributorIsChecked(): boolean;
+		aContributorIsChecked(): boolean;
         toggleAllContributors(): void;
 
 		tagExists(item: string): boolean;
@@ -60,7 +61,7 @@ module TalkwallApp {
 	}
 
 	export class WallController implements IWallControllerService {
-		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$timeout', 'URLService', '$window', 'UtilityService'];
+		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 		private magnified: boolean = false;
 		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
@@ -72,9 +73,6 @@ module TalkwallApp {
         private savedGridType: string = 'none';
 		private selectedParticipant: string;
 
-        private unselected_contributors: Array<string>;
-		private unselected_tags: Array<string>;
-
         public messageFilterByContributorOnBoard: (Message) => boolean;
 		public messageFilterByAuthorAndTag: (Message) => boolean;
 
@@ -85,6 +83,7 @@ module TalkwallApp {
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService,
 			private $translate: angular.translate.ITranslateService,
+			private $scope: IScope,
 			private $timeout: angular.ITimeoutService,
 			private urlService: IURLService,
 			private $window: IWindowService,
@@ -95,17 +94,9 @@ module TalkwallApp {
                 this.noTag = translation;
             });
 
-            this.unselected_contributors = [];
-	        this.unselected_tags = [];
 	        this.dataService.checkAuthentication(() => {
 				this.activate();
 			}, null);
-
-	        this.dataService.setRefreshCallback(() => {
-	        	this.$timeout(() => {
-	        		console.log('times out');
-				}, 100);
-			})
 
 		}
 
@@ -116,11 +107,15 @@ module TalkwallApp {
 			} else {
 				let question_index = this.dataService.getWall().questions.length > 0 ? 0 : -1;
 				this.setQuestion(question_index);
-				if (this.dataService.data.status.authorised) {
-	                this.rightMenu3 = true;
-	                this.$mdSidenav('right').open();
-				}
 				this.selectedParticipant = this.dataService.data.status.nickname;
+				this.dataService.data.status.selectedParticipant = this.selectedParticipant;
+
+				this.$scope.$watch(() => { return this.selectedParticipant }, (newVar, oldVar) => {
+					if(newVar !== oldVar) {
+						this.dataService.data.status.selectedParticipant = newVar;
+						this.dataService.refreshBoardMessages();
+					}
+				}, true);
 
 				if (this.dataService.data.status.authorised &&
 					this.dataService.getAuthenticatedUser().defaultEmail !== undefined &&
@@ -133,39 +128,46 @@ module TalkwallApp {
 				this.messageFilterByContributorOnBoard = function(message: Message) {
 					return (!message.deleted &&
 						!handle.dataService.data.status.phoneMode &&
-						message.board !== undefined &&
-						message.board[handle.selectedParticipant] !== undefined &&
-						handle.unselected_contributors.indexOf(message.creator) === -1 &&
+						typeof message.board !== 'undefined' &&
+						typeof message.board[handle.selectedParticipant] !== 'undefined' &&
+						handle.dataService.data.status.unselected_contributors.indexOf(message.creator) === -1 &&
 						handle.messageTagsNotPresent(message));
 				};
 
 				//author+tag filtering (for messages in the feed)
 				this.messageFilterByAuthorAndTag = function(message: Message) {
-					return (!message.deleted && handle.unselected_contributors.indexOf(message.creator) === -1 && handle.messageTagsNotPresent(message));
+					return (!message.deleted && handle.dataService.data.status.unselected_contributors.indexOf(message.creator) === -1 && handle.messageTagsNotPresent(message));
 				};
 
+				this.$timeout(() => {
+					this.showFeed();
+					if (this.dataService.data.status.authorised) {
+						this.rightMenu1 = true;
+						this.$mdSidenav('right').open();
+					}
+				}, 2000);
 			}
 		}
 
 		messageTagsNotPresent(message): boolean {
 			let messageTags = this.utilityService.getPossibleTags(message.text);
-			if (messageTags !== null) {
+			if (messageTags.length > 0) {
 				let present: boolean = false;
 				for (let i = 0; i < messageTags.length; i++) {
-					if (this.unselected_tags.indexOf(messageTags[i]) === -1) {
+					if (this.dataService.data.status.unselected_tags.indexOf(messageTags[i]) === -1) {
 						present = true;
 					}
 				}
 				return present;
-
 			} else {
-				return this.unselected_tags.indexOf(this.noTag) === -1;
+				return this.dataService.data.status.unselected_tags.indexOf(this.noTag) === -1;
 			}
 		}
 
 		showFeed(): void {
 			this.feedView = true;
 			this.selectedParticipant = this.dataService.data.status.nickname;
+			this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 			this.$mdSidenav('left').open();
 		}
 
@@ -209,27 +211,27 @@ module TalkwallApp {
 
         /**** contributor filtering ******/
         contributorExists(item) {
-            return this.unselected_contributors.indexOf(item) === -1;
+            return this.dataService.data.status.unselected_contributors.indexOf(item) === -1;
         };
 
 		contributorToggle(item) {
-            let idx = this.unselected_contributors.indexOf(item);
+            let idx = this.dataService.data.status.unselected_contributors.indexOf(item);
             if (idx > -1) {
-                this.unselected_contributors.splice(idx, 1);
+				this.dataService.data.status.unselected_contributors.splice(idx, 1);
             } else {
-                this.unselected_contributors.push(item);
+				this.dataService.data.status.unselected_contributors.push(item);
             }
         };
 
-        contributorIsChecked() {
-            return this.unselected_contributors.length !== this.dataService.data.status.participants.length;
+        aContributorIsChecked() {
+            return this.dataService.data.status.unselected_contributors.length < this.dataService.data.status.contributors.length;
         };
 
         toggleAllContributors() {
-            if (this.unselected_contributors.length === this.dataService.data.status.participants.length) {
-                this.unselected_contributors = [];
+            if (this.dataService.data.status.unselected_contributors.length === this.dataService.data.status.contributors.length) {
+				this.dataService.data.status.unselected_contributors = [];
             } else {
-                this.unselected_contributors = this.dataService.data.status.participants.slice(0);
+				this.dataService.data.status.unselected_contributors = this.dataService.data.status.contributors.slice(0);
             }
         };
 		/**** end contributor filtering ******/
@@ -237,32 +239,32 @@ module TalkwallApp {
 
 		/**** tag filtering ******/
 		tagExists(item) {
-			return this.unselected_tags.indexOf(item) === -1;
+			return this.dataService.data.status.unselected_tags.indexOf(item) === -1;
 		};
 
 		tagToggle(item) {
-			let idx = this.unselected_tags.indexOf(item);
+			let idx = this.dataService.data.status.unselected_tags.indexOf(item);
 			if (idx > -1) {
-				this.unselected_tags.splice(idx, 1);
+				this.dataService.data.status.unselected_tags.splice(idx, 1);
 			} else {
-				this.unselected_tags.push(item);
+				this.dataService.data.status.unselected_tags.push(item);
 			}
 		};
 
 		tagIsChecked() {
-			return this.unselected_tags.length !== this.dataService.data.status.tags.length;
+			return this.dataService.data.status.unselected_tags.length !== this.dataService.data.status.tags.length;
 		};
 
 		toggleAllTags() {
-			if (this.unselected_tags.length === this.dataService.data.status.tags.length) {
-				this.unselected_tags = [];
+			if (this.dataService.data.status.unselected_tags.length === this.dataService.data.status.tags.length) {
+				this.dataService.data.status.unselected_tags = [];
 			} else {
-				this.unselected_tags = this.dataService.data.status.tags.slice(0);
+				this.dataService.data.status.unselected_tags = this.dataService.data.status.tags.slice(0);
 			}
 		};
 		/**** end tag filtering ******/
 
-		showMessageEditor(newMessage: boolean): void {
+		showMessageEditor(newMessage: boolean, event): void {
 			let handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(null);
@@ -293,16 +295,16 @@ module TalkwallApp {
 						);
 					} else {
 						console.log('--> WallController: Edit message - edited');
-						handle.dataService.updateMessage(message);
+						handle.dataService.updateMessages([message], 'edit');
 					}
 				}
-                handle.dataService.startPolling('none', 'none');
+                handle.dataService.startPolling();
 			}, () => {
 				//dialog dismissed
 				this.$window.document.activeElement['blur']();
 				console.log('--> WallController: Edit message dismissed');
 				handle.dataService.clearMessageToEdit();
-                handle.dataService.startPolling('none', 'none');
+                handle.dataService.startPolling();
 			});
 		}
 
