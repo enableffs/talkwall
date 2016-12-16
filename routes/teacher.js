@@ -511,7 +511,7 @@ exports.createQuestion = function(req, res) {
                     return res.status(common.StatusMessages.CREATE_ERROR.status).json({
                         message: common.StatusMessages.CREATE_ERROR.message, result: error});
                 } else {
-                    mm.statusUpdate(req.body.wall_id, newQuestion._id);
+                    mm.statusUpdate(req.body.wall_id, 'none');
                     return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message, result: wall.questions[qindex]});
                 }
@@ -610,7 +610,7 @@ exports.createMessage = function(req, res) {
         }
         else {
             // Update the message manager to notify other clients
-            mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, message, 'create', true);
+            mm.postUpdate(req.body.wall_id, message.question_id, req.body.nickname, message, 'create', true);
 
             // Update the question with this new message, and return
             Wall.findOneAndUpdate({

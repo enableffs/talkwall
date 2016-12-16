@@ -11,7 +11,7 @@
 
 /// <reference path="directives/autoresize.ts"/>
 /// <reference path="components/feedMessage/feedMessage.ts"/>
-/// <reference path="components/task/task.ts"/>
+/// <reference path="components/taskQuestion/taskQuestion.ts"/>
 /// <reference path="directives/watchboardsize.ts"/>
 
 /// <reference path="components/login/login.ts"/>
@@ -35,7 +35,7 @@ module TalkwallApp {
     /**
      * Array of dependencies to be injected in the application "dependencies".
      */
-    var dependencies = [
+    let dependencies = [
         'ngRoute',
         'ngAria',
         'ngAnimate',
@@ -56,7 +56,7 @@ module TalkwallApp {
         .directive('autoresize', AutoResize)
         .directive('watchBoardSize', WatchBoardSize)
         .directive('feedMessage', FeedMessage)
-        .directive('task', Task)
+        .directive('taskQuestion', TaskQuestion)
         .controller('ArchiveWallController', ArchiveWallController)
         .controller('LoginController', LoginController)
         .controller('JoinController', JoinController)
