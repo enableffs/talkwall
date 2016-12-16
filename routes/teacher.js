@@ -119,6 +119,7 @@ exports.createWall = function(req, res) {
                     return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                         message: common.StatusMessages.UPDATE_ERROR.message, result: error});
                 } else {
+                    mm.setup(wall._id, user.nickname);
                     return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message,
                         result: wall
@@ -510,7 +511,7 @@ exports.createQuestion = function(req, res) {
                     return res.status(common.StatusMessages.CREATE_ERROR.status).json({
                         message: common.StatusMessages.CREATE_ERROR.message, result: error});
                 } else {
-                    mm.statusUpdate(req.body.wall_id, 'none');
+                    mm.statusUpdate(req.body.wall_id, newQuestion._id);
                     return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message, result: wall.questions[qindex]});
                 }
