@@ -9,7 +9,7 @@ var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
 var User = require('../models/user');
 var Question = require('../models/question');
-
+var Message = require('../models/message');
 
 // Given an integer range, generate a random number within it
 function randomNumberInRange(min, max) {
@@ -147,7 +147,7 @@ exports.updateWall = function(req, res) {
     if (req.body.wall.closed) {
         redisClient.EXPIRE(req.body.wall.pin, 1);
         req.body.wall.pin = '0000';
-        mm.removeAllFromWall(req.body.wall._id);
+        mm.removeWall(req.body.wall._id);
     }
 
     var query = Wall.findOneAndUpdate({
@@ -159,7 +159,7 @@ exports.updateWall = function(req, res) {
             return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
-            mm.putUpdate(wall._id, 'none', '', null, true);
+            mm.statusUpdate(wall._id, 'none');
 
             if (wall.closed) {
                 //send an email to the wall creator with the permalink.
@@ -250,7 +250,7 @@ exports.closeWall = function(req, res) {
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
             redisClient.EXPIRE(wall.pin, 1);
-            mm.removeAllFromWall(wall._id);
+            mm.removeWall(wall._id);
             console.log('--> closeWall: sending export link');
             sendExportLinkToOwner(wall.createdBy, req.body.targetEmail).then(function() {
                 return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
@@ -270,14 +270,60 @@ exports.notifyChangeQuestion = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
     || typeof req.params.question_id === 'undefined' || req.params.question_id == null
+    || typeof req.params.previous_question_id === 'undefined' || req.params.previous_question_id == null
     || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
-    mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
-    mm.putUpdate(req.params.wall_id, req.params.question_id, '', null, true);
+    if (req.params.previous_question_id !== 'none') {
+        mm.removeUserFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname, true);
+    }
+    mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
+    mm.statusUpdate(req.params.wall_id, req.params.question_id);
     return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
         message: common.StatusMessages.UPDATE_SUCCESS.message});
+};
+
+
+/**
+ * @api {get} /disconnect Disconnect teacher from a wall with pin
+ *
+ * @apiName disconnectWall
+ * @apiGroup authorised
+ *
+ * @apiParam {String} wall_id ID of the wall to get
+ * @apiParam {String} question_id ID of the question to get
+ * @apiParam {String} nickname Connecting client's nickname
+ *
+ */
+exports.disconnectWall = function(req, res) {
+
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
+        || typeof req.params.question_id === 'undefined' || req.params.question_id == null
+        || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Wall.findOne({
+        _id : req.params.wall_id,
+        pin : { $gte: 0 }       // Wall is not available to clients if pin is -1
+    }).lean();
+
+    query.exec(function(error, wall) {
+        if(error) {
+            return res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
+                message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error});
+        }
+        else {
+            // Remove nickname from the wall users list (message manager)
+            mm.removeUserFromQuestion(wall._id, req.params.question_id, req.params.nickname, true);
+            mm.removeUserFromWall(wall._id, req.params.nickname, true);
+            return res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+                message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message, result: wall});
+        }
+    });
+
 };
 
 
@@ -351,7 +397,7 @@ exports.getWalls = function(req, res) {
  *
  * @apiSuccess {Wall} wall Wall object
  */
-exports.getWallAuthorised = function(req, res) {
+exports.getWall = function(req, res) {
     if (typeof req.params.id === 'undefined' || req.params.id == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
@@ -386,8 +432,10 @@ exports.getWallAuthorised = function(req, res) {
                             message: common.StatusMessages.UPDATE_ERROR.message, result: error
                         });
                     } else {
-                        mm.addUser(wall._id, '', user.nickname + '\u2665' + user.defaultEmail); // '\u2665' is an uncommon character used to delimit the nickname from the teachers email address
-                        mm.putUpdate(wall.id, 'none', '', null, true);
+                        mm.setup(wall._id, user.nickname);
+                        //mm.addUserToQuestion(wall._id, '', user.nickname, true);
+                        //mm.putUpdate(wall.id, 'none', '', null, true);
+                        mm.statusUpdate(wall._id, 'none');
                         return res.status(common.StatusMessages.GET_SUCCESS.status).json({
                             message: common.StatusMessages.GET_SUCCESS.message, result: wall
                         });
@@ -400,13 +448,14 @@ exports.getWallAuthorised = function(req, res) {
 
 
 exports.getQuestionContributors = function(req, res) {
-    if (typeof req.params.wid === 'undefined' || req.params.wid == null || typeof req.params.qid === 'undefined' || req.params.qid == null) {
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
+        || typeof req.params.question_id === 'undefined' || req.params.question_id == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
     var query = Wall.findOne({
-        _id : req.params.wid
+        _id : req.params.wall_id
     });
 
     query.exec(function(error, wall) {
@@ -416,7 +465,7 @@ exports.getQuestionContributors = function(req, res) {
         }
         else if (wall !== null) {
             for (var i = 0; i < wall.questions.length; i++) {
-                if ((wall.questions[i]._id).toString() === req.params.qid) {
+                if ((wall.questions[i]._id).toString() === req.params.question_id) {
                     return res.status(common.StatusMessages.GET_SUCCESS.status).json({
                         message: common.StatusMessages.GET_SUCCESS.message, result: wall.questions[i].contributors});
                 }
@@ -461,7 +510,7 @@ exports.createQuestion = function(req, res) {
                     return res.status(common.StatusMessages.CREATE_ERROR.status).json({
                         message: common.StatusMessages.CREATE_ERROR.message, result: error});
                 } else {
-                    mm.putUpdate(req.body.wall_id, 'none', '', null, true);
+                    mm.statusUpdate(req.body.wall_id, 'none');
                     return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message, result: wall.questions[qindex]});
                 }
@@ -495,7 +544,7 @@ exports.updateQuestion = function(req, res) {
             return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
-            mm.putUpdate(wall._id, 'none', '', null, true);
+            mm.statusUpdate(wall._id, 'none');
             return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
         }
@@ -526,12 +575,107 @@ exports.deleteQuestion = function(req, res) {
             return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
-            mm.putUpdate(req.params.wall_id, 'none', '', null, true);
+            mm.statusUpdate(req.params.wall_id, 'none');
             return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
         }
     })
 };
+
+
+/**
+ * @api {post} /messageteacher Create a new message and add it to the Question
+ * @apiName createMessage
+ * @apiGroup authorised
+ *
+ * @apiSuccess {Message} message Newly created message
+ */
+exports.createMessage = function(req, res) {
+
+    if (typeof req.body.message === 'undefined' || req.body.message == null
+        || typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
+        || typeof req.body.nickname === 'undefined' || req.body.nickname == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    // Create a new Message with the supplied object, including board properties   *** Not vetted!! :S
+    var newMessage = new Message(req.body.message);
+    newMessage.save(function (error, message) {
+        if (error) {
+            return res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                message: common.StatusMessages.CREATE_ERROR.message, result: error
+            });
+        }
+        else {
+            // Update the message manager to notify other clients
+            mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, message, 'create', true);
+
+            // Update the question with this new message, and return
+            Wall.findOneAndUpdate({
+                '_id': req.body.wall_id,
+                'questions._id': req.body.message.question_id
+            }, { $push: { "questions.$.messages" : message}, $addToSet: { "questions.$.contributors" : req.body.nickname }}, function(error, wall) {
+                if(error) {
+                    return res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                        message: common.StatusMessages.CREATE_ERROR.message
+                    });
+                } else {
+                    return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                        message: common.StatusMessages.CREATE_SUCCESS.message, result: message
+                    });
+                }
+            });
+        }
+    })
+
+
+};
+
+
+/**
+ * @api {put} /messageteacher Edit a message by submitting a Message object and pin
+ * @apiName updateMessages
+ * @apiGroup authorised
+ *
+ */
+exports.updateMessages = function(req, res) {
+
+    if (typeof req.body.messages === 'undefined' || req.body.messages == null
+        || typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
+        || typeof req.body.controlString === 'undefined' || req.body.controlString == null
+        || typeof req.body.nickname === 'undefined' || req.body.nickname == null) {
+        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    for (var m = 0; m < req.body.messages.length; m++) {
+        var message = req.body.messages[m];
+        var query = Message.findOneAndUpdate({
+            _id: message._id
+        }, message, {new: true});
+
+        query.exec(function (error, updated_message) {
+            if (error) {
+                return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                    message: common.StatusMessages.UPDATE_ERROR.message, result: error
+                });
+            } else {
+                // Update the message manager to notify other clients
+                if (req.body.controlString !== 'none') {
+                    mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, true);
+                }
+
+                return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                    message: common.StatusMessages.UPDATE_SUCCESS.message, result: updated_message
+                });
+            }
+        })
+    }
+
+};
+
+
 
 exports.createTestUser = function() {
 
@@ -571,18 +715,18 @@ exports.poll = function(req, res) {
         || typeof req.params.question_id === 'undefined' || req.params.question_id == null
         || typeof req.params.previous_question_id === 'undefined' || req.params.previous_question_id == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null
-        || typeof req.params.control === 'undefined' || req.params.control == null) {
+        || typeof req.params.controlString === 'undefined' || req.params.controlString == null) {
         return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    if (req.params.control === 'change' && req.params.previous_question_id !== 'none') {
+    if (req.params.controlString === 'change' && req.params.previous_question_id !== 'none') {
         // We are changing questions, so remove the user from previous question and add them to the new one
-        mm.removeFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname);
-        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
-    } else if (req.params.control === 'new') {
+        mm.removeUserFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname, true);
+        mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
+    } else if (req.params.controlString === 'new' && req.params.question_id !== 'none') {
         // We are entering for the first time, so add the user
-        mm.addUser(req.params.wall_id, req.params.question_id, req.params.nickname, true);
+        mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     }
 
     // Return an update to the user

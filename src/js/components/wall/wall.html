@@ -132,6 +132,9 @@
 								<!--<md-icon md-svg-src="images/ic_people_black_24px.svg" aria-hidden="true"></md-icon>-->
 								<span flex>{{wallC.dataService.data.status.participants.length}} {{ 'WALL_NUMBERPARTICIPANTS' | translate }}</span>
 							</div>
+							<div class="wall-joinRow wall-joinRow4" layout="row">
+								<span flex>{{wallC.dataService.data.status.totalOnTalkwall}} {{'WALL_TALKWALLPARTICIPANTS' | translate}}</span>
+							</div>
 						</div>
 					</md-content>
 				</section>
@@ -153,9 +156,9 @@
                                     <h3>{{ 'WALL_FILTERBYCREATOR' | translate }}</h3>
                                 </md-list-item>
                                 <md-list-item>
-                                    <md-label flex="80"><p><span ng-if="wallC.contributorIsChecked()">{{ 'WALL_UN' | translate }}</span>{{ 'WALL_SELECTALL' | translate }}</p></md-label>
+                                    <md-label flex="80"><p><span ng-if="wallC.aContributorIsChecked()">{{ 'WALL_UN' | translate }}</span>{{ 'WALL_SELECTALL' | translate }}</p></md-label>
                                     <md-checkbox aria-label="Select All"
-                                                 ng-checked="wallC.contributorIsChecked()"
+                                                 ng-checked="wallC.aContributorIsChecked()"
                                                  ng-click="wallC.toggleAllContributors()">
                                     </md-checkbox>
                                     <md-divider></md-divider>
@@ -282,7 +285,7 @@
 			</div>
 
 			<!-- (+) fab button to show the editMessage bottomPane -->
-			<md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && !wallC.dataService.data.status.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true)">
+			<md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && !wallC.dataService.data.status.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true, $event)">
 				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 			</md-button>
 		</div>
