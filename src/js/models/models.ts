@@ -4,6 +4,15 @@ module TalkwallApp {
     "use strict";
     import MomentStatic = moment.MomentStatic;
 
+    enum LogType {
+        EditMessage = 0,
+        MarkMessage = 1,
+        EditTask = 2,
+        AddTask = 3,
+        PromoteMessage = 4,
+        MoveMessage = 5
+    }
+
     export class User {
         _id: string;
         nickname: string;
@@ -255,6 +264,22 @@ module TalkwallApp {
             };
             this.created = {};
             this.updated = {};
+        }
+    }
+
+    export class LogEntry {
+        type: LogType;
+        id: string;
+        nickname: string;
+        timestamp: Date;
+        diff: {x: number, y: number };
+
+        constructor(type, id, nickname, diff) {
+            this.type = type;
+            this.id = id;
+            this.nickname = nickname;
+            this.diff = diff;
+            this.timestamp = new Date();
         }
     }
 }

@@ -76,6 +76,14 @@ module TalkwallApp {
          * @return the current wall
          */
         getWall(): Wall;
+
+        /**
+         *
+         * @param type
+         * @param id
+         * @param diff      Change in position from the previous location
+         */
+        logAnEvent(type, id, diff): void;
         /**
          * get current question
          * @return the current question
@@ -269,13 +277,15 @@ module TalkwallApp {
                 restrictPositionRequests: boolean;
                 restrictPositionRequestMessages: { [message_id: string ] : Message };
                 idleTerminationTime: number;
-            }
+            },
+            log: LogEntry[]
         };
 
         private customFullscreen;
         private noTag = 'no tag';
         private pollingTimerHandle = null;
         private restrictTimerHandle = null;
+        private logEventTimeSplit = 5;
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
@@ -318,7 +328,8 @@ module TalkwallApp {
                     restrictPositionRequests: false,
                     restrictPositionRequestMessages: {},
                     idleTerminationTime: 43200             // One year = 525600 minutes.  One month = 43200 minutes.
-                }
+                },
+                log: []
             };
 
             this.customFullscreen = this.$mdMedia('xs') || this.$mdMedia('sm');
@@ -328,6 +339,10 @@ module TalkwallApp {
                 this.noTag = translation;
             });
 
+        }
+
+        logAnEvent(type, id, diff) {
+            this.data.log.push(new LogEntry(type, id, this.data.status.nickname, diff));
         }
 
         restrictRequests() {
