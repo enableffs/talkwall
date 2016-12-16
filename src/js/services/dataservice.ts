@@ -255,6 +255,7 @@ module TalkwallApp {
             wall: Wall,
             question: Question,
             status: {
+                joinedWithPin: boolean;
                 authorised: boolean;
                 nickname: string;
                 participants: Array<string>;
@@ -306,6 +307,7 @@ module TalkwallApp {
                 wall: null,
                 question: null,
                 status: {
+                    joinedWithPin: false,
                     authorised: false,
                     nickname: null,
                     participants: [],
@@ -364,21 +366,22 @@ module TalkwallApp {
             let tKey = 'authenticationToken', tokenKey = 'token';
             this.data.status.phoneMode = this.$mdMedia('max-width: 960px');
             let tokenParam = this.$routeParams[tKey] || '';
-            if (tokenParam !== '') {
+            if (tokenParam !== '' && !this.data.status.joinedWithPin) {
                 //look at the route params first for 'authenticationToken'
                 console.log('--> DataService: token from parameter');
                 this.$window.sessionStorage[tokenKey] = tokenParam;
                 //this will reload the page, clearing the token parameter. next time around it will hit the next 'else if'
                 this.$location.search(tKey, null);
-            } else if (this.$window.sessionStorage[tokenKey]) {
-                this.data.status.authorised = true;
+            } else if (this.$window.sessionStorage[tokenKey] && !this.data.status.joinedWithPin) {
                 //look at the window session object for the token. time to load the question
-                console.log('--> DataService: token already existing');
+                console.log('--> DataService: token already exists');
 
                 this.requestUser((user: User) => {
                         this.data.status.nickname = user.nickname;
+                        this.data.status.authorised = true;
                         if (user.lastOpenedWall === null) {
                             this.createWall(successCallbackFn, errorCallbackFn);
+
                         } else {
                             this.$mdDialog.show({
                                 controller: ArchiveWallController,
@@ -412,6 +415,8 @@ module TalkwallApp {
                             });
                         }
                     }, () => {
+                        // We are not authorised for this wall
+                        this.data.status.authorised = false;
                         //TODO: handle get user error
                     }
                 );
