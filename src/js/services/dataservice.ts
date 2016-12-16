@@ -963,12 +963,14 @@ module TalkwallApp {
                         this.clearMessageToEdit();
 
                         //update the messages array with the updated object, so that all references are in turn updated
+                        /*
                         this.data.question.messages.forEach((m: Message) => {
                             if (m._id === data.data[resultKey][idKey]) {
                                 m.updateMe(data.data[resultKey]);
                                 this.parseMessageForTags(data.data[resultKey]);
                             }
                         })
+                        */
                     }, (error) => {
                         console.log('--> DataService: updateMessage failure: ' + error);
                         //this.data.status.messageToEdit = message;
