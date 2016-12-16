@@ -4,26 +4,26 @@
 		<!-- Mesage control sub section -->
 		<div layout="column" ng-if="feedMessageC.showControls" layout-align="center center" class="feedMessage-messageControl">
 			<div layout="row">
-				<md-button aria-label="Hide message controls" ng-click="feedMessageC.showControls = false" class="feedMessage-showControlButton feedMessage-messageNotSelected">
+				<md-button aria-label="Hide message controls" ng-click="feedMessageC.toggleShowControls($event)" class="feedMessage-showControlButton feedMessage-messageNotSelected">
 					<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
 				</md-button>
 
-				<md-button aria-label="Delete message" ng-if="feedMessageC.isolatedScope.onBoard === 'false'" ng-click="feedMessageC.deleteMessage()" class="feedMessage-showControlButton">
+				<md-button aria-label="Delete message" ng-if="feedMessageC.isolatedScope.onBoard === 'false'" ng-click="feedMessageC.deleteMessage($event)" class="feedMessage-showControlButton">
 					<md-icon md-svg-icon="images/ic_delete_forever_orange_24px.svg" ></md-icon>
 				</md-button>
-				<md-button aria-label="Toggle highlight message" ng-if="feedMessageC.isolatedScope.onBoard === 'true'" ng-click="feedMessageC.toggleHighlightMessage()" class="feedMessage-showControlButton"
+				<md-button aria-label="Toggle highlight message" ng-if="feedMessageC.isolatedScope.onBoard === 'true'" ng-click="feedMessageC.toggleHighlightMessage($event)" class="feedMessage-showControlButton"
 						   ng-class="{'feedMessage-messageSelected': feedMessageC.message.isHighlighted && feedMessageC.isolatedScope.onBoard === 'true'}">
 					<md-icon ng-show="!feedMessageC.message.isHighlighted" md-svg-icon="images/ic_lightbulb_outline_orange_24px.svg"></md-icon>
 					<md-icon ng-show="feedMessageC.message.isHighlighted" md-svg-icon="images/ic_lightbulb_outline_darkgrey_24px.svg"></md-icon>
 				</md-button>
 			</div>
 			<div layout="row">
-				<md-button aria-label="Toggle select message" ng-click="feedMessageC.togglePinMessage()" class="feedMessage-showControlButton"
+				<md-button aria-label="Toggle select message" ng-click="feedMessageC.togglePinMessage($event)" class="feedMessage-showControlButton"
 						   ng-class="{'feedMessage-messageSelected': feedMessageC.isPinned()}">
 					<md-icon ng-show="!feedMessageC.isPinned()" md-svg-icon="images/ic_pin_orange_24px.svg"></md-icon>
 					<md-icon ng-show="feedMessageC.isPinned()" md-svg-icon="images/ic_pin_black_24px.svg"></md-icon>
 				</md-button>
-				<md-button aria-label="Edit message" ng-click="feedMessageC.editMessage()" class="feedMessage-showControlButton">
+				<md-button aria-label="Edit message" ng-click="feedMessageC.editMessage($event)" class="feedMessage-showControlButton">
 					<md-icon md-svg-icon="images/ic_mode_edit_orange_24px.svg"></md-icon>
 				</md-button>
 			</div>
@@ -31,7 +31,7 @@
 
 		<!-- Mesage control activator -->
 		<div layout="column" ng-if="!feedMessageC.showControls" layout-align="center center" ng-class="feedMessageC.getPinnedClass()">
-			<md-button aria-label="Show message controls" ng-show="!feedMessageC.showControls" ng-click="feedMessageC.showControls = true" class="feedMessage-showControlButton">
+			<md-button aria-label="Show message controls" ng-show="!feedMessageC.showControls" ng-click="feedMessageC.toggleShowControls($event)" class="feedMessage-showControlButton">
 				<md-icon md-svg-icon="images/ic_menu_grey_24px.svg"></md-icon>
 			</md-button>
 		</div>

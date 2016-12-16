@@ -23,20 +23,20 @@ module TalkwallApp {
 		/**
 		 * Toggles which right menu should be open
 		 */
-		toggleRightMenu(index: number): void;
+		toggleRightMenu(index: number, event: Event): void;
 		/**
 		 * Add a new question
 		 */
-		addQuestion(): void;
+		addQuestion(event: Event): void;
 		/**
 		 * Update a question
 		 */
-		saveQuestion(): void;
+		saveQuestion(event: Event): void;
         /**
          * Get question at index
          * @param index wall.questions Index of the question being selected
          */
-        setQuestion(index: number): void;
+        setQuestion(index: number, event: Event): void;
         /**
          * Check if question has been edited
          */
@@ -44,19 +44,19 @@ module TalkwallApp {
         /**
          * Change the grid type
          */
-        setGrid(type: string): void;
+        setGrid(type: string, event: Event): void;
 
         contributorExists(item: string): boolean;
-		contributorToggle(item: string): void;
+		contributorToggle(item: string, event: Event): void;
 		aContributorIsChecked(): boolean;
-        toggleAllContributors(): void;
+        toggleAllContributors(event: Event): void;
 
 		tagExists(item: string): boolean;
-		tagToggle(item: string): void;
+		tagToggle(item: string, event: Event): void;
 		tagIsChecked(): boolean;
-		toggleAllTags(): void;
+		toggleAllTags(event: Event): void;
 
-		showScreenContributors(): void;
+		showScreenContributors(event: Event): void;
 		showFeed(event: Event): void;
 	}
 
@@ -106,7 +106,7 @@ module TalkwallApp {
 				this.$window.location.href = this.urlService.getHost() + '/#/';
 			} else {
 				let question_index = this.dataService.data.wall.questions.length > 0 ? 0 : -1;
-				this.setQuestion(question_index);
+				this.setQuestion(question_index, null);
 				this.selectedParticipant = this.dataService.data.status.nickname;
 				this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 
@@ -166,6 +166,7 @@ module TalkwallApp {
 
 		showFeed(event): void {
         	if(event !== null) {
+				event.preventDefault();
 				event.stopPropagation();
 			}
 			this.feedView = true;
@@ -174,13 +175,21 @@ module TalkwallApp {
 			this.$mdSidenav('left').open();
 		}
 
-		showScreenContributors(): void {
+		showScreenContributors(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			this.magnified = false;
 			this.feedView = false;
 			this.$mdSidenav('left').open();
 		}
 
-        setQuestion(index) {
+        setQuestion(index, event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 	        this.dataService.setQuestion(index,
 		        () => {
                     if ( this.dataService.data.status.currentQuestionIndex !== -1 ) {
@@ -193,12 +202,20 @@ module TalkwallApp {
 	        );
 		}
 
-		closeWall(targetEmail) {
+		closeWall(targetEmail, event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			this.dataService.closeWallNow(targetEmail);
 			this.owneremail = undefined;
 		}
 
-        setGrid(type): void {
+        setGrid(type, event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
             this.dataService.data.status.questionToEdit.grid = type;
         }
 
@@ -217,7 +234,11 @@ module TalkwallApp {
             return this.dataService.data.status.unselected_contributors.indexOf(item) === -1;
         };
 
-		contributorToggle(item) {
+		contributorToggle(item, event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
             let idx = this.dataService.data.status.unselected_contributors.indexOf(item);
             if (idx > -1) {
 				this.dataService.data.status.unselected_contributors.splice(idx, 1);
@@ -230,7 +251,11 @@ module TalkwallApp {
             return this.dataService.data.status.unselected_contributors.length < this.dataService.data.status.contributors.length;
         };
 
-        toggleAllContributors() {
+        toggleAllContributors(event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
             if (this.dataService.data.status.unselected_contributors.length === this.dataService.data.status.contributors.length) {
 				this.dataService.data.status.unselected_contributors = [];
             } else {
@@ -245,7 +270,11 @@ module TalkwallApp {
 			return this.dataService.data.status.unselected_tags.indexOf(item) === -1;
 		};
 
-		tagToggle(item) {
+		tagToggle(item, event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			let idx = this.dataService.data.status.unselected_tags.indexOf(item);
 			if (idx > -1) {
 				this.dataService.data.status.unselected_tags.splice(idx, 1);
@@ -258,7 +287,11 @@ module TalkwallApp {
 			return this.dataService.data.status.unselected_tags.length !== this.dataService.data.status.tags.length;
 		};
 
-		toggleAllTags() {
+		toggleAllTags(event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			if (this.dataService.data.status.unselected_tags.length === this.dataService.data.status.tags.length) {
 				this.dataService.data.status.unselected_tags = [];
 			} else {
@@ -268,6 +301,10 @@ module TalkwallApp {
 		/**** end tag filtering ******/
 
 		showMessageEditor(newMessage: boolean, event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			let handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(null);
@@ -311,7 +348,28 @@ module TalkwallApp {
 			});
 		}
 
-		toggleRightMenu(n: number): void {
+		closeLeftSidenav(event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			this.$mdSidenav('left').close();
+			this.magnified = false;
+		}
+
+		toggleMagnified(event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			this.magnified = !this.magnified;
+		}
+
+		toggleRightMenu(n: number, event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			console.log('--> WallController: toggleRightMenu: ' + n);
 			switch (n) {
 				case 1:
@@ -347,22 +405,34 @@ module TalkwallApp {
 			}
 		}
 
-		addQuestion(): void {
+		addQuestion(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			this.dataService.data.status.questionToEdit = new Question('');
 			this.dataService.data.status.questionToEdit.isNew = true;
 		}
 
-		cancelEditQuestion(): void {
+		cancelEditQuestion(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			this.dataService.data.status.questionToEdit = null;
 		}
 
-		saveQuestion(): void {
+		saveQuestion(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			if(this.dataService.data.status.questionToEdit.isNew) {
 				this.dataService.addQuestion(
 					() => {
 						//set to the new question if none
 						if (this.dataService.data.question === null) {
-							this.setQuestion(0);
+							this.setQuestion(0, null);
 						}
 						//clear the question to edit ...
 						this.dataService.setQuestionToEdit(null);
@@ -376,7 +446,7 @@ module TalkwallApp {
 					() => {
 						//set to the new question if none
 						if (this.dataService.data.question === null) {
-							this.setQuestion(0);
+							this.setQuestion(0, null);
 						}
 						//clear the question to edit ...
 						this.dataService.setQuestionToEdit(null);

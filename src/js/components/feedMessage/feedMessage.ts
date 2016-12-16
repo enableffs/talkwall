@@ -7,10 +7,10 @@ module TalkwallApp {
 	"use strict";
 
     export interface IFeedMessageController {
-        deleteMessage(): void;
-        editMessage(): void;
-        togglePinMessage(): void;
-        toggleHighlightMessage(): void;
+        deleteMessage(event: Event): void;
+        editMessage(event: Event): void;
+        togglePinMessage(event: Event): void;
+        toggleHighlightMessage(event: Event): void;
 	    isPinned(): boolean;
     }
 
@@ -38,11 +38,23 @@ module TalkwallApp {
             }
 		};
 
+		toggleShowControls(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			this.showControls = !this.showControls;
+		}
+
 		isPinned(): boolean {
 			return (typeof this.message.board !== 'undefined' && typeof this.message.board[this.isolatedScope.selectedParticipant] !== 'undefined');
 		}
 
-		deleteMessage(): void {
+		deleteMessage(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			//check if authenticated or author
 			if (this.message.creator === this.dataService.data.status.nickname || this.dataService.data.status.authorised) {
 				this.message.deleted = true;
@@ -51,7 +63,11 @@ module TalkwallApp {
 			this.showControls = false;
 		}
 
-		editMessage(): void {
+		editMessage(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			if (this.message.creator === this.dataService.data.status.nickname) {
 				this.dataService.setMessageToEdit(this.message);
 			} else {
@@ -62,7 +78,11 @@ module TalkwallApp {
 			this.showControls = false;
 		}
 
-		togglePinMessage(): void {
+		togglePinMessage(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			if (this.isPinned()) {
                 delete this.message.board[this.dataService.data.status.nickname];
             } else {
@@ -76,7 +96,11 @@ module TalkwallApp {
 			this.showControls = false;
 		}
 
-		toggleHighlightMessage(): void {
+		toggleHighlightMessage(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			if (this.dataService.data.status.selectedParticipant === this.dataService.data.status.nickname) {
 				this.message.board[this.dataService.data.status.nickname].highlighted
 					= !this.message.board[this.dataService.data.status.nickname].highlighted;
@@ -142,8 +166,12 @@ module TalkwallApp {
 		function positionMessage() {
 
 			element.on('mousedown touchstart', function(event) {
-				// Prevent default dragging of selected content
-				event.preventDefault();
+				// Prevent touches from other places
+				/*
+				if(event.currentTarget['id'].indexOf('message-') === -1) {
+					return;
+				}
+				*/
 				currentSize = ctrl.dataService.data.status.boardDivSize;
 				messageWidth = element.prop('offsetWidth');
 				messageHeight = element.prop('offsetHeight');
