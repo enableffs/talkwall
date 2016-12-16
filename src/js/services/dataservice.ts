@@ -460,12 +460,12 @@ module TalkwallApp {
                 .then((result) => {
                     let resultKey = 'result';
                     this.data.user = result.data[resultKey];
-                    console.log('--> DataService: getUser success');
+                    console.log('--> DataService: requestUser success');
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn(this.data.user);
                     }
                 }, (error) => {
-                    console.log('--> DataService: getUser failure: ' + error);
+                    console.log('--> DataService: requestUser failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
@@ -483,7 +483,7 @@ module TalkwallApp {
                     let question_index = this.data.wall.questions.length > 0 ? 0 : -1;
                     this.setQuestion(question_index, successCallbackFn, errorCallbackFn);
                 }, (error) => {
-                    console.log('--> DataService: getWall failure: ' + error);
+                    console.log('--> DataService: requestWall failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
@@ -663,7 +663,7 @@ module TalkwallApp {
                         successCallbackFn();
                     }
                 }, (error) => {
-                    console.log('--> DataService: getQuestion failure: ' + error);
+                    console.log('--> DataService: updateWall failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
@@ -738,7 +738,7 @@ module TalkwallApp {
                         successCallbackFn();
                     }
                 }, (error) => {
-                    console.log('--> DataService: getQuestion failure: ' + error);
+                    console.log('--> DataService: addQuestion failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
@@ -797,7 +797,7 @@ module TalkwallApp {
                         successCallbackFn(401);
                     }
                 }, (error) => {
-                    console.log('--> DataService deleteQuestion: getMessages failure: ' + error);
+                    console.log('--> DataService deleteQuestion: deleteQuestion failure: ' + error);
                     errorCallbackFn(error);
                 });
         }
@@ -855,7 +855,7 @@ module TalkwallApp {
                         successCallbackFn();
                     }
                 }, (error) => {
-                    console.log('--> DataService: getQuestion failure: ' + error);
+                    console.log('--> DataService: addMessage failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
