@@ -160,8 +160,6 @@ exports.updateWall = function(req, res) {
             res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
-            mm.statusUpdate(wall._id, 'none');
-
             if (wall.closed) {
                 //send an email to the wall creator with the permalink.
                 console.log('--> updateWall: sending export link: targetemail: ' + req.body.wall.targetEmail);
@@ -169,6 +167,7 @@ exports.updateWall = function(req, res) {
                     res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});                    
                 });
             } else {
+                mm.statusUpdate(wall._id, 'none');
                 res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                     message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
             }
