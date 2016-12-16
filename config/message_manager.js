@@ -249,7 +249,7 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  * Update a message
  *
  * @param {string} wall_id
- * @param {string} question_id                      question_id can be 'none' if the teacher has not changed questions
+ * @param {string} question_id
  * @param {string} nickname                         the particular calling user
  * @param {object} updated_message                  the message object edited by the calling user. null if no changes
  * @param {string} controlString                    the type of update to be performed
@@ -276,22 +276,16 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         }
     }
 
-    var connectedStudents = this.data.walls[wall_id].status.connected_students;
-    var connectedTeachers = this.data.walls[wall_id].status.connected_teachers;
+    var thisQuestion = this.data.walls[wall_id].questions[question_id];
 
     // Make note of my changes in other users' lists on the same question
     switch(controlString) {
 
         // Only the originator of a message can make a 'create' ( a new message )
         case 'create':
-            for (var student in connectedStudents) {
-                if (student !== nickname && connectedStudents.hasOwnProperty(student)) {
-                    this.data.walls[wall_id].questions[question_id].created[student][updated_message._id] = updated_message;
-                }
-            }
-            for (var teacher in connectedTeachers) {
-                if (teacher !== nickname && connectedTeachers.hasOwnProperty(teacher)) {
-                    this.data.walls[wall_id].questions[question_id].created[teacher][updated_message._id] = updated_message;
+            for (var user in thisQuestion.created) {
+                if (user !== nickname && thisQuestion.created.hasOwnProperty(user)) {
+                    thisQuestion.created[user][updated_message._id] = updated_message;
                 }
             }
             break;
@@ -300,26 +294,14 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         case 'edit':
 
             var userQueue = null;
-
-            // Update student notifications
-            for (var student2 in connectedStudents) {
+            for (var user2 in thisQuestion.updated) {
 
                 // If the nickname is not our own, make a notification
-                if (student2 !== nickname && connectedStudents.hasOwnProperty(student2)) {
-                    userQueue = this.data.walls[wall_id].questions[question_id].updated[student2];
-                    editUpdate(userQueue);
-                }
-            }
-
-            // Update teacher notification
-            for (var teacher2 in connectedTeachers) {
-
-                // If the nickname is not our own, make a notification
-                if (teacher2 !== nickname && connectedTeachers.hasOwnProperty(teacher2)) {
-                    userQueue = this.data.walls[wall_id].questions[question_id].updated[teacher2];
+                if (user2 !== nickname && thisQuestion.updated.hasOwnProperty(user2)) {
+                    userQueue = thisQuestion.updated[user2];
                     editUpdate(userQueue);
 
-                    // Teacher's update may already have position data, so mark it now as mixed data
+                    // Update may already have position data, so mark it now as mixed data
                     userQueue[updated_message._id].updateType
                         = userQueue[updated_message._id].updateType === 'position' ? 'mixed' : 'edit';
                 }
@@ -329,11 +311,11 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         // Anyone can report position changes, but only the teacher will see them (spec as at December 2016)
         case 'position':
 
-            for (var teacher3 in connectedTeachers) {
+            for (var user3 in thisQuestion.updated) {
 
                 // If the nickname is not our own, make a notification
-                if (teacher3 !== nickname && connectedTeachers.hasOwnProperty(teacher3)) {
-                    userQueue = this.data.walls[wall_id].questions[question_id].updated[teacher3];
+                if (user3 !== nickname && thisQuestion.updated.hasOwnProperty(user3)) {
+                    userQueue = thisQuestion.updated[user3];
 
                     // Has an update to this message already been registered?
                     if (userQueue.hasOwnProperty(updated_message._id)) {

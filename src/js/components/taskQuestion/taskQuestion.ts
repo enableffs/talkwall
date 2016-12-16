@@ -4,30 +4,29 @@
 
 module TalkwallApp {
 	"use strict";
-	import IDialogService = angular.material.IDialogService;
-	class TaskController {
+
+	export interface ITaskQuestionController {
+		deleteQuestion(event): void;
+		editQuestion(): void;
+	}
+
+	class TaskQuestionController implements ITaskQuestionController {
 		static $inject = ['$scope', 'DataService', '$mdDialog'];
 
 		private question: Question;
-		private showControls: boolean = false;
+		private showControls: boolean;
 
 		constructor(
-			private isolatedScope: TaskDirectiveScope,
+			private isolatedScope: TaskQuestionDirectiveScope,
 			public dataService: DataService,
-			private $mdDialog: IDialogService) {
-			this.question = isolatedScope.data;
+			private $mdDialog: angular.material.IDialogService) {
+				this.question = isolatedScope.data;
+				this.showControls = false;
 		};
 
-		/**
-		 * init
-		 */
-		activate(): void {
-			console.log('--> TaskController activated');
-		}
-
-		deleteQuestion(ev): void {
+		deleteQuestion(event): void {
 			console.log('--> TaskController delete');
-			var handle = this;
+			let handle = this;
 			this.dataService.deleteQuestion(this.question,
 				function(code) {
 					if (code === 401) {
@@ -40,14 +39,7 @@ module TalkwallApp {
 						);
 					} else {
 						//200 => set question to 0
-						handle.dataService.setQuestion(0,
-							() => {
-								//success
-							},
-							function() {
-								//error
-							}
-						);
+						handle.dataService.setQuestion(0, null, null);
 					}
 				},
 				function(error) {
@@ -63,20 +55,20 @@ module TalkwallApp {
 	}
 
 	//isolated scope interface
-	export interface TaskDirectiveScope extends ng.IScope {
+	export interface TaskQuestionDirectiveScope extends ng.IScope {
 		data: Question;
 	}
 
 	//directive declaration
-	export function Task(): ng.IDirective {
+	export function TaskQuestion(): ng.IDirective {
 		return {
 			restrict: 'A',
 			scope: {
 				data: '='
 			},
-			templateUrl: 'js/components/task/task.html',
-			controller: TaskController,
-			controllerAs: 'taskC',
+			templateUrl: 'js/components/taskQuestion/taskQuestion.html',
+			controller: TaskQuestionController,
+			controllerAs: 'taskQuestionC',
 			replace: true
 		};
 	}
