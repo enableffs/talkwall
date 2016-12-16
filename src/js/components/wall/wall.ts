@@ -57,7 +57,7 @@ module TalkwallApp {
 		toggleAllTags(): void;
 
 		showScreenContributors(): void;
-		showFeed(): void;
+		showFeed(event: Event): void;
 	}
 
 	export class WallController implements IWallControllerService {
@@ -140,7 +140,7 @@ module TalkwallApp {
 				};
 
 				this.$timeout(() => {
-					this.showFeed();
+					this.showFeed(null);
 					if (this.dataService.data.status.authorised) {
 						this.rightMenu1 = true;
 						this.$mdSidenav('right').open();
@@ -164,7 +164,10 @@ module TalkwallApp {
 			}
 		}
 
-		showFeed(): void {
+		showFeed(event): void {
+        	if(event !== null) {
+				event.stopPropagation();
+			}
 			this.feedView = true;
 			this.selectedParticipant = this.dataService.data.status.nickname;
 			this.dataService.data.status.selectedParticipant = this.selectedParticipant;
@@ -271,7 +274,7 @@ module TalkwallApp {
 			}
 
             this.dataService.stopPolling();
-            this.showFeed();
+            this.showFeed(null);
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
 				controllerAs: 'editMessageC',

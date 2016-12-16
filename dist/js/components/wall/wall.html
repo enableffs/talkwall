@@ -3,7 +3,7 @@
 	<md-toolbar class="wall-topToolbar">
 		<div flex layout="row" layout-align="start center">
 			<div hide-xs hide-sm flex="33" layout="row" layout-align="start center">
-				<md-button aria-label="Open left-side message feed" ng-show="wallC.dataService.data.question !== null" class="md-icon-button" role="button" ng-click="wallC.showFeed()">
+				<md-button aria-label="Open left-side message feed" ng-show="wallC.dataService.data.question !== null" class="md-icon-button" role="button" ng-click="wallC.showFeed($event)">
 					<md-icon md-svg-src="images/ic_chat_bubble_outline_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 				<md-button aria-label="Open left-side participants list" ng-if="wallC.dataService.data.status.authorised" ng-show="wallC.dataService.data.question !== null" class="md-icon-button" role="button" ng-click="wallC.showScreenContributors()">
