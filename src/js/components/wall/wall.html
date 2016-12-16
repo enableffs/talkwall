@@ -210,7 +210,7 @@
 					</md-toolbar>
 					<md-content flex-grow="true" ng-show="wallC.rightMenu3">
 						<md-list>
-							<div task ng-repeat="question in wallC.dataService.data.wall.questions" data="question" show-edit-panel="wallC.showMessageEditor(false)"></div>
+							<div task-question ng-repeat="question in wallC.dataService.data.wall.questions" data="question" show-edit-panel="wallC.showMessageEditor(false)"></div>
 						</md-list>
 					</md-content>
 					<div ng-show="wallC.rightMenu3" layout="column" class="wall-rightMenuAddTaskPanel">

@@ -170,7 +170,7 @@ exports.createMessage = function(req, res) {
             }
             else {
                 // Update the message manager to notify other clients
-                mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, message, 'create', false);
+                mm.postUpdate(req.body.wall_id, message.question_id, req.body.nickname, message, 'create', false);
 
                 // Update the question with this new message, and return
                 Wall.findOneAndUpdate({
