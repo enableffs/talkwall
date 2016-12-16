@@ -77,6 +77,7 @@ module TalkwallApp {
 				.then((joinModel) => {
 					this.$window.blur();
 					handle.dataService.getClientWall(joinModel, () => {
+						handle.dataService.data.status.joinedWithPin = true;
 						handle.$window.location.href = handle.urlService.getHost() + '/#/wall';
 					}, null);
 				}, () => {
