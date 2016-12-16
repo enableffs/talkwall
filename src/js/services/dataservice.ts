@@ -366,13 +366,16 @@ module TalkwallApp {
             let tKey = 'authenticationToken', tokenKey = 'token';
             this.data.status.phoneMode = this.$mdMedia('max-width: 960px');
             let tokenParam = this.$routeParams[tKey] || '';
+            if (this.data.status.joinedWithPin) {
+                this.$window.sessionStorage.setItem(tokenKey, '');
+            }
             if (tokenParam !== '' && !this.data.status.joinedWithPin) {
                 //look at the route params first for 'authenticationToken'
                 console.log('--> DataService: token from parameter');
-                this.$window.sessionStorage[tokenKey] = tokenParam;
+                this.$window.sessionStorage.setItem(tokenKey, tokenParam);
                 //this will reload the page, clearing the token parameter. next time around it will hit the next 'else if'
                 this.$location.search(tKey, null);
-            } else if (this.$window.sessionStorage[tokenKey] && !this.data.status.joinedWithPin) {
+            } else if (this.$window.sessionStorage.getItem(tokenKey) !== '' && !this.data.status.joinedWithPin) {
                 //look at the window session object for the token. time to load the question
                 console.log('--> DataService: token already exists');
 
