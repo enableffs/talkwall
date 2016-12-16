@@ -25,7 +25,7 @@ function randomNumberInRange(min, max) {
  */
 exports.getUser = function(req, res) {
     if (typeof req.user.id === 'undefined' || req.user.id == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -35,11 +35,11 @@ exports.getUser = function(req, res) {
 
     query.exec(function(error, user) {
         if(error) {
-            return res.status(common.StatusMessages.GET_ERROR.status).json({
+            res.status(common.StatusMessages.GET_ERROR.status).json({
                 message: common.StatusMessages.GET_ERROR.message, result: error});
         }
         else {
-            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+            res.status(common.StatusMessages.GET_SUCCESS.status).json({
                 message: common.StatusMessages.GET_SUCCESS.message, result: user});
         }
     })
@@ -57,7 +57,7 @@ exports.updateUser = function(req, res) {
 
     if (typeof req.user.id === 'undefined' || req.user.id == null
         || typeof req.body.user === 'undefined' || req.body.user == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -67,14 +67,14 @@ exports.updateUser = function(req, res) {
 
     query.exec(function(error, user) {
         if(error) {
-            return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         }
         else {
             user.lastOpenedWall = req.body.user.lastOpenedWall;
             user.defaultEmail = req.body.user.defaultEmail;
             user.save();
-            return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: user});
         }
     })
@@ -107,7 +107,7 @@ exports.createWall = function(req, res) {
 
     newWall.save(function(error, wall) {
         if (error) {
-            return res.status(common.StatusMessages.CREATE_ERROR.status).json({
+            res.status(common.StatusMessages.CREATE_ERROR.status).json({
                 message: common.StatusMessages.CREATE_ERROR.message, result: error});
         }
         else {
@@ -116,11 +116,11 @@ exports.createWall = function(req, res) {
             redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
             User.findOneAndUpdate( { _id: req.user.id }, { lastOpenedWall : wall.id }, function(error, user) {
                 if(error) {
-                    return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                    res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                         message: common.StatusMessages.UPDATE_ERROR.message, result: error});
                 } else {
                     mm.setup(wall._id, user.nickname);
-                    return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                    res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message,
                         result: wall
                     });
@@ -140,7 +140,7 @@ exports.createWall = function(req, res) {
 exports.updateWall = function(req, res) {
 
     if (typeof req.body.wall === 'undefined' || req.body.wall == null ) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -157,7 +157,7 @@ exports.updateWall = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
             mm.statusUpdate(wall._id, 'none');
@@ -166,10 +166,10 @@ exports.updateWall = function(req, res) {
                 //send an email to the wall creator with the permalink.
                 console.log('--> updateWall: sending export link: targetemail: ' + req.body.wall.targetEmail);
                 sendExportLinkToOwner(wall.createdBy, req.body.wall.targetEmail).then(function() {
-                    return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});                    
+                    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});                    
                 });
             } else {
-                return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                     message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
             }
         }
@@ -237,7 +237,7 @@ function sendExportLinkToOwner(userid, targetEmail) {
 exports.closeWall = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null ) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -247,14 +247,14 @@ exports.closeWall = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
             redisClient.EXPIRE(wall.pin, 1);
             mm.removeWall(wall._id);
             console.log('--> closeWall: sending export link');
             sendExportLinkToOwner(wall.createdBy, req.body.targetEmail).then(function() {
-                return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                     message: common.StatusMessages.UPDATE_SUCCESS.message});
             });
         }
@@ -273,7 +273,7 @@ exports.notifyChangeQuestion = function(req, res) {
     || typeof req.params.question_id === 'undefined' || req.params.question_id == null
     || typeof req.params.previous_question_id === 'undefined' || req.params.previous_question_id == null
     || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
     if (req.params.previous_question_id !== 'none') {
@@ -281,7 +281,7 @@ exports.notifyChangeQuestion = function(req, res) {
     }
     mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     mm.statusUpdate(req.params.wall_id, req.params.question_id);
-    return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
         message: common.StatusMessages.UPDATE_SUCCESS.message});
 };
 
@@ -302,7 +302,7 @@ exports.disconnectWall = function(req, res) {
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
         || typeof req.params.question_id === 'undefined' || req.params.question_id == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -313,14 +313,14 @@ exports.disconnectWall = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
+            res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
                 message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error});
         }
         else {
             // Remove nickname from the wall users list (message manager)
             mm.removeUserFromQuestion(wall._id, req.params.question_id, req.params.nickname, true);
             mm.removeUserFromWall(wall._id, req.params.nickname, true);
-            return res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+            res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
                 message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message, result: wall});
         }
     });
@@ -339,7 +339,7 @@ exports.disconnectWall = function(req, res) {
 exports.deleteWall = function(req, res) {
 
     if (typeof req.params.id === 'undefined' || req.params.id == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -349,14 +349,14 @@ exports.deleteWall = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.DELETE_ERROR.status).json({
+            res.status(common.StatusMessages.DELETE_ERROR.status).json({
                 message: common.StatusMessages.DELETE_ERROR.message, result: error});
         }
         else {
             redisClient.expire(wall.pin, 1, function(error, result) {
                 if(result !== null) {
                     wall.remove();
-                    return res.status(common.StatusMessages.DELETE_SUCCESS.status).json({
+                    res.status(common.StatusMessages.DELETE_SUCCESS.status).json({
                         message: common.StatusMessages.DELETE_SUCCESS.message});
                 }
             });
@@ -379,11 +379,11 @@ exports.getWalls = function(req, res) {
 
     query.exec(function(error, walls) {
         if(error) {
-            return res.status(common.StatusMessages.GET_ERROR.status).json({
+            res.status(common.StatusMessages.GET_ERROR.status).json({
                 message: common.StatusMessages.GET_ERROR.message, result: error});
         }
         else {
-            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+            res.status(common.StatusMessages.GET_SUCCESS.status).json({
                 message: common.StatusMessages.GET_SUCCESS.message, result: walls});
         }
     })
@@ -400,7 +400,7 @@ exports.getWalls = function(req, res) {
  */
 exports.getWall = function(req, res) {
     if (typeof req.params.id === 'undefined' || req.params.id == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -410,7 +410,7 @@ exports.getWall = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.GET_ERROR.status).json({
+            res.status(common.StatusMessages.GET_ERROR.status).json({
                 message: common.StatusMessages.GET_ERROR.message, result: error});
         }
         else if (wall !== null) {
@@ -429,7 +429,7 @@ exports.getWall = function(req, res) {
                 }
                 User.findOneAndUpdate({_id: req.user.id}, {lastOpenedWall: wall.id}, function (error, user) {
                     if (error) {
-                        return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                        res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                             message: common.StatusMessages.UPDATE_ERROR.message, result: error
                         });
                     } else {
@@ -437,7 +437,7 @@ exports.getWall = function(req, res) {
                         //mm.addUserToQuestion(wall._id, '', user.nickname, true);
                         //mm.putUpdate(wall.id, 'none', '', null, true);
                         mm.statusUpdate(wall._id, 'none');
-                        return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                        res.status(common.StatusMessages.GET_SUCCESS.status).json({
                             message: common.StatusMessages.GET_SUCCESS.message, result: wall
                         });
                     }
@@ -451,7 +451,7 @@ exports.getWall = function(req, res) {
 exports.getQuestionContributors = function(req, res) {
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
         || typeof req.params.question_id === 'undefined' || req.params.question_id == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -461,18 +461,18 @@ exports.getQuestionContributors = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.GET_ERROR.status).json({
+            res.status(common.StatusMessages.GET_ERROR.status).json({
                 message: common.StatusMessages.GET_ERROR.message, result: error});
         }
         else if (wall !== null) {
             for (var i = 0; i < wall.questions.length; i++) {
                 if ((wall.questions[i]._id).toString() === req.params.question_id) {
-                    return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                    res.status(common.StatusMessages.GET_SUCCESS.status).json({
                         message: common.StatusMessages.GET_SUCCESS.message, result: wall.questions[i].contributors});
                 }
             }
 
-            return res.status(common.StatusMessages.GET_SUCCESS.status).json({
+            res.status(common.StatusMessages.GET_SUCCESS.status).json({
                 message: common.StatusMessages.GET_SUCCESS.message, result: null});
         }
     })
@@ -489,7 +489,7 @@ exports.createQuestion = function(req, res) {
 
     if (typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
         || typeof req.body.question.label === 'undefined' || req.body.question.label == null ){
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -499,7 +499,7 @@ exports.createQuestion = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.CREATE_ERROR.status).json({
+            res.status(common.StatusMessages.CREATE_ERROR.status).json({
                 message: common.StatusMessages.CREATE_ERROR.message, result: error});
         }
         else {
@@ -508,11 +508,11 @@ exports.createQuestion = function(req, res) {
             var qindex = wall.questions.length-1;
             wall.save(function(error, wall) {
                 if (error) {
-                    return res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                    res.status(common.StatusMessages.CREATE_ERROR.status).json({
                         message: common.StatusMessages.CREATE_ERROR.message, result: error});
                 } else {
                     mm.statusUpdate(req.body.wall_id, 'none');
-                    return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                    res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message, result: wall.questions[qindex]});
                 }
             });
@@ -531,7 +531,7 @@ exports.updateQuestion = function(req, res) {
 
     if (typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
         || typeof req.body.question === 'undefined' || req.body.question == null ) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -542,11 +542,11 @@ exports.updateQuestion = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
             mm.statusUpdate(wall._id, 'none');
-            return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
         }
     })
@@ -562,7 +562,7 @@ exports.deleteQuestion = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
         || typeof req.params.question_id === 'undefined' || req.params.question_id == null ) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -573,11 +573,11 @@ exports.deleteQuestion = function(req, res) {
 
     query.exec(function(error, wall) {
         if(error) {
-            return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
             mm.statusUpdate(req.params.wall_id, 'none');
-            return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
         }
     })
@@ -596,7 +596,7 @@ exports.createMessage = function(req, res) {
     if (typeof req.body.message === 'undefined' || req.body.message == null
         || typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
         || typeof req.body.nickname === 'undefined' || req.body.nickname == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -604,7 +604,7 @@ exports.createMessage = function(req, res) {
     var newMessage = new Message(req.body.message);
     newMessage.save(function (error, message) {
         if (error) {
-            return res.status(common.StatusMessages.CREATE_ERROR.status).json({
+            res.status(common.StatusMessages.CREATE_ERROR.status).json({
                 message: common.StatusMessages.CREATE_ERROR.message, result: error
             });
         }
@@ -618,11 +618,11 @@ exports.createMessage = function(req, res) {
                 'questions._id': req.body.message.question_id
             }, { $push: { "questions.$.messages" : message}, $addToSet: { "questions.$.contributors" : req.body.nickname }}, function(error, wall) {
                 if(error) {
-                    return res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                    res.status(common.StatusMessages.CREATE_ERROR.status).json({
                         message: common.StatusMessages.CREATE_ERROR.message
                     });
                 } else {
-                    return res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                    res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message, result: message
                     });
                 }
@@ -646,7 +646,7 @@ exports.updateMessages = function(req, res) {
         || typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
         || typeof req.body.controlString === 'undefined' || req.body.controlString == null
         || typeof req.body.nickname === 'undefined' || req.body.nickname == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -658,7 +658,7 @@ exports.updateMessages = function(req, res) {
 
         query.exec(function (error, updated_message) {
             if (error) {
-                return res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                     message: common.StatusMessages.UPDATE_ERROR.message, result: error
                 });
             } else {
@@ -667,7 +667,7 @@ exports.updateMessages = function(req, res) {
                     mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, true);
                 }
 
-                return res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                     message: common.StatusMessages.UPDATE_SUCCESS.message, result: updated_message
                 });
             }
@@ -717,7 +717,7 @@ exports.poll = function(req, res) {
         || typeof req.params.previous_question_id === 'undefined' || req.params.previous_question_id == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null
         || typeof req.params.controlString === 'undefined' || req.params.controlString == null) {
-        return res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
@@ -732,7 +732,7 @@ exports.poll = function(req, res) {
 
     // Return an update to the user
     var update = mm.getUpdate(req.params.wall_id, req.params.question_id, req.params.nickname, true);
-    return res.status(common.StatusMessages.POLL_SUCCESS.status)
+    res.status(common.StatusMessages.POLL_SUCCESS.status)
         .json({message: common.StatusMessages.POLL_SUCCESS.message, result: update});
 
 };
