@@ -1136,7 +1136,7 @@ module TalkwallApp {
                             break;
 
                         case 'position':
-                            message.updateBoard(update.board);
+                            message.updateBoard(update.board, true, this.data.status.nickname);
                             break;
 
                         case 'mixed':
@@ -1145,7 +1145,7 @@ module TalkwallApp {
                             if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
                             }
-                            message.updateBoard(update.board);
+                            message.updateBoard(update.board, true, this.data.status.nickname);
                             break;
                     }
 
@@ -1163,12 +1163,15 @@ module TalkwallApp {
         showClosingDialog() : void {
             //detects if the device is small
             // let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
-            
+
+            let self = this;
             let disconnect = function() {
-                let url = this.urlService.getHost() + '/#/';
-                this.$http.get(url + 'disconnect/' + this.data.status.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
-                    .then(function () {
-                        this.$window.location.href = url;
+                let url = self.urlService.getHost() + '/#/';
+                self.$http.get(url + 'disconnect/' + self.data.status.nickname + '/' + self.data.wall._id + '/' + self.data.question._id)
+                    .then(() => {
+                        self.$window.location.href = url;
+                    }, () => {
+                        self.$window.location.href = url;
                     });
             };
 

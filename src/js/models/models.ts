@@ -156,7 +156,7 @@ module TalkwallApp {
             this.question_id = newMessage['question_id'];
 
             if (typeof newMessage['board'] !== 'undefined' && newMessage['board'] !== null) {
-                this.updateBoard(newMessage['board']);
+                this.updateBoard(newMessage['board'], false, '');
             } else {
                 // Remove all nicknames
                 for (let nickname in this.board) {
@@ -177,9 +177,10 @@ module TalkwallApp {
             return this;
         }
 
-        updateBoard(newBoard) {
+        // If updateMyself is true, include my nickname in the update
+        updateBoard(newBoard, excludeMyself, myNickname) {
             for (let nickname in newBoard) {
-                if(newBoard.hasOwnProperty(nickname)) {
+                if( (!excludeMyself || nickname !== myNickname) && newBoard.hasOwnProperty(nickname)) {
 
                     // Update an existing nickname
                     if(this.board.hasOwnProperty(nickname)) {
@@ -197,9 +198,9 @@ module TalkwallApp {
                     }
                 }
             }
-            // Remove nicknames no longer in the updated message
+            // Remove nicknames no longer in the updated message, except my own as only I can remove it from my board
             for (let nickname in this.board) {
-                if(this.board.hasOwnProperty(nickname) && !newBoard.hasOwnProperty(nickname)) {
+                if(this.board.hasOwnProperty(nickname) && !newBoard.hasOwnProperty(nickname) && nickname !== myNickname) {
                     delete this.board[nickname];
                 }
             }

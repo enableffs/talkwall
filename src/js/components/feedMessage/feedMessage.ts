@@ -183,8 +183,8 @@ module TalkwallApp {
 						originalX: event.pageX,
 						originalY: event.pageY
 					};
-					ctrl.$document.on('mousemove', mousemove);
-					ctrl.$document.on('mouseup', mouseup);
+					element.on('mousemove', mousemove);
+					element.on('mouseup', mouseup);
 				} else if (event instanceof TouchEvent) {
 					let offsetLeft = element.prop('offsetLeft');
 					let offsetRight = element.prop('offsetTop');
@@ -247,8 +247,8 @@ module TalkwallApp {
 				//ctrl.message.board[isolatedScope.selectedParticipant] = participant;
 				ctrl.persistPosition(participant.xpos, participant.ypos);
 			}
-			ctrl.$document.off('mousemove', mousemove);
-			ctrl.$document.off('mouseup', mouseup);
+			element.off('mousemove', mousemove);
+			element.off('mouseup', mouseup);
             ctrl.dataService.startPolling();
 		}
 

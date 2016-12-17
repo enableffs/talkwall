@@ -53,7 +53,6 @@ exports.poll = function(req, res) {
 
 /**
  * @api {get} /clientwall Get a wall by pin - simply returns wall details if the pin exists and wall is open.
- * Adds user to wall nickname list
  *
  * @apiName clientWall
  * @apiGroup non-authorised
@@ -76,7 +75,7 @@ exports.getWall = function(req, res) {
             var query = Wall.findOne({
                 _id : wall_id,
                 pin : { $gte: 0 }       // Wall is not available to clients if pin is -1
-            }).lean();
+            }).lean().populate({ path: 'createdBy', select: 'google.name facebook.name local.name' });
 
             query.exec(function(error, wall) {
                 if(error) {
