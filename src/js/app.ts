@@ -20,6 +20,7 @@
 /// <reference path="components/archive/archive.ts"/>
 /// <reference path="components/export/export.ts"/>
 /// <reference path="components/wall/wall.ts"/>
+/// <reference path="components/sessioninfo/sessioninfo.ts"/>
 /// <reference path="components/editMessagePanel/editMessagePanel.ts"/>
 
 /// <reference path="app.run.ts"/>
