@@ -7,6 +7,7 @@ var mm = require('../config/message_manager').mm;
 var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
 var Message = require('../models/message');
+var Log = require('../models/log');
 var Promise = require('promise');
 
 /**
@@ -116,7 +117,7 @@ exports.disconnectWall = function(req, res) {
     }
 
     // Check for the student on the wall
-    if(mm.studentIsOnWall(req.params.wall_id, req.params.nickname)) {
+    if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
         var query = Wall.findOne({
             _id : req.params.wall_id,
             pin : { $gte: 0 }       // Wall is not available to clients if pin is -1
@@ -157,7 +158,7 @@ exports.createMessage = function(req, res) {
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    if (mm.studentIsOnWall(req.body.wall_id, req.body.nickname)) {
+    if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
 
         // Create a new Message with the supplied object, including board properties   *** Not vetted!! :S
         var newMessage = new Message(req.body.message);
@@ -242,7 +243,7 @@ exports.updateMessages = function(req, res) {
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    if (mm.studentIsOnWall(req.body.wall_id, req.body.nickname)) {
+    if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
 
         var multiUpdatePromise = [];
         req.body.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
@@ -360,3 +361,46 @@ function populateMessage(message) {
     });
 }
 
+
+/**
+ * @api {post} /logs Add a set of logs
+ * @apiName addLogs
+ * @apiGroup non-authorised
+ *
+ */
+exports.createLogs = function(req, res) {
+
+    if (typeof req.body.logs === 'undefined' || req.body.logs == null
+        || typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
+        || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    if (mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
+
+        var multiSavePromise = [];
+        req.body.logs.forEach(function(log) {
+            var newLog = new Log(log);
+            var p = newLog.save();
+            multiSavePromise.push(p);
+        });
+
+        Promise.all(multiSavePromise).then(function() {
+            res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                message: common.StatusMessages.CREATE_SUCCESS.message
+            });
+        }).catch(function(error) {
+            res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                message: common.StatusMessages.CREATE_ERROR.message, result: error
+            });
+        });
+
+
+    } else {
+        res.status(common.StatusMessages.INVALID_USER.status).json({
+            message: common.StatusMessages.INVALID_USER.message
+        });
+    }
+
+};

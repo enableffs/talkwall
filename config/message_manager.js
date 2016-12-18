@@ -174,9 +174,10 @@ Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeac
  * @param {string} wall_id
  * @param {string} nickname
  */
-Mm.prototype.studentIsOnWall = function(wall_id, nickname) {
+Mm.prototype.userIsOnWall = function(wall_id, nickname) {
     return this.data.walls.hasOwnProperty(wall_id)
-        && this.data.walls[wall_id].status.connected_students.hasOwnProperty(nickname);
+        && (this.data.walls[wall_id].status.connected_students.hasOwnProperty(nickname)
+        || this.data.walls[wall_id].status.connected_teachers.hasOwnProperty(nickname));
 };
 
 
@@ -250,7 +251,9 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
     if (question_id !== 'none') {
         this.data.walls[wall_id].status.teacher_current_question = question_id;
     }
-    this.data.walls[wall_id].status.last_update = Date.now();
+    if (this.data.walls.hasOwnProperty(wall_id)) {
+        this.data.walls[wall_id].status.last_update = Date.now();
+    }
 };
 
 /**

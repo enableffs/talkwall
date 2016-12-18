@@ -141,8 +141,8 @@ module TalkwallApp {
 
 				this.$timeout(() => {
 					this.showFeed(null);
-					if (this.dataService.data.status.authorised) {
-						this.rightMenu1 = true;
+					this.rightMenu1 = true;
+					if (this.dataService.data.status.authorised && this.dataService.data.question !== null) {
 						this.$mdSidenav('right').open();
 					}
 				}, 2000);
@@ -325,6 +325,7 @@ module TalkwallApp {
 				if(message !== null) {
 					if (typeof message._id === 'undefined') {
 						console.log('--> WallController: Edit message - created');
+						this.dataService.logAnEvent(LogType.CreateMessage, message._id, null);
 						handle.dataService.addMessage(
 							function () {
 								//success
@@ -335,6 +336,7 @@ module TalkwallApp {
 						);
 					} else {
 						console.log('--> WallController: Edit message - edited');
+						this.dataService.logAnEvent(LogType.EditMessage, message._id, null);
 						handle.dataService.updateMessages([message], 'edit');
 					}
 				}

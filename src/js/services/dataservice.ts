@@ -78,7 +78,7 @@ module TalkwallApp {
         getWall(): Wall;
 
         /**
-         *
+         * create a log entry
          * @param type
          * @param id
          * @param diff      Change in position from the previous location
@@ -286,7 +286,7 @@ module TalkwallApp {
         private noTag = 'no tag';
         private pollingTimerHandle = null;
         private restrictTimerHandle = null;
-        private logEventTimeSplit = 5;
+        private logCycleCounter = 0;
 
         constructor (private $http: ng.IHttpService,
                      private $window: ng.IWindowService,
@@ -344,7 +344,8 @@ module TalkwallApp {
         }
 
         logAnEvent(type, id, diff) {
-            this.data.log.push(new LogEntry(type, id, this.data.status.nickname, diff));
+            let questionId = type === LogType.CreateTask ? id : this.data.question._id;
+            this.data.log.push(new LogEntry(type, id, this.data.status.nickname, questionId, diff));
         }
 
         restrictRequests() {
@@ -723,6 +724,22 @@ module TalkwallApp {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
                 });
+
+            // Send logs to server
+            if (this.logCycleCounter === this.constants.constants['POLLS_PER_LOG_ATTEMPT']) {
+                this.logCycleCounter = 0;
+                if(this.data.log.length > 0) {
+                    this.$http.post(this.urlService.getHost() + '/logs/' + this.data.wall._id +
+                        '/' + this.data.status.nickname, {logs: this.data.log})
+                        .then(() => {
+                            console.log('--> DataService: log success');
+                        }, (error) => {
+                            console.log('--> DataService: log failure: ' + error['message']);
+                        });
+                }
+            } else {
+                this.logCycleCounter++;
+            }
         }
 
 
@@ -737,6 +754,7 @@ module TalkwallApp {
                     let resultKey = 'result', firstQuestion;
                     firstQuestion = this.data.wall.questions.length === 0;
                     this.data.wall.questions.push(response.data[resultKey]);
+                    this.logAnEvent(LogType.CreateTask, response.data[resultKey]._id, null);
 
                     // If this was the first question, set it
                     if (firstQuestion) {
@@ -764,6 +782,7 @@ module TalkwallApp {
             })
                 .then(() => {
                     console.log('updating the question');
+                    this.logAnEvent(LogType.EditTask, this.data.status.questionToEdit._id, null);
                     if(this.data.status.questionToEdit._id === this.data.question._id) {
                         this.data.question.updateMe(this.data.status.questionToEdit);
                     }
@@ -783,7 +802,8 @@ module TalkwallApp {
             //first check if there are existing message for that question
             this.$http.get(this.urlService.getHost() + '/messages/' + question._id)
                 .then((result) => {
-                    console.log('--> DataService deleteQuestion: getMessages success');
+                    console.log('--> DataService deleteQuestion: deleteQuestion success');
+                    this.logAnEvent(LogType.DeleteTask, question._id, null);
                     let resultKey = 'result';
                     if (result.data[resultKey].length === 0) {
                         let new_question_index = this.data.status.currentQuestionIndex;
@@ -947,7 +967,7 @@ module TalkwallApp {
         // Update messages on the server
         updateMessages(messages: Array<Message>, controlString: string): void {
 
-            // Queue the updated message to be sent later
+            // Queue the updated message to be sent later - this saves unnecessary server polls
             if (this.data.status.restrictPositionRequests && controlString === 'position') {
                 messages.forEach((message) => {
                     this.data.status.restrictPositionRequestMessages[message._id] = message;

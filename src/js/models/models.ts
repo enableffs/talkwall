@@ -4,13 +4,18 @@ module TalkwallApp {
     "use strict";
     import MomentStatic = moment.MomentStatic;
 
-    enum LogType {
-        EditMessage = 0,
-        MarkMessage = 1,
-        EditTask = 2,
-        AddTask = 3,
-        PromoteMessage = 4,
-        MoveMessage = 5
+    export class LogType {
+        public static readonly CreateMessage = "mc";
+        public static readonly EditMessage = "me";
+        public static readonly PinMessage = "mp";
+        public static readonly UnPinMessage = "mup";
+        public static readonly DeleteMessage = "md";
+        public static readonly HighlightMessage = "mh";
+        public static readonly UnHighlightMessage = "muh";
+        public static readonly MoveMessage = "mm";
+        public static readonly CreateTask = "tc";
+        public static readonly EditTask = "te";
+        public static readonly DeleteTask = "td";
     }
 
     export class User {
@@ -269,18 +274,24 @@ module TalkwallApp {
     }
 
     export class LogEntry {
+        q_id: string;
         type: LogType;
-        id: string;
-        nickname: string;
-        timestamp: Date;
+        itemid: string;
+        nick: string;
+        stamp: Date;
         diff: {x: number, y: number };
 
-        constructor(type, id, nickname, diff) {
+        constructor(type: LogType, id: string, nickname: string, question_id: string, diff) {
+            this.q_id = question_id;
             this.type = type;
-            this.id = id;
-            this.nickname = nickname;
-            this.diff = diff;
-            this.timestamp = new Date();
+            this.itemid = id;
+            this.nick = nickname;
+            if (diff !== null) {
+                this.diff = diff;
+            } else {
+                this.diff = null;
+            }
+            this.stamp = new Date();
         }
     }
 }
