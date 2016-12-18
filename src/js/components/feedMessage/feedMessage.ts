@@ -58,6 +58,7 @@ module TalkwallApp {
 			//check if authenticated or author
 			if (this.message.creator === this.dataService.data.status.nickname || this.dataService.data.status.authorised) {
 				this.message.deleted = true;
+				this.dataService.logAnEvent(LogType.DeleteMessage, this.message._id, null);
 				this.dataService.updateMessages([this.message], 'edit');
 			}
 			this.showControls = false;
@@ -85,12 +86,14 @@ module TalkwallApp {
 			}
 			if (this.isPinned()) {
                 delete this.message.board[this.dataService.data.status.nickname];
+				this.dataService.logAnEvent(LogType.UnPinMessage, this.message._id, null);
             } else {
                 this.message.board[this.dataService.data.status.nickname] = new Nickname(
                     this.utilityService.getRandomBetween(45, 55) / 100,
                     this.utilityService.getRandomBetween(45, 55) / 100,
                     false
-				)
+				);
+				this.dataService.logAnEvent(LogType.PinMessage, this.message._id, null);
 			}
 			this.dataService.updateMessages([this.message], 'position');
 			this.showControls = false;
@@ -104,13 +107,20 @@ module TalkwallApp {
 			if (this.dataService.data.status.selectedParticipant === this.dataService.data.status.nickname) {
 				this.message.board[this.dataService.data.status.nickname].highlighted
 					= !this.message.board[this.dataService.data.status.nickname].highlighted;
+				let highlightLogText = this.message.board[this.dataService.data.status.nickname].highlighted
+					? LogType.HighlightMessage : LogType.UnHighlightMessage;
 				this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
+				this.dataService.logAnEvent(highlightLogText, this.message._id, null);
 				this.dataService.updateMessages([this.message], 'position');
 				this.showControls = false;
 			}
 		}
 
-		persistPosition(xPercentage, yPercentage): void {
+		persistPosition(xPercentage, yPercentage, oldPercentagePosition): void {
+			this.dataService.logAnEvent(LogType.MoveMessage, this.message._id, {
+				x: oldPercentagePosition.x - xPercentage,
+				y: oldPercentagePosition.y - yPercentage,
+			});
 			this.message.board[this.isolatedScope.selectedParticipant].xpos = xPercentage;
 			this.message.board[this.isolatedScope.selectedParticipant].ypos = yPercentage;
 			this.dataService.updateMessages([this.message], 'position');
@@ -137,6 +147,7 @@ module TalkwallApp {
 
 		let offset = null;
 		let pixelPosition = {x: 0, y: 0};
+		let oldPercentagePosition = {x: 0, y: 0};
 		let participant = null;
 
 		/*
@@ -175,6 +186,7 @@ module TalkwallApp {
 				currentSize = ctrl.dataService.data.status.boardDivSize;
 				messageWidth = element.prop('offsetWidth');
 				messageHeight = element.prop('offsetHeight');
+				oldPercentagePosition = {x: participant.xpos, y: participant.ypos};
 
 				if (event instanceof MouseEvent) {
 					offset = {
@@ -183,8 +195,8 @@ module TalkwallApp {
 						originalX: event.pageX,
 						originalY: event.pageY
 					};
-					ctrl.$document.on('mousemove', mousemove);
-					ctrl.$document.on('mouseup', mouseup);
+					element.on('mousemove', mousemove);
+					element.on('mouseup', mouseup);
 				} else if (event instanceof TouchEvent) {
 					let offsetLeft = element.prop('offsetLeft');
 					let offsetRight = element.prop('offsetTop');
@@ -245,10 +257,10 @@ module TalkwallApp {
 			//will only persist if move greater than a 10 * 10px box
 			if ((diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
 				//ctrl.message.board[isolatedScope.selectedParticipant] = participant;
-				ctrl.persistPosition(participant.xpos, participant.ypos);
+				ctrl.persistPosition(participant.xpos, participant.ypos, oldPercentagePosition);
 			}
-			ctrl.$document.off('mousemove', mousemove);
-			ctrl.$document.off('mouseup', mouseup);
+			element.off('mousemove', mousemove);
+			element.off('mouseup', mouseup);
             ctrl.dataService.startPolling();
 		}
 
@@ -257,7 +269,7 @@ module TalkwallApp {
 			let diffY = offset.originalY - event.pageY;
 			//will only persist if move greater than a 10 * 10px box
 			if ((diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
-				ctrl.persistPosition(participant.xpos, participant.ypos);
+				ctrl.persistPosition(participant.xpos, participant.ypos, oldPercentagePosition);
 			}
 			event.preventDefault();
 			element.off('touchmove', touchmove);

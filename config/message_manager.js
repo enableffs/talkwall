@@ -174,9 +174,10 @@ Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeac
  * @param {string} wall_id
  * @param {string} nickname
  */
-Mm.prototype.studentIsOnWall = function(wall_id, nickname) {
+Mm.prototype.userIsOnWall = function(wall_id, nickname) {
     return this.data.walls.hasOwnProperty(wall_id)
-        && this.data.walls[wall_id].status.connected_students.hasOwnProperty(nickname);
+        && (this.data.walls[wall_id].status.connected_students.hasOwnProperty(nickname)
+        || this.data.walls[wall_id].status.connected_teachers.hasOwnProperty(nickname));
 };
 
 
@@ -225,7 +226,15 @@ Mm.prototype.removeUserFromWall = function(wall_id, nickname, isTeacher) {
  */
 Mm.prototype.removeWall = function(wall_id) {
     if (this.data.walls.hasOwnProperty(wall_id)) {
-        delete this.data.walls[wall_id];
+
+        // Allow connected clients some time to disconnect gracefully
+        this.data.walls[wall_id].status.last_update = Date.now();
+
+        var self = this;
+        setTimeout(function() {
+            delete self.data.walls[wall_id];
+        }, 10000);
+
     }
 };
 
@@ -242,7 +251,9 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
     if (question_id !== 'none') {
         this.data.walls[wall_id].status.teacher_current_question = question_id;
     }
-    this.data.walls[wall_id].status.last_update = Date.now();
+    if (this.data.walls.hasOwnProperty(wall_id)) {
+        this.data.walls[wall_id].status.last_update = Date.now();
+    }
 };
 
 /**
@@ -262,7 +273,7 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
 
     function editUpdate(userQueue) {
 
-        // Has an update to this message already been registered?
+        // Has an update to this message already been registered?  Further updates will overwrite..
         if (userQueue.hasOwnProperty(updated_message._id)) {
             userQueue[updated_message._id].text = updated_message.text;
             userQueue[updated_message._id].deleted = updated_message.deleted;
@@ -277,6 +288,7 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
     }
 
     var thisQuestion = this.data.walls[wall_id].questions[question_id];
+    var userQueue = null;
 
     // Make note of my changes in other users' lists on the same question
     switch(controlString) {
@@ -293,7 +305,7 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         // Only the originator of a message can make an 'edit' ( change text or mark as deleted )
         case 'edit':
 
-            var userQueue = null;
+
             for (var user2 in thisQuestion.updated) {
 
                 // If the nickname is not our own, make a notification
@@ -313,14 +325,15 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
 
             for (var user3 in thisQuestion.updated) {
 
-                // If the nickname is not our own, make a notification
-                if (user3 !== nickname && thisQuestion.updated.hasOwnProperty(user3)) {
+                // Make a notification to all.
+                // This is necessary to prevent interference between wall messages dependent on update / poll timing
+                if (thisQuestion.updated.hasOwnProperty(user3)) {
                     userQueue = thisQuestion.updated[user3];
 
                     // Has an update to this message already been registered?
                     if (userQueue.hasOwnProperty(updated_message._id)) {
 
-                        // Check if the updated message contains this nickname. This request may remove it from the board
+                        // Check if the updated message contains this nickname. This user may remove it from their board
                         if (updated_message.board.hasOwnProperty(nickname)) {
                             userQueue[updated_message._id].board[nickname] = updated_message.board[nickname];
                         } else {
@@ -332,7 +345,7 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
                             = userQueue[updated_message._id].updateType === 'edit' ? 'mixed' : 'position';
                     } else {
                         userQueue[updated_message._id] = {
-                            board: updated_message.board,
+                            board: updated_message.board,    // All users with this message on board need to be kept to account for those who remove it
                             text: null,
                             deleted: null,
                             updateType: 'position'

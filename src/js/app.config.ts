@@ -19,6 +19,9 @@ module TalkwallApp {
             when('/export', {
                 templateUrl : 'js/components/export/export.html'
             })
+            .when('/id', {
+                templateUrl : 'js/components/sessioninfo/sessioninfo.html'
+            })
             .when('/wall', {
                 templateUrl : 'js/components/wall/wall.html'
             })

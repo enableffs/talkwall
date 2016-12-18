@@ -359,6 +359,43 @@ md-content {
   overflow-wrap: break-word !important;
 }
 
+.sessionInfoDetails {
+  z-index: 99;
+  color: white;
+  font-size: 4vw;
+  position: relative;
+  margin-top: 18vw;
+  margin-left: 10px;
+}
+
+.sessionInfoDetails span {
+  margin-top: 2.8vw;
+}
+
+.showingClapper {
+  position: fixed;
+}
+
+.clapper {
+  position: absolute;
+  width: 60vw;
+  max-width: 500px;
+}
+
+@media (min-width: 860px) {
+  .sessionInfoDetails {
+    z-index: 99;
+    color: white;
+    font-size: 2em;
+    position: relative;
+    margin-top: 145px;
+    margin-left: 20px;
+  }
+  .sessionInfoDetails span {
+    margin-top: 25px;
+  }
+}
+
 .wall-sidemenuLarge {
   max-width: 100% !important;
   width: 75% !important;
