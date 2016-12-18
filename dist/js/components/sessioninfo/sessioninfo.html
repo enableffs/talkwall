@@ -1,46 +1,56 @@
 <div layout flex ng-controller="SessionInfoController as sessioninfoC">
-    <div flex layout id="landing-main">
+
         <md-content flex md-scroll-y>
-            <div ng-style="{'width': windowWidth+'px', 'background-color': '#00BCD4'}" style="height: 800px; position: relative;" autoresize="">
+            <div style="height: 800px; background-color: #00BCD4; position: relative;" autoresize="">
 
                 <div class="landing-clouds">
                     <img src="../images/cloud.svg">
                 </div>
 
-                <div class="landing-centered-button-panel" layout="column" layout-align="start center">
+                <div layout="column" layout-align="center center">
+                    <!--img ng-src="{{sessioninfoC.clapper}}" class="clapper" ng-show="sessioninfoC.data.showResult" /-->
 
-                    <div style=" width: 500px;">
-                        <div style="padding: 0 20%;">
-                            <img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="sessioninfoC.languageCode=='no'">
-                            <img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="sessioninfoC.languageCode=='en'">
+
+                        <div>
+                            <img class="landing-samtavlaLogo" style="width: 150px;" src="../images/logo.svg" ng-show="sessioninfoC.languageCode=='no'">
+                            <img class="landing-samtavlaLogo" style="width: 150px;" src="../images/logo_en.svg" ng-show="sessioninfoC.languageCode=='en'">
                         </div>
-                            <div class="landing-samtavlaLogo" layout="column" layout-align="center center" layout-margin>
-                            <div ng-hide="sessioninfoC.data.showResult">
-                                <md-input-container class="md-icon-float md-block">
-                                    <label>{{'MENUPAGE_PARTICIPATEDRAWER_PIN' | translate}}</label>
-                                    <md-icon md-svg-src="images/key.svg" class="name"></md-icon>
-                                    <input ng-model="sessioninfoC.data.pin" type="text" required minlength="4" maxlength="4" md-maxlength="4">
-                                </md-input-container>
 
-                                <md-button aria-label="Get Session Info" class="md-primary md-raised join-menuItem" ng-click="sessioninfoC.activate()" aria-label="Get Info">
-                                    {{'MENUPAGE_GETSESSIONINFO' | translate}}
-                                </md-button>
+                        <div ng-hide="sessioninfoC.data.showResult" layout="column" layout-align="center center">
+                            <md-input-container class="md-icon-float md-block">
+                                <label>{{'MENUPAGE_PARTICIPATEDRAWER_PIN' | translate}}</label>
+                                <md-icon md-svg-src="images/key.svg" class="name"></md-icon>
+                                <input ng-model="sessioninfoC.data.pin" type="text" required minlength="4" maxlength="4" md-maxlength="4">
+                            </md-input-container>
+
+                            <md-button aria-label="Get Session Info" class="md-primary md-raised join-menuItem" ng-click="sessioninfoC.activate()" aria-label="Get Info">
+                                {{'MENUPAGE_GETSESSIONINFO' | translate}}
+                            </md-button>
+                        </div>
+
+
+                        <!--div layout="column" layout-align="center center" ng-show="sessioninfoC.data.showResult" ng-style="{'background-image': 'url(' + sessioninfoC.clapper + ')'}"-->
+                        <div style="position: relative;" ng-show="sessioninfoC.data.showResult">
+
+                            <div style="position: relative;" layout="column" layout-align="start center">
+                                <img ng-src="{{sessioninfoC.clapper}}" class="clapper">
                             </div>
 
-                            <div ng-show="sessioninfoC.data.showResult" style="text-align: center;">
-                                <h2 ng-show="sessioninfoC.data.error.length > 0">{{sessioninfoC.data.error}}</h2>
-                                <h4>{{sessioninfoC.data.pin}}</h4>
-                                <h2>{{sessioninfoC.datestring}}</h2>
-                                <h2>{{sessioninfoC.timestring}}</h2>
-                                <h2>{{sessioninfoC.data.wall._id}}</h2>
-                                <h3>{{sessioninfoC.data.name}}</h3>
+                            <div class="sessionInfoDetails" layout="column" layout-align="start center">
+                                <div layout="column" layout-align="center start" style="margin-left: 10px;">
+                                    <span ng-show="sessioninfoC.data.error.length > 0">{{sessioninfoC.data.error}}</span>
+                                    <span>{{sessioninfoC.datestring}}</span>
+                                    <span>{{sessioninfoC.timestring}}</span>
+                                    <span>{{sessioninfoC.data.wall._id}}</span>
+                                    <span>{{sessioninfoC.data.name}}<span style="padding-left: 3em;">{{sessioninfoC.data.pin}}</span></span>
+                                </div>
                             </div>
 
+
+
                         </div>
-                    </div>
+
                 </div>
-
-
             </div>
 
             <!-- footer -->
@@ -65,5 +75,5 @@
             </div>
 
         </md-content>
-    </div>
+
 </div>

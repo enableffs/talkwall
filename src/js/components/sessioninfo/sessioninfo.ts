@@ -14,6 +14,7 @@ module TalkwallApp {
 		private data;
 		private timestring;
 		private datestring;
+		private clapper;
 		private languageCode: string = 'no';
 
 		constructor(private urlService: IURLService,
@@ -35,6 +36,7 @@ module TalkwallApp {
 
 			this.datestring = '';
 			this.timestring = '';
+			this.clapper = 'images/clapper1.png';
 
 		}
 
@@ -56,6 +58,7 @@ module TalkwallApp {
 						let data = SessionInfoController.GetClock();
 						this.datestring = data.date;
 						this.timestring = data.time;
+						this.clapper = this.clapper === 'images/clapper1.png' ? 'images/clapper2.png' : 'images/clapper1.png';
 					}, 1000);
 
 				}, () => {
