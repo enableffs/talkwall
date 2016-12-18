@@ -62,6 +62,7 @@ module TalkwallApp {
         .controller('JoinController', JoinController)
         .controller('CloseController', CloseController)
         .controller('LandingController', LandingController)
+        .controller('SessionInfoController', SessionInfoController)
         .controller('ExportController', ExportController)
         .controller('WallController', WallController)
         .controller('EditMessageController', EditMessageController)

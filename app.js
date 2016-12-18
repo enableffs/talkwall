@@ -116,7 +116,8 @@ app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:controlStr
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessages);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
-app.get('/export/:wall_id',                                                                          routes.client.exportWall);
+app.get('/export/:wall_id',                                                                         routes.client.exportWall);
+app.post('/logs/:wall_id/:nickname',                                                                routes.client.createLogs);
 
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());
