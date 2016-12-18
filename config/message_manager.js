@@ -269,8 +269,9 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
 Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
 
     // Note that someone is using this wall
-    this.data.walls[wall_id].status.last_access = Date.now();
-
+    if (this.data.walls.hasOwnProperty(wall_id)) {
+        this.data.walls[wall_id].status.last_access = Date.now();
+    }
     function editUpdate(userQueue) {
 
         // Has an update to this message already been registered?  Further updates will overwrite..
