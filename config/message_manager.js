@@ -264,7 +264,6 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  * @param {string} nickname                         the particular calling user
  * @param {object} updated_message                  the message object edited by the calling user. null if no changes
  * @param {string} controlString                    the type of update to be performed
- * @param {boolean} isTeacher                       the teacher is making this request
  */
 Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
 
@@ -272,8 +271,8 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
     if (this.data.walls.hasOwnProperty(wall_id)) {
         this.data.walls[wall_id].status.last_access = Date.now();
     }
-    function editUpdate(userQueue) {
 
+    function editUpdate(userQueue) {
         // Has an update to this message already been registered?  Further updates will overwrite..
         if (userQueue.hasOwnProperty(updated_message._id)) {
             userQueue[updated_message._id].text = updated_message.text;
@@ -306,11 +305,10 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         // Only the originator of a message can make an 'edit' ( change text or mark as deleted )
         case 'edit':
 
-
             for (var user2 in thisQuestion.updated) {
 
-                // If the nickname is not our own, make a notification
-                if (user2 !== nickname && thisQuestion.updated.hasOwnProperty(user2)) {
+                // Make a notification to all including myself (possibly i'm a teacher editing another user's board)
+                if (thisQuestion.updated.hasOwnProperty(user2)) {
                     userQueue = thisQuestion.updated[user2];
                     editUpdate(userQueue);
 

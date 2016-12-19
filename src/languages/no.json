@@ -71,5 +71,7 @@
   "WALL_SELECTALL": "velg alle",
   "WALL_SELECTWALLS": "Deltagernes tavler",
   "WALL_UN": "ikke ",
-  "NO_TAG": "Uten #emnetagg"
+  "NO_TAG": "Uten #emnetagg",
+  "MAGNIFY_ON": "Board magnification on",
+  "MAGNIFY_OFF": "Board magnification Off"
 }

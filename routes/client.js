@@ -325,8 +325,6 @@ exports.exportWall = function(req, res) {
     });
 };
 
-//function that returns a promise with a populated fixture with views and surveys based on an ID.
-//Note: Only published fixtures will be returned
 function populateQuestion(question) {
 
     return new Promise(function(resolve, reject) {

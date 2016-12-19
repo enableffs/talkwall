@@ -135,6 +135,12 @@
 							<div class="wall-joinRow wall-joinRow4" layout="row">
 								<span flex>{{wallC.dataService.data.status.totalOnTalkwall}} {{'WALL_TALKWALLPARTICIPANTS' | translate}}</span>
 							</div>
+							<div layout="row">
+								<md-switch ng-model="wallC.magnifyBoard" ng-change="wallC.dataService.toggleMagnifyBoard()" aria-label="Board magnification">
+									{{wallC.dataService.data.status.magnifyBoard ? 'MAGNIFY_ON' : 'MAGNIFY_OFF' | translate }}
+								</md-switch>
+							</div>
+
 						</div>
 					</md-content>
 				</section>
@@ -213,7 +219,7 @@
 							<div task-question ng-repeat="question in wallC.dataService.data.wall.questions" data="question" show-edit-panel="wallC.showMessageEditor(false, null)"></div>
 						</md-list>
 					</md-content>
-					<div ng-show="wallC.rightMenu3" layout="column" class="wall-rightMenuAddTaskPanel">
+					<div ng-show="wallC.rightMenu3" layout="column" class="wall-rightMenuAddTaskPanel" ng-class="{'wall-rightMenuAddTaskPanel--open': wallC.dataService.data.status.questionToEdit !== null }">
 						<md-button aria-label="Add question" ng-show="wallC.dataService.data.status.questionToEdit === null" class="md-raised wall-addTaskReadyButton" ng-disabled="!wallC.questionToEditDirty()" ng-click="wallC.addQuestion($event)">{{ 'WALL_ADDBTN' | translate }}</md-button>
 						<md-input-container class="md-block" ng-show="wallC.dataService.data.status.questionToEdit !== null">
 							<label>{{ 'WALL_TASKNAME' | translate }}</label>
@@ -277,7 +283,7 @@
 				<hr ng-show="wallC.dataService.data.question.grid === 'horizontal' || wallC.dataService.data.question.grid === 'both'"
                     width="{{wallC.dataService.data.status.boardDivSize['VIEW_WIDTH']}}" size="3" ng-style="wallC.dataService.getGridStyle('horizontal')">
                 <div ng-repeat="message in wallC.dataService.data.question.messages | filter : wallC.messageFilterByContributorOnBoard" class="animate-repeat">
-                    <div feed-message data="message" on-board="true" selected-participant="{{wallC.selectedParticipant}}"
+                    <div feed-message data="message" magnified="wallC.dataService.data.status.magnifyBoard" on-board="true" selected-participant="{{wallC.selectedParticipant}}"
                          show-edit-panel="wallC.showMessageEditor(false, null)" class="feedMessage-messageOnBoard" id="message-{{message._id}}">
                     </div>
                 </div>

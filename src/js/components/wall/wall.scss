@@ -71,9 +71,12 @@
 
 .wall-rightMenuAddTaskPanel {
   width: 100%;
+  padding: 20px 8px 8px 8px !important;
+}
+
+.wall-rightMenuAddTaskPanel--open {
   height: 270px;
   min-height: 250px;
-  padding: 20px 8px 8px 8px !important;
 }
 
 .wall-rightMenuAddTaskPanel md-input-container {

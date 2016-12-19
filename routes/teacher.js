@@ -661,7 +661,7 @@ exports.updateMessages = function(req, res) {
                 }
                 // Update the message manager to notify other clients
                 if (req.body.controlString !== 'none') {
-                    mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, false);
+                    mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, true);
                 }
                 resolve(updated_message);
             });
