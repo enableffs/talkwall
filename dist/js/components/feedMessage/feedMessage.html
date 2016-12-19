@@ -8,8 +8,9 @@
 					<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
 				</md-button>
 
-				<md-button aria-label="Delete message" ng-if="feedMessageC.isolatedScope.onBoard === 'false'" ng-click="feedMessageC.deleteMessage($event)" class="feedMessage-showControlButton">
-					<md-icon md-svg-icon="images/ic_delete_forever_orange_24px.svg" ></md-icon>
+				<md-button aria-label="Delete message" ng-if="feedMessageC.isolatedScope.onBoard === 'false'" ng-disabled="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant" ng-click="feedMessageC.deleteMessage($event)" class="feedMessage-showControlButton">
+					<md-icon ng-hide="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant" md-svg-icon="images/ic_delete_forever_orange_24px.svg"></md-icon>
+					<md-icon ng-show="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant" md-svg-icon="images/ic_delete_forever_grey_24px.svg"></md-icon>
 				</md-button>
 				<md-button aria-label="Toggle highlight message" ng-if="feedMessageC.isolatedScope.onBoard === 'true'" ng-click="feedMessageC.toggleHighlightMessage($event)" class="feedMessage-showControlButton"
 						   ng-class="{'feedMessage-messageSelected': feedMessageC.message.isHighlighted && feedMessageC.isolatedScope.onBoard === 'true'}">
@@ -38,7 +39,7 @@
 
 		<!-- Mesage text content -->
 		<div layout="column" layout-align="space-between none" flex-grow="true" class="feedMessage-messageBody feedMessage-wordWrap" ng-class="feedMessageC.getPinnedClass()">
-			<div layout="column" flex="none" class="feedMessage-wordWrap">
+			<div layout="column" flex="none" class="feedMessage-wordWrap" ng-class="{'feedMessage-magnified' : feedMessageC.isolatedScope.magnified }">
 				{{ feedMessageC.message.text }}
 			</div>
 			<div layout="row" layout-align="end center">

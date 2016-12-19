@@ -61,7 +61,7 @@
   "WALL_FILTER": "Filter",
   "WALL_FILTERBYCREATOR": "Filter by contributor",
   "WALL_FILTERBYTAG": "Filter by #hashtag",
-  "WALL_JOINWITHPIN": "Join with PIN",
+  "WALL_JOINWITHPIN": "Talkwall",
   "WALL_MESSAGES": "Contributions",
   "WALL_NOQUESTION": "Add task!",
   "WALL_NUMBERPARTICIPANTS": "participants",
@@ -71,5 +71,7 @@
   "WALL_SELECTALL": "select all",
   "WALL_SELECTWALLS": "Participants' walls",
   "WALL_UN": "un",
-  "NO_TAG": "No #hashtag"
+  "NO_TAG": "No #hashtag",
+  "MAGNIFY_ON": "Board magnification on",
+  "MAGNIFY_OFF": "Board magnification Off"
 }

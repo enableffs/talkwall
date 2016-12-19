@@ -1,0 +1,98 @@
+Talkwall UI issues
+------------------
+
+
+next / prev arrow in top bar causes task title text to move around
+
+task list for teacher is too small.
+
+
+
+Design for new Message Manager
+------------------------------
+
+immutable data set at message creation, not changed thereafter. shared with all on creation only:
+---------------------------------------------------------------------------------------
+
+MM type 1 = 'create'
+
+
+	question_id:    { type: Schema.Types.ObjectId, ref: 'Question', default: null},
+    	createdAt:      { type: Date, default: Date.now },
+    	creator:        { type: String }, // nickname
+    	origin: [
+        	{
+            		nickname:   { type: String },
+            		message_id: { type: String, default: "" }
+        	}
+    	]
+
+
+
+mutable by message creator only. not shared
+-------------------------------------------
+
+	edits: [
+        	{
+            		date:   { type: Date },
+            		text:   { type: String }
+        	}
+    	]
+
+
+
+mutable by message creator only. shared teacher and student
+------------------------------------------------
+
+MM type 2 = 'update'
+
+	text:           { type: String, default: "" },
+    	deleted:        { type: Boolean, default: false },
+
+MM update type 1 = 'edit'
+MM update type 2 = 'delete'
+
+
+
+mutable by all. shared with teacher  (or just share to all?)
+------------------------------------------------
+
+MM type 2 = 'update'
+
+        board:  {
+            nickname: {
+                xpos:   { type: Number },
+                ypos:   { type: Number },
+                highlighted: { type: Boolean, default: false }
+            }
+        }
+
+MM update type 3 = 'position'
+
+
+
+
+
+
+TO DO
+=====
+
+
+(done) Remove unnecessary redis calls
+
+queue message 'position' updates on client, send just before poll.
+
+assign database writes to a worker?
+
+add 'toobusy' to server
+
+add NewRelic to server
+
+report call failures to console
+
+
+*** Check that nicknames are unique!
+
+
+->  Test that wall is removed from memory after inactivity
+->  Test that clients stop polling after wall is removed

@@ -21,6 +21,10 @@ module TalkwallApp {
 		 */
 		showMessageEditor(newMessage: boolean, event: Event): void;
 		/**
+		 * Switch to magnified board mode. Affects code in feedMessage controller
+		 */
+		magnifyTheBoard(): void;
+		/**
 		 * Toggles which right menu should be open
 		 */
 		toggleRightMenu(index: number, event: Event): void;
@@ -63,6 +67,7 @@ module TalkwallApp {
 	export class WallController implements IWallControllerService {
 		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 		private magnified: boolean = false;
+		private magnifyBoard: boolean = false;
 		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
@@ -100,6 +105,9 @@ module TalkwallApp {
 
 		}
 
+		magnifyTheBoard(): void {
+        	this.magnifyBoard = !this.magnifyBoard;
+		}
 
 		activate(): void {
 			if (this.dataService.data.wall === null) {
@@ -310,8 +318,8 @@ module TalkwallApp {
                 handle.dataService.setMessageToEdit(null);
 			}
 
-            this.dataService.stopPolling();
-            this.showFeed(null);
+            //this.dataService.stopPolling();
+            //this.showFeed(null);
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
 				controllerAs: 'editMessageC',
@@ -340,13 +348,13 @@ module TalkwallApp {
 						handle.dataService.updateMessages([message], 'edit');
 					}
 				}
-                handle.dataService.startPolling();
+                //handle.dataService.startPolling();
 			}, () => {
 				//dialog dismissed
 				this.$window.document.activeElement['blur']();
 				console.log('--> WallController: Edit message dismissed');
 				handle.dataService.clearMessageToEdit();
-                handle.dataService.startPolling();
+                //handle.dataService.startPolling();
 			});
 		}
 
