@@ -55,8 +55,8 @@ module TalkwallApp {
 				event.preventDefault();
 				event.stopPropagation();
 			}
-			//check if authenticated or author
-			if (this.message.creator === this.dataService.data.status.nickname || this.dataService.data.status.authorised) {
+			//check if I am authenticated viewing the participant, or the actual author
+			if (this.message.creator === this.isolatedScope.selectedParticipant) {
 				this.message.deleted = true;
 				this.dataService.logAnEvent(LogType.DeleteMessage, this.message._id, null);
 				this.dataService.updateMessages([this.message], 'edit');
@@ -69,7 +69,8 @@ module TalkwallApp {
 				event.preventDefault();
 				event.stopPropagation();
 			}
-			if (this.message.creator === this.dataService.data.status.nickname) {
+			// Either we are the creator or teacher is editing another's message
+			if (this.message.creator === this.isolatedScope.selectedParticipant) {
 				this.dataService.setMessageToEdit(this.message);
 			} else {
 				this.dataService.setMessageOrigin(this.message);
@@ -85,10 +86,10 @@ module TalkwallApp {
 				event.stopPropagation();
 			}
 			if (this.isPinned()) {
-                delete this.message.board[this.dataService.data.status.nickname];
+                delete this.message.board[this.dataService.data.status.selectedParticipant];
 				this.dataService.logAnEvent(LogType.UnPinMessage, this.message._id, null);
             } else {
-                this.message.board[this.dataService.data.status.nickname] = new Nickname(
+                this.message.board[this.dataService.data.status.selectedParticipant] = new Nickname(
                     this.utilityService.getRandomBetween(45, 55) / 100,
                     this.utilityService.getRandomBetween(45, 55) / 100,
                     false
@@ -104,16 +105,12 @@ module TalkwallApp {
 				event.preventDefault();
 				event.stopPropagation();
 			}
-			if (this.dataService.data.status.selectedParticipant === this.dataService.data.status.nickname) {
-				this.message.board[this.dataService.data.status.nickname].highlighted
-					= !this.message.board[this.dataService.data.status.nickname].highlighted;
-				let highlightLogText = this.message.board[this.dataService.data.status.nickname].highlighted
-					? LogType.HighlightMessage : LogType.UnHighlightMessage;
-				this.message.isHighlighted = this.message.board[this.dataService.data.status.nickname].highlighted;
-				this.dataService.logAnEvent(highlightLogText, this.message._id, null);
-				this.dataService.updateMessages([this.message], 'position');
-				this.showControls = false;
-			}
+            this.message.board[this.dataService.data.status.selectedParticipant].highlighted = !this.message.board[this.dataService.data.status.selectedParticipant].highlighted;
+            let highlightLogText = this.message.board[this.dataService.data.status.selectedParticipant].highlighted ? LogType.HighlightMessage : LogType.UnHighlightMessage;
+            this.message.isHighlighted = this.message.board[this.dataService.data.status.selectedParticipant].highlighted;
+            this.dataService.logAnEvent(highlightLogText, this.message._id, null);
+            this.dataService.updateMessages([this.message], 'position');
+            this.showControls = false;
 		}
 
 		persistPosition(xPercentage, yPercentage, oldPercentagePosition): void {
@@ -195,7 +192,7 @@ module TalkwallApp {
 						originalX: event.pageX,
 						originalY: event.pageY
 					};
-					element.on('mousemove', mousemove);
+					ctrl.$document.on('mousemove', mousemove);
 					element.on('mouseup', mouseup);
 				} else if (event instanceof TouchEvent) {
 					let offsetLeft = element.prop('offsetLeft');
@@ -255,11 +252,12 @@ module TalkwallApp {
 			let diffX = offset.originalX - event.pageX;
 			let diffY = offset.originalY - event.pageY;
 			//will only persist if move greater than a 10 * 10px box
-			if ((diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
+			if (diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) {
 				//ctrl.message.board[isolatedScope.selectedParticipant] = participant;
 				ctrl.persistPosition(participant.xpos, participant.ypos, oldPercentagePosition);
 			}
-			element.off('mousemove', mousemove);
+			ctrl.$document.off('mousemove', mousemove);
+            element.off('touchmove', touchmove);
 			element.off('mouseup', mouseup);
             ctrl.dataService.startPolling();
 		}
@@ -268,10 +266,11 @@ module TalkwallApp {
 			let diffX = offset.originalX - event.pageX;
 			let diffY = offset.originalY - event.pageY;
 			//will only persist if move greater than a 10 * 10px box
-			if ((diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) && isolatedScope.selectedParticipant === ctrl.dataService.data.status.nickname) {
+			if (diffX >= 10 || diffX <= -10 || diffY >= 10 || diffY <= -10) {
 				ctrl.persistPosition(participant.xpos, participant.ypos, oldPercentagePosition);
 			}
 			event.preventDefault();
+            ctrl.$document.off('mousemove', mousemove);
 			element.off('touchmove', touchmove);
 			element.off('touchend', touchend);
 
@@ -299,6 +298,7 @@ module TalkwallApp {
 			restrict: 'A',
 			scope: {
 				data: '=',
+				magnified: '=',
 				showEditPanel: "&",
 				onBoard: "@",
 				selectedParticipant: '@'

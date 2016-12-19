@@ -175,6 +175,10 @@ module TalkwallApp {
          */
         setBoardDivSize(dimensions: {}): void;
         /**
+         * Toggle board message magnification
+         */
+        toggleMagnifyBoard(): void;
+        /**
          * get this appropriate background colour for the current question index
          */
         getBackgroundColour(): string;
@@ -275,6 +279,7 @@ module TalkwallApp {
                 boardDivSize: {};
                 last_status_update: number;
                 touchControl: boolean;
+                magnifyBoard: boolean;
                 restrictPositionRequests: boolean;
                 restrictPositionRequestMessages: { [message_id: string ] : Message };
                 idleTerminationTime: number;
@@ -327,6 +332,7 @@ module TalkwallApp {
                     boardDivSize: {},
                     last_status_update: 0,
                     touchControl: false,
+                    magnifyBoard: false,
                     restrictPositionRequests: false,
                     restrictPositionRequestMessages: {},
                     idleTerminationTime: 43200             // One year = 525600 minutes.  One month = 43200 minutes.
@@ -346,6 +352,10 @@ module TalkwallApp {
         logAnEvent(type, id, diff) {
             let questionId = type === LogType.CreateTask ? id : this.data.question._id;
             this.data.log.push(new LogEntry(type, id, this.data.status.nickname, questionId, diff));
+        }
+
+        toggleMagnifyBoard() {
+            this.data.status.magnifyBoard = !this.data.status.magnifyBoard;
         }
 
         restrictRequests() {
@@ -836,8 +846,11 @@ module TalkwallApp {
             if (this.data.status.messageToEdit === null) {
                 errorCallbackFn({status: '400', message: "message is not defined"});
             }
-
             this.data.status.messageToEdit.edits.push({date: new Date(), text: this.data.status.messageToEdit.text});
+            if (this.data.status.updateOrigin) {
+                // If the message was created from another, add it to the board, it will replace the origin message's location
+                this.data.status.messageToEdit.board[this.data.status.nickname] = this.data.status.messageOrigin.board[this.data.status.nickname];
+            }
             let clientType = this.data.status.authorised ? '/messageteacher' : '/message';
             this.$http.post(this.urlService.getHost() + clientType, {
                 message: this.data.status.messageToEdit,
@@ -978,7 +991,7 @@ module TalkwallApp {
                 this.$http.put(this.urlService.getHost() + clientType, {
                     messages: messages,
                     wall_id: this.data.wall._id,
-                    nickname: this.data.status.nickname,
+                    nickname: this.data.status.selectedParticipant,  // Teacher can masquerade as another user
                     controlString: controlString
                 })
                     .then((data) => {
@@ -1156,7 +1169,7 @@ module TalkwallApp {
                             break;
 
                         case 'position':
-                            message.updateBoard(update.board, true, this.data.status.nickname);
+                            message.updateBoard(update.board, false, this.data.status.nickname);
                             break;
 
                         case 'mixed':
@@ -1165,7 +1178,7 @@ module TalkwallApp {
                             if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
                             }
-                            message.updateBoard(update.board, true, this.data.status.nickname);
+                            message.updateBoard(update.board, false, this.data.status.nickname);
                             break;
                     }
 

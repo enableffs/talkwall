@@ -68,6 +68,9 @@ module TalkwallApp {
         }
 
         updateMe(newQuestion: {}): Question {
+            if(typeof newQuestion === 'undefined') {
+                return;
+            }
             this._id = newQuestion['_id'];
             this.createdAt = newQuestion['createdAt'];
             this.label = newQuestion['label'];
@@ -205,7 +208,7 @@ module TalkwallApp {
             }
             // Remove nicknames no longer in the updated message, except my own as only I can remove it from my board
             for (let nickname in this.board) {
-                if(this.board.hasOwnProperty(nickname) && !newBoard.hasOwnProperty(nickname) && nickname !== myNickname) {
+                if(this.board.hasOwnProperty(nickname) && !newBoard.hasOwnProperty(nickname)) {
                     delete this.board[nickname];
                 }
             }

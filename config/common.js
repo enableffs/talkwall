@@ -5,8 +5,8 @@ exports.Constants = {
     TOKEN_EXPIRATION: 86400, //24hrs
     MINIMUM_PIN: 1000,
     MAXIMUM_PIN: 9999,
-    POLL_USER_EXPIRY_TIME_MINUTES: 1,  // 30 seconds = 30000            // Remove a user's MM queue if this idle period is exceeded
-    TERMINATE_MESSAGE_MANAGER_MINUTES: 1440,  // 1440 = 24 hours        // Remove an entire MM wall if this idle period is exceeded
+    POLL_USER_EXPIRY_TIME_MINUTES: 2,  // 30 seconds = 30000            // Remove a user's MM queue if this idle period is exceeded
+    TERMINATE_MESSAGE_MANAGER_MINUTES: 10080,  // 1440 = 24 hours  10080 = 7 days   // Remove an entire MM wall if this idle period is exceeded
     TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS: 60   // 600 = 10 minutes   // How often to check for the idle period expiry
 };
 
