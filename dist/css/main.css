@@ -19,6 +19,12 @@
   margin: 30px !important;
 }
 
+@media all and (max-width: 960px) {
+  .editMessage-editContainer {
+    margin: 0 !important;
+  }
+}
+
 .export-topToolbar {
   min-height: 64px;
   max-height: 64px;
@@ -505,10 +511,9 @@ md-content {
 
 .wall-sidenavRightBottomDiv {
   position: absolute;
-  left: 0px !important;
+  left: 45% !important;
   bottom: 0px !important;
   max-height: 70px !important;
-  width: 100% !important;
 }
 
 .wall-showEditMessageButton {

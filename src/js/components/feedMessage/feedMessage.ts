@@ -73,6 +73,7 @@ module TalkwallApp {
 			if (this.message.creator === this.isolatedScope.selectedParticipant) {
 				this.dataService.setMessageToEdit(this.message);
 			} else {
+				// Otherwise we are going to clone someone else's message
 				this.dataService.setMessageOrigin(this.message);
 				this.dataService.setMessageToEdit(null);
 			}

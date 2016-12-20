@@ -1,4 +1,4 @@
-<div layout="column" flex ng-controller="WallController as wallC">
+<div-- layout="column" flex ng-controller="WallController as wallC">
 	<!-- top toolbar component of the wall -->
 	<md-toolbar class="wall-topToolbar">
 		<div flex layout="row" layout-align="start center">
@@ -84,7 +84,7 @@
 				<md-list ng-if="wallC.feedView">
 					<div feed-message selected-participant="{{wallC.dataService.data.status.nickname}}"
 						 on-board="false" ng-repeat="message in wallC.dataService.data.question.messages | filter : wallC.messageFilterByAuthorAndTag"
-						 data="message" show-edit-panel="wallC.showMessageEditor(false, null)"></div>
+						 data="message" show-edit-panel="wallC.showMessageEditor(false)"></div>
 				</md-list>
 
 				<!-- left sidenav people's screen feed -->
@@ -96,16 +96,20 @@
 				</div>
 
 			</md-content>
-			<div class="wall-sidenavRightBottomDiv" layout="row" layout-align="center center">
-				<!-- this is to allow the fab button 'show editMessage' to float over the bottom of the sidenav -->
-				<md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && wallC.dataService.data.status.phoneMode" class="md-fab wall-showEditMessageButtonPhone" ng-click="wallC.showMessageEditor(true, $event)">
+            <!-- this is to allow the fab button 'show editMessage' to float over the bottom of the sidenav -->
+			<!--div class="wall-sidenavRightBottomDiv" layout="row" layout-align="center center">
+				<md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && wallC.dataService.data.status.phoneMode" class="md-fab wall-showEditMessageButtonPhone" ng-click="wallC.showMessageEditor(true)">
 					<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 				</md-button>
-			</div>
+			</div-->
+            <md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && wallC.dataService.data.status.phoneMode"
+                       class="md-fab wall-sidenavRightBottomDiv wall-showEditMessageButtonPhone" ng-click="wallC.showMessageEditor(true)">
+                <md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
+            </md-button>
 		</md-sidenav>
 
 		<!-- right sidenav of the wall -->
-		<md-sidenav ng-if="!wallC.dataService.data.status.phoneMode" md-component-id="right" class="md-sidenav-right wall-sidenav" layout="column">
+		<md-sidenav ng-show="!wallC.dataService.data.status.phoneMode" md-component-id="right" class="md-sidenav-right wall-sidenav" layout="column">
 			<div layout-fill="true" layout="column" style="overflow: hidden">
 
 				<!-- Join with PIN section -->
@@ -216,7 +220,7 @@
 					</md-toolbar>
 					<md-content flex-grow="true" ng-show="wallC.rightMenu3">
 						<md-list>
-							<div task-question ng-repeat="question in wallC.dataService.data.wall.questions" data="question" show-edit-panel="wallC.showMessageEditor(false, null)"></div>
+							<div task-question ng-repeat="question in wallC.dataService.data.wall.questions" data="question" show-edit-panel="wallC.showMessageEditor(false)"></div>
 						</md-list>
 					</md-content>
 					<div ng-show="wallC.rightMenu3" layout="column" class="wall-rightMenuAddTaskPanel" ng-class="{'wall-rightMenuAddTaskPanel--open': wallC.dataService.data.status.questionToEdit !== null }">
@@ -284,14 +288,14 @@
                     width="{{wallC.dataService.data.status.boardDivSize['VIEW_WIDTH']}}" size="3" ng-style="wallC.dataService.getGridStyle('horizontal')">
                 <div ng-repeat="message in wallC.dataService.data.question.messages | filter : wallC.messageFilterByContributorOnBoard" class="animate-repeat">
                     <div feed-message data="message" magnified="wallC.dataService.data.status.magnifyBoard" on-board="true" selected-participant="{{wallC.selectedParticipant}}"
-                         show-edit-panel="wallC.showMessageEditor(false, null)" class="feedMessage-messageOnBoard" id="message-{{message._id}}">
+                         show-edit-panel="wallC.showMessageEditor(false)" class="feedMessage-messageOnBoard" id="message-{{message._id}}">
                     </div>
                 </div>
 
 			</div>
 
 			<!-- (+) fab button to show the editMessage bottomPane -->
-			<md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && !wallC.dataService.data.status.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true, $event)">
+			<md-button aria-label="Create a new message" ng-if="wallC.dataService.data.question !== null && !wallC.dataService.data.status.phoneMode" class="md-fab wall-showEditMessageButton" ng-click="wallC.showMessageEditor(true)">
 				<md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
 			</md-button>
 		</div>
