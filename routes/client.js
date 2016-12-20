@@ -8,7 +8,6 @@ var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
 var Message = require('../models/message');
 var Log = require('../models/log');
-var Promise = require('promise');
 
 /**
  * @api {get} /poll Respond to this call with any changed messages and status
