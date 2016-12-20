@@ -9,6 +9,7 @@
   "description": "Talkwall application",
   "dependencies": {
     "angular": "1.5.x",
+    "angular-messages": "1.5.x",
     "angular-route": "1.5.x",
     "angular-aria": "1.5.x",
     "angular-animate": "1.5.x",
@@ -18,7 +19,6 @@
     "moment": "2.16.x"
   },
   "resolutions": {
-    "angular": "1.5.9",
-    "angular-translate": "2.13.0"
+    "angular": "^1.5.10"
   }
 }
