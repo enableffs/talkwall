@@ -10,8 +10,19 @@
   color: #FFFFFF !important;
 }
 
+.editMessage-cancelButton {
+  background-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
 .editMessage-editContainer {
   margin: 30px !important;
+}
+
+@media all and (max-width: 960px) {
+  .editMessage-editContainer {
+    margin: 0 !important;
+  }
 }
 
 .export-topToolbar {
@@ -294,6 +305,11 @@ md-content {
   padding: 5px;
 }
 
+.feedMessage-magnified {
+  font-size: 1.7em;
+  font-weight: bold;
+}
+
 .feedMessage-messageControl {
   width: 112px !important;
   min-width: 112px !important;
@@ -311,18 +327,13 @@ md-content {
   width: 320px !important;
   min-width: 320px !important;
   max-width: 320px !important;
-  background-color: #FFFFFF !important;
+  background-color: #FFFFFF;
   position: absolute !important;
   cursor: move;
 }
 
 .feedMessage-messageOnBoardSelected {
-  width: 320px !important;
-  min-width: 320px !important;
-  max-width: 320px !important;
   background-color: rgba(255, 119, 0, 0.5) !important;
-  position: absolute !important;
-  cursor: move;
 }
 
 .task-showControlButton {
@@ -357,6 +368,43 @@ md-content {
   overflow: hidden;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
+}
+
+.sessionInfoDetails {
+  z-index: 99;
+  color: white;
+  font-size: 4vw;
+  position: relative;
+  margin-top: 18vw;
+  margin-left: 10px;
+}
+
+.sessionInfoDetails span {
+  margin-top: 2.8vw;
+}
+
+.showingClapper {
+  position: fixed;
+}
+
+.clapper {
+  position: absolute;
+  width: 60vw;
+  max-width: 500px;
+}
+
+@media (min-width: 860px) {
+  .sessionInfoDetails {
+    z-index: 99;
+    color: white;
+    font-size: 2em;
+    position: relative;
+    margin-top: 145px;
+    margin-left: 20px;
+  }
+  .sessionInfoDetails span {
+    margin-top: 25px;
+  }
 }
 
 .wall-sidemenuLarge {
@@ -433,9 +481,12 @@ md-content {
 
 .wall-rightMenuAddTaskPanel {
   width: 100%;
+  padding: 20px 8px 8px 8px !important;
+}
+
+.wall-rightMenuAddTaskPanel--open {
   height: 270px;
   min-height: 250px;
-  padding: 20px 8px 8px 8px !important;
 }
 
 .wall-rightMenuAddTaskPanel md-input-container {
@@ -460,10 +511,9 @@ md-content {
 
 .wall-sidenavRightBottomDiv {
   position: absolute;
-  left: 0px !important;
+  left: 45% !important;
   bottom: 0px !important;
   max-height: 70px !important;
-  width: 100% !important;
 }
 
 .wall-showEditMessageButton {
@@ -501,6 +551,11 @@ md-content {
   font-size: 1.7em;
 }
 
+.wall-joinRow4 {
+  color: #c0c0c0;
+  font-size: 1em;
+}
+
 .wall-toolbarText {
   margin-left: 14px;
 }
@@ -524,19 +579,16 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 /* -------------   ANIMATIONS ----------------- */
 /* Messages on board */
 .animate-repeat.ng-move,
-.animate-repeat.ng-enter,
 .animate-repeat.ng-leave {
   transition: all linear 1s;
 }
 
 .animate-repeat.ng-leave.ng-leave-active,
-.animate-repeat.ng-move,
 .animate-repeat.ng-enter {
   opacity: 0;
 }
 
 .animate-repeat.ng-leave,
-.animate-repeat.ng-move.ng-move-active,
 .animate-repeat.ng-enter.ng-enter-active {
   opacity: 1;
 }
@@ -626,11 +678,13 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 html, body {
   overflow: hidden;
   height: 100%;
+  width: 100%;
+  position: fixed;
 }
 
 body {
   margin: 0;
-  adding: 0;
+  padding: 0;
   font-family: 'RobotoDraft', Arial, sans-serif;
 }
 

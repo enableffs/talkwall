@@ -9,6 +9,7 @@ module TalkwallApp {
 	import IBottomSheetService = angular.material.IBottomSheetService;
 	import ISidenavService = angular.material.ISidenavService;
 	import IWindowService = angular.IWindowService;
+	import IScope = angular.IScope;
 
 	export interface IWallControllerService {
 		/**
@@ -20,18 +21,26 @@ module TalkwallApp {
 		 */
 		showMessageEditor(newMessage: boolean): void;
 		/**
+		 * Switch to magnified board mode. Affects code in feedMessage controller
+		 */
+		magnifyTheBoard(): void;
+		/**
 		 * Toggles which right menu should be open
 		 */
-		toggleRightMenu(index: number): void;
+		toggleRightMenu(index: number, event: Event): void;
 		/**
-		 * Post a new question
+		 * Add a new question
 		 */
-		postQuestion(update: boolean): void;
+		addQuestion(event: Event): void;
+		/**
+		 * Update a question
+		 */
+		saveQuestion(event: Event): void;
         /**
          * Get question at index
          * @param index wall.questions Index of the question being selected
          */
-        setQuestion(index: number): void;
+        setQuestion(index: number, event: Event): void;
         /**
          * Check if question has been edited
          */
@@ -39,25 +48,26 @@ module TalkwallApp {
         /**
          * Change the grid type
          */
-        setGrid(type: string): void;
+        setGrid(type: string, event: Event): void;
 
-        userExists(item: string): boolean;
-        userToggle(item: string): void;
-        userIsChecked(): boolean;
-        toggleAll(): void;
+        contributorExists(item: string): boolean;
+		contributorToggle(item: string, event: Event): void;
+		aContributorIsChecked(): boolean;
+        toggleAllContributors(event: Event): void;
 
 		tagExists(item: string): boolean;
-		tagToggle(item: string): void;
+		tagToggle(item: string, event: Event): void;
 		tagIsChecked(): boolean;
-		toggleAllTags(): void;
+		toggleAllTags(event: Event): void;
 
-		showScreenContributors(): void;
-		showFeed(): void;
+		showScreenContributors(event: Event): void;
+		showFeed(event: Event): void;
 	}
 
 	export class WallController implements IWallControllerService {
-		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', 'URLService', '$window', 'UtilityService'];
+		static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 		private magnified: boolean = false;
+		private magnifyBoard: boolean = false;
 		private feedView: boolean = true;
 		private rightMenu1: boolean = false;
 		private rightMenu2: boolean = false;
@@ -66,10 +76,7 @@ module TalkwallApp {
 		private owneremail: string = undefined;
 
         private savedGridType: string = 'none';
-		private selectedContributor: string;
-
-        private unselected_users: Array<string>;
-		private unselected_tags: Array<string>;
+		private selectedParticipant: string;
 
         public messageFilterByContributorOnBoard: (Message) => boolean;
 		public messageFilterByAuthorAndTag: (Message) => boolean;
@@ -81,6 +88,8 @@ module TalkwallApp {
 			private $mdSidenav: ISidenavService,
 			private $mdBottomSheet: IBottomSheetService,
 			private $translate: angular.translate.ITranslateService,
+			private $scope: IScope,
+			private $timeout: angular.ITimeoutService,
 			private urlService: IURLService,
 			private $window: IWindowService,
 			private utilityService: UtilityService) {
@@ -90,92 +99,109 @@ module TalkwallApp {
                 this.noTag = translation;
             });
 
-            this.unselected_users = [];
-	        this.unselected_tags = [];
-	        this.dataService.checkAuthentication((success) => {
+	        this.dataService.checkAuthentication(() => {
 				this.activate();
 			}, null);
+
 		}
 
+		magnifyTheBoard(): void {
+        	this.magnifyBoard = !this.magnifyBoard;
+		}
 
 		activate(): void {
-			if (this.dataService.getWall() === null) {
+			if (this.dataService.data.wall === null) {
 				this.$window.location.href = this.urlService.getHost() + '/#/';
 			} else {
-				var question_index = this.dataService.getWall().questions.length > 0 ? 0 : -1;
-				this.setQuestion(question_index);
-				if (this.dataService.userIsAuthorised()) {
-	                this.rightMenu3 = true;
-	                this.$mdSidenav('right').open();
-				}
-				this.selectedContributor = this.dataService.getNickname();
+				let question_index = this.dataService.data.wall.questions.length > 0 ? 0 : -1;
+				this.setQuestion(question_index, null);
+				this.selectedParticipant = this.dataService.data.status.nickname;
+				this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 
-				if (this.dataService.userIsAuthorised() &&
+				this.$scope.$watch(() => { return this.selectedParticipant }, (newVar, oldVar) => {
+					if(newVar !== oldVar) {
+						this.dataService.data.status.selectedParticipant = newVar;
+						this.dataService.refreshBoardMessages();
+					}
+				}, true);
+
+				if (this.dataService.data.status.authorised &&
 					this.dataService.getAuthenticatedUser().defaultEmail !== undefined &&
 					this.dataService.getAuthenticatedUser().defaultEmail !== '') {
 					this.owneremail = this.dataService.getAuthenticatedUser().defaultEmail;
 				}
 
-				var handle = this;
+				let handle = this;
 				//contributor filtering (for messages on the board)
 				this.messageFilterByContributorOnBoard = function(message: Message) {
-					if (!message.deleted &&
-						!handle.dataService.getPhoneMode() &&
-						message.board !== undefined &&
-						message.board[handle.selectedContributor] !== undefined &&
-						handle.unselected_users.indexOf(message.creator) === -1 &&
-						handle.messageTagsNotPresent(message)) {
-						return true;
-					} else {
-						return false;
-					}
+					return (!message.deleted &&
+						!handle.dataService.data.status.phoneMode &&
+						typeof message.board !== 'undefined' &&
+						typeof message.board[handle.selectedParticipant] !== 'undefined' &&
+						handle.dataService.data.status.unselected_contributors.indexOf(message.creator) === -1 &&
+						handle.messageTagsNotPresent(message));
 				};
 
 				//author+tag filtering (for messages in the feed)
 				this.messageFilterByAuthorAndTag = function(message: Message) {
-					if (!message.deleted && handle.unselected_users.indexOf(message.creator) === -1 && handle.messageTagsNotPresent(message)) {
-						return true;
-					} else {
-						return false;
-					}
+					return (!message.deleted && handle.dataService.data.status.unselected_contributors.indexOf(message.creator) === -1 && handle.messageTagsNotPresent(message));
 				};
 
+				this.$timeout(() => {
+					this.showFeed(null);
+					this.rightMenu1 = true;
+					if (this.dataService.data.status.authorised && this.dataService.data.question !== null) {
+						this.$mdSidenav('right').open();
+					}
+				}, 2000);
 			}
 		}
 
 		messageTagsNotPresent(message): boolean {
-			var messageTags = this.utilityService.getPossibleTags(message.text);
-			if (messageTags !== null) {
-				var present: boolean = false;
-				for (var i = 0; i < messageTags.length; i++) {
-					if (this.unselected_tags.indexOf(messageTags[i]) === -1) {
+			let messageTags = this.utilityService.getPossibleTags(message.text);
+			if (messageTags.length > 0) {
+				let present: boolean = false;
+				for (let i = 0; i < messageTags.length; i++) {
+					if (this.dataService.data.status.unselected_tags.indexOf(messageTags[i]) === -1) {
 						present = true;
 					}
 				}
 				return present;
-
 			} else {
-				return this.unselected_tags.indexOf(this.noTag) === -1;
+				return this.dataService.data.status.unselected_tags.indexOf(this.noTag) === -1;
 			}
 		}
 
-		showFeed(): void {
+		showFeed(event): void {
+        	if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			this.feedView = true;
-			this.selectedContributor = this.dataService.getNickname();
+			this.selectedParticipant = this.dataService.data.status.nickname;
+			this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 			this.$mdSidenav('left').open();
 		}
 
-		showScreenContributors(): void {
+		showScreenContributors(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			this.magnified = false;
 			this.feedView = false;
 			this.$mdSidenav('left').open();
 		}
 
-        setQuestion(index) {
+        setQuestion(index, event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 	        this.dataService.setQuestion(index,
 		        () => {
-                    if ( this.dataService.getCurrentQuestionIndex() !== -1 ) {
-                        this.savedGridType = this.dataService.getQuestion().grid;
+                    if ( this.dataService.data.status.currentQuestionIndex !== -1 ) {
+                        this.savedGridType = this.dataService.data.question.grid;
                     }
 		        },
 		        function() {
@@ -184,117 +210,172 @@ module TalkwallApp {
 	        );
 		}
 
-		closeWall(targetEmail) {
+		closeWall(targetEmail, event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			this.dataService.closeWallNow(targetEmail);
 			this.owneremail = undefined;
 		}
 
-        setGrid(type): void {
-            this.dataService.getQuestionToEdit().grid = type;
+        setGrid(type, event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+            this.dataService.data.status.questionToEdit.grid = type;
         }
 
         questionToEditDirty() {
-	        if (this.dataService.getQuestionToEdit() === null || this.dataService.getQuestion() === null) {
+	        if (this.dataService.data.status.questionToEdit === null || this.dataService.data.question === null) {
 		        return true;
 	        } else {
-	            return (this.dataService.getQuestionToEdit().label !== this.dataService.getQuestion().label
-	                && this.dataService.getQuestionToEdit().label !== '')
-	                || typeof this.dataService.getQuestionToEdit()._id !== 'undefined';
+	            return (this.dataService.data.status.questionToEdit.label !== this.dataService.data.question.label
+	                && this.dataService.data.status.questionToEdit.label !== '')
+	                || typeof this.dataService.data.status.questionToEdit._id !== 'undefined';
 	        }
         }
 
-        /**** author filtering ******/
-        userExists(item) {
-            return this.unselected_users.indexOf(item) === -1;
+        /**** contributor filtering ******/
+        contributorExists(item) {
+            return this.dataService.data.status.unselected_contributors.indexOf(item) === -1;
         };
 
-		userToggle(item) {
-            var idx = this.unselected_users.indexOf(item);
+		contributorToggle(item, event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+            let idx = this.dataService.data.status.unselected_contributors.indexOf(item);
             if (idx > -1) {
-                this.unselected_users.splice(idx, 1);
+				this.dataService.data.status.unselected_contributors.splice(idx, 1);
             } else {
-                this.unselected_users.push(item);
+				this.dataService.data.status.unselected_contributors.push(item);
             }
         };
 
-        userIsChecked() {
-            return this.unselected_users.length !== this.dataService.getContributors().length;
+        aContributorIsChecked() {
+            return this.dataService.data.status.unselected_contributors.length < this.dataService.data.status.contributors.length;
         };
 
-        toggleAll() {
-            if (this.unselected_users.length === this.dataService.getContributors().length) {
-                this.unselected_users = [];
+        toggleAllContributors(event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+            if (this.dataService.data.status.unselected_contributors.length === this.dataService.data.status.contributors.length) {
+				this.dataService.data.status.unselected_contributors = [];
             } else {
-                this.unselected_users = this.dataService.getContributors().slice(0);
+				this.dataService.data.status.unselected_contributors = this.dataService.data.status.contributors.slice(0);
             }
         };
-		/**** author filtering ******/
+		/**** end contributor filtering ******/
 
 
 		/**** tag filtering ******/
 		tagExists(item) {
-			return this.unselected_tags.indexOf(item) === -1;
+			return this.dataService.data.status.unselected_tags.indexOf(item) === -1;
 		};
 
-		tagToggle(item) {
-			var idx = this.unselected_tags.indexOf(item);
+		tagToggle(item, event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			let idx = this.dataService.data.status.unselected_tags.indexOf(item);
 			if (idx > -1) {
-				this.unselected_tags.splice(idx, 1);
+				this.dataService.data.status.unselected_tags.splice(idx, 1);
 			} else {
-				this.unselected_tags.push(item);
+				this.dataService.data.status.unselected_tags.push(item);
 			}
 		};
 
 		tagIsChecked() {
-			return this.unselected_tags.length !== this.dataService.getTags().length;
+			return this.dataService.data.status.unselected_tags.length !== this.dataService.data.status.tags.length;
 		};
 
-		toggleAllTags() {
-			if (this.unselected_tags.length === this.dataService.getTags().length) {
-				this.unselected_tags = [];
+		toggleAllTags(event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			if (this.dataService.data.status.unselected_tags.length === this.dataService.data.status.tags.length) {
+				this.dataService.data.status.unselected_tags = [];
 			} else {
-				this.unselected_tags = this.dataService.getTags().slice(0);
+				this.dataService.data.status.unselected_tags = this.dataService.data.status.tags.slice(0);
 			}
 		};
-		/**** tag filtering ******/
+		/**** end tag filtering ******/
 
 		showMessageEditor(newMessage: boolean): void {
-			var handle = this;
+			let handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(null);
 			}
-            this.dataService.stopPolling();
-            this.showFeed();
+
+            //this.dataService.stopPolling();
+            //this.showFeed(null);
 			this.$mdBottomSheet.show({
 				controller: EditMessageController,
 				controllerAs: 'editMessageC',
+				clickOutsideToClose: false,
 				templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
-			}).then(function(answer) {
+			}).then(() => {
 				//dialog answered
-				console.log('--> WallController: answer: ' + answer);
+				this.$window.document.activeElement['blur']();
 				//post message to server and add returned object to question feed
-                if (handle.dataService.getMessageToEdit()._id === undefined) {
-                    handle.dataService.addMessage(
-                        function () {
-                            //success
-                        },
-                        function (error: {}) {
-                            //TODO: handle message create error
-                        }
-                    );
-                } else {
-                    handle.dataService.updateMessage();
-                }
-                handle.dataService.startPolling('none', 'none');
-			}, function() {
+				let message = handle.dataService.getMessageToEdit();
+				if(message !== null) {
+					if (typeof message._id === 'undefined') {
+						console.log('--> WallController: Edit message - created');
+						this.dataService.logAnEvent(LogType.CreateMessage, message._id, null);
+						handle.dataService.addMessage(
+							function () {
+								//success
+							},
+							function () {
+								//TODO: handle message create error
+							}
+						);
+					} else {
+						console.log('--> WallController: Edit message - edited');
+						this.dataService.logAnEvent(LogType.EditMessage, message._id, null);
+						handle.dataService.updateMessages([message], 'edit');
+					}
+				}
+                //handle.dataService.startPolling();
+			}, () => {
 				//dialog dismissed
-				console.log('--> WallController: dismissed');
-				handle.dataService.setMessageOrigin(null);
-                handle.dataService.startPolling('none', 'none');
+				this.$window.document.activeElement['blur']();
+				console.log('--> WallController: Edit message dismissed');
+				handle.dataService.clearMessageToEdit();
+                //handle.dataService.startPolling();
 			});
 		}
 
-		toggleRightMenu(n: number): void {
+		closeLeftSidenav(event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			this.$mdSidenav('left').close();
+			this.magnified = false;
+		}
+
+		toggleMagnified(event) {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			this.magnified = !this.magnified;
+		}
+
+		toggleRightMenu(n: number, event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
 			console.log('--> WallController: toggleRightMenu: ' + n);
 			switch (n) {
 				case 1:
@@ -330,36 +411,59 @@ module TalkwallApp {
 			}
 		}
 
-		postQuestion(update: boolean): void {
-			if (update) {
-				this.dataService.updateQuestion(
-					(success) => {
+		addQuestion(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			this.dataService.data.status.questionToEdit = new Question('');
+			this.dataService.data.status.questionToEdit.isNew = true;
+		}
+
+		cancelEditQuestion(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			this.dataService.data.status.questionToEdit = null;
+		}
+
+		saveQuestion(event): void {
+			if(event !== null) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			if(this.dataService.data.status.questionToEdit.isNew) {
+				this.dataService.addQuestion(
+					() => {
 						//set to the new question if none
-						if (this.dataService.getQuestion() === null) {
-							this.setQuestion(0);
+						if (this.dataService.data.question === null) {
+							this.setQuestion(0, null);
 						}
 						//clear the question to edit ...
-						this.dataService.setQuestionToEdit(new Question(''));
+						this.dataService.setQuestionToEdit(null);
 					},
-					function(error) {
+					() => {
 						//TODO: handle question retrieval error
 					}
 				);
 			} else {
-				this.dataService.addQuestion(
-					(success) => {
+				this.dataService.updateQuestion(
+					() => {
 						//set to the new question if none
-						if (this.dataService.getQuestion() === null) {
-							this.setQuestion(0);
+						if (this.dataService.data.question === null) {
+							this.setQuestion(0, null);
 						}
 						//clear the question to edit ...
-						this.dataService.setQuestionToEdit(new Question(''));
+						this.dataService.setQuestionToEdit(null);
 					},
-					function(error) {
+					() => {
 						//TODO: handle question retrieval error
 					}
 				);
 			}
 		}
+
+
 	}
 }

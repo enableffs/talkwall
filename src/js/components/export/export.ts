@@ -41,7 +41,7 @@ module TalkwallApp {
 					this.$mdDialog.alert()
 						.clickOutsideToClose(true)
 						.title('Wall ID missing')
-						.content('Please provide a valid wall ID to export its content.' +
+						.textContent('Please provide a valid wall ID to export its content.' +
 							'The URL should be in the form: http://...talkwall.net/#/export?wid=WALL_ID')
 						.ok('OK')
 				);

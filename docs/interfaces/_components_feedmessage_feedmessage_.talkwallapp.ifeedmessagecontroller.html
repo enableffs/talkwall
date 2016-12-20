@@ -7,7 +7,6 @@
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
-	<script src="../assets/js/modernizr.js"></script>
 </head>
 <body>
 <header>
@@ -96,9 +95,9 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#deletemessage" class="tsd-kind-icon">delete<wbr>Message</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#editmessage" class="tsd-kind-icon">edit<wbr>Message</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#isselected" class="tsd-kind-icon">is<wbr>Selected</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#ispinned" class="tsd-kind-icon">is<wbr>Pinned</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#togglehighlightmessage" class="tsd-kind-icon">toggle<wbr>Highlight<wbr>Message</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#togglepinmessage" class="tsd-kind-icon">toggle<wbr>Pin<wbr>Message</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#toggleselectmessage" class="tsd-kind-icon">toggle<wbr>Select<wbr>Message</a></li>
 							</ul>
 						</section>
 					</div>
@@ -110,15 +109,21 @@
 					<a name="deletemessage" class="tsd-anchor"></a>
 					<h3>delete<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">delete<wbr>Message<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">delete<wbr>Message<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L10">components/feedMessage/feedMessage.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/11c92ef/src/js/components/feedMessage/feedMessage.ts#L10">components/feedMessage/feedMessage.ts:10</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">Event</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -127,30 +132,36 @@
 					<a name="editmessage" class="tsd-anchor"></a>
 					<h3>edit<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">edit<wbr>Message<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">edit<wbr>Message<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L11">components/feedMessage/feedMessage.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/11c92ef/src/js/components/feedMessage/feedMessage.ts#L11">components/feedMessage/feedMessage.ts:11</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">Event</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="isselected" class="tsd-anchor"></a>
-					<h3>is<wbr>Selected</h3>
+					<a name="ispinned" class="tsd-anchor"></a>
+					<h3>is<wbr>Pinned</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Selected<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Pinned<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L14">components/feedMessage/feedMessage.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/11c92ef/src/js/components/feedMessage/feedMessage.ts#L14">components/feedMessage/feedMessage.ts:14</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -158,35 +169,47 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="togglepinmessage" class="tsd-anchor"></a>
-					<h3>toggle<wbr>Pin<wbr>Message</h3>
+					<a name="togglehighlightmessage" class="tsd-anchor"></a>
+					<h3>toggle<wbr>Highlight<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">toggle<wbr>Pin<wbr>Message<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">toggle<wbr>Highlight<wbr>Message<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L13">components/feedMessage/feedMessage.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/11c92ef/src/js/components/feedMessage/feedMessage.ts#L13">components/feedMessage/feedMessage.ts:13</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">Event</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="toggleselectmessage" class="tsd-anchor"></a>
-					<h3>toggle<wbr>Select<wbr>Message</h3>
+					<a name="togglepinmessage" class="tsd-anchor"></a>
+					<h3>toggle<wbr>Pin<wbr>Message</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">toggle<wbr>Select<wbr>Message<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">toggle<wbr>Pin<wbr>Message<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Event</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/develop/src/js/components/feedMessage/feedMessage.ts#L12">components/feedMessage/feedMessage.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/nesnass/talkwall/blob/11c92ef/src/js/components/feedMessage/feedMessage.ts#L12">components/feedMessage/feedMessage.ts:12</a></li>
 								</ul>
 							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">Event</span></h5>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -199,33 +222,6 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/__references_.html">"_<wbr>references"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_app_.html">"app"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_app_config_.html">"app.config"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_app_constants_.html">"app.constants"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_app_run_.html">"app.run"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_archive_archive_.html">"components/archive/archive"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_close_close_.html">"components/close/close"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_editmessagepanel_editmessagepanel_.html">"components/edit<wbr>Message<wbr>Panel/edit<wbr>Message<wbr>Panel"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_export_export_.html">"components/export/export"</a>
-					</li>
 					<li class="current tsd-kind-external-module">
 						<a href="../modules/_components_feedmessage_feedmessage_.html">"components/feed<wbr>Message/feed<wbr>Message"</a>
 						<ul>
@@ -233,45 +229,6 @@
 								<a href="../modules/_components_feedmessage_feedmessage_.talkwallapp.html">Talkwall<wbr>App</a>
 							</li>
 						</ul>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_join_join_.html">"components/join/join"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_landing_landing_.html">"components/landing/landing"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_login_login_.html">"components/login/login"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_task_task_.html">"components/task/task"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_components_wall_wall_.html">"components/wall/wall"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_directives_autoresize_.html">"directives/autoresize"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_directives_watchboardsize_.html">"directives/watchboardsize"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_models_models_.html">"models/models"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_services_authenticationservice_.html">"services/authenticationservice"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_services_dataservice_.html">"services/dataservice"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_services_tokenservice_.html">"services/tokenservice"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_services_urlservice_.html">"services/urlservice"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="../modules/_services_utilityservice_.html">"services/utilityservice"</a>
 					</li>
 				</ul>
 			</nav>
@@ -295,13 +252,13 @@
 								<a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#editmessage" class="tsd-kind-icon">edit<wbr>Message</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#isselected" class="tsd-kind-icon">is<wbr>Selected</a>
+								<a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#ispinned" class="tsd-kind-icon">is<wbr>Pinned</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#togglehighlightmessage" class="tsd-kind-icon">toggle<wbr>Highlight<wbr>Message</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface">
 								<a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#togglepinmessage" class="tsd-kind-icon">toggle<wbr>Pin<wbr>Message</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-interface">
-								<a href="_components_feedmessage_feedmessage_.talkwallapp.ifeedmessagecontroller.html#toggleselectmessage" class="tsd-kind-icon">toggle<wbr>Select<wbr>Message</a>
 							</li>
 						</ul>
 					</li>
@@ -378,7 +335,7 @@
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.io" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>

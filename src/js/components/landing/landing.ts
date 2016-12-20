@@ -35,23 +35,24 @@ module TalkwallApp {
 		 * display an advanced dialog for the login, and catches it's events
 		 */
 		showLoginDialog(ev) : void {
-			var handle = this;
+			let handle = this;
 			//detects if the device is small
-			var useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+			let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
 			//show the dialog
 			this.$mdDialog.show({
 				controller: LoginController,
 				controllerAs: 'loginC',
 				templateUrl: 'js/components/login/login.html',
-				parent: angular.element(document.body),
 				targetEvent: ev,
 				clickOutsideToClose: true
 			})
-			.then(function(answer) {
+			.then((answer) => {
+				this.$window.blur();
 				//dialog answered
 				console.log('--> LandingController: answer: ' + answer);
 				handle.$window.location.href = handle.urlService.getHost() + answer;
-			}, function() {
+			}, () => {
+				this.$window.blur();
 				//dialog dismissed
 				console.log('--> LandingController: dismissed');
 			});
@@ -61,9 +62,9 @@ module TalkwallApp {
 		 * display dialog for joining with pin and nickname
 		 */
 		showJoinDialog(ev) : void {
-			var handle = this;
+			let handle = this;
 			//detects if the device is small
-			var useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+			let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
 			//show the dialog
 			this.$mdDialog.show({
 					controller: JoinController,
@@ -73,11 +74,14 @@ module TalkwallApp {
 					targetEvent: ev,
 					clickOutsideToClose: true
 				})
-				.then(function(joinModel) {
+				.then((joinModel) => {
+					this.$window.blur();
 					handle.dataService.getClientWall(joinModel, () => {
+						handle.dataService.data.status.joinedWithPin = true;
 						handle.$window.location.href = handle.urlService.getHost() + '/#/wall';
 					}, null);
-				}, function() {
+				}, () => {
+					this.$window.blur();
 					//dialog dismissed
 					console.log('--> LandingController: dismissed');
 				});

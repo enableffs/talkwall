@@ -7,7 +7,7 @@ var questionSchema = Schema({
     createdAt:      { type: Date, default: Date.now },
     label:          { type: String },
     grid:           { type: String, default: 'none' },  // 'none', 'horizontal', 'vertical', 'both'
-    participants:   [ { type: String } ],
+    contributors:   [ { type: String } ],
     messages:       [ { type: Schema.Types.ObjectId, ref: 'Message', default: null } ]
 });
 

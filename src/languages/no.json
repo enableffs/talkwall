@@ -11,6 +11,7 @@
   "CLOSE_HEADING": "Denne Samtavla er avsluttet",
   "CLOSE_MESSAGE": "Takk for alle bidrag!",
   "EDITMESSAGEPANEL_EDITMESSAGE": "Rediger bidrag",
+  "MENUPAGE_GETSESSIONINFO": "Få sesjon informasjon",
   "MENUPAGE_BETA_DIALOG_BDY": "Samtavla prøves nå ut.",
   "MENUPAGE_BETA_DIALOG_HEADING": "Beta testing",
   "MENUPAGE_BROWSER_PRIVATEMODE_WARNING_TOAST": "Din nettleseren er i privat modus og derfor kan du ikke logge deg inn",
@@ -50,7 +51,8 @@
   "MENUPAGE_STATEMENT1":"Jeg får innblikk i elevenes forståelse, og hvordan de ordlegger seg. (Lærer)",
   "MENUPAGE_STATEMENT2":"Flere kan komme med samme svar når vi skriver inn mikroblogger. Det kan man ikke hvis man har håndsopprekning. Da er det bare én som får svare. (Ungdomsskoleelev)",
   "WALL_ADDBTN": "Legg til",
-  "WALL_ADDTASK": "Legg til oppgavetekst",
+  "WALL_CANCELBTN": "Avbryt",
+  "WALL_TASKNAME": "Oppgavetekst",
   "WALL_BACKGROUND": "Bakgrunn",
   "WALL_CLOSE": "Avslutt",
   "WALL_CLOSEMSG": "Alle bidrag på denne Samtavla vil bli sendt i epost til:",
@@ -63,10 +65,13 @@
   "WALL_MESSAGES": "Bidrag",
   "WALL_NOQUESTION": "Legg til oppgavetekst!",
   "WALL_NUMBERPARTICIPANTS": "deltagere",
+  "WALL_TALKWALLPARTICIPANTS": "in total using talkwall",
   "WALL_PARTICIPATE": "Delta på denne samtavla",
   "WALL_SAVEBTN": "Lagre",
   "WALL_SELECTALL": "velg alle",
   "WALL_SELECTWALLS": "Deltagernes tavler",
   "WALL_UN": "ikke ",
-  "NO_TAG": "Uten #emnetagg"
+  "NO_TAG": "Uten #emnetagg",
+  "MAGNIFY_ON": "Board magnification on",
+  "MAGNIFY_OFF": "Board magnification Off"
 }
