@@ -4,16 +4,18 @@
 module TalkwallApp {
 	"use strict";
 	import IDialogService = angular.material.IDialogService;
+	import IDocumentService = angular.IDocumentService;
 	export class JoinController {
-		static $inject = ['$mdDialog'];
+		static $inject = ['$mdDialog', '$document'];
 
 		public joinModel = {
 			nickname: "",
 			pin: NaN
 		};
 		constructor(
-			private $mdDialog: IDialogService) {
-			console.log('--> LoginController: started: ');
+			private $mdDialog: IDialogService,
+			private $document: IDocumentService) {
+				console.log('--> LoginController: started: ');
 		}
 
 		/**
@@ -22,6 +24,7 @@ module TalkwallApp {
 		 */
 		hide(response?: any): void {
 			console.log('--> JoinController: hide');
+			this.$document[0].activeElement['blur']();
 			this.$mdDialog.hide();
 		};
 		/**
@@ -29,6 +32,7 @@ module TalkwallApp {
 		 * @aparam response a possible reponse
 		 */
 		cancel(response?: any) : void {
+			this.$document[0].activeElement['blur']();
 			console.log('--> JoinController: cancel');
 			this.$mdDialog.cancel();
 		};
@@ -38,6 +42,7 @@ module TalkwallApp {
 		 */
 		answer(): void {
 			if (this.joinModel.nickname.length > 0 && this.joinModel.pin > 999 && this.joinModel.pin < 10000) {
+				this.$document[0].activeElement['blur']();
 				this.$mdDialog.hide(this.joinModel);
 			}
 		};

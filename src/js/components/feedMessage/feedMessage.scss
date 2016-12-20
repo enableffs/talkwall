@@ -52,6 +52,11 @@
   padding: 5px;
 }
 
+.feedMessage-magnified {
+  font-size: 1.7em;
+  font-weight: bold;
+}
+
 .feedMessage-messageControl {
   //background-color: $color-grey;
   width: 112px !important;
@@ -70,16 +75,11 @@
   width: 320px !important;
   min-width: 320px !important;
   max-width: 320px !important;
-  background-color: $color-white !important;
+  background-color: $color-white;
   position: absolute !important;
   cursor: move;
 }
 
 .feedMessage-messageOnBoardSelected {
-  width: 320px !important;
-  min-width: 320px !important;
-  max-width: 320px !important;
   background-color: rgba(255, 119, 0, 0.5) !important;
-  position: absolute !important;
-  cursor: move;
 }

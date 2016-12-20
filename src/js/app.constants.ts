@@ -10,7 +10,8 @@ module TalkwallApp {
     export class TalkwallConstants {
         public static get constants() {
             return {
-
+                POLL_INTERVAL_SECONDS: 5,
+                POLLS_PER_LOG_ATTEMPT: 5,
                 /****  Colours animated from wall.scss  References are here  */
 
                 BACKGROUND_COLOURS: ['bg1', 'bg2', 'bg3', 'bg4', 'bg5', 'bg6', 'bg7', 'bg8', 'bg9'],

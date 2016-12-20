@@ -17,18 +17,21 @@
         "../js/components/join/join",
         "../js/components/close/close",
         "../js/components/feedMessage/feedMessage",
-        "../js/components/task/task",
+        "../js/components/taskQuestion/taskQuestion",
+        "../js/components/sessioninfo/sessioninfo",
         "../js/components/wall/wall";
 
 
 html, body {
   overflow: hidden;
   height: 100%;
+  width: 100%;
+  position: fixed;
 }
 
 body {
   margin:0;
-  adding:0;
+  padding:0;
   font-family:'RobotoDraft', Arial, sans-serif;
 }
 

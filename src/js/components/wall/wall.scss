@@ -71,9 +71,12 @@
 
 .wall-rightMenuAddTaskPanel {
   width: 100%;
+  padding: 20px 8px 8px 8px !important;
+}
+
+.wall-rightMenuAddTaskPanel--open {
   height: 270px;
   min-height: 250px;
-  padding: 20px 8px 8px 8px !important;
 }
 
 .wall-rightMenuAddTaskPanel md-input-container {
@@ -98,10 +101,9 @@
 
 .wall-sidenavRightBottomDiv {
   position: absolute;
-  left: 0px !important;
+  left: 45% !important;
   bottom: 0px !important;
   max-height: 70px !important;
-  width: 100% !important;
 }
 
 .wall-showEditMessageButton {
@@ -139,6 +141,11 @@
   font-size: 1.7em;
 }
 
+.wall-joinRow4 {
+  color: $color-grey;
+  font-size: 1em;
+}
+
 .wall-toolbarText {
   margin-left: 14px;
 }
@@ -165,19 +172,19 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 /* Messages on board */
 
 .animate-repeat.ng-move,
-.animate-repeat.ng-enter,
+//.animate-repeat.ng-enter,
 .animate-repeat.ng-leave {
   transition:all linear 1s;
 }
 
 .animate-repeat.ng-leave.ng-leave-active,
-.animate-repeat.ng-move,
+//.animate-repeat.ng-move,
 .animate-repeat.ng-enter {
   opacity:0;
 }
 
 .animate-repeat.ng-leave,
-.animate-repeat.ng-move.ng-move-active,
+//.animate-repeat.ng-move.ng-move-active,
 .animate-repeat.ng-enter.ng-enter-active {
   opacity:1;
 }

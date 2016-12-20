@@ -11,3 +11,4 @@ npm-debug.log
 src/**/*.js
 src/**/*.map
 src/css
+newrelic_agent.log
