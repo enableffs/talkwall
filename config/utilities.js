@@ -3,7 +3,6 @@
 var moment = require('moment');
 var common = require('../config/common.js');
 var postmark = require('postmark');
-var prom = require('promise');
 
 var systemOK = true;
 var error = '';
@@ -20,7 +19,7 @@ exports.getRandomBetween = function(min, max) {
 exports.sendMail = function(mail) {
 
     //create a send email promise and return it
-    return new prom(function (resolve) {
+    return new Promise(function (resolve) {
 
         //avoid sending emails all the time when testing
         if(process.env.STATIC_FOLDER === 'src') {
