@@ -4,7 +4,7 @@
 			<label>{{ 'EDITMESSAGEPANEL_EDITMESSAGE' | translate }}</label>
 			<textarea ng-model="editMessageC.messageToEdit.text" md-maxlength="140" type="text" maxlength="140" rows="5" md-auto-focus="" id="editMessageInputTextBox"></textarea>
 		</md-input-container>
-		<div flex="10" layout="column" layout-align="space-around center">
+		<div flex="15" layout="column" layout-align="space-around center">
 			<md-button aria-label="Post message" ng-disabled="editMessageC.messageToEdit.text === ''" class="md-fab" ng-class="{'editMessage-validateButton' : editMessageC.messageToEdit.text !== ''}" ng-click="editMessageC.answer()">
 				<md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
 			</md-button>

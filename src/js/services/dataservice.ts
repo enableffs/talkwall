@@ -569,9 +569,6 @@ module TalkwallApp {
                 this.data.status.messageToEdit.question_id = this.data.question._id;
             } else if (message === null && this.data.status.messageOrigin !== null) {
                 //we have an origin to create the new message, clone it
-
-                //this.data.status.messageToEdit = JSON.parse(JSON.stringify(this.data.status.messageOrigin));
-
                 this.data.status.messageToEdit = new Message().createFromOrigin(this.data.status.messageOrigin, this.data.status.nickname);
                 this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.status.nickname] !== 'undefined';
             } else {
@@ -870,18 +867,15 @@ module TalkwallApp {
                             nickname: this.data.status.nickname,
                             controlString: 'position'
                         })
-                            .then((data) => {
+                            .then((response) => {
                                 let resultKey = 'result';
-                                this.setMessageToEdit(null);
                                 this.data.status.updateOrigin = false;
-                                if (this.data.status.messageOrigin !== null) {
-                                    this.data.status.messageOrigin = null;
-                                }
+                                this.data.status.messageOrigin = null;
                                 //update the messages array with the updated object, so that all references are in turn updated
                                 let idKey = '_id';
                                 this.data.question.messages.forEach((m) => {
-                                    if (m._id === data[resultKey][idKey]) {
-                                        m.updateMe(data[resultKey]);
+                                    if (m._id === response.data[resultKey][idKey]) {
+                                        m.updateMe(response.data[resultKey]);
                                     }
                                 });
                             }, (error) => {
@@ -891,6 +885,7 @@ module TalkwallApp {
                     } else {
                         //make sure to reset the message origin ...
                         this.data.status.messageOrigin = null;
+                        this.data.status.messageToEdit = null;
                     }
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();

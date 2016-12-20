@@ -19,7 +19,7 @@ module TalkwallApp {
 		/**
 		 * Pop up bottom sheet to edit messages. Slide out left sidenav also
 		 */
-		showMessageEditor(newMessage: boolean, event: Event): void;
+		showMessageEditor(newMessage: boolean): void;
 		/**
 		 * Switch to magnified board mode. Affects code in feedMessage controller
 		 */
@@ -308,11 +308,7 @@ module TalkwallApp {
 		};
 		/**** end tag filtering ******/
 
-		showMessageEditor(newMessage: boolean, event): void {
-			if(event !== null) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
+		showMessageEditor(newMessage: boolean): void {
 			let handle = this;
 			if (newMessage) {
                 handle.dataService.setMessageToEdit(null);
