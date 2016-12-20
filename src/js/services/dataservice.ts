@@ -991,25 +991,14 @@ module TalkwallApp {
                 this.$http.put(this.urlService.getHost() + clientType, {
                     messages: messages,
                     wall_id: this.data.wall._id,
-                    nickname: this.data.status.selectedParticipant,  // Teacher can masquerade as another user
+                    nickname: this.data.status.selectedParticipant,
                     controlString: controlString
                 })
-                    .then((data) => {
-                        let resultKey = 'result'; let idKey = '_id';
+                    .then(() => {
                         this.clearMessageToEdit();
-
-                        //update the messages array with the updated object, so that all references are in turn updated
-                        /*
-                        this.data.question.messages.forEach((m: Message) => {
-                            if (m._id === data.data[resultKey][idKey]) {
-                                m.updateMe(data.data[resultKey]);
-                                this.parseMessageForTags(data.data[resultKey]);
-                            }
-                        })
-                        */
+                        console.log('--> DataService: updateMessage success');
                     }, (error) => {
                         console.log('--> DataService: updateMessage failure: ' + error);
-                        //this.data.status.messageToEdit = message;
                     });
             }
 
@@ -1169,7 +1158,7 @@ module TalkwallApp {
                             break;
 
                         case 'position':
-                            message.updateBoard(update.board, false, this.data.status.nickname);
+                            message.updateBoard(update.board, true, this.data.status.nickname);
                             break;
 
                         case 'mixed':
@@ -1178,7 +1167,7 @@ module TalkwallApp {
                             if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
                             }
-                            message.updateBoard(update.board, false, this.data.status.nickname);
+                            message.updateBoard(update.board, true, this.data.status.nickname);
                             break;
                     }
 
