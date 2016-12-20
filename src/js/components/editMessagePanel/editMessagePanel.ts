@@ -57,7 +57,6 @@ module TalkwallApp {
 			console.log('--> EditMessageController: answered: ');
 			this.$document[0].activeElement['blur']();
 			this.$mdBottomSheet.hide();
-			this.messageToEdit = null;
 		};
 	}
 }
