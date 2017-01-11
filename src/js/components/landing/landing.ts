@@ -37,7 +37,7 @@ module TalkwallApp {
 		showLoginDialog(ev) : void {
 			let handle = this;
 			//detects if the device is small
-			let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+			// let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
 			//show the dialog
 			this.$mdDialog.show({
 				controller: LoginController,
@@ -64,7 +64,7 @@ module TalkwallApp {
 		showJoinDialog(ev) : void {
 			let handle = this;
 			//detects if the device is small
-			let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
+			// let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
 			//show the dialog
 			this.$mdDialog.show({
 					controller: JoinController,
@@ -74,9 +74,9 @@ module TalkwallApp {
 					targetEvent: ev,
 					clickOutsideToClose: true
 				})
-				.then((joinModel) => {
+				.then((answer) => {
 					this.$window.blur();
-					handle.dataService.getClientWall(joinModel, () => {
+					handle.dataService.getClientWall(answer, () => {
 						handle.dataService.data.status.joinedWithPin = true;
 						handle.$window.location.href = handle.urlService.getHost() + '/#/wall';
 					}, null);

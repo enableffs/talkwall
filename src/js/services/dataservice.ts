@@ -533,13 +533,22 @@ module TalkwallApp {
                 .then((success) => {
                     let resultKey = 'result', dataKey = 'data', statusKey = 'status';
 
-                    // The wall is closed
+                    // The wall is closed or PIN not found
                     if (success[statusKey] === 204) {
-                        if (this.data.wall !== null) {
+                        if (this.data.wall !== null && !this.data.wall.closed) {
                             this.data.wall.closed = true;
+                            this.stopPolling();
+                            this.showClosingDialog();
+                        } else {
+                            let messageText = this.$translate.instant('MENUPAGE_PIN_NOT_FOUND');
+                            this.$mdDialog.show(
+                                this.$mdDialog.alert()
+                                    .clickOutsideToClose(true)
+                                    .title('Pin unknown')
+                                    .textContent(messageText)
+                                    .ok('OK')
+                            );
                         }
-                        this.stopPolling();
-                        this.showClosingDialog();
                     } else {
                         this.data.wall = success[dataKey][resultKey];
                         this.data.status.nickname = joinModel.nickname;

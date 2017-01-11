@@ -3,16 +3,17 @@
 module TalkwallApp {
 
     'use strict';
-    configApp.$inject = ['$translateProvider', '$httpProvider', '$routeProvider'];
+    configApp.$inject = ['$translateProvider', '$httpProvider', '$routeProvider', '$mdThemingProvider'];
 
     /**
      * Application-wide overall configuration
      * @param $translateProvider  Used for defining default language translation support.
      * @param $httpProvider  Used for registering an interceptor (TokenInterceptor).
      * @param $routeProvider  Used for defining default routing.
+     * @param $mdThemingProvider Used to set Angular Material theme settings
      */
     export function configApp($translateProvider: angular.translate.ITranslateProvider, $httpProvider: ng.IHttpProvider,
-                              $routeProvider: ng.route.IRouteProvider) {
+                              $routeProvider: ng.route.IRouteProvider, $mdThemingProvider: ng.material.IThemingProvider) {
 
         // Routes
         $routeProvider.
@@ -39,7 +40,34 @@ module TalkwallApp {
             suffix: '.json'
         });
 
-        var lang = null;
+
+        $mdThemingProvider['disableTheming']();
+        /*
+        let customBackground = {
+            '50': '#ffffff',
+            '100': '#ffffff',
+            '200': '#ffffff',
+            '300': '#ffffff',
+            '400': '#ffffff',
+            '500': '#FFF',
+            '600': '#f2f2f2',
+            '700': '#e6e6e6',
+            '800': '#d9d9d9',
+            '900': '#cccccc',
+            'A100': '#ffffff',
+            'A200': '#ffffff',
+            'A400': '#ffffff',
+            'A700': '#bfbfbf'
+        };
+        $mdThemingProvider
+            .definePalette('customBackground',
+                customBackground);
+
+        $mdThemingProvider.theme('default')
+            .backgroundPalette('customBackground');
+        */
+
+        let lang = null;
         let languagesKey: string = 'languages';
         let langKey: string = 'lang';
         if (navigator[languagesKey]) {

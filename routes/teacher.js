@@ -242,7 +242,7 @@ exports.closeWall = function(req, res) {
 
     var query = Wall.findOneAndUpdate({
         _id : req.params.wall_id
-    }, {closed: true, pin: '0000'}, { new: true });
+    }, {closed: true}, { new: true });
 
     query.exec(function(error, wall) {
         if(error) {
