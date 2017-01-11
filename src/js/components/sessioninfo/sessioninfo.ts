@@ -31,12 +31,17 @@ module TalkwallApp {
 				error: '',
 				showResult: false,
 				wall: Wall,
-				name: ''
+				name: '',
+				sessionid: ''
 			};
 
 			this.datestring = '';
 			this.timestring = '';
 			this.clapper = 'images/clapper1.png';
+
+		}
+
+		exportCSV() {
 
 		}
 

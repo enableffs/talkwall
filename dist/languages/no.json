@@ -37,6 +37,8 @@
   "MENUPAGE_PARTICIPATEDRAWER_NAME": "Navn",
   "MENUPAGE_PARTICIPATEDRAWER_PIN": "PIN-koden",
   "MENUPAGE_PARTICIPATEDRAWERJOINBTN":"Delta",
+  "IDPAGE_SESSIONID": "Session ID",
+  "IDPAGE_EXPORT": "Export CSV",
   "MENUPAGE_Q_BDY": "Engasjer elevene dine i  utforskende samtaler i klasserommet med Samtavla. Et digitalt verktøy som kan videreutvikle din dialogiske undervisning.",
   "MENUPAGE_Q_HREF" : "http://digitaledialoger.no/understanding-classroom-dialogue?lang=nb",
   "MENUPAGE_Q_REF" : "Lær mer om dialogisk undervisning, og hvordan en inviterer til utforskende samtaler.",
