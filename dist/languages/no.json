@@ -1,4 +1,4 @@
-  {
+{
   "ARCHIVE_ACTIVEWALL": "Aktiv samtavle",
   "ARCHIVE_CONTINUTEEXISTING": "Fortsett",
   "ARCHIVE_CREATENEW": "Opprett ny",
@@ -53,6 +53,12 @@
   "MENUPAGE_S_TITLE": "Del",
   "MENUPAGE_STATEMENT1":"Jeg får innblikk i elevenes forståelse, og hvordan de ordlegger seg. (Lærer)",
   "MENUPAGE_STATEMENT2":"Flere kan komme med samme svar når vi skriver inn mikroblogger. Det kan man ikke hvis man har håndsopprekning. Da er det bare én som får svare. (Ungdomsskoleelev)",
+  "ORG_TITLE": "Your Talkwalls",
+  "ORG_NICKNAME": "nickname",
+  "ORG_RECENT_TALKWALLS": "Recently used talkwalls",
+  "ORG_ALL_TALKWALLS": "All talkwalls",
+  "ORG_GROUP": "group",
+  "ORG_THEME": "theme",
   "WALL_ADDBTN": "Legg til",
   "WALL_CANCELBTN": "Avbryt",
   "WALL_TASKNAME": "Oppgavetekst",

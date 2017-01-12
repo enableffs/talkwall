@@ -681,6 +681,18 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
   }
 }
 
+.organiser-clouds {
+  position: fixed;
+  bottom: 0;
+  height: 300px;
+  width: 100%;
+}
+
+.addWallButton {
+  z-index: 900 !important;
+  background-color: #FF7700 !important;
+}
+
 html, body {
   overflow: hidden;
   height: 100%;

@@ -16,27 +16,29 @@
                         <img class="landing-samtavlaLogo" style="width: 150px;" src="../images/logo_en.svg" ng-show="sessioninfoC.languageCode=='en'">
                     </div>
 
-                    <div ng-hide="sessioninfoC.data.showResult" layout="column" layout-align="center center">
-                        <md-input-container class="md-icon-float md-block">
-                            <label>{{'MENUPAGE_PARTICIPATEDRAWER_PIN' | translate}}</label>
-                            <md-icon md-svg-src="images/key.svg" class="name"></md-icon>
-                            <input ng-model="sessioninfoC.data.pin" type="text" required minlength="4" maxlength="4" md-maxlength="4">
-                        </md-input-container>
+                    <div layout="row" layout-align="space-around center">
+                        <div ng-hide="sessioninfoC.data.showResult" layout="column" layout-align="center center" style="padding: 30px;">
+                            <md-input-container class="md-icon-float md-block">
+                                <label>{{'MENUPAGE_PARTICIPATEDRAWER_PIN' | translate}}</label>
+                                <md-icon md-svg-src="images/key.svg" class="name"></md-icon>
+                                <input ng-model="sessioninfoC.data.pin" type="text" required minlength="4" maxlength="4" md-maxlength="4">
+                            </md-input-container>
 
-                        <md-button aria-label="Get Session Info" class="md-primary md-raised join-menuItem" ng-click="sessioninfoC.activate()">
-                            {{'MENUPAGE_GETSESSIONINFO' | translate}}
-                        </md-button>
-                    </div>
+                            <md-button aria-label="Get Session Info" class="md-primary md-raised join-menuItem" ng-click="sessioninfoC.activate()">
+                                {{'MENUPAGE_GETSESSIONINFO' | translate}}
+                            </md-button>
+                        </div>
 
-                    <div ng-hide="sessioninfoC.data.showResult" layout="column" layout-align="center center">
-                        <md-input-container class="md-icon-float md-block">
-                            <label>{{'IDPAGE_SESSIONID' | translate}}</label>
-                            <input ng-model="sessioninfoC.data.sessionid" type="text">
-                        </md-input-container>
+                        <div ng-hide="sessioninfoC.data.showResult" layout="column" layout-align="center center" style="padding: 30px;">
+                            <md-input-container class="md-icon-float md-block">
+                                <label>{{'IDPAGE_SESSIONID' | translate}}</label>
+                                <input ng-model="sessioninfoC.data.sessionid" type="text">
+                            </md-input-container>
 
-                        <md-button aria-label="Export Session CSV file" class="md-primary md-raised join-menuItem" ng-click="sessioninfoC.exportCSV()">
-                            {{'IDPAGE_EXPORT' | translate}}
-                        </md-button>
+                            <md-button aria-label="Export Session CSV file" class="md-primary md-raised join-menuItem" ng-click="sessioninfoC.exportCSV()">
+                                {{'IDPAGE_EXPORT' | translate}}
+                            </md-button>
+                        </div>
                     </div>
 
                     <!--div layout="column" layout-align="center center" ng-show="sessioninfoC.data.showResult" ng-style="{'background-image': 'url(' + sessioninfoC.clapper + ')'}"-->

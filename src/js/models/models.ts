@@ -285,6 +285,9 @@ module TalkwallApp {
         diff: {x: number, y: number };
 
         constructor(type: LogType, id: string, nickname: string, question_id: string, diff) {
+
+            // In cases where we record a 'question' event, the itemid will match the q_id
+
             this.q_id = question_id;
             this.type = type;
             this.itemid = id;

@@ -20,6 +20,7 @@
 /// <reference path="components/archive/archive.ts"/>
 /// <reference path="components/export/export.ts"/>
 /// <reference path="components/wall/wall.ts"/>
+/// <reference path="components/organiser/organiser.ts"/>
 /// <reference path="components/sessioninfo/sessioninfo.ts"/>
 /// <reference path="components/editMessagePanel/editMessagePanel.ts"/>
 
@@ -66,6 +67,7 @@ module TalkwallApp {
         .controller('SessionInfoController', SessionInfoController)
         .controller('ExportController', ExportController)
         .controller('WallController', WallController)
+        .controller('OrganiserController', OrganiserController)
         .controller('EditMessageController', EditMessageController)
         .run(runApp);
 }

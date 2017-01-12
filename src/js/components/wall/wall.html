@@ -88,7 +88,7 @@
 			<md-content flex="grow" style="overflow-x: hidden !important;">
 				<!-- left sidenav message feed -->
 				<md-list ng-if="wallC.feedView">
-					<div feed-message selected-participant="{{wallC.dataService.data.status.nickname}}"
+					<div feed-message selected-participant="{{wallC.dataService.data.user.nickname}}"
 						 on-board="false" ng-repeat="message in wallC.dataService.data.question.messages | filter : wallC.messageFilterByAuthorAndTag"
 						 data="message" show-edit-panel="wallC.showMessageEditor(false)"></div>
 				</md-list>
@@ -181,7 +181,7 @@
                                 </md-list-item>
                                 <md-list-item ng-repeat="nickname in wallC.dataService.data.status.contributors">
                                     <div flex="80">
-                                        <md-icon ng-style="{ 'fill' : wallC.dataService.data.status.nickname === nickname ? '#FF7700' : 'black' }" md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
+                                        <md-icon ng-style="{ 'fill' : wallC.dataService.data.user.nickname === nickname ? '#FF7700' : 'black' }" md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
                                         <md-label class="wall-username">{{nickname}}</md-label>
                                     </div>
                                     <md-checkbox class="user-checkbox" ng-checked="wallC.contributorExists(nickname)" ng-click="wallC.contributorToggle(nickname, $event)"></md-checkbox>

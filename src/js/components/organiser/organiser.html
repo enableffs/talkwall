@@ -1,0 +1,82 @@
+<div layout flex ng-controller="OrganiserController as orgC">
+    <div flex layout id="landing-main">
+
+        <div ng-style="{'width': windowWidth+'px', 'background-color': '#00BCD4'}" style="position: relative;" autoresize="">
+
+            <div class="organiser-clouds">
+                <img src="../images/cloud.svg">
+            </div>
+
+            <div class="landing-betalabel">
+                <img src="../images/beta_icon.png">
+            </div>
+
+
+            <div class="landing-centered-button-panel" layout="column" layout-align="start center">
+
+                <div style="margin-top: 100px; width: 300px;">
+                    <img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="landingC.languageCode=='no'">
+                    <img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="landingC.languageCode=='en'">
+                </div>
+
+
+                <div flex-gt-sm="50" flex="">
+
+                    <md-toolbar layout="row" style="background-color: #65B4CE !important;">
+                        <div class="md-toolbar-tools">
+                            <span>{{ 'ORG_TITLE' | translate }}</span>
+                        </div>
+                    </md-toolbar>
+
+                    <md-content style="background-color: white;">
+                        <md-list flex="">
+
+                            <md-list-item class="md-2-line" style="background-color: #D8EdF3;">
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>{{'ORG_NICKNAME' | translate}}</label>
+                                    <input ng-model="orgC.user.nickname" type="text">
+                                </md-input-container>
+                            </md-list-item>
+
+                            <md-subheader class="md-no-sticky">{{'ORG_RECENT_TALKWALLS' | translate}}</md-subheader>
+                            <md-list-item class="md-2-line" ng-repeat-start="recentWalls in orgC.user.recentWalls" ng-click="null">
+                                <span class="md-list-item-text">recent wall {{$index}}</span>
+                                <!--div organiserItem wall-data="wall"></div-->
+                            </md-list-item>
+                            <md-divider ng-repeat-end></md-divider>
+
+                            <md-subheader class="md-no-sticky">{{'ORG_ALL_TALKWALLS' | translate}}</md-subheader>
+                            <md-list-item class="md-2-line" ng-repeat-start="walls in orgC.walls" ng-click="null">
+                                <span class="md-list-item-text">all wall {{$index}}</span>
+                                <!--div organiserItem wall-data="wall"></div-->
+                            </md-list-item>
+                            <md-divider ng-repeat-end></md-divider>
+
+                            <md-list-item class="md-3-line" style="background-color: #D8EdF3;">
+                                <md-input-container class="md-icon-float md-block" style="margin: 15px;">
+                                    <label>{{'ORG_GROUP' | translate}}</label>
+                                    <input ng-model="orgC.newWall.label" type="text">
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block"  style="margin: 15px;">
+                                    <label>{{'ORG_THEME' | translate}}</label>
+                                    <input ng-model="orgC.newWall.theme" type="text">
+                                </md-input-container>
+                                <md-button aria-label="Create a new wall" class="md-fab addWallButton" ng-click="orgC.createWall()">
+                                    <md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
+                                </md-button>
+                            </md-list-item>
+
+                        </md-list>
+                    </md-content>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+
+    </div>
+</div>

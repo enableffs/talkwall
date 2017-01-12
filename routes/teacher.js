@@ -102,7 +102,9 @@ exports.createWall = function(req, res) {
     var newWall = new Wall({
         pin: newPin,
         label: req.body.label,
-        createdBy: req.user.id
+        theme: req.body.theme,
+        createdBy: req.user.id,
+        organisers: [req.user.id]
     });
 
     newWall.save(function(error, wall) {
@@ -114,17 +116,10 @@ exports.createWall = function(req, res) {
             // Save the new pin and wall ID to redis
             redisClient.set(newPin, wall.id);
             redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
-            User.findOneAndUpdate( { _id: req.user.id }, { lastOpenedWall : wall.id }, function(error, user) {
-                if(error) {
-                    res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                        message: common.StatusMessages.UPDATE_ERROR.message, result: error});
-                } else {
-                    mm.setup(wall._id, user.nickname);
-                    res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
-                        message: common.StatusMessages.CREATE_SUCCESS.message,
-                        result: wall
-                    });
-                }
+            mm.setup(wall._id, req.user.nickname);
+            res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                message: common.StatusMessages.CREATE_SUCCESS.message,
+                result: wall
             });
         }
     })
@@ -373,8 +368,9 @@ exports.deleteWall = function(req, res) {
  */
 exports.getWalls = function(req, res) {
     var query = Wall.find({
-        'createdBy' : req.user.id
-    }, '-createdBy -questions').lean();
+        'organisers' : req.user.id
+    // }, '-createdBy -questions').lean();
+    });
 
     query.exec(function(error, walls) {
         if(error) {
@@ -426,7 +422,7 @@ exports.getWall = function(req, res) {
                     wall.pin = newPin;
                     wall.save();
                 }
-                User.findOneAndUpdate({_id: req.user.id}, {lastOpenedWall: wall.id}, function (error, user) {
+                User.findOne({_id: req.user.id}, function (error, user) {
                     if (error) {
                         res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                             message: common.StatusMessages.UPDATE_ERROR.message, result: error
@@ -436,6 +432,11 @@ exports.getWall = function(req, res) {
                         //mm.addUserToQuestion(wall._id, '', user.nickname, true);
                         //mm.putUpdate(wall.id, 'none', '', null, true);
                         mm.statusUpdate(wall._id, 'none');
+                        if (user.recentWalls.length === 4) {
+                            user.recentWalls.pop();
+                        }
+                        user.recentWalls.unshift(wall._id);
+                        user.save();
                         res.status(common.StatusMessages.GET_SUCCESS.status).json({
                             message: common.StatusMessages.GET_SUCCESS.message, result: wall
                         });

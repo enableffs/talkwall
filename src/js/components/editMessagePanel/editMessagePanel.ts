@@ -20,7 +20,7 @@ module TalkwallApp {
 			private dataService: DataService) {
 			console.log('--> EditMessageController: started: ');
 
-			this.messageToEdit = dataService.getMessageToEdit();
+			this.messageToEdit = dataService.data.status.messageToEdit;
 
 			this.$timeout(() => {
 				this.$document[0].activeElement['focus']();

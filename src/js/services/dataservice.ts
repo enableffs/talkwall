@@ -53,6 +53,12 @@ module TalkwallApp {
          */
         requestUser(sFunc: (success: User) => void, eFunc: (error: {}) => void): void;
         /**
+         * get list of a user's walls where it is an organiser.
+         * @param sFunc success callback
+         * @param eFunc error callback
+         */
+        requestWalls(sFunc: (success: Wall[]) => void, eFunc: (error: {}) => void): void;
+        /**
          * get last existing from services wall if any.
          * @param wallId string
          * @param sFunc success callback
@@ -61,22 +67,17 @@ module TalkwallApp {
         requestWall(wallId: string, sFunc: (success: Wall) => void, eFunc: (error: {}) => void): void;
         /**
          * create a new wall
+         * @param newWall data object
          * @param sFunc success callback
          * @param eFunc error callback
          */
-        createWall(sFunc: (success: Wall) => void, eFunc: (error: {}) => void): void;
+        createWall(newWall: {}, sFunc: (success: Wall) => void, eFunc: (error: {}) => void): void;
         /**
          * join a wall
          * @param sFunc success callback
          * @param eFunc error callback
          */
         getClientWall(joinModel: {}, sFunc: (success: Wall) => void, eFunc: (error: {}) => void): void;
-        /**
-         * get current wall
-         * @return the current wall
-         */
-        getWall(): Wall;
-
         /**
          * create a log entry
          * @param type
@@ -188,18 +189,9 @@ module TalkwallApp {
          */
         getGridStyle(type): {};
         /**
-         * set a message as the editable message object
-         * @param message the message to edit
-         */
-        setMessageToEdit(message: Message): void;
-        /**
          * clear the temporary editable message object
          */
         clearMessageToEdit(): void;
-        /**
-         * retrieve the editable message object
-         */
-        getMessageToEdit(): Message;
         /**
          * run the polling timer
          */
@@ -208,15 +200,6 @@ module TalkwallApp {
          * pause the polling timer
          */
         stopPolling(): void;
-        /**
-         * set a message as the editable message object
-         * @param message the message to edit
-         */
-        setMessageOrigin(message: Message): void;
-        /**
-         * retrieve the origin message object
-         */
-        getMessageOrigin(): Message;
         /**
          * refresh the message CSS as displayed on the board
          */
@@ -261,7 +244,6 @@ module TalkwallApp {
             status: {
                 joinedWithPin: boolean;
                 authorised: boolean;
-                nickname: string;
                 participants: Array<string>;
                 totalOnTalkwall: number,
                 selectedParticipant: string;
@@ -314,7 +296,6 @@ module TalkwallApp {
                 status: {
                     joinedWithPin: false,
                     authorised: false,
-                    nickname: null,
                     participants: [],
                     totalOnTalkwall: 0,
                     selectedParticipant: null,
@@ -350,8 +331,9 @@ module TalkwallApp {
         }
 
         logAnEvent(type, id, diff) {
+            // In cases where we record a question event, the itemid will match the q_id
             let questionId = type === LogType.CreateTask ? id : this.data.question._id;
-            this.data.log.push(new LogEntry(type, id, this.data.status.nickname, questionId, diff));
+            this.data.log.push(new LogEntry(type, id, this.data.user.nickname, questionId, diff));
         }
 
         toggleMagnifyBoard() {
@@ -369,7 +351,6 @@ module TalkwallApp {
                 console.log('Sending pending position updates');
             }, 3000);
         };
-
 
         // Remove token string from the address bar. Then, if authorised, get the user model and the most recent wall
         // Otherwise, follow on back to where we came from..
@@ -389,49 +370,13 @@ module TalkwallApp {
             } else if (this.$window.sessionStorage.getItem(tokenKey) !== '' && !this.data.status.joinedWithPin) {
                 //look at the window session object for the token. time to load the question
                 console.log('--> DataService: token already exists');
-
-                this.requestUser((user: User) => {
-                        this.data.status.nickname = user.nickname;
+                this.requestUser(() => {
                         this.data.status.authorised = true;
-                        if (user.lastOpenedWall === null) {
-                            this.createWall(successCallbackFn, errorCallbackFn);
-
-                        } else {
-                            this.$mdDialog.show({
-                                controller: ArchiveWallController,
-                                controllerAs: 'archiveWallC',
-                                templateUrl: 'js/components/archive/archive.html',
-                                parent: angular.element(document.body),
-                                clickOutsideToClose: true
-                            }).then((answer) => {
-                                //dialog answered
-                                console.log('--> DataService: ArchiveWallController: answer: ' + answer);
-                                if (answer === 'continue') {
-                                    this.requestWall(user.lastOpenedWall, successCallbackFn, errorCallbackFn);
-                                } else {
-                                    this.$http.put(this.urlService.getHost() + '/wall/close/' + user.lastOpenedWall, {
-                                        targetEmail: answer
-                                    })
-                                        .then(() => {
-                                            console.log('--> DataService: close wall success');
-                                            this.createWall(successCallbackFn, errorCallbackFn);
-                                        }, (error) => {
-                                            console.log('--> DataService: close wall failure: ' + error);
-                                            if (typeof errorCallbackFn === "function") {
-                                                errorCallbackFn({status: error.status, message: error.message});
-                                            }
-                                        })
-                                }
-                            }, () => {
-                                //dialog dismissed
-                                console.log('--> DataService: ArchiveWallController: dismissed');
-                                this.$window.location.href = this.urlService.getHost() + '/#/';
-                            });
-                        }
+                        successCallbackFn();
                     }, () => {
                         // We are not authorised for this wall
                         this.data.status.authorised = false;
-                        //TODO: handle get user error
+                        errorCallbackFn();
                     }
                 );
             } else {
@@ -444,7 +389,7 @@ module TalkwallApp {
             this.$window.onbeforeunload = () => {
                 let url = this.urlService.getHost() + '/';
                 let clientType = this.data.status.authorised ? 'disconnectteacher/' : 'disconnect/';
-                this.$http.get(url + clientType + this.data.status.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
+                this.$http.get(url + clientType + this.data.user.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
                     .then(function () {
                         this.$window.location.href = url;
                     });
@@ -510,14 +455,28 @@ module TalkwallApp {
         }
 
         // For authorised users only
-        createWall(successCallbackFn, errorCallbackFn): void {
-            this.$http.post(this.urlService.getHost() + '/wall', {label: "New Wall: " + new Date().toDateString()})
+        requestWalls(successCallbackFn, errorCallbackFn): void {
+            this.$http.get(this.urlService.getHost() + '/walls')
                 .then((result) => {
                     let resultKey = 'result';
-                    this.data.wall = result.data[resultKey];
+                    console.log('--> DataService: getWalls success');
+                    successCallbackFn(result.data[resultKey]);
+                }, (error) => {
+                    console.log('--> DataService: requestWalls failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+        }
+
+        // For authorised users only
+        createWall(newWall: {}, successCallbackFn, errorCallbackFn): void {
+            this.$http.post(this.urlService.getHost() + '/wall', {label: newWall['label'], theme: newWall['theme']})
+                .then((result) => {
+                    let resultKey = 'result';
                     console.log('--> DataService: createWall success');
                     if (typeof successCallbackFn === "function") {
-                        successCallbackFn(this.data.wall);
+                        successCallbackFn(result.data[resultKey]);
                     }
                 }, (error) => {
                     console.log('--> DataService: createWall failure: ' + error);
@@ -551,7 +510,7 @@ module TalkwallApp {
                         }
                     } else {
                         this.data.wall = success[dataKey][resultKey];
-                        this.data.status.nickname = joinModel.nickname;
+                        this.data.user.nickname = joinModel.nickname;
                         console.log('--> DataService: getClientWall success');
                     }
                     if (typeof successCallbackFn === "function") {
@@ -573,13 +532,13 @@ module TalkwallApp {
             if (message === null && this.data.status.messageOrigin === null) {
                 //no message, create a new one
                 this.data.status.messageToEdit = new Message();
-                this.data.status.messageToEdit.creator = this.data.status.nickname;
-                this.data.status.messageToEdit.origin.push({nickname: this.data.status.nickname, message_id: null});
+                this.data.status.messageToEdit.creator = this.data.user.nickname;
+                this.data.status.messageToEdit.origin.push({nickname: this.data.user.nickname, message_id: null});
                 this.data.status.messageToEdit.question_id = this.data.question._id;
             } else if (message === null && this.data.status.messageOrigin !== null) {
                 //we have an origin to create the new message, clone it
-                this.data.status.messageToEdit = new Message().createFromOrigin(this.data.status.messageOrigin, this.data.status.nickname);
-                this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.status.nickname] !== 'undefined';
+                this.data.status.messageToEdit = new Message().createFromOrigin(this.data.status.messageOrigin, this.data.user.nickname);
+                this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.user.nickname] !== 'undefined';
             } else {
                 this.data.status.messageToEdit = message;
             }
@@ -588,26 +547,6 @@ module TalkwallApp {
         clearMessageToEdit() {
             this.data.status.messageToEdit = null;
         }
-
-        getMessageToEdit(): Message {
-            return this.data.status.messageToEdit;
-        }
-
-        setMessageOrigin(message: Message): void {
-            this.data.status.messageOrigin = message;
-        }
-
-        getMessageOrigin(): Message {
-            return this.data.status.messageOrigin;
-        }
-
-
-
-
-        getWall(): Wall {
-            return this.data.wall;
-        }
-
 
         // If we are changing questions, or a new question, set the polling params correctly. Input new question index.
         setQuestion(newIndex, successCallbackFn, errorCallbackFn): void {
@@ -696,7 +635,7 @@ module TalkwallApp {
         }
 
         notifyChangedQuestion(new_question_id, previous_question_id, successCallbackFn, errorCallbackFn): void {
-            this.$http.get(this.urlService.getHost() + '/change/' + this.data.status.nickname + '/' + this.data.wall._id + '/' + new_question_id + '/' + previous_question_id)
+            this.$http.get(this.urlService.getHost() + '/change/' + this.data.user.nickname + '/' + this.data.wall._id + '/' + new_question_id + '/' + previous_question_id)
                 .then(() => {
                     if (typeof successCallbackFn === "function") {
                         successCallbackFn();
@@ -720,7 +659,7 @@ module TalkwallApp {
             if (this.data.status.authorised) {
                 pollRoute = '/pollteacher/';
             }
-            this.$http.get(this.urlService.getHost() + pollRoute + this.data.status.nickname + '/' + this.data.wall._id +
+            this.$http.get(this.urlService.getHost() + pollRoute + this.data.user.nickname + '/' + this.data.wall._id +
                 '/' + question_id + '/' + previousQuestionId + '/' + control)
                 .then((result) => {
                     let resultKey = 'result';
@@ -746,7 +685,7 @@ module TalkwallApp {
                 this.logCycleCounter = 0;
                 if(this.data.log.length > 0) {
                     this.$http.post(this.urlService.getHost() + '/logs/' + this.data.wall._id +
-                        '/' + this.data.status.nickname, {logs: this.data.log})
+                        '/' + this.data.user.nickname, {logs: this.data.log})
                         .then(() => {
                             console.log('--> DataService: log success');
                         }, (error) => {
@@ -848,14 +787,14 @@ module TalkwallApp {
 
         //generate a new message on server with _id and returns it
         addMessage(successCallbackFn, errorCallbackFn): void {
-            let nickname = this.data.status.nickname;
+            let nickname = this.data.user.nickname;
             if (this.data.status.messageToEdit === null) {
                 errorCallbackFn({status: '400', message: "message is not defined"});
             }
             this.data.status.messageToEdit.edits.push({date: new Date(), text: this.data.status.messageToEdit.text});
             if (this.data.status.updateOrigin) {
                 // If the message was created from another, add it to the board, it will replace the origin message's location
-                this.data.status.messageToEdit.board[this.data.status.nickname] = this.data.status.messageOrigin.board[this.data.status.nickname];
+                this.data.status.messageToEdit.board[this.data.user.nickname] = this.data.status.messageOrigin.board[this.data.user.nickname];
             }
             let clientType = this.data.status.authorised ? '/messageteacher' : '/message';
             this.$http.post(this.urlService.getHost() + clientType, {
@@ -869,11 +808,11 @@ module TalkwallApp {
                     this.data.status.messageToEdit = null;
                     if (this.data.status.updateOrigin) {
                         //the new cloned message was created from a message on the board, so remove my nickname from the old one
-                        delete this.data.status.messageOrigin.board[this.data.status.nickname];
+                        delete this.data.status.messageOrigin.board[this.data.user.nickname];
                         this.$http.put(this.urlService.getHost() + clientType, {
                             messages: [this.data.status.messageOrigin],
                             wall_id: this.data.wall._id,
-                            nickname: this.data.status.nickname,
+                            nickname: this.data.user.nickname,
                             controlString: 'position'
                         })
                             .then((response) => {
@@ -1073,7 +1012,7 @@ module TalkwallApp {
             let participants = Object.keys(pollUpdateObject.status.connected_students);
             this.data.status.participants = participants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
             // We should not be here! Go back to the landing page
-            if (this.data.status.participants.indexOf(this.data.status.nickname) === -1) {
+            if (this.data.status.participants.indexOf(this.data.user.nickname) === -1) {
                 this.$window.location.href = this.urlService.getHost() + '/';
             }
 
@@ -1091,7 +1030,7 @@ module TalkwallApp {
                     this.data.status.last_status_update = pollUpdateObject.status.last_update;
 
                     // Refresh the wall
-                    this.getClientWall({nickname: this.data.status.nickname, pin: this.data.wall.pin}, () => {
+                    this.getClientWall({nickname: this.data.user.nickname, pin: this.data.wall.pin}, () => {
 
                         // Set a new question if available
                         let new_question_id = pollUpdateObject.status.teacher_current_question;
@@ -1162,7 +1101,7 @@ module TalkwallApp {
                             break;
 
                         case 'position':
-                            message.updateBoard(update.board, true, this.data.status.nickname);
+                            message.updateBoard(update.board, true, this.data.user.nickname);
                             break;
 
                         case 'mixed':
@@ -1171,7 +1110,7 @@ module TalkwallApp {
                             if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
                             }
-                            message.updateBoard(update.board, true, this.data.status.nickname);
+                            message.updateBoard(update.board, true, this.data.user.nickname);
                             break;
                     }
 
@@ -1193,7 +1132,7 @@ module TalkwallApp {
             let self = this;
             let disconnect = function() {
                 let url = self.urlService.getHost() + '/#/';
-                self.$http.get(url + 'disconnect/' + self.data.status.nickname + '/' + self.data.wall._id + '/' + self.data.question._id)
+                self.$http.get(url + 'disconnect/' + self.data.user.nickname + '/' + self.data.wall._id + '/' + self.data.question._id)
                     .then(() => {
                         self.$window.location.href = url;
                     }, () => {

@@ -31,7 +31,7 @@ var userSchema = Schema({
     },
     nickname:       { type: String, default: 'teacher' },
     defaultEmail:   { type: String, unique: false },
-    lastOpenedWall: { type: Schema.Types.ObjectId, ref: 'Wall', default: null},
+    recentWalls:    [ { type: Schema.Types.ObjectId, ref: 'Wall', default: null} ],
     helpViewed:     { type: Boolean, default: false }
 });
 

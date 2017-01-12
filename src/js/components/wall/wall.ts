@@ -99,11 +99,14 @@ module TalkwallApp {
                 this.noTag = translation;
             });
 
-	        this.dataService.checkAuthentication(() => {
-				this.activate();
-			}, null);
-
-		}
+            // Run this activation code each time the wall view is opened
+			let handle = this;
+			$scope.$on('$routeChangeSuccess', function(event, current, previous) {
+				if(current.$$route.originalPath === '/wall') {
+					handle.activate();
+				}
+			});
+        }
 
 		magnifyTheBoard(): void {
         	this.magnifyBoard = !this.magnifyBoard;
@@ -115,7 +118,7 @@ module TalkwallApp {
 			} else {
 				let question_index = this.dataService.data.wall.questions.length > 0 ? 0 : -1;
 				this.setQuestion(question_index, null);
-				this.selectedParticipant = this.dataService.data.status.nickname;
+				this.selectedParticipant = this.dataService.data.user.nickname;
 				this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 
 				this.$scope.$watch(() => { return this.selectedParticipant }, (newVar, oldVar) => {
@@ -178,7 +181,7 @@ module TalkwallApp {
 				event.stopPropagation();
 			}
 			this.feedView = true;
-			this.selectedParticipant = this.dataService.data.status.nickname;
+			this.selectedParticipant = this.dataService.data.user.nickname;
 			this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 			this.$mdSidenav('left').open();
 		}
@@ -325,7 +328,7 @@ module TalkwallApp {
 				//dialog answered
 				this.$window.document.activeElement['blur']();
 				//post message to server and add returned object to question feed
-				let message = handle.dataService.getMessageToEdit();
+				let message = handle.dataService.data.status.messageToEdit;
 				if(message !== null) {
 					if (typeof message._id === 'undefined') {
 						console.log('--> WallController: Edit message - created');

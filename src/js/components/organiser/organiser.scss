@@ -1,0 +1,13 @@
+@import "../../../scss/colors";
+
+.organiser-clouds {
+  position: fixed;
+  bottom: 0;
+  height: 300px;
+  width: 100%;
+}
+
+.addWallButton {
+  z-index: 900 !important;
+  background-color: $color-orange !important;
+}
