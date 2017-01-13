@@ -1,5 +1,16 @@
 @import "../../../scss/colors";
 
+
+.organiser {
+  margin-top: 100px;
+  md-list {
+    padding: 0;
+  }
+  md-button {
+    min-width: 10px;
+  }
+}
+
 .organiser-clouds {
   position: fixed;
   bottom: 0;
@@ -7,7 +18,25 @@
   width: 100%;
 }
 
-.addWallButton {
+.organiser-addWallButton {
   z-index: 900 !important;
   background-color: $color-orange !important;
+}
+
+.organiser-title {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.organiser-content {
+  max-height: 300px;
+  background-color: white;
+}
+
+.organiser-nickname {
+  md-input-container .md-errors-spacer {
+    min-height: 0;
+  }
 }

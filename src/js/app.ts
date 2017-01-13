@@ -11,6 +11,7 @@
 
 /// <reference path="directives/autoresize.ts"/>
 /// <reference path="components/feedMessage/feedMessage.ts"/>
+/// <reference path="components/organiserItem/organiserItem.ts"/>
 /// <reference path="components/taskQuestion/taskQuestion.ts"/>
 /// <reference path="directives/watchboardsize.ts"/>
 
@@ -58,6 +59,7 @@ module TalkwallApp {
         .directive('autoresize', AutoResize)
         .directive('watchBoardSize', WatchBoardSize)
         .directive('feedMessage', FeedMessage)
+        .directive('organiserItem', OrganiserItem)
         .directive('taskQuestion', TaskQuestion)
         .controller('ArchiveWallController', ArchiveWallController)
         .controller('LoginController', LoginController)

@@ -376,6 +376,73 @@
   overflow-wrap: break-word !important;
 }
 
+.organiserItem-messageSelected {
+  background-color: rgba(255, 119, 0, 0.5);
+}
+
+.organiserItem-messageNotSelected {
+  background-color: white;
+}
+
+.organiserItem-messageNotPinned {
+  background-color: #c0c0c0 !important;
+}
+
+.organiserItem-showControlButton {
+  height: 40px !important;
+  min-width: 40px !important;
+  max-height: 40px !important;
+}
+
+.organiserItem-textMargin {
+  margin-left: 10px !important;
+}
+
+.organiserItem-close {
+  background-color: #FFFFFF !important;
+}
+
+.organiserItem-messageBody {
+  padding: 5px;
+}
+
+.organiserItem-messageBody md-input-container {
+  padding: 2px;
+  margin: 0;
+}
+
+.organiserItem-messageControl {
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+}
+
+.organiserItem-wordWrap {
+  width: 100%;
+  overflow: hidden;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.organiserItem-messageOnBoard {
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: #FFFFFF;
+  position: absolute !important;
+  cursor: move;
+}
+
+.organiserItem-messageOnBoardSelected {
+  background-color: rgba(255, 119, 0, 0.5) !important;
+}
+
+.organiserItem-addWallButton {
+  background-color: #c0c0c0 !important;
+  min-width: 10px;
+  height: 40px;
+}
+
 .sessionInfoDetails {
   z-index: 99;
   color: white;
@@ -681,6 +748,18 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
   }
 }
 
+.organiser {
+  margin-top: 100px;
+}
+
+.organiser md-list {
+  padding: 0;
+}
+
+.organiser md-button {
+  min-width: 10px;
+}
+
 .organiser-clouds {
   position: fixed;
   bottom: 0;
@@ -688,9 +767,25 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
   width: 100%;
 }
 
-.addWallButton {
+.organiser-addWallButton {
   z-index: 900 !important;
   background-color: #FF7700 !important;
+}
+
+.organiser-title {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.organiser-content {
+  max-height: 300px;
+  background-color: white;
+}
+
+.organiser-nickname md-input-container .md-errors-spacer {
+  min-height: 0;
 }
 
 html, body {

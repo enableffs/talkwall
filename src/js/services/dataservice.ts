@@ -133,7 +133,7 @@ module TalkwallApp {
         /**
          * Force all connected clients to change to this question id
          */
-        updateWall(status: PollUpdate, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
+        updateWall(wall: Wall, status: PollUpdate, sFunc: (success: Question) => void, eFunc: (error: {}) => void): void;
         /**
          * update a question
          * @param sFunc success callback
@@ -607,7 +607,7 @@ module TalkwallApp {
             let handle = this;
             this.data.wall.closed = true;
             this.data.wall.targetEmail = targetEmail;
-            this.updateWall(function() {
+            this.updateWall(null, function() {
                 handle.$window.location.href = handle.urlService.getHost() + '/#/';
             }, null);
         }
@@ -618,13 +618,16 @@ module TalkwallApp {
          }
          */
 
-        updateWall(successCallbackFn, errorCallbackFn): void {
+        updateWall(wall: Wall, successCallbackFn, errorCallbackFn): void {
+            if (wall === null) {
+                wall = this.data.wall;
+            }
             this.$http.put(this.urlService.getHost() + '/wall', {
-                wall: this.data.wall
+                wall: wall
             })
-                .then(() => {
+                .then((response) => {
                     if (typeof successCallbackFn === "function") {
-                        successCallbackFn();
+                        successCallbackFn(response['data']['result']);
                     }
                 }, (error) => {
                     console.log('--> DataService: updateWall failure: ' + error);

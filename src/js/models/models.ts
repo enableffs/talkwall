@@ -30,8 +30,10 @@ module TalkwallApp {
         pin: string;
         label: string;
         createdAt: Date;
+        lastOpenedAt: Date;
         createdBy: string;
         closed: boolean;
+        deleted: boolean;
         questions: Array<Question>;
         targetEmail: string;
     }
