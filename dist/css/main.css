@@ -762,8 +762,7 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 
 .organiser-clouds {
   position: fixed;
-  bottom: 0;
-  height: 300px;
+  bottom: -10px;
   width: 100%;
 }
 

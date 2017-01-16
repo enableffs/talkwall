@@ -372,11 +372,15 @@ module TalkwallApp {
                 console.log('--> DataService: token already exists');
                 this.requestUser(() => {
                         this.data.status.authorised = true;
-                        successCallbackFn();
+                        if (successCallbackFn) {
+                            successCallbackFn();
+                        }
                     }, () => {
                         // We are not authorised for this wall
                         this.data.status.authorised = false;
-                        errorCallbackFn();
+                        if(errorCallbackFn) {
+                            errorCallbackFn();
+                        }
                     }
                 );
             } else {
@@ -575,6 +579,10 @@ module TalkwallApp {
             // Now set the question if we have it available on the client.
             // If not, we will poll anyway, until notification arrives from server of teacher moving to a question
             if (newIndex !== -1 && this.data.wall.questions.length > 0) {
+                // As this operation returns a promise - possible a second request to iterate question is made before the first is resolved
+                if (newIndex > this.data.wall.questions.length - 1) {
+                    return;
+                }
                 this.data.question = new Question("").updateMe(this.data.wall.questions[newIndex]);
                 this.data.status.currentQuestionIndex = newIndex;
                 this.data.status.contributors = this.data.question.contributors;

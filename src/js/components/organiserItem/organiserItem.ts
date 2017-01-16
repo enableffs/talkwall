@@ -79,6 +79,7 @@ module TalkwallApp {
 	export interface OrganiserItemDirectiveScope extends ng.IScope {
 		data: Wall;
 		showEditPanel(): void;
+		openThisWall(): void;
 	}
 
 	//directive declaration
@@ -87,7 +88,8 @@ module TalkwallApp {
 			restrict: 'A',
 			scope: {
 				data: '=',
-				showEditPanel: "&"
+				showEditPanel: "&",
+				openThisWall: "&"
 			},
 			templateUrl: 'js/components/organiserItem/organiserItem.html',
 			controller: OrganiserItemController,

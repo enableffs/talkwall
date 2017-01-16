@@ -10,6 +10,7 @@
 /// <reference path="services/utilityservice.ts"/>
 
 /// <reference path="directives/autoresize.ts"/>
+/// <reference path="directives/twMaxlength.ts"/>
 /// <reference path="components/feedMessage/feedMessage.ts"/>
 /// <reference path="components/organiserItem/organiserItem.ts"/>
 /// <reference path="components/taskQuestion/taskQuestion.ts"/>
@@ -57,6 +58,7 @@ module TalkwallApp {
         .service('TokenInterceptor', TokenInterceptor)
         .service('UtilityService', UtilityService)
         .directive('autoresize', AutoResize)
+        .directive('twMaxlength', TwMaxlength)
         .directive('watchBoardSize', WatchBoardSize)
         .directive('feedMessage', FeedMessage)
         .directive('organiserItem', OrganiserItem)

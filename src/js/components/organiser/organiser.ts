@@ -16,6 +16,7 @@ module TalkwallApp {
          * init function for this controller
          */
         activate(): void;
+        openWall(wall: Wall): void;
     }
 
     export class OrganiserController implements IOrganiserControllerService {
@@ -63,6 +64,15 @@ module TalkwallApp {
             }, (error) => {
                 console.log('Error creating wall: ' + error.message);
             })
+        }
+
+        openWall(wall: Wall): void {
+            this.dataService.data.wall = wall;
+            this.dataService.requestWall(wall._id, () => {
+                this.$window.location.href = this.urlService.getHost() + '/#/wall';
+            }, () => {
+                console.log('Error requesting wall');
+            });
         }
 
     }

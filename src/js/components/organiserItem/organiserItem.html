@@ -31,10 +31,18 @@
 			</div>
 		</div>
 
-		<!-- Wall control activator -->
+		<!-- Wall controls -->
 		<div layout="column" ng-show="!orgItemC.showControls && !orgItemC.showEditor" layout-align="center center">
 			<md-button aria-label="Show wall controls" ng-show="!orgItemC.showControls" ng-click="orgItemC.toggleShowControls()" class="organiserItem-showControlButton">
 				<md-icon md-svg-icon="images/ic_menu_grey_24px.svg"></md-icon>
+			</md-button>
+		</div>
+
+
+		<!-- Wall activate -->
+		<div layout="column" layout-align="center center">
+			<md-button aria-label="Show wall controls" ng-show="!orgItemC.wall.closed" ng-click="orgItemC.isolatedScope.openThisWall()" class="organiserItem-showControlButton">
+				<md-icon md-svg-icon="images/ic_play_circle_outline_black_24px.svg"></md-icon>
 			</md-button>
 		</div>
 

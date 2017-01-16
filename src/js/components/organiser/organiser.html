@@ -43,13 +43,13 @@
 
                                 <md-subheader class="md-no-sticky">{{'ORG_RECENT_TALKWALLS' | translate}}</md-subheader>
                                 <md-list-item class="md-2-line" ng-repeat-start="recentWall in orgC.user.recentWalls" ng-click="null">
-                                    <div organiser-item data="recentWall"></div>
+                                    <div organiser-item data="recentWall" open-this-wall="orgC.openWall(recentWall)"></div>
                                 </md-list-item>
                                 <md-divider ng-repeat-end></md-divider>
 
                                 <md-subheader class="md-no-sticky">{{'ORG_ALL_TALKWALLS' | translate}}</md-subheader>
                                 <md-list-item class="md-2-line" ng-repeat-start="wall in orgC.walls" ng-click="null">
-                                    <div organiser-item data="wall" ng-if="!wall.deleted"></div>
+                                    <div organiser-item data="wall" open-this-wall="orgC.openWall(wall)" ng-if="!wall.deleted"></div>
                                 </md-list-item>
                                 <md-divider ng-repeat-end></md-divider>
 
