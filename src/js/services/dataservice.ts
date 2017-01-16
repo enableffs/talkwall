@@ -152,7 +152,7 @@ module TalkwallApp {
         /**
          * get all current messages on the feed for this question
          */
-        getMessages(): void;
+        getMessages(sFunc: (code: number) => void, eFunc: (error: {}) => void): void;
         /**
          * get array of all current participants in this question
          */
@@ -448,8 +448,9 @@ module TalkwallApp {
                     let resultKey = 'result';
                     this.data.wall = result.data[resultKey];
                     console.log('--> DataService: getWall success');
-                    let question_index = this.data.wall.questions.length > 0 ? 0 : -1;
-                    this.setQuestion(question_index, successCallbackFn, errorCallbackFn);
+                    //let question_index = this.data.wall.questions.length > 0 ? 0 : -1;
+                    //this.setQuestion(question_index, successCallbackFn, errorCallbackFn);
+                    successCallbackFn();
                 }, (error) => {
                     console.log('--> DataService: requestWall failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
@@ -514,6 +515,7 @@ module TalkwallApp {
                         }
                     } else {
                         this.data.wall = success[dataKey][resultKey];
+                        this.data.user = new User();
                         this.data.user.nickname = joinModel.nickname;
                         console.log('--> DataService: getClientWall success');
                     }
@@ -593,10 +595,13 @@ module TalkwallApp {
             // Get the whole message list if we are 'new' or 'changing'
             // Notify a change of question if we are the teacher
             if (control !== 'none' && this.data.question !== null) {
-                this.getMessages();
-                if (this.data.status.authorised) {
-                    this.notifyChangedQuestion(this.data.question._id, previous_question_id, null, null);
-                }
+                this.getMessages(() => {
+                    if (this.data.status.authorised) {
+                        this.notifyChangedQuestion(this.data.question._id, previous_question_id, null, null);
+                    }
+                }, () => {
+                    console.log('Get message error');
+                });
             }
 
             // Start polling regardless of the question existing, to enable poll notifications
@@ -616,7 +621,7 @@ module TalkwallApp {
             this.data.wall.closed = true;
             this.data.wall.targetEmail = targetEmail;
             this.updateWall(null, function() {
-                handle.$window.location.href = handle.urlService.getHost() + '/#/';
+                handle.$window.location.href = handle.urlService.getHost() + '/#/organise';
             }, null);
         }
 
@@ -857,7 +862,7 @@ module TalkwallApp {
                 });
         }
 
-        getMessages(): void {
+        getMessages(sFunc, eFunc): void {
             if (this.data.question !== null) {
                 this.$http.get(this.urlService.getHost() + '/messages/' + this.data.question._id)
                     .then((result) => {
@@ -869,8 +874,14 @@ module TalkwallApp {
 
                         this.buildTagArray();
                         this.refreshBoardMessages();
+                        if(sFunc) {
+                            sFunc();
+                        }
                     }, (error) => {
                         console.log('--> DataService: getMessages failure: ' + error);
+                        if(eFunc) {
+                            eFunc();
+                        }
                     });
             }
         }
@@ -950,6 +961,9 @@ module TalkwallApp {
                 })
                     .then(() => {
                         this.clearMessageToEdit();
+                        messages.forEach((message) => {
+                            this.parseMessageForTags(message);
+                        });
                         console.log('--> DataService: updateMessage success');
                     }, (error) => {
                         console.log('--> DataService: updateMessage failure: ' + error);

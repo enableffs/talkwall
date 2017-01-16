@@ -45,6 +45,8 @@ module TalkwallApp {
 
 
         //$mdThemingProvider['disableTheming']();
+
+        /*
         let customPrimary = {
             '50': '#ffffff',
             '100': '#ffffff',
@@ -65,6 +67,7 @@ module TalkwallApp {
         $mdThemingProvider
             .definePalette('customPrimary',
                 customPrimary);
+        */
 
         let customBackground = {
             '50': '#ffffff',
@@ -88,7 +91,7 @@ module TalkwallApp {
                 customBackground);
 
         $mdThemingProvider.theme('default')
-            .primaryPalette('customPrimary')
+            //.primaryPalette('customPrimary')
             .backgroundPalette('customBackground');
 
 

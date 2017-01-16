@@ -67,12 +67,14 @@ module TalkwallApp {
         }
 
         openWall(wall: Wall): void {
-            this.dataService.data.wall = wall;
-            this.dataService.requestWall(wall._id, () => {
-                this.$window.location.href = this.urlService.getHost() + '/#/wall';
-            }, () => {
-                console.log('Error requesting wall');
-            });
+            if (!wall.closed) {
+                this.dataService.data.wall = wall;
+                this.dataService.requestWall(wall._id, () => {
+                    this.$window.location.href = this.urlService.getHost() + '/#/wall';
+                }, () => {
+                    console.log('Error requesting wall');
+                });
+            }
         }
 
     }

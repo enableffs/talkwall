@@ -213,13 +213,19 @@ module TalkwallApp {
 	        );
 		}
 
-		closeWall(targetEmail, event) {
-			if(event !== null) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			this.dataService.closeWallNow(targetEmail);
-			this.owneremail = undefined;
+        toggleLock() {
+			this.dataService.data.wall.closed = !this.dataService.data.wall.closed;
+            this.dataService.updateWall(null, (wall) => {
+                this.dataService.data.wall.pin = wall.pin;
+            }, () => {
+                console.log('error updating wall');
+            });
+		}
+
+		exitWall() {
+            this.dataService.data.wall = null;
+            this.dataService.data.question = null;
+			this.$window.location.href = this.urlService.getHost() + '/#/organiser';
 		}
 
         setGrid(type, event): void {
@@ -298,11 +304,7 @@ module TalkwallApp {
 			return this.dataService.data.status.unselected_tags.length !== this.dataService.data.status.tags.length;
 		};
 
-		toggleAllTags(event) {
-			if(event !== null) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
+		toggleAllTags() {
 			if (this.dataService.data.status.unselected_tags.length === this.dataService.data.status.tags.length) {
 				this.dataService.data.status.unselected_tags = [];
 			} else {

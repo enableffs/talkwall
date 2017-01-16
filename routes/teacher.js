@@ -114,7 +114,7 @@ exports.createWall = function(req, res) {
         }
         else {
             // Save the new pin and wall ID to redis
-            redisClient.set(newPin, wall.id);
+            redisClient.set(newPin, wall.id.toString());
             redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
             mm.setup(wall._id, req.user.nickname);
             res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
@@ -152,7 +152,7 @@ exports.updateWall = function(req, res) {
                 // Expire the pin
                 if (req.body.wall.closed) {
                     redisClient.EXPIRE(req.body.wall.pin, 1);
-                    req.body.wall.pin = '0000';
+                    wall.pin = '0000';
                     mm.removeWall(req.body.wall._id);
                 }
 
@@ -176,6 +176,7 @@ exports.updateWall = function(req, res) {
                     newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
                 }
                 wall.pin = newPin;
+                redisClient.set(newPin, wall._id.toString());
                 wall.closed = false;
             }
             mm.statusUpdate(wall._id, 'none');
@@ -435,7 +436,7 @@ exports.getWall = function(req, res) {
                     while (redisClient.exists(newPin) === 1) {
                         newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
                     }
-                    redisClient.set(newPin, wall._id);
+                    redisClient.set(newPin, wall._id.toString());
                     redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
                     wall.pin = newPin;
                     wall.save();
