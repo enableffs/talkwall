@@ -11,9 +11,9 @@
                 <img src="../images/beta_icon.png">
             </div>
 
-            <div>
-                <img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="landingC.languageCode=='no'">
-                <img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="landingC.languageCode=='en'">
+            <div class="organiser-logo" layout="row" layout-align="center start">
+                <img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="orgC.languageCode=='no'">
+                <img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="orgC.languageCode=='en'">
             </div>
 
 
@@ -29,11 +29,14 @@
                     <div>
                         <md-list flex="">
 
-                            <md-list-item class="md-2-line organiser-nickname" style="background-color: #D8EdF3;">
-                                <md-input-container class="md-icon-float md-block">
+                            <md-list-item class="md-2-line organiser-nickname" style="background-color: #D8EdF3;"  layout="row" layout-align="space-between center" >
+                                <md-input-container class="md-icon-float md-block" flex>
                                     <label>{{'ORG_NICKNAME' | translate}}</label>
-                                    <input ng-model="orgC.user.nickname" type="text">
+                                    <input ng-model="orgC.newNickname" type="text">
                                 </md-input-container>
+                                <md-button aria-label="Submit update to nickname" class="organiser-saveNicknameButton" ng-show="orgC.newNickname !== orgC.user.nickname" ng-click="orgC.updateNickname()">
+                                    <md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
+                                </md-button>
                             </md-list-item>
 
                         </md-list>

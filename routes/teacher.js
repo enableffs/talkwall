@@ -73,6 +73,7 @@ exports.updateUser = function(req, res) {
         else {
             user.lastOpenedWall = req.body.user.lastOpenedWall;
             user.defaultEmail = req.body.user.defaultEmail;
+            user.nickname = req.body.user.nickname;
             user.save();
             res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: user});
@@ -451,10 +452,12 @@ exports.getWall = function(req, res) {
                         //mm.addUserToQuestion(wall._id, '', user.nickname, true);
                         //mm.putUpdate(wall.id, 'none', '', null, true);
                         mm.statusUpdate(wall._id, 'none');
-                        if (user.recentWalls.length === 4) {
-                            user.recentWalls.pop();
+                        if (user.recentWalls.indexOf(wall._id) > -1) {
+                            if (user.recentWalls.length === 4) {
+                                user.recentWalls.pop();
+                            }
+                            user.recentWalls.unshift(wall._id);
                         }
-                        user.recentWalls.unshift(wall._id);
                         user.save();
                         res.status(common.StatusMessages.GET_SUCCESS.status).json({
                             message: common.StatusMessages.GET_SUCCESS.message, result: wall

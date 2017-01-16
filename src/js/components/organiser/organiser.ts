@@ -17,14 +17,17 @@ module TalkwallApp {
          */
         activate(): void;
         openWall(wall: Wall): void;
+        updateNickname();
     }
 
     export class OrganiserController implements IOrganiserControllerService {
         static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 
         private user: User;
+        private newNickname: string;
         private walls: Wall[];
         private newWall: {};
+        private languageCode: string = 'no';
 
         constructor(
             private dataService: DataService,
@@ -38,6 +41,9 @@ module TalkwallApp {
             private utilityService: UtilityService) {
             console.log('--> OrganiserController: started: ');
 
+            let langKey: string = 'lang';
+            this.languageCode = this.$window.sessionStorage[langKey];
+
             this.dataService.checkAuthentication(() => {
                 this.activate();
             }, null);
@@ -45,12 +51,13 @@ module TalkwallApp {
             this.newWall = {
                 label: "",
                 theme: ""
-            }
+            };
 
         }
 
         activate(): void {
             this.user = this.dataService.data.user;
+            this.newNickname = this.user.nickname;
             this.dataService.requestWalls((walls) => {
                 this.walls = walls;
             }, () => {
@@ -75,6 +82,14 @@ module TalkwallApp {
                     console.log('Error requesting wall');
                 });
             }
+        }
+
+        updateNickname(): void {
+            this.dataService.updateUser(this.user, (result) => {
+                this.user.nickname = result.nickname;
+            }, () => {
+                console.log('error updating user nickname');
+            })
         }
 
     }

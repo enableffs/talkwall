@@ -53,6 +53,13 @@ module TalkwallApp {
          */
         requestUser(sFunc: (success: User) => void, eFunc: (error: {}) => void): void;
         /**
+         *
+         * @param user
+         * @param sFunc
+         * @param eFunc
+         */
+        updateUser(user: User, sFunc: (success: User) => void, eFunc: (error: {}) => void): void;
+        /**
          * get list of a user's walls where it is an organiser.
          * @param sFunc success callback
          * @param eFunc error callback
@@ -434,6 +441,25 @@ module TalkwallApp {
                     }
                 }, (error) => {
                     console.log('--> DataService: requestUser failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+        }
+
+        updateUser(user: User, successCallbackFn, errorCallbackFn): void {
+            if (user === null) {
+                user = this.data.user;
+            }
+            this.$http.put(this.urlService.getHost() + '/user', {
+                user: user
+            })
+                .then((response) => {
+                    if (typeof successCallbackFn === "function") {
+                        successCallbackFn(response['data']['result']);
+                    }
+                }, (error) => {
+                    console.log('--> DataService: updateUser failure: ' + error);
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
