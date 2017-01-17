@@ -1,4 +1,4 @@
-<div-- layout="column" flex ng-controller="WallController as wallC">
+<div layout="column" flex ng-controller="WallController as wallC">
 	<!-- top toolbar component of the wall -->
 	<md-toolbar class="wall-topToolbar">
 		<div flex layout="row" layout-align="start center">
@@ -53,6 +53,12 @@
 				</div>
 			</div>
 			<div ng-if="wallC.dataService.data.status.authorised" hide-xs hide-sm flex="33" layout="row" layout-align="end center">
+				<md-button aria-label="Zoom in board messages" ng-if="!wallC.dataService.data.status.magnifyBoard" class="md-icon-button" role="button" ng-click="wallC.dataService.toggleMagnifyBoard()">
+					<md-icon md-svg-src="images/ic_zoom_in_orange_24px.svg" aria-hidden="true"></md-icon>
+				</md-button>
+				<md-button aria-label="Zoom out board messages" ng-if="wallC.dataService.data.status.magnifyBoard" class="md-icon-button" role="button" ng-click="wallC.dataService.toggleMagnifyBoard()">
+					<md-icon md-svg-src="images/ic_zoom_out_orange_24px.svg" aria-hidden="true"></md-icon>
+				</md-button>
 				<button aria-label="Toggle right-side panel" class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle(); wallC.toggleRightMenu(0, $event)">
 					<md-icon ng-show="!wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_menu_orange_24px.svg" aria-hidden="true"></md-icon>
 					<md-icon ng-show="wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
@@ -82,7 +88,7 @@
 			<md-content flex="grow" style="overflow-x: hidden !important;">
 				<!-- left sidenav message feed -->
 				<md-list ng-if="wallC.feedView">
-					<div feed-message selected-participant="{{wallC.dataService.data.status.nickname}}"
+					<div feed-message selected-participant="{{wallC.dataService.data.user.nickname}}"
 						 on-board="false" ng-repeat="message in wallC.dataService.data.question.messages | filter : wallC.messageFilterByAuthorAndTag"
 						 data="message" show-edit-panel="wallC.showMessageEditor(false)"></div>
 				</md-list>
@@ -126,11 +132,12 @@
 							<h3>{{ 'WALL_PARTICIPATE' | translate }}</h3>
 							<div class="wall-joinRow wall-joinRow1" layout="row">
 								<!--<md-icon md-svg-src="images/ic_arrow_forward_grey_24px.svg" aria-hidden="true"></md-icon>-->
-								<span flex>{{ wallC.urlService.getHost() }}</span>
+								<span flex>{{ ::wallC.urlService.getHost() }}</span>
 							</div>
 							<div class="wall-joinRow wall-joinRow2" layout="row">
 								<!--<md-icon md-svg-src="images/ic_arrow_forward_grey_24px.svg" aria-hidden="true"></md-icon>-->
-								<span flex>PIN: {{wallC.dataService.data.wall.pin}}</span>
+								<span flex ng-hide="wallC.dataService.data.wall.pin === '0000'">PIN: {{wallC.dataService.data.wall.pin}}</span>
+								<span flex ng-show="wallC.dataService.data.wall.pin === '0000'">{{::'WALL_IS_CLOSED' | translate }}</span>
 							</div>
 							<div class="wall-joinRow wall-joinRow3" layout="row">
 								<!--<md-icon md-svg-src="images/ic_people_black_24px.svg" aria-hidden="true"></md-icon>-->
@@ -139,17 +146,17 @@
 							<div class="wall-joinRow wall-joinRow4" layout="row">
 								<span flex>{{wallC.dataService.data.status.totalOnTalkwall}} {{'WALL_TALKWALLPARTICIPANTS' | translate}}</span>
 							</div>
-							<div layout="row">
+							<!--div layout="row">
 								<md-switch ng-model="wallC.magnifyBoard" ng-change="wallC.dataService.toggleMagnifyBoard()" aria-label="Board magnification">
 									{{wallC.dataService.data.status.magnifyBoard ? 'MAGNIFY_ON' : 'MAGNIFY_OFF' | translate }}
 								</md-switch>
-							</div>
+							</div-->
 
 						</div>
 					</md-content>
 				</section>
 
-                <!-- Filter by contributors -->
+                <!-- Filter by contributors & hashtags -->
                 <section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu2, 'wall-rightMenuFlexClosed' : !wallC.rightMenu2}">
                     <md-toolbar ng-click="wallC.toggleRightMenu(2, $event)">
                         <div layout-fill="true" layout="row" layout-align="start center">
@@ -175,7 +182,7 @@
                                 </md-list-item>
                                 <md-list-item ng-repeat="nickname in wallC.dataService.data.status.contributors">
                                     <div flex="80">
-                                        <md-icon ng-style="{ 'fill' : wallC.dataService.data.status.nickname === nickname ? '#FF7700' : 'black' }" md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
+                                        <md-icon ng-style="{ 'fill' : wallC.dataService.data.user.nickname === nickname ? '#FF7700' : 'black' }" md-svg-icon="images/ic_person_black_24px.svg"></md-icon>
                                         <md-label class="wall-username">{{nickname}}</md-label>
                                     </div>
                                     <md-checkbox class="user-checkbox" ng-checked="wallC.contributorExists(nickname)" ng-click="wallC.contributorToggle(nickname, $event)"></md-checkbox>
@@ -191,7 +198,7 @@
 									<md-label flex="80"><p><span ng-if="wallC.tagIsChecked()">{{ 'WALL_UN' | translate }}</span>{{ 'WALL_SELECTALL' | translate }}</p></md-label>
 									<md-checkbox aria-label="Select All"
 												 ng-checked="wallC.tagIsChecked()"
-												 ng-click="wallC.toggleAllTags($event)">
+												 ng-click="wallC.toggleAllTags()">
 									</md-checkbox>
 									<md-divider></md-divider>
 								</md-list-item>
@@ -263,13 +270,20 @@
 					</md-toolbar>
 					<md-content ng-show="wallC.rightMenu4">
 						<div layout="column" layout-padding>
-							<div>{{ 'WALL_CLOSEMSG' | translate }}</div>
+							<!--div>{{ 'WALL_CLOSEMSG' | translate }}</div>
 							<md-input-container>
 								<label>{{ 'WALL_EMAIL' | translate }}</label>
 								<input ng-model="wallC.owneremail" type="email">
-							</md-input-container>
+							</md-input-container-->
 
-							<md-button aria-label="Close current wall" class="md-raised wall-powerOffButton" ng-disabled="wallC.owneremail === undefined" ng-click="wallC.closeWall(wallC.owneremail, $event)">
+							<div style="background-color: rgb(238, 238, 238);" layout="column" layout-align="center start">
+								<md-switch ng-model="data.cb6" aria-label="Close wall toggle" ng-change="wallC.toggleLock()">
+									{{::wallC.dataService.data.wall.closed ? 'WALL_IS_CLOSED' : 'WALL_CLOSE_TOGGLE' | translate }}
+								</md-switch>
+								<span>{{ wallC.dataService.data.wall.closed ? 'WALL_IS_CLOSED' : 'WALL_IS_OPEN' | translate }}</span>
+							</div>
+
+							<md-button aria-label="Exit to organiser panel" class="md-raised wall-powerOffButton" ng-click="wallC.exitWall()">
 								<md-icon md-svg-src="images/ic_power_settings_new_black_24px.svg" aria-hidden="true"></md-icon>
 							</md-button>
 						</div>

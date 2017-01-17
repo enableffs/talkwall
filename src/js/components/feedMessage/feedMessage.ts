@@ -74,7 +74,7 @@ module TalkwallApp {
 				this.dataService.setMessageToEdit(this.message);
 			} else {
 				// Otherwise we are going to clone someone else's message
-				this.dataService.setMessageOrigin(this.message);
+				this.dataService.data.status.messageOrigin = this.message;
 				this.dataService.setMessageToEdit(null);
 			}
 			this.isolatedScope.showEditPanel();

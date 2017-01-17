@@ -1,0 +1,56 @@
+@import "../../../scss/colors";
+
+.organiser {
+  margin-top: 100px;
+  md-list {
+    padding: 0;
+  }
+  md-button {
+    min-width: 10px;
+  }
+}
+
+.organiser-logo {
+  margin-top: 30px;
+ }
+
+.organiser-clouds {
+  position: fixed;
+  bottom: -10px;
+  width: 100%;
+}
+
+.organiser-addWallButton {
+  z-index: 900 !important;
+}
+
+.organiser-saveNicknameButton {
+  background-color: $color-grey !important;
+  min-width: 10px;
+  height: 40px;
+}
+
+.organiser-title {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.organiser-content {
+  max-height: 300px;
+  background-color: white;
+}
+
+.organiser-nickname {
+  padding: 0 5px;
+  md-input-container .md-errors-spacer {
+    min-height: 0;
+  }
+}
+
+@media only screen and (max-height : 800px) {
+  .organiser-logo {
+    display: none;
+  }
+}

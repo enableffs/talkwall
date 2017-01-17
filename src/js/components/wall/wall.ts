@@ -99,11 +99,14 @@ module TalkwallApp {
                 this.noTag = translation;
             });
 
-	        this.dataService.checkAuthentication(() => {
-				this.activate();
-			}, null);
-
-		}
+            // Run this activation code each time the wall view is opened
+			let handle = this;
+			$scope.$on('$routeChangeSuccess', function(event, current, previous) {
+				if(current.$$route.originalPath === '/wall') {
+					handle.activate();
+				}
+			});
+        }
 
 		magnifyTheBoard(): void {
         	this.magnifyBoard = !this.magnifyBoard;
@@ -113,9 +116,14 @@ module TalkwallApp {
 			if (this.dataService.data.wall === null) {
 				this.$window.location.href = this.urlService.getHost() + '/#/';
 			} else {
-				let question_index = this.dataService.data.wall.questions.length > 0 ? 0 : -1;
+				let question_index = -1;
+				if (this.dataService.data.wall.questionIndex !== -1) {
+					question_index = this.dataService.data.wall.questionIndex;
+				} else {
+					question_index = this.dataService.data.wall.questions.length > 0 ? 0 : -1;
+				}
 				this.setQuestion(question_index, null);
-				this.selectedParticipant = this.dataService.data.status.nickname;
+				this.selectedParticipant = this.dataService.data.user.nickname;
 				this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 
 				this.$scope.$watch(() => { return this.selectedParticipant }, (newVar, oldVar) => {
@@ -178,7 +186,7 @@ module TalkwallApp {
 				event.stopPropagation();
 			}
 			this.feedView = true;
-			this.selectedParticipant = this.dataService.data.status.nickname;
+			this.selectedParticipant = this.dataService.data.user.nickname;
 			this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 			this.$mdSidenav('left').open();
 		}
@@ -210,13 +218,19 @@ module TalkwallApp {
 	        );
 		}
 
-		closeWall(targetEmail, event) {
-			if(event !== null) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			this.dataService.closeWallNow(targetEmail);
-			this.owneremail = undefined;
+        toggleLock() {
+			this.dataService.data.wall.closed = !this.dataService.data.wall.closed;
+            this.dataService.updateWall(null, (wall) => {
+                this.dataService.data.wall.pin = wall.pin;
+            }, () => {
+                console.log('error updating wall');
+            });
+		}
+
+		exitWall() {
+            this.dataService.data.wall = null;
+            this.dataService.data.question = null;
+			this.$window.location.href = this.urlService.getHost() + '/#/organiser';
 		}
 
         setGrid(type, event): void {
@@ -295,11 +309,7 @@ module TalkwallApp {
 			return this.dataService.data.status.unselected_tags.length !== this.dataService.data.status.tags.length;
 		};
 
-		toggleAllTags(event) {
-			if(event !== null) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
+		toggleAllTags() {
 			if (this.dataService.data.status.unselected_tags.length === this.dataService.data.status.tags.length) {
 				this.dataService.data.status.unselected_tags = [];
 			} else {
@@ -325,7 +335,7 @@ module TalkwallApp {
 				//dialog answered
 				this.$window.document.activeElement['blur']();
 				//post message to server and add returned object to question feed
-				let message = handle.dataService.getMessageToEdit();
+				let message = handle.dataService.data.status.messageToEdit;
 				if(message !== null) {
 					if (typeof message._id === 'undefined') {
 						console.log('--> WallController: Edit message - created');

@@ -51,6 +51,18 @@ module TalkwallApp {
             }
         }
 
+        static getFormattedDateTimeFromNow(date: Date): string {
+            if (date !== null) {
+                let a = moment(new Date());
+                let b = moment(date);
+                if (a.diff(b, 'days') > 2) {
+                    return b.format("D MMM YYYY");
+                } else {
+                    return moment(date).fromNow();
+                }
+            }
+        }
+
         getRandomBetween(min: number, max: number) {
             return Math.floor(Math.random() * (max - min + 1) + min);
         }
