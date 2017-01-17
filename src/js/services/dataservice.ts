@@ -717,6 +717,11 @@ module TalkwallApp {
                     }
                 }, (error) => {
                     console.log('Poll FAILED at ' + Date.now().toString());
+                    if (error.status === 401) {
+                        this.data.status.authorised = false;
+                        this.stopPolling();
+                        this.$window.location.href = this.urlService.getHost() + '/#/';
+                    }
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }
