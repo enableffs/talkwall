@@ -66,6 +66,12 @@ module TalkwallApp {
          */
         requestWalls(sFunc: (success: Wall[]) => void, eFunc: (error: {}) => void): void;
         /**
+         * get list of a user's logs where it is an organiser.
+         * @param sFunc success callback
+         * @param eFunc error callback
+         */
+        requestLogs(wall_id: string, sFunc: (success: Wall[]) => void, eFunc: (error: {}) => void): void;
+        /**
          * get last existing from services wall if any.
          * @param wallId string
          * @param sFunc success callback
@@ -517,6 +523,21 @@ module TalkwallApp {
                 });
         }
 
+        // For authorised users only
+        requestLogs(wall_id: string, successCallbackFn, errorCallbackFn): void {
+            this.$http.get(this.urlService.getHost() + '/logs' + wall_id)
+                .then((result) => {
+                    let resultKey = 'result';
+                    console.log('--> DataService: requestLogs success');
+                    successCallbackFn(result.data[resultKey]);
+                }, (error) => {
+                    console.log('--> DataService: requestLogs failure: ' + error);
+                    if (typeof errorCallbackFn === "function") {
+                        errorCallbackFn({status: error.status, message: error.message});
+                    }
+                });
+        }
+
         // For non-authorised users
         getClientWall(joinModel, successCallbackFn, errorCallbackFn): void {
             this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin)
@@ -717,6 +738,11 @@ module TalkwallApp {
                     }
                 }, (error) => {
                     console.log('Poll FAILED at ' + Date.now().toString());
+                    if (error.status === 401) {
+                        this.data.status.authorised = false;
+                        this.stopPolling();
+                        this.$window.location.href = this.urlService.getHost() + '/#/';
+                    }
                     if (typeof errorCallbackFn === "function") {
                         errorCallbackFn({status: error.status, message: error.message});
                     }

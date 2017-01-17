@@ -108,6 +108,7 @@ app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:con
 app.get('/disconnectteacher/:nickname/:wall_id/:question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.disconnectWall);
 app.post('/messageteacher',                                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.createMessage);
 app.put('/messageteacher',                                     jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.updateMessages);
+app.get('/logs/:wall_id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getLogs);
 
 /********* student / teacher operations *********/
 app.get('/clientwall/:nickname/:pin',                                                               routes.client.getWall);
