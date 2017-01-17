@@ -820,6 +820,10 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
   }
 }
 
+.log-content {
+  background-color: white;
+}
+
 html, body {
   overflow: hidden;
   height: 100%;

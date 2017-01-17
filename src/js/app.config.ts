@@ -23,6 +23,9 @@ module TalkwallApp {
             .when('/id', {
                 templateUrl : 'js/components/sessioninfo/sessioninfo.html'
             })
+            .when('/logs', {
+                templateUrl : 'js/components/logs/logs.html'
+            })
             .when('/organiser', {
                 templateUrl : 'js/components/organiser/organiser.html'
             })

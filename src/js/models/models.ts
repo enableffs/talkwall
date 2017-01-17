@@ -1,6 +1,6 @@
 /// <reference path="../_references.ts"/>
 
-module TalkwallApp {
+namespace TalkwallApp {
     "use strict";
     import MomentStatic = moment.MomentStatic;
 
