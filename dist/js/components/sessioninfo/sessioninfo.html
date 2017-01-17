@@ -1,7 +1,7 @@
 <div layout flex ng-controller="SessionInfoController as sessioninfoC">
 
-        <md-content flex md-scroll-y>
-            <div style="height: 800px; background-color: #00BCD4; position: relative;" autoresize="">
+        <md-content flex md-scroll-y layout="column">
+            <div flex style="min-height: 400px; background-color: #00BCD4; position: relative;" autoresize="">
 
                 <div class="landing-clouds">
                     <img src="../images/cloud.svg">
@@ -11,7 +11,7 @@
                     <!--img ng-src="{{sessioninfoC.clapper}}" class="clapper" ng-show="sessioninfoC.data.showResult" /-->
 
 
-                    <div>
+                    <div ng-hide="sessioninfoC.data.showResult">
                         <img class="landing-samtavlaLogo" style="width: 150px;" src="../images/logo.svg" ng-show="sessioninfoC.languageCode=='no'">
                         <img class="landing-samtavlaLogo" style="width: 150px;" src="../images/logo_en.svg" ng-show="sessioninfoC.languageCode=='en'">
                     </div>
@@ -42,7 +42,7 @@
                     </div>
 
                     <!--div layout="column" layout-align="center center" ng-show="sessioninfoC.data.showResult" ng-style="{'background-image': 'url(' + sessioninfoC.clapper + ')'}"-->
-                    <div style="position: relative;" ng-show="sessioninfoC.data.showResult">
+                    <div style="position: relative; margin-top: 5px;" ng-show="sessioninfoC.data.showResult">
 
                         <div style="position: relative;" layout="column" layout-align="start center">
                             <img ng-src="{{sessioninfoC.clapper}}" class="clapper">

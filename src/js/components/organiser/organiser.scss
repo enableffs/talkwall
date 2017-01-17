@@ -1,6 +1,5 @@
 @import "../../../scss/colors";
 
-
 .organiser {
   margin-top: 100px;
   md-list {
@@ -23,7 +22,6 @@
 
 .organiser-addWallButton {
   z-index: 900 !important;
-  background-color: $color-orange !important;
 }
 
 .organiser-saveNicknameButton {
@@ -48,5 +46,11 @@
   padding: 0 5px;
   md-input-container .md-errors-spacer {
     min-height: 0;
+  }
+}
+
+@media only screen and (max-height : 800px) {
+  .organiser-logo {
+    display: none;
   }
 }

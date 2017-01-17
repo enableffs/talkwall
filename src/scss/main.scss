@@ -104,3 +104,11 @@ md-content.md-default-theme.md-hue-2 {
 md-content.md-default-theme.md-hue-3 {
   background-color: transparent;
 }
+
+.md-button.md-default-theme.md-fab, .md-button.md-fab {
+  background-color: $color-orange;
+}
+
+.md-button:not([disabled]).md-fab.md-focused, .md-button:not([disabled]).md-raised.md-focused, .md-button:not([disabled]).md-fab:hover {
+  background-color: #AA6600;
+}

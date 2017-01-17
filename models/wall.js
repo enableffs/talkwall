@@ -14,7 +14,8 @@ var wallSchema = Schema({
     organisers:     [ { type: Schema.Types.ObjectId, ref: 'User', default: null } ],
     closed:         { type: Boolean, default: false },
     deleted:        { type: Boolean, default: false },
-    questions:      [Question]
+    questions:      [Question],
+    questionIndex: { type: Number, default: -1 }
 });
 
 wallSchema.pre('remove', function(next) {

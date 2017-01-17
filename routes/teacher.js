@@ -293,8 +293,24 @@ exports.notifyChangeQuestion = function(req, res) {
     }
     mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     mm.statusUpdate(req.params.wall_id, req.params.question_id);
-    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-        message: common.StatusMessages.UPDATE_SUCCESS.message});
+    Wall.findOne({
+        '_id': req.params.wall_id
+    }, function(error, wall) {
+        if(error) {
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                message: common.StatusMessages.UPDATE_ERROR.message
+            });
+        } else {
+            wall.questions.forEach(function(question, index) {
+                if (question._id.toString() === req.params.question_id) {
+                    wall.questionIndex = index;
+                }
+            });
+            wall.save();
+            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                message: common.StatusMessages.UPDATE_SUCCESS.message });
+        }
+    });
 };
 
 
@@ -389,7 +405,7 @@ exports.getWalls = function(req, res) {
         'organisers' : req.user.id,
         'deleted': false
     // }, '-createdBy -questions').lean();
-    });
+    }).populate('organisers');
 
     query.exec(function(error, walls) {
         if(error) {
@@ -452,7 +468,11 @@ exports.getWall = function(req, res) {
                         //mm.addUserToQuestion(wall._id, '', user.nickname, true);
                         //mm.putUpdate(wall.id, 'none', '', null, true);
                         mm.statusUpdate(wall._id, 'none');
-                        if (user.recentWalls.indexOf(wall._id) > -1) {
+                        var idIndex = user.recentWalls.indexOf(wall._id);
+                        if (idIndex > -1) {
+                            var item = user.recentWalls.splice(idIndex, 1);
+                            user.recentWalls.unshift(item);
+                        } else {
                             if (user.recentWalls.length === 4) {
                                 user.recentWalls.pop();
                             }

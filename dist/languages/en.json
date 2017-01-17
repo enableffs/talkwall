@@ -12,7 +12,7 @@
   "CLOSE_MESSAGE": "Thank you for participating!",
   "EDITMESSAGEPANEL_EDITMESSAGE": "Edit contribution",
   "MENUPAGE_PIN_NOT_FOUND": "The requested pin was not found",
-  "MENUPAGE_GETSESSIONINFO": "Get session information",
+  "MENUPAGE_GETSESSIONINFO": "Show timesync",
   "MENUPAGE_BETA_DIALOG_BDY": "talkwall is under beta testing at some schools.",
   "MENUPAGE_BETA_DIALOG_HEADING": "Beta testing",
   "MENUPAGE_BROWSER_PRIVATEMODE_WARNING_TOAST": "Turn private browsing off to log in",

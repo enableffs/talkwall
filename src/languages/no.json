@@ -12,7 +12,7 @@
   "CLOSE_MESSAGE": "Takk for alle bidrag!",
   "EDITMESSAGEPANEL_EDITMESSAGE": "Rediger bidrag",
   "MENUPAGE_PIN_NOT_FOUND": "The requested pin was not found",
-  "MENUPAGE_GETSESSIONINFO": "Få sesjon informasjon",
+  "MENUPAGE_GETSESSIONINFO": "Show timesync",
   "MENUPAGE_BETA_DIALOG_BDY": "Samtavla prøves nå ut.",
   "MENUPAGE_BETA_DIALOG_HEADING": "Beta testing",
   "MENUPAGE_BROWSER_PRIVATEMODE_WARNING_TOAST": "Din nettleseren er i privat modus og derfor kan du ikke logge deg inn",

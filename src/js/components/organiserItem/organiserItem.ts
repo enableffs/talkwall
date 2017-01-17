@@ -23,6 +23,8 @@ module TalkwallApp {
 		private showControls: boolean = false;
 		private showEditor: boolean = false;
 		private timeFromNow: string;
+		private totalContributors: number;
+		private totalMessages: number;
 
 		constructor(
 			private isolatedScope: OrganiserItemDirectiveScope,
@@ -33,6 +35,13 @@ module TalkwallApp {
 
             this.wall = isolatedScope.data;
             this.timeFromNow = UtilityService.getFormattedDateTimeFromNow(this.wall.lastOpenedAt);
+
+			this.totalContributors = this.totalMessages = 0;
+			this.wall.questions.forEach((q) => {
+				this.totalContributors += q.contributors.length;
+				this.totalMessages += q.messages.length;
+			});
+
 		};
 
 		toggleShowControls(): void {

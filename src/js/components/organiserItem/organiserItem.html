@@ -39,13 +39,6 @@
 		</div>
 
 
-		<!-- Wall activate -->
-		<!--div layout="column" layout-align="center center">
-			<md-button aria-label="Show wall controls" ng-show="!orgItemC.wall.closed" ng-click="orgItemC.isolatedScope.openThisWall()" class="organiserItem-showControlButton">
-				<md-icon md-svg-icon="images/ic_play_circle_outline_black_24px.svg"></md-icon>
-			</md-button>
-		</div-->
-
 		<!-- Wall info content -->
 		<div layout="row" layout-align="space-between none" flex-grow="true" class="organiserItem-messageBody organiserItem-wordWrap" ng-show="!orgItemC.showControls">
 
@@ -68,16 +61,28 @@
 			</div>
 
             <div ng-hide="orgItemC.showEditor" flex layout="row" layout-align="space-between none">
-                <div flex>
-                    <span>{{orgItemC.wall.label}}</span>&nbsp;-&nbsp;<span>{{orgItemC.wall.theme}}</span>
+                <div flex layout="column">
+					<div>
+                    	<span>{{orgItemC.wall.label}}</span>&nbsp;-&nbsp;<span>{{orgItemC.wall.theme}}</span>
+					</div>
+					<div class="organiserItem-counters" layout="row">
+						<img ng-src="/images/ic_group_black_24px.svg"/>&nbsp;
+						<span style="margin-right: 5px;">{{::orgItemC.totalContributors}}</span>
+						<img ng-src="/images/ic_message_black_24px.svg"/>&nbsp;
+						<span>{{::orgItemC.totalMessages}}</span>
+					</div>
                 </div>
                 <div flex layout="row" layout-align="space-around center">
+					<div layout="column" class="organiserItem-organisers">
+						<span ng-repeat="item in orgItemC.wall.organisers">{{::item.nickname}}</span>
+					</div>
                     <div>
                         <span ng-hide="orgItemC.wall.closed">{{orgItemC.wall.pin}}</span>
                         <md-icon ng-show="orgItemC.wall.closed" md-svg-icon="images/ic_lock_outline_grey_24px.svg"></md-icon>
                     </div>
-                    <div>
-                        <span style="font-size: 0.5em;">{{'ORG_LAST_OPENED' | translate}} {{::orgItemC.timeFromNow}}</span>
+                    <div style="font-size: 0.5em;" layout="column">
+						<!--span>{{'ORG_LAST_OPENED' | translate}}</span-->
+                        <span> {{::orgItemC.timeFromNow}}</span>
                     </div>
                 </div>
             </div>

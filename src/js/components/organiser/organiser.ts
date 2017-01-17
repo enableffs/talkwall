@@ -26,6 +26,7 @@ module TalkwallApp {
         private user: User;
         private newNickname: string;
         private walls: Wall[];
+        private recentWalls: Wall[];
         private newWall: {};
         private languageCode: string = 'no';
 
@@ -48,6 +49,7 @@ module TalkwallApp {
                 this.activate();
             }, null);
 
+            this.recentWalls = [];
             this.newWall = {
                 label: "",
                 theme: ""
@@ -60,6 +62,14 @@ module TalkwallApp {
             this.newNickname = this.user.nickname;
             this.dataService.requestWalls((walls) => {
                 this.walls = walls;
+
+                // Determine recent walls
+                this.walls.forEach((wall: Wall) => {
+                    if (this.user.recentWalls.indexOf(wall._id) > -1) {
+                        this.recentWalls.push(wall);
+                    }
+                })
+
             }, () => {
                 console.log("No walls found");
             })

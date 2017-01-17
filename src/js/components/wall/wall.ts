@@ -116,7 +116,12 @@ module TalkwallApp {
 			if (this.dataService.data.wall === null) {
 				this.$window.location.href = this.urlService.getHost() + '/#/';
 			} else {
-				let question_index = this.dataService.data.wall.questions.length > 0 ? 0 : -1;
+				let question_index = -1;
+				if (this.dataService.data.wall.questionIndex !== -1) {
+					question_index = this.dataService.data.wall.questionIndex;
+				} else {
+					question_index = this.dataService.data.wall.questions.length > 0 ? 0 : -1;
+				}
 				this.setQuestion(question_index, null);
 				this.selectedParticipant = this.dataService.data.user.nickname;
 				this.dataService.data.status.selectedParticipant = this.selectedParticipant;

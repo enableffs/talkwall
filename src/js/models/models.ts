@@ -23,6 +23,7 @@ module TalkwallApp {
         nickname: string;
         lastOpenedWall: string;   //wall _id
         defaultEmail: string;
+        recentWalls: string[];
     }
 
     export class Wall {
@@ -36,6 +37,7 @@ module TalkwallApp {
         deleted: boolean;
         questions: Array<Question>;
         targetEmail: string;
+        questionIndex: number;
     }
 
     export interface IQuestion {

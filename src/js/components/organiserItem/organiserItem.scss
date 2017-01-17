@@ -66,3 +66,16 @@
   min-width: 10px;
   height: 40px;
 }
+
+.organiserItem-organisers {
+  font-size: 0.5em;
+  color: $color-darkgrey;
+}
+
+.organiserItem-counters {
+  font-size: 0.75em;
+  color: $color-darkgrey;
+  img {
+    width: 13px;
+  }
+}

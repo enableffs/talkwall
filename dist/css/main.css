@@ -443,6 +443,20 @@
   height: 40px;
 }
 
+.organiserItem-organisers {
+  font-size: 0.5em;
+  color: #333333;
+}
+
+.organiserItem-counters {
+  font-size: 0.75em;
+  color: #333333;
+}
+
+.organiserItem-counters img {
+  width: 13px;
+}
+
 .sessionInfoDetails {
   z-index: 99;
   color: white;
@@ -772,7 +786,6 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 
 .organiser-addWallButton {
   z-index: 900 !important;
-  background-color: #FF7700 !important;
 }
 
 .organiser-saveNicknameButton {
@@ -799,6 +812,12 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 
 .organiser-nickname md-input-container .md-errors-spacer {
   min-height: 0;
+}
+
+@media only screen and (max-height: 800px) {
+  .organiser-logo {
+    display: none;
+  }
 }
 
 html, body {
@@ -880,4 +899,12 @@ md-content.md-default-theme.md-hue-2 {
 
 md-content.md-default-theme.md-hue-3 {
   background-color: transparent;
+}
+
+.md-button.md-default-theme.md-fab, .md-button.md-fab {
+  background-color: #FF7700;
+}
+
+.md-button:not([disabled]).md-fab.md-focused, .md-button:not([disabled]).md-raised.md-focused, .md-button:not([disabled]).md-fab:hover {
+  background-color: #AA6600;
 }
