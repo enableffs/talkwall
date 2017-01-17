@@ -73,6 +73,7 @@ exports.updateUser = function(req, res) {
         else {
             user.lastOpenedWall = req.body.user.lastOpenedWall;
             user.defaultEmail = req.body.user.defaultEmail;
+            user.nickname = req.body.user.nickname;
             user.save();
             res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: user});
@@ -102,7 +103,9 @@ exports.createWall = function(req, res) {
     var newWall = new Wall({
         pin: newPin,
         label: req.body.label,
-        createdBy: req.user.id
+        theme: req.body.theme,
+        createdBy: req.user.id,
+        organisers: [req.user.id]
     });
 
     newWall.save(function(error, wall) {
@@ -112,19 +115,12 @@ exports.createWall = function(req, res) {
         }
         else {
             // Save the new pin and wall ID to redis
-            redisClient.set(newPin, wall.id);
+            redisClient.set(newPin, wall.id.toString());
             redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
-            User.findOneAndUpdate( { _id: req.user.id }, { lastOpenedWall : wall.id }, function(error, user) {
-                if(error) {
-                    res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                        message: common.StatusMessages.UPDATE_ERROR.message, result: error});
-                } else {
-                    mm.setup(wall._id, user.nickname);
-                    res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
-                        message: common.StatusMessages.CREATE_SUCCESS.message,
-                        result: wall
-                    });
-                }
+            mm.setup(wall._id, req.user.nickname);
+            res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                message: common.StatusMessages.CREATE_SUCCESS.message,
+                result: wall
             });
         }
     })
@@ -144,33 +140,50 @@ exports.updateWall = function(req, res) {
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    // Close this wall to clients by expiring the pin
-    if (req.body.wall.closed) {
-        redisClient.EXPIRE(req.body.wall.pin, 1);
-        req.body.wall.pin = '0000';
-        mm.removeWall(req.body.wall._id);
-    }
-
-    var query = Wall.findOneAndUpdate({
+    var query = Wall.findOne({
         _id : req.body.wall._id
-    }, req.body.wall, { new: true });
+    });
 
     query.exec(function(error, wall) {
         if(error) {
             res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
-            if (wall.closed) {
+            if (!wall.closed && req.body.wall.closed) {     // Wall has been closed (locked)
+                // Expire the pin
+                if (req.body.wall.closed) {
+                    redisClient.EXPIRE(req.body.wall.pin, 1);
+                    wall.pin = '0000';
+                    mm.removeWall(req.body.wall._id);
+                }
+
+                wall.closed = true;
+
                 //send an email to the wall creator with the permalink.
+                /*
                 console.log('--> updateWall: sending export link: targetemail: ' + req.body.wall.targetEmail);
-                sendExportLinkToOwner(wall.createdBy, req.body.wall.targetEmail).then(function() {
-                    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});                    
+                sendExportLinkToOwner(wall.createdBy, req.body.wall.targetEmail).then(function () {
+                    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                        message: common.StatusMessages.UPDATE_SUCCESS.message,
+                        result: wall
+                    });
                 });
-            } else {
-                mm.statusUpdate(wall._id, 'none');
-                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                    message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
+                */
+
+            } else if (wall.closed && !req.body.wall.closed) {  // Wall has been opened (unlocked)
+                // Choose a fresh pin
+                var newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
+                while(redisClient.exists(newPin) === 1) {
+                    newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
+                }
+                wall.pin = newPin;
+                redisClient.set(newPin, wall._id.toString());
+                wall.closed = false;
             }
+            mm.statusUpdate(wall._id, 'none');
+            wall.save();
+            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
         }
     });
 };
@@ -242,7 +255,7 @@ exports.closeWall = function(req, res) {
 
     var query = Wall.findOneAndUpdate({
         _id : req.params.wall_id
-    }, {closed: true, pin: '0000'}, { new: true });
+    }, {closed: true}, { new: true });
 
     query.exec(function(error, wall) {
         if(error) {
@@ -280,8 +293,24 @@ exports.notifyChangeQuestion = function(req, res) {
     }
     mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     mm.statusUpdate(req.params.wall_id, req.params.question_id);
-    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-        message: common.StatusMessages.UPDATE_SUCCESS.message});
+    Wall.findOne({
+        '_id': req.params.wall_id
+    }, function(error, wall) {
+        if(error) {
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                message: common.StatusMessages.UPDATE_ERROR.message
+            });
+        } else {
+            wall.questions.forEach(function(question, index) {
+                if (question._id.toString() === req.params.question_id) {
+                    wall.questionIndex = index;
+                }
+            });
+            wall.save();
+            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                message: common.StatusMessages.UPDATE_SUCCESS.message });
+        }
+    });
 };
 
 
@@ -373,8 +402,10 @@ exports.deleteWall = function(req, res) {
  */
 exports.getWalls = function(req, res) {
     var query = Wall.find({
-        'createdBy' : req.user.id
-    }, '-createdBy -questions').lean();
+        'organisers' : req.user.id,
+        'deleted': false
+    // }, '-createdBy -questions').lean();
+    }).populate('organisers');
 
     query.exec(function(error, walls) {
         if(error) {
@@ -413,6 +444,7 @@ exports.getWall = function(req, res) {
                 message: common.StatusMessages.GET_ERROR.message, result: error});
         }
         else if (wall !== null) {
+            wall.lastOpenedAt = new Date();
             redisClient.get(wall.pin, function(error, redis_wall_id) {
                 if(redis_wall_id === null || wall.pin === '0000') {
                     // Pin has expired while we were away or deliberately - Reallocate a pin to this wall
@@ -421,12 +453,12 @@ exports.getWall = function(req, res) {
                     while (redisClient.exists(newPin) === 1) {
                         newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
                     }
-                    redisClient.set(newPin, wall._id);
+                    redisClient.set(newPin, wall._id.toString());
                     redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
                     wall.pin = newPin;
                     wall.save();
                 }
-                User.findOneAndUpdate({_id: req.user.id}, {lastOpenedWall: wall.id}, function (error, user) {
+                User.findOne({_id: req.user.id}, function (error, user) {
                     if (error) {
                         res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                             message: common.StatusMessages.UPDATE_ERROR.message, result: error
@@ -436,6 +468,17 @@ exports.getWall = function(req, res) {
                         //mm.addUserToQuestion(wall._id, '', user.nickname, true);
                         //mm.putUpdate(wall.id, 'none', '', null, true);
                         mm.statusUpdate(wall._id, 'none');
+                        var idIndex = user.recentWalls.indexOf(wall._id);
+                        if (idIndex > -1) {
+                            var item = user.recentWalls.splice(idIndex, 1);
+                            user.recentWalls.unshift(item);
+                        } else {
+                            if (user.recentWalls.length === 4) {
+                                user.recentWalls.pop();
+                            }
+                            user.recentWalls.unshift(wall._id);
+                        }
+                        user.save();
                         res.status(common.StatusMessages.GET_SUCCESS.status).json({
                             message: common.StatusMessages.GET_SUCCESS.message, result: wall
                         });

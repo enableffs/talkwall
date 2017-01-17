@@ -23,6 +23,7 @@ module TalkwallApp {
         nickname: string;
         lastOpenedWall: string;   //wall _id
         defaultEmail: string;
+        recentWalls: string[];
     }
 
     export class Wall {
@@ -30,10 +31,13 @@ module TalkwallApp {
         pin: string;
         label: string;
         createdAt: Date;
+        lastOpenedAt: Date;
         createdBy: string;
         closed: boolean;
+        deleted: boolean;
         questions: Array<Question>;
         targetEmail: string;
+        questionIndex: number;
     }
 
     export interface IQuestion {
@@ -285,6 +289,9 @@ module TalkwallApp {
         diff: {x: number, y: number };
 
         constructor(type: LogType, id: string, nickname: string, question_id: string, diff) {
+
+            // In cases where we record a 'question' event, the itemid will match the q_id
+
             this.q_id = question_id;
             this.type = type;
             this.itemid = id;

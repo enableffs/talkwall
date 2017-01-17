@@ -10,7 +10,9 @@
 /// <reference path="services/utilityservice.ts"/>
 
 /// <reference path="directives/autoresize.ts"/>
+/// <reference path="directives/twMaxlength.ts"/>
 /// <reference path="components/feedMessage/feedMessage.ts"/>
+/// <reference path="components/organiserItem/organiserItem.ts"/>
 /// <reference path="components/taskQuestion/taskQuestion.ts"/>
 /// <reference path="directives/watchboardsize.ts"/>
 
@@ -20,6 +22,7 @@
 /// <reference path="components/archive/archive.ts"/>
 /// <reference path="components/export/export.ts"/>
 /// <reference path="components/wall/wall.ts"/>
+/// <reference path="components/organiser/organiser.ts"/>
 /// <reference path="components/sessioninfo/sessioninfo.ts"/>
 /// <reference path="components/editMessagePanel/editMessagePanel.ts"/>
 
@@ -55,8 +58,10 @@ module TalkwallApp {
         .service('TokenInterceptor', TokenInterceptor)
         .service('UtilityService', UtilityService)
         .directive('autoresize', AutoResize)
+        .directive('twMaxlength', TwMaxlength)
         .directive('watchBoardSize', WatchBoardSize)
         .directive('feedMessage', FeedMessage)
+        .directive('organiserItem', OrganiserItem)
         .directive('taskQuestion', TaskQuestion)
         .controller('ArchiveWallController', ArchiveWallController)
         .controller('LoginController', LoginController)
@@ -66,6 +71,7 @@ module TalkwallApp {
         .controller('SessionInfoController', SessionInfoController)
         .controller('ExportController', ExportController)
         .controller('WallController', WallController)
+        .controller('OrganiserController', OrganiserController)
         .controller('EditMessageController', EditMessageController)
         .run(runApp);
 }

@@ -18,8 +18,10 @@
         "../js/components/close/close",
         "../js/components/feedMessage/feedMessage",
         "../js/components/taskQuestion/taskQuestion",
+        "../js/components/organiserItem/organiserItem",
         "../js/components/sessioninfo/sessioninfo",
-        "../js/components/wall/wall";
+        "../js/components/wall/wall",
+        "../js/components/organiser/organiser";
 
 
 html, body {
@@ -47,6 +49,11 @@ a, img {
 
 md-dialog {
   min-width: 320px !important;
+  background-color: $color-white;
+}
+
+md-content {
+  background-color: transparent;
 }
 
 md-toolbar {
@@ -55,6 +62,7 @@ md-toolbar {
 
 md-backdrop.md-sidenav-backdrop {
   display:none !important;
+  background-color: $color-white;
 }
 
 md-bottom-sheet {
@@ -79,4 +87,28 @@ button:focus {
 md-radio-button.md-default-theme.md-checked .md-off,
 md-radio-button.md-checked .md-off {
   border-color: $color-orange !important;
+}
+
+md-content.md-default-theme {
+  background-color: transparent;
+}
+
+md-content.md-default-theme.md-hue-1 {
+  background-color: transparent;
+}
+
+md-content.md-default-theme.md-hue-2 {
+  background-color: transparent;
+}
+
+md-content.md-default-theme.md-hue-3 {
+  background-color: transparent;
+}
+
+.md-button.md-default-theme.md-fab, .md-button.md-fab {
+  background-color: $color-orange;
+}
+
+.md-button:not([disabled]).md-fab.md-focused, .md-button:not([disabled]).md-raised.md-focused, .md-button:not([disabled]).md-fab:hover {
+  background-color: #AA6600;
 }

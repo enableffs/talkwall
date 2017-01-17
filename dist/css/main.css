@@ -73,7 +73,6 @@
 
 #landing-main {
   overflow: hidden;
-  background-color: #FFFFFF;
 }
 
 .landing-betalabel {
@@ -109,10 +108,6 @@
 
 .landing-arrow svg path {
   fill: #0096a9;
-}
-
-md-content {
-  background-color: #FFFFFF;
 }
 
 .landing-centered-button-panel {
@@ -154,7 +149,6 @@ md-content {
 }
 
 .landing-title, .landing-subtitle {
-  width: 700px !important;
   padding: 0px;
 }
 
@@ -175,9 +169,14 @@ md-content {
   margin-bottom: 40px;
 }
 
+.landing-video iframe {
+  width: 980px;
+  height: 551px;
+}
+
 .landing-rqs {
   max-width: 320px !important;
-  padding: 0px;
+  padding: 0;
   margin-top: 100px;
 }
 
@@ -236,6 +235,13 @@ md-content {
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
   img[src*=".svg"] {
     width: 100%;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .landing-video iframe {
+    width: 356px;
+    height: 200px;
   }
 }
 
@@ -368,6 +374,87 @@ md-content {
   overflow: hidden;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
+}
+
+.organiserItem-messageSelected {
+  background-color: rgba(255, 119, 0, 0.5);
+}
+
+.organiserItem-messageNotSelected {
+  background-color: white;
+}
+
+.organiserItem-messageNotPinned {
+  background-color: #c0c0c0 !important;
+}
+
+.organiserItem-showControlButton {
+  height: 40px !important;
+  min-width: 40px !important;
+  max-height: 40px !important;
+}
+
+.organiserItem-textMargin {
+  margin-left: 10px !important;
+}
+
+.organiserItem-close {
+  background-color: #FFFFFF !important;
+}
+
+.organiserItem-messageBody {
+  padding: 5px;
+}
+
+.organiserItem-messageBody md-input-container {
+  padding: 2px;
+  margin: 0;
+}
+
+.organiserItem-messageControl {
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+}
+
+.organiserItem-wordWrap {
+  width: 100%;
+  overflow: hidden;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.organiserItem-messageOnBoard {
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: #FFFFFF;
+  position: absolute !important;
+  cursor: move;
+}
+
+.organiserItem-messageOnBoardSelected {
+  background-color: rgba(255, 119, 0, 0.5) !important;
+}
+
+.organiserItem-addWallButton {
+  background-color: #c0c0c0 !important;
+  min-width: 10px;
+  height: 40px;
+}
+
+.organiserItem-organisers {
+  font-size: 0.5em;
+  color: #333333;
+}
+
+.organiserItem-counters {
+  font-size: 0.75em;
+  color: #333333;
+}
+
+.organiserItem-counters img {
+  width: 13px;
 }
 
 .sessionInfoDetails {
@@ -675,6 +762,64 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
   }
 }
 
+.organiser {
+  margin-top: 100px;
+}
+
+.organiser md-list {
+  padding: 0;
+}
+
+.organiser md-button {
+  min-width: 10px;
+}
+
+.organiser-logo {
+  margin-top: 30px;
+}
+
+.organiser-clouds {
+  position: fixed;
+  bottom: -10px;
+  width: 100%;
+}
+
+.organiser-addWallButton {
+  z-index: 900 !important;
+}
+
+.organiser-saveNicknameButton {
+  background-color: #c0c0c0 !important;
+  min-width: 10px;
+  height: 40px;
+}
+
+.organiser-title {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.organiser-content {
+  max-height: 300px;
+  background-color: white;
+}
+
+.organiser-nickname {
+  padding: 0 5px;
+}
+
+.organiser-nickname md-input-container .md-errors-spacer {
+  min-height: 0;
+}
+
+@media only screen and (max-height: 800px) {
+  .organiser-logo {
+    display: none;
+  }
+}
+
 html, body {
   overflow: hidden;
   height: 100%;
@@ -700,6 +845,11 @@ a, img {
 
 md-dialog {
   min-width: 320px !important;
+  background-color: #FFFFFF;
+}
+
+md-content {
+  background-color: transparent;
 }
 
 md-toolbar {
@@ -708,6 +858,7 @@ md-toolbar {
 
 md-backdrop.md-sidenav-backdrop {
   display: none !important;
+  background-color: #FFFFFF;
 }
 
 md-bottom-sheet {
@@ -732,4 +883,28 @@ button:focus {
 md-radio-button.md-default-theme.md-checked .md-off,
 md-radio-button.md-checked .md-off {
   border-color: #FF7700 !important;
+}
+
+md-content.md-default-theme {
+  background-color: transparent;
+}
+
+md-content.md-default-theme.md-hue-1 {
+  background-color: transparent;
+}
+
+md-content.md-default-theme.md-hue-2 {
+  background-color: transparent;
+}
+
+md-content.md-default-theme.md-hue-3 {
+  background-color: transparent;
+}
+
+.md-button.md-default-theme.md-fab, .md-button.md-fab {
+  background-color: #FF7700;
+}
+
+.md-button:not([disabled]).md-fab.md-focused, .md-button:not([disabled]).md-raised.md-focused, .md-button:not([disabled]).md-fab:hover {
+  background-color: #AA6600;
 }

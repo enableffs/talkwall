@@ -232,6 +232,10 @@ Mm.prototype.removeWall = function(wall_id) {
 
         var self = this;
         setTimeout(function() {
+            var studentsOnWall = Object.keys(self.data.walls[wall_id].status.connected_students).length;
+            var teachersOnWall = Object.keys(self.data.walls[wall_id].status.connected_teachers).length;
+            self.data.total_talkwall_connections -= studentsOnWall;
+            self.data.total_talkwall_connections -= teachersOnWall;
             delete self.data.walls[wall_id];
         }, 10000);
 
