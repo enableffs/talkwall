@@ -118,7 +118,7 @@ exports.createWall = function(req, res) {
             // Save the new pin and wall ID to redis
             redisClient.set(newPin, wall.id.toString());
             redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
-            mm.setup(wall._id, req.user.nickname);
+            //mm.setup(wall._id, req.user.nickname);
             res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                 message: common.StatusMessages.CREATE_SUCCESS.message,
                 result: wall

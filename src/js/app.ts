@@ -1,79 +1,69 @@
-/// <reference path="_references.ts"/>
-/// <reference path="app.config.ts"/>
+'use strict';
 
-/// <reference path="app.constants.ts"/>
+import {TalkwallConstants} from "./app.constants";
+import {configApp} from "./app.config";
+import {URLService} from "./services/urlservice";
+import {DataService} from "./services/dataservice";
+import {AuthenticationService} from "./services/authenticationservice";
+import {TokenInterceptor} from "./services/tokenservice";
+import {UtilityService} from "./services/utilityservice";
+import {AutoResize} from "./directives/autoresize";
+import {TwMaxlength} from "./directives/twMaxlength";
+import {WatchBoardSize} from "./directives/watchboardsize";
+import {FeedMessage} from "./components/feedMessage/feedMessage";
+import {OrganiserItem} from "./components/organiserItem/organiserItem";
+import {TaskQuestion} from "./components/taskQuestion/taskQuestion";
+import {ArchiveWallController} from "./components/archive/archive";
+import {LoginController} from "./components/login/login";
+import {JoinController} from "./components/join/join";
+import {CloseController} from "./components/close/close";
+import {LandingController} from "./components/landing/landing";
+import {SessionInfoController} from "./components/sessioninfo/sessioninfo";
+import {ExportController} from "./components/export/export";
+import {WallController} from "./components/wall/wall";
+import {OrganiserController} from "./components/organiser/organiser";
+import {EditMessageController} from "./components/editMessagePanel/editMessagePanel";
+import {LogController} from "./components/logs/logs";
+import {runApp} from "./app.run";
 
-/// <reference path="services/dataservice.ts"/>
-/// <reference path="services/authenticationservice.ts"/>
-/// <reference path="services/tokenservice.ts"/>
-/// <reference path="services/urlservice.ts"/>
-/// <reference path="services/utilityservice.ts"/>
-
-/// <reference path="directives/autoresize.ts"/>
-/// <reference path="directives/twMaxlength.ts"/>
-/// <reference path="components/feedMessage/feedMessage.ts"/>
-/// <reference path="components/organiserItem/organiserItem.ts"/>
-/// <reference path="components/taskQuestion/taskQuestion.ts"/>
-/// <reference path="directives/watchboardsize.ts"/>
-
-/// <reference path="components/login/login.ts"/>
-/// <reference path="components/join/join.ts"/>
-/// <reference path="components/landing/landing.ts"/>
-/// <reference path="components/archive/archive.ts"/>
-/// <reference path="components/export/export.ts"/>
-/// <reference path="components/wall/wall.ts"/>
-/// <reference path="components/organiser/organiser.ts"/>
-/// <reference path="components/logs/logs.ts"/>
-/// <reference path="components/sessioninfo/sessioninfo.ts"/>
-/// <reference path="components/editMessagePanel/editMessagePanel.ts"/>
-
-/// <reference path="app.run.ts"/>
-
+let dependencies = [
+    'ngRoute',
+    'ngAria',
+    'ngAnimate',
+    'pascalprecht.translate',
+    'ngMaterial'
+];
 
 /**
  * TalkwallApp core application module.
- * @preferred
  */
-module TalkwallApp {
-    'use strict';
+export let app = angular.module('TalkwallApp', dependencies)
 
-    /**
-     * Array of dependencies to be injected in the application "dependencies".
-     */
-    let dependencies = [
-        'ngRoute',
-        'ngAria',
-        'ngAnimate',
-        'pascalprecht.translate',
-        'ngMaterial'
-    ];
+    .constant('TalkwallConstants', TalkwallConstants)
+    .config(configApp)
 
-    angular.module('TalkwallApp', dependencies)
+    .service('URLService', URLService)
+    .service('DataService', DataService)
+    .service('AuthenticationService', AuthenticationService)
+    .service('TokenInterceptor', TokenInterceptor)
+    .service('UtilityService', UtilityService)
 
-        .constant('TalkwallConstants', TalkwallConstants)
-        .config(configApp)
+    .directive('autoresize', AutoResize)
+    .directive('twMaxlength', TwMaxlength)
+    .directive('watchBoardSize', WatchBoardSize)
+    .directive('feedMessage', FeedMessage)
+    .directive('organiserItem', OrganiserItem)
+    .directive('taskQuestion', TaskQuestion)
 
-        .service('URLService', URLService)
-        .service('DataService', DataService)
-        .service('AuthenticationService', AuthenticationService)
-        .service('TokenInterceptor', TokenInterceptor)
-        .service('UtilityService', UtilityService)
-        .directive('autoresize', AutoResize)
-        .directive('twMaxlength', TwMaxlength)
-        .directive('watchBoardSize', WatchBoardSize)
-        .directive('feedMessage', FeedMessage)
-        .directive('organiserItem', OrganiserItem)
-        .directive('taskQuestion', TaskQuestion)
-        .controller('ArchiveWallController', ArchiveWallController)
-        .controller('LoginController', LoginController)
-        .controller('JoinController', JoinController)
-        .controller('CloseController', CloseController)
-        .controller('LandingController', LandingController)
-        .controller('SessionInfoController', SessionInfoController)
-        .controller('ExportController', ExportController)
-        .controller('WallController', WallController)
-        .controller('OrganiserController', OrganiserController)
-        .controller('LogController', LogController)
-        .controller('EditMessageController', EditMessageController)
-        .run(runApp);
-}
+    .controller('ArchiveWallController', ArchiveWallController)
+    .controller('LoginController', LoginController)
+    .controller('JoinController', JoinController)
+    .controller('CloseController', CloseController)
+    .controller('LandingController', LandingController)
+    .controller('SessionInfoController', SessionInfoController)
+    .controller('ExportController', ExportController)
+    .controller('WallController', WallController)
+    .controller('OrganiserController', OrganiserController)
+    .controller('EditMessageController', EditMessageController)
+    .controller('LogController', LogController)
+    .run(runApp);

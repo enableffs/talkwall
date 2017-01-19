@@ -1,30 +1,17 @@
-/// <reference path="../_references.ts"/>
+import ILocationService = angular.ILocationService;
 
-module TalkwallApp {
-    "use strict";
-    import ILocationService = angular.ILocationService;
+export class URLService {
+    static $inject = ['$location'];
 
-    export interface IURLService {
-        /**
-         * get the host's web address
-         * @return string representing the host (for ex: http://URL:PORT)
-         */
-        getHost(): string;
+    constructor( private $location: ILocationService ) {
+        console.log('--> URLService started ... ');
     }
 
-    export class URLService implements IURLService {
-        static $inject = ['$location'];
-
-        constructor( private $location: ILocationService ) {
-            console.log('--> URLService started ... ');
-        }
-
-        getHost(): string {
-            if (this.$location.port() === 80) {
-                return this.$location.protocol() + '://' + this.$location.host();
-            } else {
-                return this.$location.protocol() + '://' + this.$location.host() + ':' + this.$location.port();
-            }
+    getHost(): string {
+        if (this.$location.port() === 80) {
+            return this.$location.protocol() + '://' + this.$location.host();
+        } else {
+            return this.$location.protocol() + '://' + this.$location.host() + ':' + this.$location.port();
         }
     }
 }

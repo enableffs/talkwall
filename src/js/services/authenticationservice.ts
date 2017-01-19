@@ -1,20 +1,10 @@
-/// <reference path="../_references.ts"/>
+export class AuthenticationService {
+	private _isAuthenticated: boolean = false;
 
-module TalkwallApp {
-	"use strict";
-
-	export interface IAuthenticationService {
-		isAuthenticated: boolean;
+	public get isAuthenticated(): boolean {
+		return this._isAuthenticated;
 	}
-
-	export class AuthenticationService implements IAuthenticationService {
-		private _isAuthenticated: boolean = false;
-
-		public get isAuthenticated(): boolean {
-			return this._isAuthenticated;
-		}
-		public set isAuthenticated(value: boolean) {
-			this._isAuthenticated = value;
-		}
+	public set isAuthenticated(value: boolean) {
+		this._isAuthenticated = value;
 	}
 }

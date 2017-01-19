@@ -251,7 +251,7 @@ exports.updateMessages = function(req, res) {
                 var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true});
 
                 query.exec(function (err, updated_message) {
-                    if (err) {
+                    if (err || typeof updated_message === 'undefined') {
                         reject(err);
                     }
                     // Update the message manager to notify other clients

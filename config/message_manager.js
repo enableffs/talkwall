@@ -275,6 +275,8 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
     // Note that someone is using this wall
     if (this.data.walls.hasOwnProperty(wall_id)) {
         this.data.walls[wall_id].status.last_access = Date.now();
+    } else {
+        return;
     }
     function editUpdate(userQueue) {
 

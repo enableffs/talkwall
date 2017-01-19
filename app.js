@@ -68,7 +68,7 @@ app.use(passport.initialize());
 
 /********* express *********/
 app.use(express.static(path.join(__dirname, process.env.STATIC_FOLDER)));
-app.use(express.static(path.join(__dirname, 'bower_components')));
+app.use(express.static(path.join(__dirname, 'node_modules')));
 
 app.all('*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
