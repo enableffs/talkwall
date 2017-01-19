@@ -824,6 +824,67 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
   background-color: white;
 }
 
+.calendarDisplay {
+  background-color: #ccc;
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
+}
+
+.day {
+  fill: #fff;
+  stroke: #ccc;
+}
+
+.month {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.year .color0 {
+  fill: red;
+}
+
+.year .color1 {
+  fill: #ff3333;
+}
+
+.year .color2 {
+  fill: #ff6666;
+}
+
+.year .color3 {
+  fill: #ff9999;
+}
+
+.year .color4 {
+  fill: #ffcccc;
+}
+
+.year .color5 {
+  fill: #ffffcc;
+}
+
+.year .color6 {
+  fill: #ccffcc;
+}
+
+.year .color7 {
+  fill: #99ff99;
+}
+
+.year .color8 {
+  fill: #66ff66;
+}
+
+.year .color9 {
+  fill: #33ff33;
+}
+
+.year .color10 {
+  fill: lime;
+}
+
 html, body {
   overflow: hidden;
   height: 100%;
