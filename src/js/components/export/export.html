@@ -11,7 +11,7 @@
 				<div ng-repeat="question in exportC.wall.questions" layout-padding="true">
 					<h1>{{ 'Question: ' + question.label }} | {{ exportC.getFormattedDate(question.createdAt) }}</h1>
 					<div class="export-messageArea" layout="column" ng-show="question.messages.length > 0">
-						<div ng-repeat="participant in question.participants">
+						<div ng-repeat="participant in question.contributors">
 							<h2>{{ participant }}</h2>
 							<div ng-repeat="message in exportC.getBoardMessagesForParticipant(participant, question._id)" layout="column" ng-class="{'export-messageOnBoardSelected': message.board[participant].pinned, 'export-feedMessage': !message.board[participant].pinned }">
 								<div>{{ message.text }}</div>
