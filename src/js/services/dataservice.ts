@@ -1,6 +1,5 @@
 /// <reference path="../_references.ts"/>
 /// <reference path="../app.constants.ts"/>
-/// <reference path="urlservice.ts"/>
 /// <reference path="authenticationservice.ts"/>
 /// <reference path="utilityservice.ts"/>
 /// <reference path="urlservice.ts"/>
@@ -303,7 +302,7 @@ module TalkwallApp {
                      private $mdDialog: angular.material.IDialogService,
                      private $translate: angular.translate.ITranslateService,
                      private utilityService: UtilityService,
-                     private urlService: IURLService,
+                     private urlService: URLService,
                      private $mdMedia: IMedia,
                      private constants: ITalkwallConstants) {
 

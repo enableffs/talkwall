@@ -328,32 +328,13 @@ function populateQuestion(question) {
 
     return new Promise(function(resolve, reject) {
 
-        var expandedResultsPromise = [];
-        question.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
-            expandedResultsPromise.push(populateMessage(message));
-        });
-        Promise.all(expandedResultsPromise).then(function(messagesArray) {
-            question.messages = messagesArray;
-            resolve(question);
-        }).catch(function(err) {
-            reject(err);
-        });
-        
-        
-        
-    });
-}
-
-function populateMessage(message) {
-
-    return new Promise(function(resolve, reject) {
-        var query = Message.findOne({_id: message});
-        //query.populate('messages');
-        query.exec(function (err, expandedMessage) {
+        var query = Message.find({question_id: question._id});
+        query.exec(function (err, messages) {
             if (err) {
                 reject(err);
             }
-            resolve(expandedMessage);
+            question.messages = messages;
+            resolve(question);
         });
     });
 }
