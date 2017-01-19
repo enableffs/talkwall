@@ -1,0 +1,169 @@
+@import "../../../scss/colors";
+
+
+#landing-main {
+  overflow: hidden;
+  background-color: $color-white;
+}
+
+.landing-betalabel {
+  position:absolute !important;
+  z-index: 4 !important;
+  width: 20% !important;
+  max-width: 150px;
+  cursor: pointer;
+}
+
+.landing-betalabel img {
+  width: 100% !important;
+}
+
+.landing-cloud-background {
+  flex: 1 100%;
+  align-self: flex-end;
+}
+
+
+.landing-arrow-footer {
+  height: 70px;
+  width: 100%;
+  background-color: $color-white;
+  text-align: center;
+}
+
+.landing-arrow {
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+
+.landing-arrow svg path {
+  fill: $color-blue;
+}
+
+md-content {
+  background-color: $color-white;
+}
+
+.landing-centered-button-panel {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.landing-clouds {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+}
+
+.landing-createButton,
+.landing-joinButton {
+  height: 50px;
+}
+
+.landing-joinButton {
+  background-color: $color-orange !important;
+  color: $color-white !important;
+}
+
+.landing-createButton {
+  background-color: $color-white !important;
+  color: $color-black !important;
+}
+
+.landing-samtavlaLogo {
+ /* width: 300px !important;*/
+}
+
+.landing-under {}
+
+.landing-illustration {
+  width: 100%;
+  background-color: $color-lightblue;
+  }
+
+.landing-title, .landing-subtitle {
+    width: 700px !important;
+    padding: 0px;
+}
+
+.landing-title h1 {
+  font-family: 'Roboto', sans-serif;
+  margin: 0px;
+  font-size: 3em !important;
+  text-align: center;
+  color: $color-orange;
+  overflow: hidden !important;
+}
+
+.landing-subtitle h2 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.8em !important;
+  text-align: center;
+  color: $color-blue;
+  margin-bottom: 40px;
+}
+
+
+.landing-rqs {
+    max-width: 320px !important;
+    padding: 0px;
+    margin-top: 100px;
+}
+
+.landing-rqs h2 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 2em !important;
+  color: $color-orange; 
+  text-align: center;
+}
+
+.landing-rqs p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em !important;
+  color: $color-black; 
+  text-align: left;
+}
+
+.landing-statements {    
+  margin: 50px;
+}
+
+.landing-statements-line {    
+  width: 80%; 
+  height: 2px; 
+  background: $color-blue; 
+  overflow: hidden;
+  margin-bottom: 50px;
+}
+
+.landing-statements h1 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5em !important;
+  color: $color-orange; 
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.landing-footer {
+  background-color: $color-black; 
+  padding: 20px;
+}
+
+.landing-footer-about a {
+  font-weight: normal;
+  font-size: 14px !important;
+  text-align: left;
+  color: $color-white;
+  overflow: hidden !important;
+}
+
+.ie9 img[src*=".svg"] {
+  width: 100%;
+}
+/* 2 */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  img[src*=".svg"] {
+    width: 100%;
+  }
+}

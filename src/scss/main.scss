@@ -6,3 +6,77 @@
           Engagelab
 \*------------------------------------------------------*/
 
+@import url(//fonts.googleapis.com/css?family=RobotoDraft&lang=en);
+
+@import "colors",
+        "../js/components/editMessagePanel/editMessagePanel",
+        "../js/components/export/export",
+        "../js/components/landing/landing",
+        "../js/components/archive/archive",
+        "../js/components/login/login",
+        "../js/components/join/join",
+        "../js/components/close/close",
+        "../js/components/feedMessage/feedMessage",
+        "../js/components/taskQuestion/taskQuestion",
+        "../js/components/sessioninfo/sessioninfo",
+        "../js/components/wall/wall";
+
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+}
+
+body {
+  margin:0;
+  padding:0;
+  font-family:'RobotoDraft', Arial, sans-serif;
+}
+
+a, img {
+  border :none !important;
+  outline: none !important;
+}
+
+.hr {
+  border: 0;
+  border-bottom: 1px solid $color-grey;
+}
+
+md-dialog {
+  min-width: 320px !important;
+}
+
+md-toolbar {
+  background-color: $color-blue !important;
+}
+
+md-backdrop.md-sidenav-backdrop {
+  display:none !important;
+}
+
+md-bottom-sheet {
+  z-index: 1001 !important;
+}
+
+.md-bottom-sheet-backdrop {
+  z-index: 1000 !important;
+}
+
+div:focus,
+p:focus,
+md-toolbar:focus,
+button:focus {
+  outline:0 !important;
+}
+
+.md-on {
+  background-color: $color-orange !important;
+}
+
+md-radio-button.md-default-theme.md-checked .md-off,
+md-radio-button.md-checked .md-off {
+  border-color: $color-orange !important;
+}

@@ -232,93 +232,101 @@ rename it to Talkwall
 
 * Project setup, platform and distribution
 	* landing page (needs edits OLE)
-	* CREATE -> login panel (google / facebook)
-		* auhtentication
-		* open last or create new (dialog as today)
-			* if new, slide open "new task" right panel
-			* if not, everything closed, with teacher's messages on board
-	* JOIN
-		* join pin dialog with nickname (only one nickname allowed)
+	* ~~CREATE -> login panel (google / facebook)~~
+		* ~~auhtentication~~
+		* ~~open last or create new (dialog as today)~~
+			* ~~if new, slide open "new task" right panel~~
+			* ~~if not, everything closed, with teacher's messages on board~~
+	* ~~JOIN~~
+		* ~~join pin dialog with nickname (only one nickname allowed)~~
 	* wall
-		* layout
-		* sidepanel-left
-			* "Messages" tab
-				* zoom
-					* larger side panel
-					* apply larger fonts
-				* message feed
-					* white footer to allow graphical position of the (+) button (so that it doesn't cover a message)
-					* latest message at the bottom (no auto scroll, keep position)
-					* message
-						* show text (3 lines that fits 140 characters)
-						* history (chips). chips have a fixed size, with "...". fit as many chips has possible on one line (+ '...' if it goes beyond)
-						* controllbar
-							* select (place on wall) / deselect (removes from wall)
-								* keep random placement around the center
-							* edit (should open the text in the edit pane)
-								* if not owner of the message, create a copy, inherit history and metadata, and appends to the message feed. keep originator message ID.
-							* delete (remove from list not from DB)
-						* selected message inherits 'light' orange background
-			* Add message button (+)
-				* position bottom left
-				* shows a bottom-sheet component
-				* slide open message feed if closed
-			* "Show screens" tab
-				* client list
-					* client
-						* standard icon (same but for the teacher -> crown)
-						* nickname
-						* select checkbox (selected -> display client's task wall same as teacher's task number)
-					* select all button checks all checkboxes (-> unselect all button, but keep the teacher)
-		* Add message bottom-sheet
-			* textarea fixed length 140 char
-			* check button
-				* adds a message to the feed and dismisses the bottom-sheet
-		* sidepanel-right ("slack style", one panel open at a time)
-			* ORGANIZER -> "Join with PIN" panel
-				* as today (dynamic update of participants count based on polling)
-			* ORGANIZER -> "Edit tasks" panel
-				* List of exisiting tasks (by default empty list)
-					* task has slide control to edit, delete
-					* delete only works if no messages for that task
-				* "Add task" panel (10 tasks max -> matching color palette for task background)
-					* Text input, background, submit (no message size selector)
-					* submit button adds/validates a task in the list above
-			* ORGANIZER -> "Close Talkwall" panel
-				* text that explaind the effects of closing 
-				* Clients receive an instruction to disconnect based on polling
-					* dialog thanking for participation
-					* ok, takes back to landing page
-				* Send email to organiser with link to URL (report page rich text or HTML)
-					* page [https://github.com/engagelab/talkwall/blob/master/export%20spec.md]
-		* message "on-wall"
-			* control
-				* select: highights message by setting a 'light orange' background
-				* edit: brings up message bottom-sheet with its content to edit
-				* remove: remove from wall (-> unhighlights in the feed)
-			* messages has fixed width, variable height to show all content
-				* all content should be visible so messages can be auto relocated
-		* top bar
-			* "message feed" button
-			* "screens" button (teacher only)
-			* next task button (if next task exists)
-				* teacher -> next wall also triggers all participant's apps
-				* student -> only affects his/her wall
-			* previous task button (if previous task exists)
-				* teacher -> previous wall also triggers all participant's apps
-				* student -> only affects his/her wall
+		* ~~layout~~
+		* ~~sidepanel-left~~
+			* ~~"Messages" tab~~
+				* ~~zoom~~
+					* ~~larger side panel~~
+					* ~~apply larger fonts~~
+				* ~~message feed~~
+					* ~~white footer to allow graphical position of the (+) button (so that it doesn't cover a message)~~
+					* ~~latest message at the bottom (no auto scroll, keep position)~~
+					* ~~message~~
+						* ~~show text (3 lines that fits 140 characters)~~
+						* ~~history (chips). chips have a fixed size, with "...". fit as many chips has possible on one line (+ '...' if it goes beyond)~~
+						* ~~controllbar~~
+							* ~~select (place on wall) / deselect (removes from wall)~~
+								* ~~keep random placement around the center~~
+							* ~~edit (should open the text in the edit pane)~~
+								* ~~if not owner of the message, create a copy, inherit history and metadata, and appends to the message feed. keep originator message ID.~~
+							* ~~delete (remove from list not from DB)~~
+						* ~~selected message inherits 'light' orange background~~
+			* ~~Add message button (+)~~
+				* ~~position bottom left~~
+				* ~~shows a bottom-sheet component~~
+				* ~~slide open message feed if closed~~
+			* ~~"Show screens" tab~~
+				* ~~client list~~
+					* ~~client~~
+						* ~~standard icon (same but for the teacher -> crown)~~
+						* ~~nickname~~
+						* ~~select checkbox (selected -> display client's task wall same as teacher's task number)~~
+					* ~~select all button checks all checkboxes (-> unselect all button, but keep the teacher)~~
+		* ~~Add message bottom-sheet~~
+			* ~~textarea fixed length 140 char~~
+			* ~~check button~~
+				* ~~adds a message to the feed and dismisses the bottom-sheet~~
+		* ~~sidepanel-right ("slack style", one panel open at a time)~~
+			* ~~ORGANIZER -> "Join with PIN" panel~~
+				* ~~as today (dynamic update of participants count based on polling)~~
+			* ~~ORGANIZER -> "Edit tasks" panel~~
+				* ~~List of exisiting tasks (by default empty list)~~
+					* ~~task has slide control to edit, delete~~
+					* ~~delete only works if no messages for that task~~
+				* ~~"Add task" panel (10 tasks max -> matching color palette for task background)~~
+					* ~~Text input, background, submit (no message size selector)~~
+					* ~~submit button adds/validates a task in the list above~~
+			* ~~ORGANIZER -> "Close Talkwall" panel~~
+				* ~~text that explaind the effects of closing~~
+				* ~~Clients receive an instruction to disconnect based on polling~~
+					* ~~dialog thanking for participation~~
+					* ~~ok, takes back to landing page~~
+				* ~~Send email to organiser with link to URL (report page rich text or HTML)~~
+					* ~~page [https://github.com/engagelab/talkwall/blob/master/export%20spec.md]~~
+		* ~~message "on-wall"~~
+			* ~~control~~
+				* ~~select: highights message by setting a 'light orange' background~~
+				* ~~edit: brings up message bottom-sheet with its content to edit~~
+					* ~~(should open the text in the edit pane)~~
+					* ~~if not owner of the message (revision 01/06):~~
+						 * ~~create a copy (clone and get a new message id)~~
+						 * ~~inherit history and metadata~~
+						 * ~~inherit position x. y~~
+						 * ~~appends to the message feed.~~
+						 * ~~place the new maessage on board on previous position~~
+						 * ~~remove origin message from board~~
+				* ~~remove: remove from wall (-> unhighlights in the feed)~~
+			* ~~messages has fixed width, variable height to show all content~~
+				* ~~all content should be visible so messages can be auto relocated~~
+		* ~~top bar~~
+			* ~~"message feed" button~~
+			* ~~"screens" button (teacher only)~~
+			* ~~next task button (if next task exists)~~
+				* ~~teacher -> next wall also triggers all participant's apps~~
+				* ~~student -> only affects his/her wall~~
+			* ~~previous task button (if previous task exists)~~
+				* ~~teacher -> previous wall also triggers all participant's apps~~
+				* ~~student -> only affects his/her wall~~
 			NOTE when moving from one task to the next: 
-				* when interaction occurs (drag, write, scroll, etc -> no polling)
-				* background animation between questions
-			* "hamburger" button (teacher only)
-	* PHONE version
-		* JOIN only
-		* add messages to feed
-		* navigate between tasks
-		* edit, delete own messages
-			* edit not own creates new copy with history (same as desktop)
-		* wall hidden
-		* right-hand menu hidden
+				* ~~when interaction occurs (drag, write, scroll, etc -> no polling)~~
+				* ~~background animation between questions~~
+			* ~~"hamburger" button (teacher only)~~
+	* ~~PHONE version~~
+		* ~~JOIN only~~
+		* ~~add messages to feed~~
+		* ~~navigate between tasks~~
+		* ~~edit, delete own messages~~
+			* ~~edit not own creates new copy with history (same as desktop)~~
+		* ~~wall hidden~~
+		* ~~right-hand menu hidden~~
 * Test
 * Bug fixing
 

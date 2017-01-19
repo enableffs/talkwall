@@ -1,0 +1,48 @@
+<md-dialog aria-label="Login dialog" ng-cloak style="z-index: 200; height: 300px;">
+
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Login</h2>
+				<span flex></span>
+				<md-button aria-label="Cancel login" class="md-icon-button" ng-click="loginC.cancel()">
+					<md-icon md-svg-src="images/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content flex layout="column">
+				<md-button class="loginMenuItem" ng-click="loginC.answer('/auth/google')" aria-label="Login med Google">
+					<div layout="row" layout-padding>
+						<div style="width: 40px;">
+							<img ng-src="images/google.svg">
+						</div>
+						<div layout="row">
+							<div layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_GOOGLE' | translate }}</div>
+						</div>
+					</div>
+				</md-button>
+
+				<md-button class="loginMenuItem" ng-click="loginC.answer('/auth/facebook')" aria-label="Login med Facebook">
+					<div layout="row" layout-padding>
+						<div style="width: 40px;">
+							<img ng-src="images/facebook.svg">
+						</div>
+						<div layout="row">
+							<div layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_FACEBOOK' | translate }}</div>
+						</div>
+					</div>
+				</md-button>
+
+				<md-button class="loginMenuItem" ng-click="loginC.hide()" disabled="true" aria-label="Login med Feide">
+					<div layout="row" layout-padding>
+						<div style="width: 40px;">
+							<img ng-src="images/nokkelhull-48px.png" width="40px">
+						</div>
+						<div layout="row">
+							<div layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_FEIDE' | translate }}</div>
+						</div>
+					</div>
+				</md-button>
+
+		</md-dialog-content>
+
+</md-dialog>

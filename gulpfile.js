@@ -17,7 +17,8 @@ var gulp = require('gulp'),
     tslint = require("gulp-tslint"),
     cssnano = require('gulp-cssnano'),
     ts = require('gulp-typescript'),
-    del = require('del');
+    del = require('del'),
+    typedoc = require("gulp-typedoc");
 
 var config = {
     project: '/',
@@ -29,7 +30,8 @@ var config = {
         scss: 'src/scss/**/*.scss',
         css: 'src/css',
         fonts: 'src/fonts/**',
-        partials: 'src/partials/**/*.html',
+        partials: 'src/js/components/**/*.html',
+        partials_sass: 'src/js/components/**/*.scss',
         images: 'src/images/**',
         languages: 'src/languages/**'
     },
@@ -40,9 +42,30 @@ var config = {
         fonts: 'dist/fonts/',
         images: 'dist/images/',
         languages: 'dist/languages/',
-        partials: 'dist/partials'
+        partials: 'dist/js/components/'
     }
 };
+
+var sassOptions = {
+    errLogToConsole: true,
+    outputStyle: 'expanded'
+};
+
+/*
+var tsProject = ts.createProject({
+    "compilerOptions": {
+        "declaration": false,
+        "sourceMap": true,
+        "module": "commonjs",
+        "target": "ES5",
+        "outFile": 'output.js'
+    },
+    "exclude": [
+        "node_modules",
+        "wwwroot"
+    ]
+});
+*/
 
 function showError (error) {
     console.log(error.toString());
@@ -58,48 +81,42 @@ gulp.task('clean:dist', function () {
 
 gulp.task('sass', function() {
     return gulp.src(config.src.scss)
-        .pipe(sass({
-                style: 'expanded',
-                includePaths: [require('node-normalize-scss').includePaths, config.bower+'susy/sass']
-            })
-            .on('error', function(err){
-                browserSync.notify(err.message, 10000);
-                this.emit('end');
-            })
-            .on('error', sass.logError)
-        )
+        .pipe(sass(sassOptions).on('error', sass.logError))
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
         }))
         .pipe(gulp.dest(config.src.css))
-        .pipe(browserSync.reload({stream: true}))
-        .pipe(cssnano())
-        .pipe(rename({
-            suffix: '.min'
-        }))
-        .pipe(gulp.dest(config.dist.css))
-        .pipe(sass({errLogToConsole: true}))
+        .pipe(gulp.dest(config.dist.css));
 });
 
 
 gulp.task("ts-lint", function() {
     return gulp.src(config.src.ts)
-        .pipe(tslint())
-        .pipe(tslint.report("verbose"))
+        .pipe(tslint({
+            formatter: "prose"
+        }))
+        .pipe(tslint.report({
+            summarizeFailureOutput: true
+        }))
 });
 
 
 gulp.task("typescripts", function () {
     return gulp.src(config.src.ts)
-        .pipe(ts(tsProject))
+        .pipe(ts({
+            "noImplicitAny": false,
+            "outFile": "output.js",
+            "target": "es5",
+            "sourceMap": false
+        }))
         .pipe(gulp.dest('src/js/'));
 });
 
 
 gulp.task('javascripts', function() {
     return gulp.src('src/js/output.js')
-        .pipe(concat('main.min.js'))
+        .pipe(rename('main.min.js'))
         .pipe(gulp.dest(config.dist.js));
 });
 
@@ -107,13 +124,18 @@ gulp.task('javascripts', function() {
 gulp.task('images', function() {
     return gulp.src(config.src.images)
         .pipe(newer(config.dist.images))
-        .pipe(imagemin())
+        //.pipe(imagemin())
         .pipe(gulp.dest(config.dist.images));
 });
 
 gulp.task('copy-index-html', function() {
     return gulp.src('src/index_dist.html')
         .pipe(rename("index.html"))
+        .pipe(gulp.dest(config.dist.root));
+});
+
+gulp.task('copy-json', function() {
+    return gulp.src('src/*.json')
         .pipe(gulp.dest(config.dist.root));
 });
 
@@ -127,10 +149,6 @@ gulp.task('copy-partials-html', function() {
         .pipe(gulp.dest(config.dist.partials));
 });
 
-gulp.task('copy-styles', function () {
-    return gulp.src(config.src.css).pipe(gulp.dest(config.dist.css))
-});
-
 gulp.task('copy-languages', function () {
     return gulp.src(config.src.languages)
         .pipe(gulp.dest(config.dist.languages))
@@ -141,15 +159,6 @@ gulp.task('copy-fonts', function () {
     return gulp.src(config.src.fonts)
         .pipe(gulp.dest(config.dist.fonts))
 });
-
-var tsProject = ts.createProject({
-    declaration: false,
-    sortOutput: true,
-    module: "commonjs",
-    target: "ES5",
-    out: 'output.js'
-});
-
 
 
 gulp.task('svg-store', function () {
@@ -190,10 +199,11 @@ gulp.task('watch', function() {
 });
 
 gulp.task('watchreload', function() {
-    gulp.watch('./www/scss/*.scss', gulp.series('visitrackersass'));
-    gulp.watch('./www/css/main*.css').on('change', browserSync.reload);
-    gulp.watch('./www/js/**/*.js').on('change', browserSync.reload);
-    gulp.watch(['./www/partials/*.html', './www/js/components/*.html']).on('change', browserSync.reload);
+    gulp.watch('./src/scss/*.scss', gulp.series('visitrackersass'));
+    gulp.watch('./src/js/components/**/*.scss', gulp.series('visitrackersass'));
+    gulp.watch('./src/css/main*.css').on('change', browserSync.reload);
+    gulp.watch('./src/js/**/*.js').on('change', browserSync.reload);
+    gulp.watch(['./src/js/components/*.html', './www/js/components/*.html']).on('change', browserSync.reload);
 });
 
 
@@ -210,7 +220,20 @@ gulp.task('browserSync', function() {
     });
 });
 
+gulp.task("typedoc", function() {
+    return gulp
+        .src(["src/js/**/*.ts"])
+        .pipe(typedoc({
+            module: "commonjs",
+            target: "es5",
+            out: "docs/",
+            name: "Talkwall client"
+        }))
+        ;
+});
 
-gulp.task('dev', gulp.series('sass', 'ts-lint', 'typescripts', 'javascripts'));
+
+gulp.task('css', gulp.series('sass'));
+gulp.task('dev', gulp.series('sass', 'typescripts', 'javascripts'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'ts-lint', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-styles', 'copy-languages', 'copy-fonts'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
