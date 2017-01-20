@@ -12,6 +12,7 @@ import {UtilityService} from "./utilityservice";
 import {URLService} from "./urlservice";
 import {CloseController} from "../components/close/close";
 import {LogType} from "../models/models";
+import IToastService = angular.material.IToastService;
 
 export interface IDataService {
     /**
@@ -42,7 +43,7 @@ export interface IDataService {
      * @param sFunc success callback
      * @param eFunc error callback
      */
-    requestLogs(wall_id: string, sFunc: (success: models.Wall[]) => void, eFunc: (error: {}) => void): void;
+    requestLogs(data: { wall_id: string, datetime: Date, nvivoTime: Date, nvivoVideoLength: Date }, sFunc: (success: models.Wall[]) => void, eFunc: (error: {}) => void): void;
     /**
      * get last existing from services wall if any.
      * @param wallId string
@@ -166,6 +167,11 @@ export interface IDataService {
      */
     refreshBoardMessages(): void;
     /**
+     * show a toast pop up with text as message
+     * @param text
+     */
+    showToast(text: string): void;
+    /**
      * get the wall to show in export format
      * @param wallId the wall ID string
      * @param sFunc success callback
@@ -183,7 +189,7 @@ let constants = TalkwallConstants.Constants;
 
 export class DataService implements IDataService {
     static $inject = ['$http', '$window', '$routeParams', '$rootScope', '$location', '$interval', '$timeout', '$mdDialog', '$translate',
-        'UtilityService', 'URLService', '$mdMedia', 'TalkwallConstants'];
+        'UtilityService', 'URLService', '$mdMedia', '$mdToast'];
 
     /*  New Version 3 data structure to improve binding between multiple views and this DataService */
 
@@ -236,7 +242,8 @@ export class DataService implements IDataService {
                  private $translate: angular.translate.ITranslateService,
                  private utilityService: UtilityService,
                  private urlService: URLService,
-                 private $mdMedia: IMedia) {
+                 private $mdMedia: IMedia,
+                 private $mdToast: IToastService) {
 
         this.data = {
             user: null,
@@ -277,6 +284,10 @@ export class DataService implements IDataService {
             this.noTag = translation;
         });
 
+    }
+
+    showToast(text: string): void {
+        this.$mdToast.show(this.$mdToast.simple().textContent(text).hideDelay(2000));
     }
 
     logAnEvent(type: LogType, id: string, diff: {x: number, y: number}) {
@@ -460,8 +471,8 @@ export class DataService implements IDataService {
     }
 
     // For authorised users only
-    requestLogs(wall_id: string, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
-        this.$http.get(this.urlService.getHost() + '/logs' + wall_id)
+    requestLogs(data: { wall_id: string, datetime: Date, nvivoTime: Date, nvivoVideoLength: Date }, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
+        this.$http.get(this.urlService.getHost() + '/logs' + data.wall_id + '/' + data.datetime + '/' + data.nvivoTime + '/' + data.nvivoVideoLength)
             .then((result) => {
                 let resultKey = 'result';
                 console.log('--> DataService: requestLogs success');
@@ -674,7 +685,13 @@ export class DataService implements IDataService {
                 }
             }, (error) => {
                 console.log('Poll FAILED at ' + Date.now().toString());
-                if (error.status === 401) {
+                if (error.status === 503) {
+                    this.showToast('Server very busy..');
+                    this.stopPolling();
+                    this.$timeout(() => {
+                        this.startPolling();
+                    }, 5000 + Math.random()*10);
+                } else if (error.status === 401) {
                     this.data.status.authorised = false;
                     this.stopPolling();
                     this.$window.location.href = this.urlService.getHost() + '/#/';

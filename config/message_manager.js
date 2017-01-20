@@ -379,7 +379,18 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
 Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
     
     if (typeof this.data.walls[wall_id] === 'undefined') {
-        return null;
+        return {
+            totalOnTalkwall: this.data.total_talkwall_connections,
+            status: {
+                last_update: Date.now(),
+                last_access: null,
+                teacher_current_question: 'none',
+                connected_teachers: {},
+                connected_students: {}
+            },
+            created: {},
+            updated: {}
+        }
     }
 
     var created = {};

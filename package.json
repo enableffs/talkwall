@@ -23,6 +23,7 @@
     "angular-route": "1.5.10",
     "angular-translate": "2.13.1",
     "angular-translate-loader-static-files": "2.13.1",
+    "angular-moment-picker": "0.9.x",
     "async": "2.1.2",
     "bcrypt": "0.8.7",
     "body-parser": "1.15.2",

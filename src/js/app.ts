@@ -25,13 +25,15 @@ import {OrganiserController} from "./components/organiser/organiser";
 import {EditMessageController} from "./components/editMessagePanel/editMessagePanel";
 import {LogController} from "./components/logs/logs";
 import {runApp} from "./app.run";
+import {NvivoLogController} from "./components/nvivologs/nvivologs";
 
 let dependencies = [
     'ngRoute',
     'ngAria',
     'ngAnimate',
     'pascalprecht.translate',
-    'ngMaterial'
+    'ngMaterial',
+    'moment-picker'
 ];
 
 /**
@@ -66,4 +68,5 @@ export let app = angular.module('TalkwallApp', dependencies)
     .controller('OrganiserController', OrganiserController)
     .controller('EditMessageController', EditMessageController)
     .controller('LogController', LogController)
+    .controller('NvivoLogController', NvivoLogController)
     .run(runApp);

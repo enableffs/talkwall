@@ -19,6 +19,9 @@ export function configApp($translateProvider: angular.translate.ITranslateProvid
         .when('/logs', {
             templateUrl : 'js/components/logs/logs.html'
         })
+        .when('/nvivo', {
+            templateUrl : 'js/components/nvivologs/nvivologs.html'
+        })
         .when('/organiser', {
             templateUrl : 'js/components/organiser/organiser.html'
         })
@@ -82,30 +85,28 @@ export function configApp($translateProvider: angular.translate.ITranslateProvid
         'A700': '#bfbfbf',
         'hue-3': '#ffffff',
     };
-    $mdThemingProvider
+    /*$mdThemingProvider
         .definePalette('customBackground',
             customBackground);
 
     $mdThemingProvider.theme('default')
         //.primaryPalette('customPrimary')
         .backgroundPalette('customBackground');
-
+*/
 
     let lang: string = null;
-    let languagesKey: string = 'languages';
-    let langKey: string = 'lang';
-    if (navigator[languagesKey] !== null) {
-        lang = navigator[languagesKey][0];
+    if (navigator['language'] !== null) {
+        lang = navigator['language'][0];
     } else {
         lang = navigator.language || navigator['userLanguage'];
     }
 
     if (lang.indexOf('no') > -1 || lang.indexOf('nb') > -1) {
         $translateProvider.preferredLanguage('no');
-        sessionStorage[langKey] = 'no';
+        sessionStorage['lang'] = 'no';
     } else {
         $translateProvider.preferredLanguage('en');
-        sessionStorage[langKey] = 'en';
+        sessionStorage['lang'] = 'en';
     }
 }
 configApp.$inject = ['$translateProvider', '$httpProvider', '$routeProvider', '$mdThemingProvider'];

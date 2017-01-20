@@ -467,8 +467,11 @@ export class LogController {
             dayRects.filter( isRectDataInCsvData )
                 .attr( "class", getRectClass )
                 .select( "title" )
-                .text( getRectTitle );
-        }
+                .text( getRectTitle )
+                .on('click', function( d: any, i: any){
+                    console.log('data: '+ d + ' i: ' + i);
+                });
+        };
 
         /**
          * Transform the given CSV data, structured as an array of objects, into a D3 nested map.

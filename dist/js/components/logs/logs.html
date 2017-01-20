@@ -39,7 +39,11 @@
                                 </md-button>
                             </md-list-item>
 
-                            <md-content class="calendarDisplay" layout="column"></md-content>
+                            <div>
+                                <md-content  layout="column" style="max-height: 400px; max-width: 1000px;">
+                                    <div class="calendarDisplay"></div>
+                                </md-content>
+                            </div>
 
                             <md-list-item class="md-2-line organiser-nickname" layout="row" layout-align="space-between center" ng-show="logC.wall !== null" >
                                 <md-input-container class="md-icon-float md-block" flex>
