@@ -272,7 +272,7 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  */
 Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
 
-    // Note that someone is using this wall
+    // Note that someone is using this wall, or return if it has been removed
     if (this.data.walls.hasOwnProperty(wall_id)) {
         this.data.walls[wall_id].status.last_access = Date.now();
     } else {
@@ -299,6 +299,22 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
 
     // Make note of my changes in other users' lists on the same question
     switch(controlString) {
+
+       /* // In this case an Organiser is deleting someone else's message
+        case 'delete':
+            for (var user3 in thisQuestion.updated) {
+
+                // If the nickname is not our own, make a notification
+                if (user3 !== nickname && thisQuestion.updated.hasOwnProperty(user3)) {
+                    userQueue = thisQuestion.updated[user3];
+                    editUpdate(userQueue);
+
+                    // Update may already have position data, so mark it now as mixed data
+                    userQueue[updated_message._id].updateType
+                        = userQueue[updated_message._id].updateType === 'position' ? 'mixed' : 'edit';
+                }
+            }
+            break;*/
 
         // Only the originator of a message can make a 'create' ( a new message )
         case 'create':

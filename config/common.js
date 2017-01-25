@@ -10,6 +10,24 @@ exports.Constants = {
     TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS: 60   // 600 = 10 minutes   // How often to check for the idle period expiry
 };
 
+exports.LogType = {
+    mc: 'CreateMessage',
+    me: 'EditMessage',
+    mp: 'PinMessage',
+    mup: 'UnPinMessage',
+    md: 'DeleteMessage',
+    mh: 'HighlightMessage',
+    muh: 'UnHighlightMessage',
+    mm: 'MoveMessage',
+    tc: 'CreateTask',
+    te: 'EditTask',
+    td: 'DeleteTask'
+};
+
+exports.trackedOrganiserWalls = [
+    'richardn@uio.im'
+];
+
 exports.StatusMessages = {
     PING_OK: {
         status: 200,

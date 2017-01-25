@@ -113,3 +113,12 @@ md-content.md-default-theme.md-hue-3 {
 .md-button:not([disabled]).md-fab.md-focused, .md-button:not([disabled]).md-raised.md-focused, .md-button:not([disabled]).md-fab:hover {
   background-color: #AA6600;
 }
+
+@media only screen and (max-width : 800px) {
+  .landing-video {
+    iframe {
+      width: 356px;
+      height: 200px;
+    }
+  }
+}

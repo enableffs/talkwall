@@ -13,7 +13,7 @@ export interface IOrganiserItemController {
 }
 
 class OrganiserItemController implements IOrganiserItemController {
-	static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window'];
+	static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window', '$location'];
 
 	public wall: Wall;
 	private showControls: boolean = false;
@@ -27,7 +27,8 @@ class OrganiserItemController implements IOrganiserItemController {
 		public dataService: DataService,
 		public $document: ng.IDocumentService,
 		public utilityService: UtilityService,
-		public $window: ng.IWindowService) {
+		public $window: ng.IWindowService,
+		public $location: ng.ILocationService) {
 
 		this.wall = isolatedScope.data;
 		this.timeFromNow = UtilityService.getFormattedDateTimeFromNow(this.wall.lastOpenedAt);
@@ -39,6 +40,10 @@ class OrganiserItemController implements IOrganiserItemController {
 		});
 
 	};
+
+	organiserFilter = (item: any) => {
+	    return item.nickname !== this.dataService.data.user.nickname;
+    };
 
 	toggleShowControls(): void {
 		this.showControls = !this.showControls;
@@ -65,6 +70,10 @@ class OrganiserItemController implements IOrganiserItemController {
 
 	shareWall(): void {
 		this.showControls = false;
+	}
+
+	exportWall(): void {
+		this.$location.url('/export?wid=' + this.wall._id);
 	}
 
 	deleteWall(): void {

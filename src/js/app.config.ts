@@ -6,7 +6,7 @@
  * @param $mdThemingProvider Used to set Angular Material theme settings
  */
 export function configApp($translateProvider: angular.translate.ITranslateProvider, $httpProvider: ng.IHttpProvider,
-                          $routeProvider: ng.route.IRouteProvider, $mdThemingProvider: ng.material.IThemingProvider) {
+                          $routeProvider: ng.route.IRouteProvider, $mdThemingProvider: ng.material.IThemingProvider, momentPickerProvider: any) {
 
     // Routes
     $routeProvider.
@@ -94,6 +94,32 @@ export function configApp($translateProvider: angular.translate.ITranslateProvid
         .backgroundPalette('customBackground');
 */
 
+    momentPickerProvider.options({
+        /* Picker properties */
+        locale:        'en',
+        format:        'L LTS',
+        minView:       'decade',
+        maxView:       'minute',
+        startView:     'year',
+        autoclose:     true,
+        today:         false,
+        keyboard:      false,
+
+        /* Extra: Views properties */
+        leftArrow:     '&larr;',
+        rightArrow:    '&rarr;',
+        yearsFormat:   'YYYY',
+        monthsFormat:  'MMM',
+        daysFormat:    'D',
+        hoursFormat:   'HH',
+        minutesFormat: 'mm', //moment.localeData().longDateFormat('LT').replace(/[aA]/, ''),
+        secondsFormat: 'ss',
+        minutesStep:   1,
+        secondsStep:   1
+    });
+
+
+
     let lang: string = null;
     if (navigator['language'] !== null) {
         lang = navigator['language'][0];
@@ -109,4 +135,4 @@ export function configApp($translateProvider: angular.translate.ITranslateProvid
         sessionStorage['lang'] = 'en';
     }
 }
-configApp.$inject = ['$translateProvider', '$httpProvider', '$routeProvider', '$mdThemingProvider'];
+configApp.$inject = ['$translateProvider', '$httpProvider', '$routeProvider', '$mdThemingProvider', 'momentPickerProvider'];

@@ -11,6 +11,8 @@ var User = require('../models/user');
 var Question = require('../models/question');
 var Message = require('../models/message');
 var Log = require('../models/log');
+var moment = require('moment');
+var stringify = require('csv-stringify');
 
 // Given an integer range, generate a random number within it
 function randomNumberInRange(min, max) {
@@ -99,32 +101,52 @@ exports.createWall = function(req, res) {
     while(redisClient.exists(newPin) === 1) {
         newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
     }
-
-    // Create a new Wall model and include the pin
-    var newWall = new Wall({
-        pin: newPin,
-        label: req.body.label,
-        theme: req.body.theme,
-        createdBy: req.user.id,
-        organisers: [req.user.id]
-    });
-
-    newWall.save(function(error, wall) {
-        if (error) {
+    var trackLogs = false;
+    User.findOne({ _id: req.user.id}).lean().exec(function(error, user) {
+        if(error) {
             res.status(common.StatusMessages.CREATE_ERROR.status).json({
                 message: common.StatusMessages.CREATE_ERROR.message, result: error});
         }
-        else {
-            // Save the new pin and wall ID to redis
-            redisClient.set(newPin, wall.id.toString());
-            redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
-            //mm.setup(wall._id, req.user.nickname);
-            res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
-                message: common.StatusMessages.CREATE_SUCCESS.message,
-                result: wall
-            });
-        }
-    })
+
+        trackLogs = common.trackedOrganiserWalls.indexOf(user.defaultEmail) > -1;
+
+        // Create a new Wall model and include the pin
+        var newWall = new Wall({
+            pin: newPin,
+            label: req.body.label,
+            theme: req.body.theme,
+            createdBy: req.user.id,
+            organisers: [req.user.id],
+            trackLogs: trackLogs
+        });
+
+        newWall.save(function(error, wall) {
+            if (error) {
+                res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                    message: common.StatusMessages.CREATE_ERROR.message, result: error});
+            }
+            else {
+                // Save the new pin and wall ID to redis
+                redisClient.set(newPin, wall.id.toString());
+                redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
+                //mm.setup(wall._id, req.user.nickname);
+
+                Wall.populate(newWall, { path: "organisers" }, function(err, wallWithOrganisers) {
+                    if(error) {
+                        res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                            message: common.StatusMessages.CREATE_SUCCESS.message,
+                            result: wall
+                        });
+                    }
+                    res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                        message: common.StatusMessages.CREATE_SUCCESS.message,
+                        result: wallWithOrganisers
+                    });
+                });
+            }
+        })
+    });
+
 };
 
 /**
@@ -181,6 +203,9 @@ exports.updateWall = function(req, res) {
                 redisClient.set(newPin, wall._id.toString());
                 wall.closed = false;
             }
+            wall.label = req.body.wall.label;
+            wall.theme = req.body.wall.theme;
+            wall.deleted = req.body.wall.deleted;
             mm.statusUpdate(wall._id, 'none');
             wall.save();
             res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
@@ -481,7 +506,8 @@ exports.getWall = function(req, res) {
                         }
                         user.save();
                         res.status(common.StatusMessages.GET_SUCCESS.status).json({
-                            message: common.StatusMessages.GET_SUCCESS.message, result: wall
+                            message: common.StatusMessages.GET_SUCCESS.message,
+                            result: wall
                         });
                     }
                 });
@@ -724,6 +750,40 @@ exports.updateMessages = function(req, res) {
 
 };
 
+/**
+ * @api {delete} /message Delete a message
+ * @apiName deleteMessage
+ * @apiGroup authorised
+ *
+ */
+/*
+
+exports.deleteMessage = function(req, res) {
+
+    if (typeof req.params.message_id === 'undefined' || req.params.message_id == null ||
+        typeof req.params.nickname === 'undefined' || req.params.nickname == null ||
+        typeof req.params.wall_id === 'undefined' || req.params.wall_id == null) {
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Message.update(
+        { _id : req.params.message_id },
+        { deleted : true },
+        { new: true } );
+
+    query.exec(function(error, updated_message) {
+        if(error) {
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
+        } else {
+            mm.postUpdate(req.params.wall_id, updated_message.question_id, req.params.nickname, updated_message, 'delete', true);
+            res.status(common.StatusMessages.DELETE_SUCCESS.status).json({
+                message: common.StatusMessages.DELETE_SUCCESS.message, result: wall});
+        }
+    })
+};
+*/
 
 
 exports.createTestUser = function() {
@@ -783,4 +843,97 @@ exports.poll = function(req, res) {
     res.status(common.StatusMessages.POLL_SUCCESS.status)
         .json({message: common.StatusMessages.POLL_SUCCESS.message, result: update});
 
+};
+
+
+
+/**
+ * @api {get} /logs Get Logs
+ * @apiName getLogs
+ * @apiGroup authorised
+ *
+ * @apiParam {String} id ID of the wall to get logs for
+ *
+ * @apiSuccess {log[]} log object array
+ */
+exports.getLogs = function(req, res) {
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null ||
+        typeof req.params.startdatetime === 'undefined' || req.params.startdatetime == null ||
+        typeof req.params.enddatetime === 'undefined' || req.params.enddatetime == null ||
+        typeof req.params.timelinetime === 'undefined' || req.params.timelinetime == null ||
+        typeof req.params.selectedtypes === 'undefined' || req.params.selectedtypes == null) {
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var selectedTypes = JSON.parse(req.params.selectedtypes);
+
+    var query = Wall.findOne({
+        _id : req.params.wall_id
+    }).lean();
+
+    query.exec(function(error, wall) {
+        if(error) {
+            res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message, result: error});
+        }
+        else if (wall !== null) {
+            var question_ids = [];
+            var start = new Date(parseInt(req.params.startdatetime));
+            var end = new Date(parseInt(req.params.enddatetime));
+            wall.questions.forEach(function(question) {
+                question_ids.push(question._id);
+            });
+            var logQuery = Log.find({
+                'q_id' : { $in: question_ids },
+                'type' : { $in: selectedTypes },
+                'stamp' : { $gte: start, $lt: end }
+            }).lean();
+            logQuery.exec(function(error, logs) {
+                if(error) {
+                    res.status(common.StatusMessages.GET_ERROR.status).json({
+                        message: common.StatusMessages.GET_ERROR.message, result: error});
+                } else if (logs !== null) {
+
+                    var data = '';
+                    var diff = {x: '', y: ''};
+                    var columns = {
+                        eventTime: 'Event time',
+                        minsIntoSession: 'Minutes into session',
+                        eventType: 'Event type',
+                        nickname: 'Nickname',
+                        diffX: 'Diff X',
+                        diffY: 'Diff Y',
+                        itemId: 'Message or Question ID'
+                    };
+                    var stringifier = stringify({ header: true, columns: columns, delimiter: ',' });
+
+                    res.setHeader('Content-disposition', 'attachment; filename=\"talkwall-logs-' + req.params.startdatetime + '.csv\"');
+                    res.setHeader('Content-type', 'text/csv');
+                    res.charset = 'UTF-8';
+
+                    stringifier.on('readable', function(){
+                        while(row = stringifier.read()){
+                            data += row;
+                        }
+                    });
+
+                    stringifier.on('finish', function(){
+                        res.send(data);
+                    });
+
+                    logs.forEach( function(log) {
+                        var relativeTime = moment(parseInt(req.params.timelinetime)).add(moment(log['stamp'], moment.ISO_8601).diff(moment(parseInt(req.params.startdatetime)))).format('HH:mm:ss');
+                        if (typeof log.diff !== 'undefined' && log.diff !== null) {
+                            diff.x = log.diff.x;
+                            diff.y = log.diff.y;
+                        }
+                        stringifier.write([ moment(log.stamp).format(), relativeTime, common.LogType[log.type], log.nick, diff.x, diff.y, log.itemid ]);
+                    });
+
+                    stringifier.end();
+                }
+            })
+        }
+    })
 };

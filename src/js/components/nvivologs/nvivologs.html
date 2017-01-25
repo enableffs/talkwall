@@ -3,6 +3,8 @@
 
         <div ng-style="{'width': windowWidth+'px', 'background-color': '#00BCD4'}" style="position: relative;" autoresize="">
 
+            <div class="organiser-overlay"></div>
+
             <div class="organiser-clouds">
                 <img src="../images/cloud.svg">
             </div>
@@ -27,7 +29,7 @@
 
                     <div class="log-content">
                         <span ng-show="nvivoC.errorString !== ''">{{nvivoC.errorString}}</span>
-                        <md-list flex="">
+                        <md-list flex="" style="width: 600px;">
 
                             <md-list-item class="md-2-line organiser-nickname" layout="row" layout-align="space-between center" >
                                 <md-input-container class="md-icon-float md-block" flex>
@@ -38,30 +40,72 @@
                                     <md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
                                 </md-button>
                             </md-list-item>
+                            <md-divider></md-divider>
 
+                            <md-list-item class="md-2-line organiser-nickname" layout="row" ng-show="nvivoC.wall !== null" >
 
-                            <md-list-item class="md-2-line organiser-nickname" layout="row" layout-align="space-between center" ng-show="nvivoC.wall !== null" >
-                                <p>{{::'NVIVO_TIMESTRING' | translate}}</p>
-                                <mdp-date-picker mdp-placeholder="Date" ng-model="nvivoC.data.datetime"></mdp-date-picker>
-                                <mdp-time-picker ng-model="nvivoC.data.datetime"></mdp-time-picker>
+                                <div layout="row" >
+                                    <md-input-container>
+                                        <label>{{::'NVIVO_DATETIMESTRING' | translate}}</label>
+                                        <input ng-model="nvivoC.data.startDateTime" moment-picker format="YYYY-MM-DD HH:mm:ss" placeholder="Select a date and time...">
+                                    </md-input-container>
+
+                                    <md-input-container>
+                                        <label>{{::'NVIVO_TIMESPANVALUE' | translate}}</label>
+                                        <input ng-model="nvivoC.data.timelineDateTime" moment-picker format="HH:mm:ss">
+                                    </md-input-container>
+
+                                    <md-input-container>
+                                        <label>{{::'NVIVO_CLIPLENGTH' | translate}}</label>
+                                        <input ng-model="nvivoC.data.videoLength" moment-picker format="HH:mm:ss">
+                                    </md-input-container>
+                                </div>
+
                             </md-list-item>
                             <md-divider></md-divider>
 
                             <md-list-item class="md-2-line organiser-nickname" layout="row" layout-align="space-between center" ng-show="nvivoC.wall !== null" >
-                                <p>{{::'NVIVO_TIMESPANVALUE' | translate}}</p>
-                                <mdp-time-picker ng-model="nvivoC.data.nvivoTime"></mdp-time-picker>
-                            </md-list-item>
-                            <md-divider></md-divider>
-
-                            <md-list-item class="md-2-line organiser-nickname" layout="row" layout-align="space-between center" ng-show="nvivoC.wall !== null" >
-                                <p>{{::'NVIVO_CLIPLENGTH' | translate}}</p>
-                                <mdp-time-picker ng-model="nvivoC.data.nvivoVideoLength"></mdp-time-picker>
-                            </md-list-item>
-                            <md-divider></md-divider>
-
-                            <md-list-item class="md-2-line organiser-nickname" layout="row" layout-align="space-between center" ng-show="nvivoC.wall !== null" >
-                                <md-button aria-label="Submit to find this wall ID" class="organiser-saveNicknameButton" ng-click="nvivoC.requestLogs()">
-                                    <md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
+                                <div layout="column" style="padding: 10px;">
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.mc" aria-label="Create Message">
+                                        Create Message
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.me" aria-label="Edit Message">
+                                        Edit Message
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.md" aria-label="Delete Message">
+                                        Delete Message
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.mm" aria-label="Move Message">
+                                        Move Message
+                                    </md-checkbox>
+                                </div>
+                                <div layout="column" style="padding: 10px;">
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.mp" aria-label="Pin Message">
+                                        Pin Message
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.mup" aria-label="UnPin Message">
+                                        UnPin Message
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.mh" aria-label="Highlight Message">
+                                        Highlight Message
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.mh" aria-label="UnHighlight Message">
+                                        UnHighlight Message
+                                    </md-checkbox>
+                                </div>
+                                <div layout="column" style="padding: 10px;">
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.tc" aria-label="Create Task">
+                                        Create Task
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.te" aria-label="Edit Task">
+                                        Edit Task
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="nvivoC.data.selectedTypes.td" aria-label="Delete Task">
+                                        Delete Task
+                                    </md-checkbox>
+                                </div>
+                                <md-button aria-label="Submit to find this wall ID" class="organiser-submitButton" ng-click="nvivoC.requestLogs()">
+                                    Get CSV
                                 </md-button>
                             </md-list-item>
 

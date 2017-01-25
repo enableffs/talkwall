@@ -8,9 +8,9 @@
 					<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
 				</md-button>
 
-				<md-button aria-label="Delete message" ng-if="feedMessageC.isolatedScope.onBoard === 'false'" ng-disabled="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant" ng-click="feedMessageC.deleteMessage()" class="feedMessage-showControlButton">
-					<md-icon ng-hide="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant" md-svg-icon="images/ic_delete_forever_orange_24px.svg"></md-icon>
-					<md-icon ng-show="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant" md-svg-icon="images/ic_delete_forever_grey_24px.svg"></md-icon>
+				<md-button aria-label="Delete message" ng-if="feedMessageC.isolatedScope.onBoard === 'false'" ng-disabled="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant && !feedMessageC.dataService.data.status.authorised" ng-click="feedMessageC.deleteMessage()" class="feedMessage-showControlButton">
+					<md-icon ng-hide="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant && !feedMessageC.dataService.data.status.authorised" md-svg-icon="images/ic_delete_forever_orange_24px.svg"></md-icon>
+					<md-icon ng-show="feedMessageC.message.creator !== feedMessageC.isolatedScope.selectedParticipant && !feedMessageC.dataService.data.status.authorised" md-svg-icon="images/ic_delete_forever_grey_24px.svg"></md-icon>
 				</md-button>
 				<md-button aria-label="Toggle highlight message" ng-if="feedMessageC.isolatedScope.onBoard === 'true'" ng-click="feedMessageC.toggleHighlightMessage()" class="feedMessage-showControlButton"
 						   ng-class="{'feedMessage-messageSelected': feedMessageC.message.isHighlighted && feedMessageC.isolatedScope.onBoard === 'true'}">

@@ -8,6 +8,7 @@ var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
 var Message = require('../models/message');
 var Log = require('../models/log');
+var moment = require('moment');
 
 /**
  * @api {get} /poll Respond to this call with any changed messages and status
@@ -84,7 +85,8 @@ exports.getWall = function(req, res) {
                 }
                 else {
                     res.status(common.StatusMessages.CLIENT_CONNECT_SUCCESS.status).json({
-                        message: common.StatusMessages.CLIENT_CONNECT_SUCCESS.message, result: wall});
+                        message: common.StatusMessages.CLIENT_CONNECT_SUCCESS.message,
+                        result: wall});
                 }
             });
         } else {        // Pin has expired or does not exist
@@ -339,56 +341,6 @@ function populateQuestion(question) {
         });
     });
 }
-
-
-/**
- * @api {get} /logs Get Logs
- * @apiName getLogs
- * @apiGroup authorised
- *
- * @apiParam {String} id ID of the wall to get logs for
- *
- * @apiSuccess {log[]} log object array
- */
-exports.getLogs = function(req, res) {
-    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null ||
-        typeof req.params.datetime === 'undefined' || req.params.datetime == null ||
-        typeof req.params.nvivotime === 'undefined' || req.params.nvivotime == null ||
-        typeof req.params.nvivolength === 'undefined' || req.params.nvivolength == null ) {
-        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
-            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
-    }
-
-    var query = Wall.findOne({
-        _id : req.params.wall_id
-    }).lean();
-
-    query.exec(function(error, wall) {
-        if(error) {
-            res.status(common.StatusMessages.GET_ERROR.status).json({
-                message: common.StatusMessages.GET_ERROR.message, result: error});
-        }
-        else if (wall !== null) {
-
-            var startDatetime = new Date(req.params.nvivotime);
-
-            var question_ids = [];
-            wall.questions.forEach(function(question) {
-                question_ids.push(question._id);
-            });
-            var logQuery = Log.find({ 'q_id' : { $in: question_ids } });
-            logQuery.exec(function(error, logs) {
-                if(error) {
-                    res.status(common.StatusMessages.GET_ERROR.status).json({
-                        message: common.StatusMessages.GET_ERROR.message, result: error});
-                } else if (logs !== null) {
-                    res.status(common.StatusMessages.GET_SUCCESS.status).json({
-                        message: common.StatusMessages.GET_SUCCESS.message, result: logs});
-                }
-            })
-        }
-    })
-};
 
 
 /**

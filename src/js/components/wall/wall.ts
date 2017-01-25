@@ -73,6 +73,7 @@ export class WallController implements IWallControllerService {
 	private rightMenu3: boolean = false;
 	private rightMenu4: boolean = false;
 	private owneremail: string = undefined;
+	private closeOnExit: boolean = false;
 
 	private savedGridType: string = 'none';
 	private selectedParticipant: string;
@@ -157,7 +158,8 @@ export class WallController implements IWallControllerService {
 			this.$timeout(() => {
 				this.showFeed();
 				this.rightMenu1 = true;
-				if (this.dataService.data.status.authorised && this.dataService.data.question !== null) {
+				if (this.dataService.data.status.authorised) {
+					this.rightMenu1 = true;
 					this.$mdSidenav('right').open();
 				}
 			}, 2000);
@@ -206,18 +208,20 @@ export class WallController implements IWallControllerService {
 	}
 
 	toggleLock() {
-		this.dataService.data.wall.closed = !this.dataService.data.wall.closed;
-		this.dataService.updateWall(null, (wall: Wall) => {
-			this.dataService.data.wall.pin = wall.pin;
-		}, () => {
-			console.log('error updating wall');
-		});
+		this.closeOnExit = !this.closeOnExit;
 	}
 
 	exitWall() {
-		this.dataService.data.wall = null;
-		this.dataService.data.question = null;
-		this.$window.location.href = this.urlService.getHost() + '/#/organiser';
+		if(this.closeOnExit && !this.dataService.data.wall.closed) {
+			this.dataService.data.wall.closed = true;
+			this.dataService.updateWall(null, () => {
+				this.dataService.data.wall = null;
+				this.dataService.data.question = null;
+				this.$window.location.href = this.urlService.getHost() + '/#/organiser';
+			}, () => {
+				console.log('error updating wall');
+			});
+		}
 	}
 
 	setGrid(type: string): void {
@@ -311,7 +315,13 @@ export class WallController implements IWallControllerService {
 			if(message !== null) {
 				if (typeof message._id === 'undefined') {
 					console.log('--> WallController: Edit message - created');
-					this.dataService.logAnEvent(LogType.CreateMessage, message._id, null);
+					let origin: {}[] = [];
+					let basedOnText: string = '';
+					if (this.dataService.data.status.messageOrigin !== null) {
+						origin = this.dataService.data.status.messageOrigin.origin;
+						basedOnText = this.dataService.data.status.messageOrigin.text;
+					}
+					this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
 					handle.dataService.addMessage(
 						function () {
 							//success
@@ -322,7 +332,7 @@ export class WallController implements IWallControllerService {
 					);
 				} else {
 					console.log('--> WallController: Edit message - edited');
-					this.dataService.logAnEvent(LogType.EditMessage, message._id, null);
+					this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, '');
 					handle.dataService.updateMessages([message], 'edit');
 				}
 			}

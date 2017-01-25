@@ -34,6 +34,15 @@
   }
 }
 
+.organiserItem-metadataArea {
+  font-size: 0.8em;
+  color: $color-grey;
+}
+
+.organiserItem-pin {
+  font-size: initial;
+}
+
 .organiserItem-messageControl {
   //background-color: $color-grey;
   width: 112px !important;
@@ -67,14 +76,9 @@
   height: 40px;
 }
 
-.organiserItem-organisers {
-  font-size: 0.5em;
-  color: $color-darkgrey;
-}
-
 .organiserItem-counters {
-  font-size: 0.75em;
-  color: $color-darkgrey;
+  font-size: 1em;
+  color: $color-grey;
   img {
     width: 13px;
   }

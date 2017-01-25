@@ -43,7 +43,7 @@ export interface IDataService {
      * @param sFunc success callback
      * @param eFunc error callback
      */
-    requestLogs(data: { wall_id: string, datetime: Date, nvivoTime: Date, nvivoVideoLength: Date }, sFunc: (success: models.Wall[]) => void, eFunc: (error: {}) => void): void;
+    requestLogs(wall_id: string, startDateTime: number, endDateTime: number, timelineTime: number, selectedTypes: string, sFunc: (success: models.Wall[]) => void, eFunc: (error: {}) => void): void;
     /**
      * get last existing from services wall if any.
      * @param wallId string
@@ -70,7 +70,7 @@ export interface IDataService {
      * @param id
      * @param diff      Change in position from the previous location
      */
-    logAnEvent(type: LogType, id: string, diff: {x: number, y: number}): void;
+    logAnEvent(type: LogType, id: string, diff: {x: number, y: number}, text: string, basedOn: {}, basedOnText: string): void;
     /**
      * get current nickname
      * @return the current nickname
@@ -290,10 +290,17 @@ export class DataService implements IDataService {
         this.$mdToast.show(this.$mdToast.simple().textContent(text).hideDelay(2000));
     }
 
-    logAnEvent(type: LogType, id: string, diff: {x: number, y: number}) {
+    logAnEvent(type: LogType, id: string, diff: {x: number, y: number}, text: string, origin: {}[], basedOnText: string) {
+        if(!this.data.wall.trackLogs) {
+            return;
+        }
         // In cases where we record a question event, the itemid will match the q_id
         let questionId = type === models.LogType.CreateTask ? id : this.data.question._id;
-        this.data.log.push(new models.LogEntry(type, id, this.data.user.nickname, questionId, diff));
+        let basedOn: {itemid: string, nick: string, text: string} = null;
+        if (origin !== null && origin.length > 0) {
+            basedOn = { itemid: origin[0]['message_id'], nick: origin[0]['nickname'], text: basedOnText }
+        }
+        this.data.log.push(new models.LogEntry(type, id, this.data.user.nickname, text, questionId, diff, basedOn));
     }
 
     toggleMagnifyBoard() {
@@ -424,7 +431,7 @@ export class DataService implements IDataService {
         //return the previous wall with a the existing PIN from REDIS (if expired return true)
         this.$http.get(this.urlService.getHost() + '/wall/' + wallId)
             .then((result) => {
-                let resultKey = 'result';
+                let resultKey = 'result', trackKey = 'trackWall';
                 this.data.wall = result.data[resultKey];
                 console.log('--> DataService: getWall success');
                 //let question_index = this.data.wall.questions.length > 0 ? 0 : -1;
@@ -471,18 +478,21 @@ export class DataService implements IDataService {
     }
 
     // For authorised users only
-    requestLogs(data: { wall_id: string, datetime: Date, nvivoTime: Date, nvivoVideoLength: Date }, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
-        this.$http.get(this.urlService.getHost() + '/logs' + data.wall_id + '/' + data.datetime + '/' + data.nvivoTime + '/' + data.nvivoVideoLength)
-            .then((result) => {
-                let resultKey = 'result';
-                console.log('--> DataService: requestLogs success');
-                successCallbackFn(result.data[resultKey]);
-            }, (error) => {
-                console.log('--> DataService: requestLogs failure: ' + error);
-                if (typeof errorCallbackFn === "function") {
-                    errorCallbackFn({status: error.status, message: error.message});
-                }
-            });
+    requestLogs(wall_id: string, startDateTime: number, endDateTime: number, timelineTime: number, selectedTypes: string, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
+        let url = this.urlService.getHost() + '/logs/' + wall_id + '/' + startDateTime + '/' + endDateTime + '/' + timelineTime + '/' + selectedTypes;
+        //this.$location.url(url);
+        //successCallbackFn(null);
+        this.$http.post(url, {}, {responseType: 'arraybuffer'})
+            .then((response) => {
+                let headers = response.headers();
+                let blob = new Blob([response.data],{type:headers['content-type']});
+                let link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "talkwall-logs-" + startDateTime + '-' + endDateTime;
+                link.click();
+        }, (error) => {
+            console.log('Get logs error' + error);
+        })
     }
 
     // For non-authorised users
@@ -498,11 +508,12 @@ export class DataService implements IDataService {
                         this.stopPolling();
                         this.showClosingDialog();
                     } else {
+                        let messageTitle = this.$translate.instant('MENUPAGE_PIN_NOT_FOUND_TITLE');
                         let messageText = this.$translate.instant('MENUPAGE_PIN_NOT_FOUND');
                         this.$mdDialog.show(
                             this.$mdDialog.alert()
                                 .clickOutsideToClose(true)
-                                .title('Pin unknown')
+                                .title(messageTitle)
                                 .textContent(messageText)
                                 .ok('OK')
                         );
@@ -630,7 +641,7 @@ export class DataService implements IDataService {
             wall = this.data.wall;
         }
         this.$http.put(this.urlService.getHost() + '/wall', {
-            wall: models.Wall
+            wall: wall
         })
             .then((response) => {
                 if (typeof successCallbackFn === "function") {
@@ -708,6 +719,7 @@ export class DataService implements IDataService {
                 this.$http.post(this.urlService.getHost() + '/logs/' + this.data.wall._id +
                     '/' + this.data.user.nickname, {logs: this.data.log})
                     .then(() => {
+                        this.data.log.length = 0;
                         console.log('--> DataService: log success');
                     }, (error) => {
                         console.log('--> DataService: log failure: ' + error['message']);
@@ -730,7 +742,7 @@ export class DataService implements IDataService {
                 let resultKey: string = 'result', firstQuestion: boolean;
                 firstQuestion = this.data.wall.questions.length === 0;
                 this.data.wall.questions.push(response.data[resultKey]);
-                this.logAnEvent(models.LogType.CreateTask, response.data[resultKey]._id, null);
+                this.logAnEvent(models.LogType.CreateTask, response.data[resultKey]._id, null, response.data[resultKey].label, null, '');
 
                 // If this was the first question, set it
                 if (firstQuestion) {
@@ -758,7 +770,7 @@ export class DataService implements IDataService {
         })
             .then(() => {
                 console.log('updating the question');
-                this.logAnEvent(models.LogType.EditTask, this.data.status.questionToEdit._id, null);
+                this.logAnEvent(models.LogType.EditTask, this.data.status.questionToEdit._id, null, this.data.status.questionToEdit.label, null, '');
                 if(this.data.status.questionToEdit._id === this.data.question._id) {
                     this.data.question.updateMe(this.data.status.questionToEdit);
                 }
@@ -779,7 +791,7 @@ export class DataService implements IDataService {
         this.$http.get(this.urlService.getHost() + '/messages/' + question._id)
             .then((result) => {
                 console.log('--> DataService deleteQuestion: deleteQuestion success');
-                this.logAnEvent(models.LogType.DeleteTask, question._id, null);
+                this.logAnEvent(models.LogType.DeleteTask, question._id, null, question.label, null, '');
                 let resultKey = 'result';
                 if (result.data[resultKey].length === 0) {
                     let new_question_index = this.data.status.currentQuestionIndex;

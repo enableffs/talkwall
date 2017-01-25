@@ -108,17 +108,17 @@ app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:con
 app.get('/disconnectteacher/:nickname/:wall_id/:question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.disconnectWall);
 app.post('/messageteacher',                                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.createMessage);
 app.put('/messageteacher',                                     jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.updateMessages);
+app.post('/logs/:wall_id/:startdatetime/:enddatetime/:timelinetime/:selectedtypes',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,        routes.teacher.getLogs);
 
 /********* student / teacher operations *********/
 app.get('/clientwall/:nickname/:pin',                                                               routes.client.getWall);
-app.get('/disconnect/:nickname/:wall_id/:question_id',                                                  routes.client.disconnectWall);
-app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',                     routes.client.poll);
+app.get('/disconnect/:nickname/:wall_id/:question_id',                                              routes.client.disconnectWall);
+app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',               routes.client.poll);
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessages);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
 app.get('/export/:wall_id',                                                                         routes.client.exportWall);
 app.post('/logs/:wall_id/:nickname',                                                                routes.client.createLogs);
-app.get('/logs/:wall_id/:datetime/:nvivotime:/:nvivolength',                                        routes.client.getLogs);
 
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());

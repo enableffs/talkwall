@@ -52,6 +52,10 @@ export class OrganiserController implements IOrganiserControllerService {
 
     }
 
+    itemFilter = (item: Wall) => {
+        return !item.deleted;
+    };
+
     activate(): void {
         this.user = this.dataService.data.user;
         this.newNickname = this.user.nickname;
@@ -73,20 +77,34 @@ export class OrganiserController implements IOrganiserControllerService {
     createWall(): void {
         this.dataService.createWall(this.newWall, (wall: Wall) => {
             this.walls.push(wall);
+            this.openWall(wall);
         }, (error: {status: number, message: string}) => {
             console.log('Error creating wall: ' + error.message);
         })
     }
 
     openWall(wall: Wall): void {
-        if (!wall.closed) {
+        let openTheWall = (wall: Wall) => {
             this.dataService.data.wall = wall;
             this.dataService.requestWall(wall._id, () => {
                 this.$window.location.href = this.urlService.getHost() + '/#/wall';
             }, () => {
                 console.log('Error requesting wall');
             });
+        };
+
+        if (wall.closed) {
+            wall.closed = false;
+            this.dataService.updateWall(wall, (updatedWall: Wall) => {
+                wall.pin = updatedWall.pin;
+                openTheWall(wall);
+            }, (error) => {
+                console.log('error updating wall' + error);
+            });
+        } else {
+            openTheWall(wall);
         }
+
     }
 
     updateNickname(): void {

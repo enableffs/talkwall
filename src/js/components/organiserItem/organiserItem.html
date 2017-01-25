@@ -20,8 +20,12 @@
 					<md-icon md-svg-icon="images/ic_person_add_orange_24px.svg"></md-icon>
 				</md-button>
 				
-				<md-button aria-label="Share wall" ng-click="orgItemC.shareWall()" class="organiserItem-showControlButton">
+				<!--md-button aria-label="Share wall" ng-click="orgItemC.shareWall()" class="organiserItem-showControlButton">
 					<md-icon md-svg-icon="images/ic_share_orange_24px.svg"></md-icon>
+				</md-button-->
+
+				<md-button aria-label="Export wall" ng-click="orgItemC.exportWall()" class="organiserItem-showControlButton">
+					<md-icon md-svg-icon="images/ic_archive_orange_24px.svg"></md-icon>
 				</md-button>
 
 				<md-button aria-label="Delete wall" ng-click="orgItemC.deleteWall()" class="organiserItem-showControlButton">
@@ -60,29 +64,26 @@
                 </div>
 			</div>
 
-            <div ng-hide="orgItemC.showEditor" flex layout="row" layout-align="space-between none">
-                <div flex layout="column">
+            <div ng-hide="orgItemC.showEditor" flex layout="column" layout-align="space-between none">
+                <div flex layout="row">
 					<div>
                     	<span>{{orgItemC.wall.label}}</span>&nbsp;-&nbsp;<span>{{orgItemC.wall.theme}}</span>
 					</div>
+                </div>
+                <div flex layout="row" layout-align="space-between start" class="organiserItem-metadataArea">
 					<div class="organiserItem-counters" layout="row">
-						<img ng-src="/images/ic_group_black_24px.svg"/>&nbsp;
+						<img ng-src="/images/ic_group_grey_24px.svg"/>&nbsp;
 						<span style="margin-right: 5px;">{{::orgItemC.totalContributors}}</span>
-						<img ng-src="/images/ic_message_black_24px.svg"/>&nbsp;
+						<img ng-src="/images/ic_message_grey_24px.svg"/>&nbsp;
 						<span>{{::orgItemC.totalMessages}}</span>
 					</div>
-                </div>
-                <div flex layout="row" layout-align="space-around center">
-					<div layout="column" class="organiserItem-organisers">
-						<span ng-repeat="item in orgItemC.wall.organisers">{{::item.nickname}}</span>
+					<div layout="column">
+						<span ng-repeat="item in orgItemC.wall.organisers | filter: orgItemC.organiserFilter">{{::item.nickname}}</span>
 					</div>
-                    <div>
-                        <span ng-hide="orgItemC.wall.closed">{{orgItemC.wall.pin}}</span>
+                    <div layout="row">
+                        <span ng-hide="orgItemC.wall.closed" class="organiserItem-pin">{{orgItemC.wall.pin}}</span>
                         <md-icon ng-show="orgItemC.wall.closed" md-svg-icon="images/ic_lock_outline_grey_24px.svg"></md-icon>
-                    </div>
-                    <div style="font-size: 0.5em;" layout="column">
-						<!--span>{{'ORG_LAST_OPENED' | translate}}</span-->
-                        <span> {{::orgItemC.timeFromNow}}</span>
+						<span style="margin-left: 5px;"> {{::orgItemC.timeFromNow}}</span>
                     </div>
                 </div>
             </div>

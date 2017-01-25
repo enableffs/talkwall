@@ -26,6 +26,7 @@ export class Wall {
     _id: string;
     pin: string;
     label: string;
+    theme: string;
     createdAt: Date;
     lastOpenedAt: Date;
     createdBy: string;
@@ -34,6 +35,7 @@ export class Wall {
     questions: Array<Question>;
     targetEmail: string;
     questionIndex: number;
+    trackLogs: boolean;
 }
 
 export interface IQuestion {
@@ -138,11 +140,12 @@ export class Message implements IMessage {
         this.creator = newNickname;
         this.question_id = originMessage.question_id;
 
+        this.origin.push({nickname: newNickname, message_id: originMessage._id});
         originMessage.origin.forEach((origin) => {
             this.origin.push(origin);
         });
-        this.origin.push({nickname: newNickname, message_id: originMessage._id});
-        this.origin.reverse();
+
+        //this.origin.reverse();
 
         if (typeof originMessage.board[newNickname] !== 'undefined') {
             this.board[newNickname] = new Nickname(
@@ -281,10 +284,16 @@ export class LogEntry {
     type: LogType;
     itemid: string;
     nick: string;
+    text: string;
     stamp: Date;
     diff: {x: number, y: number };
+    basedOn:    {
+        itemid: string,
+        nick:   string,
+        text:   string
+    };
 
-    constructor(type: LogType, id: string, nickname: string, question_id: string, diff: {x: number, y: number}) {
+    constructor(type: LogType, id: string, nickname: string, text: string, question_id: string, diff: {x: number, y: number}, basedOn: { itemid: string, nick: string, text: string }) {
 
         // In cases where we record a 'question' event, the itemid will match the q_id
 
@@ -292,12 +301,18 @@ export class LogEntry {
         this.type = type;
         this.itemid = id;
         this.nick = nickname;
+        this.text = text;
         if (diff !== null) {
             this.diff = diff;
         } else {
             this.diff = null;
         }
         this.stamp = new Date();
+        if (basedOn !== null) {
+            this.basedOn = basedOn;
+        } else {
+            this.basedOn = null;
+        }
     }
 }
 

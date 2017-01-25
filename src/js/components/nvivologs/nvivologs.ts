@@ -6,15 +6,30 @@ import * as models from "../../models/models";
 import {DataService} from "../../services/dataservice";
 import {UtilityService} from "../../services/utilityservice";
 import {URLService} from "../../services/urlservice";
+import * as moment from 'moment';
+import Moment = moment.Moment;
 
 export class NvivoLogController {
     static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 
     private data : {
         wall_id: string;
-        datetime: Date;
-        nvivoTime: Date;
-        nvivoVideoLength: Date
+        startDateTime: Moment;
+        timelineDateTime: Moment;
+        videoLength: Moment;
+        selectedTypes: {
+            'mc': boolean;
+            'me': boolean;
+            'mp': boolean;
+            'mup': boolean;
+            'md': boolean;
+            'mh': boolean;
+            'muh': boolean;
+            'mm': boolean;
+            'tc': boolean;
+            'te': boolean;
+            'td': boolean;
+        }
     };
     private wall: models.Wall = null;
     private errorString: string;
@@ -34,9 +49,22 @@ export class NvivoLogController {
 
         this.data = {
             wall_id: '',
-            datetime: new Date(),
-            nvivoTime: new Date(),
-            nvivoVideoLength: new Date()
+            startDateTime: moment(),
+            timelineDateTime: moment(0),
+            videoLength: moment(0),
+            selectedTypes: {
+                'mc': true,
+                'me': true,
+                'mp': false,
+                'mup': false,
+                'md': false,
+                'mh': false,
+                'muh': false,
+                'mm': false,
+                'tc': false,
+                'te': false,
+                'td': false
+            }
         };
         let langKey: string = 'lang';
         this.languageCode = this.$window.sessionStorage[langKey];
@@ -52,8 +80,22 @@ export class NvivoLogController {
         })
     }
 
+    /**
+     * The search will look for log entries that are dated between the 'clapper' time (filmed by the video) and the end of the video
+     * End of video is deemed by adding the video duration to the 'clapper' time.
+     * Each log entry is then given a relative time to fit it to nVivo timeline from t = 0 that is:  logDateTime - startDateTime + timelineDateTime
+     */
     requestLogs(): void {
-        this.dataService.requestLogs(this.data, (logs: any) => {
+        let endDateTime = moment(this.data.startDateTime)
+        .add({
+            hours: this.data.videoLength.hours(),
+            minutes: this.data.videoLength.minutes(),
+            seconds: this.data.videoLength.seconds()
+        });
+        let selectedTypesArray = Object.keys(this.data.selectedTypes).filter((k) => {
+            return this.data.selectedTypes[k];
+        });
+        this.dataService.requestLogs(this.data.wall_id, this.data.startDateTime.valueOf(), endDateTime.valueOf(), this.data.timelineDateTime.valueOf(), angular.toJson(selectedTypesArray), (logs: {}[]) => {
             console.log('Logs requested');
         }, (error: {status: number, message: string}) => {
 

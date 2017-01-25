@@ -44,9 +44,9 @@ class FeedMessageController implements IFeedMessageController {
 
 	deleteMessage(): void {
 		//check if I am authenticated viewing the participant, or the actual author
-		if (this.message.creator === this.isolatedScope.selectedParticipant) {
+		if (this.message.creator === this.isolatedScope.selectedParticipant || this.dataService.data.status.authorised) {
 			this.message.deleted = true;
-			this.dataService.logAnEvent(LogType.DeleteMessage, this.message._id, null);
+			this.dataService.logAnEvent(LogType.DeleteMessage, this.message._id, null, this.message.text, null, '');
 			this.dataService.updateMessages([this.message], 'edit');
 		}
 		this.showControls = false;
@@ -68,14 +68,14 @@ class FeedMessageController implements IFeedMessageController {
 	togglePinMessage(): void {
 		if (this.isPinned()) {
 			delete this.message.board[this.dataService.data.status.selectedParticipant];
-			this.dataService.logAnEvent(LogType.UnPinMessage, this.message._id, null);
+			this.dataService.logAnEvent(LogType.UnPinMessage, this.message._id, null, this.message.text, this.message.origin, '');
 		} else {
 			this.message.board[this.dataService.data.status.selectedParticipant] = new Nickname(
 				this.utilityService.getRandomBetween(45, 55) / 100,
 				this.utilityService.getRandomBetween(45, 55) / 100,
 				false
 			);
-			this.dataService.logAnEvent(LogType.PinMessage, this.message._id, null);
+			this.dataService.logAnEvent(LogType.PinMessage, this.message._id, null, this.message.text, null, '');
 		}
 		this.dataService.updateMessages([this.message], 'position');
 		this.showControls = false;
@@ -85,7 +85,7 @@ class FeedMessageController implements IFeedMessageController {
 		this.message.board[this.dataService.data.status.selectedParticipant].highlighted = !this.message.board[this.dataService.data.status.selectedParticipant].highlighted;
 		let highlightLogText = this.message.board[this.dataService.data.status.selectedParticipant].highlighted ? LogType.HighlightMessage : LogType.UnHighlightMessage;
 		this.message.isHighlighted = this.message.board[this.dataService.data.status.selectedParticipant].highlighted;
-		this.dataService.logAnEvent(highlightLogText, this.message._id, null);
+		this.dataService.logAnEvent(highlightLogText, this.message._id, null, this.message.text, null, '');
 		this.dataService.updateMessages([this.message], 'position');
 		this.showControls = false;
 	}
@@ -94,7 +94,7 @@ class FeedMessageController implements IFeedMessageController {
 		this.dataService.logAnEvent(LogType.MoveMessage, this.message._id, {
 			x: oldPercentagePosition.x - xPercentage,
 			y: oldPercentagePosition.y - yPercentage,
-		});
+		}, this.message.text, null, '');
 		this.message.board[this.isolatedScope.selectedParticipant].xpos = xPercentage;
 		this.message.board[this.isolatedScope.selectedParticipant].ypos = yPercentage;
 		this.dataService.updateMessages([this.message], 'position');
