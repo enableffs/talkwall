@@ -1,3 +1,22 @@
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * This message manager keeps track of which messages need to be updated on a client polling round
  * It also notifies a client of change of status
@@ -209,14 +228,30 @@ Mm.prototype.removeUserFromQuestion = function(wall_id, question_id, nickname, i
  *
  */
 Mm.prototype.removeUserFromWall = function(wall_id, nickname, isTeacher) {
-    // Remove this nickname from the wall's connected users
-    if (typeof this.data.walls[wall_id] !== 'undefined') {
+
+    if (this.data.walls.hasOwnProperty(wall_id)) {
+
+        // Remove user from all questions
+        var qs = this.data.walls[wall_id].questions;
+        for (var q in qs) {
+            if (qs.hasOwnProperty(q)) {
+                if (qs[q].created.hasOwnProperty(nickname)) {
+                    delete qs[q].created[nickname];
+                }
+                if (qs[q].updated.hasOwnProperty(nickname)) {
+                    delete qs[q].created[nickname];
+                }
+            }
+        }
+
+        // Remove this nickname from the wall's connected users
         var clientType = isTeacher ? 'connected_teachers' : 'connected_students';
         if (this.data.walls[wall_id].status[clientType].hasOwnProperty(nickname)) {
             delete this.data.walls[wall_id].status[clientType][nickname];
             this.data.total_talkwall_connections--;
         }
     }
+
 };
 
 /**

@@ -1,3 +1,22 @@
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import IDialogService = angular.material.IDialogService;
 import IMedia = angular.material.IMedia;
 import IWindowService = angular.IWindowService;
@@ -62,29 +81,25 @@ export class LandingController {
 	showJoinDialog(ev: MouseEvent) : void {
 		let handle = this;
 		let dialogOptions: IDialogOptions = {
-			controller: LoginController,
+			controller: JoinController,
 			controllerAs: 'joinC',
 			templateUrl: 'js/components/join/join.html',
+			parent: angular.element(document.body),
 			targetEvent: ev,
 			clickOutsideToClose: true
 		};
 		//detects if the device is small
 		// let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
 		//show the dialog
-		this.$mdDialog.show({
-				controller: JoinController,
-				controllerAs: 'joinC',
-				templateUrl: 'js/components/join/join.html',
-				parent: angular.element(document.body),
-				targetEvent: ev,
-				clickOutsideToClose: true
-			})
+		this.$mdDialog.show(dialogOptions)
 			.then((answer) => {
 				this.$window.blur();
-				handle.dataService.getClientWall(answer, () => {
+				handle.dataService.connectClientWall(answer, () => {
 					handle.dataService.data.status.joinedWithPin = true;
 					handle.$window.location.href = handle.urlService.getHost() + '/#/wall';
-				}, null);
+				}, () => {
+
+				});
 			}, () => {
 				this.$window.blur();
 				//dialog dismissed

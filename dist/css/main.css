@@ -140,7 +140,7 @@
 }
 
 .landing-samtavlaLogo {
-  /* width: 300px !important;*/
+  max-width: 300px !important;
 }
 
 .landing-illustration {
@@ -396,6 +396,18 @@
 
 .organiserItem-textMargin {
   margin-left: 10px !important;
+}
+
+.orgItem-input {
+  padding: 20px;
+}
+
+.orgItem-input-ok {
+  color: green !important;
+}
+
+.orgItem-submit-orange {
+  background-color: #FF7700 !important;
 }
 
 .organiserItem-close {

@@ -1,3 +1,22 @@
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 "use strict";
 import IAngularEvent = angular.IAngularEvent;
 import IRouteParamsService = angular.route.IRouteParamsService;
@@ -33,6 +52,13 @@ export interface IDataService {
      */
     updateUser(user: models.User, sFunc: (success: models.User) => void, eFunc: (error: {}) => void): void;
     /**
+     * check if a user exists on Talkwall by email address
+     * @param email email address
+     * @param sFunc success callback
+     * @param eFunc error callback
+     */
+    userExists(email: string, sFunc: () => void, eFunc: () => void): void;
+    /**
      * get list of a user's walls where it is an organiser.
      * @param sFunc success callback
      * @param eFunc error callback
@@ -45,12 +71,19 @@ export interface IDataService {
      */
     requestLogs(wall_id: string, startDateTime: number, endDateTime: number, timelineTime: number, selectedTypes: string, sFunc: (success: models.Wall[]) => void, eFunc: (error: {}) => void): void;
     /**
-     * get last existing from services wall if any.
-     * @param wallId string
+     * get wall by wall_id (requires authorisation).
+     * @param wall_id string
      * @param sFunc success callback
      * @param eFunc error callback
      */
-    requestWall(wallId: string, sFunc: (success: models.Wall) => void, eFunc: (error: {}) => void): void;
+    requestWall(wall_id: string, sFunc: (success: models.Wall) => void, eFunc: (error: {}) => void): void;
+    /**
+     * get wall by wall_id (non-authorised).
+     * @param wall_id string
+     * @param sFunc success callback
+     * @param eFunc error callback
+     */
+    requestWallUnauthorised(wall_id: string, sFunc: (success: models.Wall) => void, eFunc: (error: {}) => void): void;
     /**
      * create a new wall
      * @param newWall data object
@@ -63,7 +96,7 @@ export interface IDataService {
      * @param sFunc success callback
      * @param eFunc error callback
      */
-    getClientWall(joinModel: {}, sFunc: (success: models.Wall) => void, eFunc: (error: {}) => void): void;
+    connectClientWall(joinModel: {}, sFunc: (success: models.Wall) => void, eFunc: (error: {}) => void): void;
     /**
      * create a log entry
      * @param type
@@ -356,15 +389,7 @@ export class DataService implements IDataService {
             successCallbackFn();
         }
 
-        // Set up listener for disconnect
-        this.$window.onbeforeunload = () => {
-            let url = this.urlService.getHost() + '/';
-            let clientType = this.data.status.authorised ? 'disconnectteacher/' : 'disconnect/';
-            this.$http.get(url + clientType + this.data.user.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
-                .then(function () {
-                    this.$window.location.href = url;
-                });
-        };
+
 
         /*
          // Alternative method for disconnect - causes a browser dialog to show and allows time for disconnect request
@@ -407,12 +432,21 @@ export class DataService implements IDataService {
             });
     }
 
+    userExists(email: string, sFunc: (result: boolean) => void, eFunc: () => void): void {
+        this.$http.get(this.urlService.getHost() + '/userexists/' + email)
+            .then((result) => {
+                sFunc(result['data']['exists']);
+            }, () => {
+                eFunc();
+            });
+    }
+
     updateUser(user: models.User, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
         if (user === null) {
             user = this.data.user;
         }
         this.$http.put(this.urlService.getHost() + '/user', {
-            user: models.User
+            user: user
         })
             .then((response) => {
                 if (typeof successCallbackFn === "function") {
@@ -431,11 +465,25 @@ export class DataService implements IDataService {
         //return the previous wall with a the existing PIN from REDIS (if expired return true)
         this.$http.get(this.urlService.getHost() + '/wall/' + wallId)
             .then((result) => {
-                let resultKey = 'result', trackKey = 'trackWall';
+                let resultKey = 'result';
                 this.data.wall = result.data[resultKey];
                 console.log('--> DataService: getWall success');
-                //let question_index = this.data.wall.questions.length > 0 ? 0 : -1;
-                //this.setQuestion(question_index, successCallbackFn, errorCallbackFn);
+                successCallbackFn(null);
+            }, (error) => {
+                console.log('--> DataService: requestWall failure: ' + error);
+                if (typeof errorCallbackFn === "function") {
+                    errorCallbackFn({status: error.status, message: error.message});
+                }
+            });
+    }
+
+    // For non-authorised users
+    requestWallUnauthorised(wall_id: string, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
+        //return the previous wall with a the existing PIN from REDIS (if expired return true)
+        this.$http.get(this.urlService.getHost() + '/clientwall/' + wall_id)
+            .then((result) => {
+                this.data.wall = result.data['result'];
+                console.log('--> DataService: getWall success');
                 successCallbackFn(null);
             }, (error) => {
                 console.log('--> DataService: requestWall failure: ' + error);
@@ -496,12 +544,13 @@ export class DataService implements IDataService {
     }
 
     // For non-authorised users
-    getClientWall(joinModel: any, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
+    connectClientWall(joinModel: any, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
+        let resultKey = 'result', dataKey = 'data', statusKey = 'status', messageKey = 'message';
         this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin)
             .then((success) => {
-                let resultKey = 'result', dataKey = 'data', statusKey = 'status';
 
-                // The wall is closed or PIN not found
+
+                // The wall is closed or PIN not found or nickname is in use
                 if (success[statusKey] === 204) {
                     if (this.data.wall !== null && !this.data.wall.closed) {
                         this.data.wall.closed = true;
@@ -528,10 +577,22 @@ export class DataService implements IDataService {
                     successCallbackFn(this.data.wall);
                 }
             }, (error) => {
-                // Close client wall if wall was closed by teacher
-                this.data.wall.closed = true;
-                this.stopPolling();
-                this.showClosingDialog();
+                if (error['data'][messageKey] === 'Invalid User') {
+                    let messageTitle = this.$translate.instant('MENUPAGE_NICKNAME_IN_USE_TITLE');
+                    let messageText = this.$translate.instant('MENUPAGE_NICKNAME_IN_USE');
+                    this.$mdDialog.show(
+                        this.$mdDialog.alert()
+                            .clickOutsideToClose(true)
+                            .title(messageTitle)
+                            .textContent(messageText)
+                            .ok('OK')
+                    );
+                } else {
+                    // Close client wall if wall was closed by teacher
+                    this.data.wall.closed = true;
+                    this.stopPolling();
+                    this.showClosingDialog();
+                }
                 if (typeof errorCallbackFn === "function") {
                     errorCallbackFn({status: error.status, message: error.message});
                 }
@@ -636,7 +697,7 @@ export class DataService implements IDataService {
      }
      */
 
-    updateWall(wall: models.Wall, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
+    updateWall(wall: models.Wall, successCallbackFn: (success: models.Wall) => void, errorCallbackFn: (error: {}) => void): void {
         if (wall === null) {
             wall = this.data.wall;
         }
@@ -1067,11 +1128,11 @@ export class DataService implements IDataService {
         // Run on student connections only
         else {
             // Status update
-            if (pollUpdateObject.status.last_update > this.data.status.last_status_update) {
+            if (pollUpdateObject.status.last_update > this.data.status.last_status_update && this.data.wall !== null) {
                 this.data.status.last_status_update = pollUpdateObject.status.last_update;
 
                 // Refresh the wall
-                this.getClientWall({nickname: this.data.user.nickname, pin: this.data.wall.pin}, () => {
+                this.requestWallUnauthorised(this.data.wall._id, () => {
 
                     // Set a new question if available
                     let new_question_id = pollUpdateObject.status.teacher_current_question;

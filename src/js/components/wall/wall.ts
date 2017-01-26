@@ -1,3 +1,22 @@
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 "use strict";
 import IBottomSheetService = angular.material.IBottomSheetService;
 import ISidenavService = angular.material.ISidenavService;
@@ -20,7 +39,7 @@ export interface IWallControllerService {
 	 */
 	showMessageEditor(newMessage: boolean): void;
 	/**
-	 * Switch to magnified board mode. Affects code in feedMessage controller
+	 * Switch to magnifyFeed board mode. Affects code in feedMessage controller
 	 */
 	magnifyTheBoard(): void;
 	/**
@@ -65,9 +84,10 @@ export interface IWallControllerService {
 
 export class WallController implements IWallControllerService {
 	static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
-	private magnified: boolean = false;
+	private magnifyFeed: boolean = false;
 	private magnifyBoard: boolean = false;
-	private feedView: boolean = true;
+	private feedView: boolean = false;
+	private participantView: boolean = false;
 	private rightMenu1: boolean = false;
 	private rightMenu2: boolean = false;
 	private rightMenu3: boolean = false;
@@ -116,6 +136,30 @@ export class WallController implements IWallControllerService {
 		if (this.dataService.data.wall === null) {
 			this.$window.location.href = this.urlService.getHost() + '/#/';
 		} else {
+
+			// Set event to trigger a server disconnect if the window is closed / tab is closed
+			let clientType = this.dataService.data.status.authorised ? 'disconnectteacher/' : 'disconnect/';
+			let disconnectUrl = this.urlService.getHost() + '/' + clientType + this.dataService.data.user.nickname
+				+ '/' + this.dataService.data.wall._id;
+			this.$window.addEventListener('beforeunload', function() {
+				let xmlHttp = new XMLHttpRequest();
+				xmlHttp.open( "GET", disconnectUrl, false ); // false for synchronous request
+				xmlHttp.send( null );
+				return xmlHttp.responseText;
+			});
+
+
+			/*
+			this.$window.onbeforeunload = () => {
+				let url = this.urlService.getHost() + '/';
+				let clientType = this.data.status.authorised ? 'disconnectteacher/' : 'disconnect/';
+				this.$http.get(url + clientType + this.data.user.nickname + '/' + this.data.wall._id + '/' + this.data.question._id)
+                    .then(function () {
+						this.$window.location.href = url;
+					});
+			};
+			*/
+
 			let question_index = -1;
 			if (this.dataService.data.wall.questionIndex !== -1) {
 				question_index = this.dataService.data.wall.questionIndex;
@@ -183,14 +227,16 @@ export class WallController implements IWallControllerService {
 
 	showFeed(): void {
 		this.feedView = true;
+		this.participantView = false;
 		this.selectedParticipant = this.dataService.data.user.nickname;
 		this.dataService.data.status.selectedParticipant = this.selectedParticipant;
 		this.$mdSidenav('left').open();
 	}
 
 	showScreenContributors(): void {
-		this.magnified = false;
+		this.magnifyFeed = false;
 		this.feedView = false;
+		this.participantView = true;
 		this.$mdSidenav('left').open();
 	}
 
@@ -212,15 +258,21 @@ export class WallController implements IWallControllerService {
 	}
 
 	exitWall() {
-		if(this.closeOnExit && !this.dataService.data.wall.closed) {
+		if (this.closeOnExit && !this.dataService.data.wall.closed) {
 			this.dataService.data.wall.closed = true;
 			this.dataService.updateWall(null, () => {
+				this.dataService.stopPolling();
 				this.dataService.data.wall = null;
 				this.dataService.data.question = null;
 				this.$window.location.href = this.urlService.getHost() + '/#/organiser';
 			}, () => {
 				console.log('error updating wall');
 			});
+		} else {
+			this.dataService.stopPolling();
+			this.dataService.data.wall = null;
+			this.dataService.data.question = null;
+			this.$window.location.href = this.urlService.getHost() + '/#/organiser';
 		}
 	}
 
@@ -347,12 +399,13 @@ export class WallController implements IWallControllerService {
 	}
 
 	closeLeftSidenav() {
+		this.participantView = false;
+		this.feedView = false;
 		this.$mdSidenav('left').close();
-		this.magnified = false;
 	}
 
-	toggleMagnified() {
-		this.magnified = !this.magnified;
+	togglemagnifyFeed() {
+		this.magnifyFeed = !this.magnifyFeed;
 	}
 
 	toggleRightMenu(n: number): void {

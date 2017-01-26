@@ -22,6 +22,18 @@
   margin-left: 10px !important;
 }
 
+.orgItem-input {
+  padding: 20px;
+}
+
+.orgItem-input-ok {
+  color: green !important;
+}
+
+.orgItem-submit-orange {
+  background-color: $color-orange !important;
+}
+
 .organiserItem-close {
   background-color: $color-white !important;
 }

@@ -1,3 +1,22 @@
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import {Wall} from '../../models/models';
 import {DataService} from "../../services/dataservice";
 import {UtilityService} from "../../services/utilityservice";
@@ -13,7 +32,7 @@ export interface IOrganiserItemController {
 }
 
 class OrganiserItemController implements IOrganiserItemController {
-	static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window', '$location'];
+	static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window', '$location', '$timeout'];
 
 	public wall: Wall;
 	private showControls: boolean = false;
@@ -21,6 +40,9 @@ class OrganiserItemController implements IOrganiserItemController {
 	private timeFromNow: string;
 	private totalContributors: number;
 	private totalMessages: number;
+	private newOrganiserEmail: string = '';
+	private checkNameTimeout: any;
+	private nameExists: boolean = false;
 
 	constructor(
 		private isolatedScope: OrganiserItemDirectiveScope,
@@ -28,7 +50,8 @@ class OrganiserItemController implements IOrganiserItemController {
 		public $document: ng.IDocumentService,
 		public utilityService: UtilityService,
 		public $window: ng.IWindowService,
-		public $location: ng.ILocationService) {
+		public $location: ng.ILocationService,
+		public $timeout: ng.ITimeoutService) {
 
 		this.wall = isolatedScope.data;
 		this.timeFromNow = UtilityService.getFormattedDateTimeFromNow(this.wall.lastOpenedAt);
@@ -51,6 +74,7 @@ class OrganiserItemController implements IOrganiserItemController {
 
 	editDetails(): void {
 		this.showEditor = true;
+        this.nameExists = false;
 		this.showControls = false;
 	}
 
@@ -82,9 +106,27 @@ class OrganiserItemController implements IOrganiserItemController {
 		this.showControls = false;
 	}
 
+	checkOrganiserEmail(): void {
+		this.$timeout.cancel(this.checkNameTimeout);
+		this.checkNameTimeout = this.$timeout(() => {
+			this.dataService.userExists(this.newOrganiserEmail, (exists) => {
+				this.nameExists = exists;
+			}, () => {
+				console.log('Error checking organiser exists');
+			});
+		}, 1000);
+	}
+
 	submitEditedDetails(): void {
-		this.dataService.updateWall(this.wall, null, null);
-		this.showEditor = false;
+		if (this.newOrganiserEmail !== '') {
+			this.wall['newOrganiser'] = this.newOrganiserEmail;
+		}
+		this.dataService.updateWall(this.wall, (updatedWall) => {
+			this.wall = updatedWall;
+		}, null);
+		this.newOrganiserEmail = '';
+        this.nameExists = false;
+		//this.showEditor = false;
 	}
 
 }

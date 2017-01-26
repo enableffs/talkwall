@@ -1,6 +1,22 @@
-/**
- * Created by richardnesnass on 02/06/16.
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 var utilities = require('../config/utilities.js');
 var common = require('../config/common');
@@ -48,6 +64,32 @@ exports.getUser = function(req, res) {
     })
 };
 
+/**
+ * @api {get} /userexists Confirm a user exists
+ * @apiName userExists
+ * @apiGroup authorised
+ *
+ * @apiSuccess {Boolean} boolean
+ */
+exports.userExists = function(req, res) {
+    if (typeof req.params.email === 'undefined' || req.params.email == null) {
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+    User.count({
+        defaultEmail : req.params.email
+    }, function(error, count) {
+        if (error) {
+            res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message});
+        }
+        else {
+            res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                message: common.StatusMessages.GET_SUCCESS.message, exists: count > 0});
+        }
+    })
+};
+
 
 /**
  * @api {put} /user Update a users details
@@ -62,26 +104,27 @@ exports.updateUser = function(req, res) {
         || typeof req.body.user === 'undefined' || req.body.user == null) {
         res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    } else {
+        var query = User.findOne({
+            _id: req.user.id
+        });
+
+        query.exec(function (error, user) {
+            if (error) {
+                res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                    message: common.StatusMessages.UPDATE_ERROR.message, result: error
+                });
+            }
+            else {
+                user.defaultEmail = req.body.user.defaultEmail;
+                user.nickname = req.body.user.nickname;
+                user.save();
+                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                    message: common.StatusMessages.UPDATE_SUCCESS.message, result: user
+                });
+            }
+        })
     }
-
-    var query = User.findOne({
-        _id : req.user.id
-    });
-
-    query.exec(function(error, user) {
-        if(error) {
-            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
-        }
-        else {
-            user.lastOpenedWall = req.body.user.lastOpenedWall;
-            user.defaultEmail = req.body.user.defaultEmail;
-            user.nickname = req.body.user.nickname;
-            user.save();
-            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                message: common.StatusMessages.UPDATE_SUCCESS.message, result: user});
-        }
-    })
 };
 
 /**
@@ -165,7 +208,7 @@ exports.updateWall = function(req, res) {
 
     var query = Wall.findOne({
         _id : req.body.wall._id
-    });
+    }).populate('organisers');
 
     query.exec(function(error, wall) {
         if(error) {
@@ -203,13 +246,27 @@ exports.updateWall = function(req, res) {
                 redisClient.set(newPin, wall._id.toString());
                 wall.closed = false;
             }
+
             wall.label = req.body.wall.label;
             wall.theme = req.body.wall.theme;
             wall.deleted = req.body.wall.deleted;
             mm.statusUpdate(wall._id, 'none');
-            wall.save();
-            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
+
+            if (typeof req.body.wall['newOrganiser'] !== 'undefined' && req.body.wall['newOrganiser'] !== null) {
+                User.findOne({ defaultEmail: req.body.wall['newOrganiser'] }).exec(function(error, user) {
+                    wall.organisers.push(user._id);
+                    wall.save(function(error, savedWall) {
+                        res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                            message: common.StatusMessages.UPDATE_SUCCESS.message, result: savedWall});
+                    });
+
+                })
+            } else {
+                wall.save(function(error, savedWall) {
+                    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                        message: common.StatusMessages.UPDATE_SUCCESS.message, result: savedWall});
+                });
+            }
         }
     });
 };
@@ -354,30 +411,32 @@ exports.notifyChangeQuestion = function(req, res) {
 exports.disconnectWall = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
-        || typeof req.params.question_id === 'undefined' || req.params.question_id == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
         res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    var query = Wall.findOne({
-        _id : req.params.wall_id,
-        pin : { $gte: 0 }       // Wall is not available to clients if pin is -1
-    }).lean();
+    if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
+        var query = Wall.findOne({
+            _id: req.params.wall_id,
+            pin: {$gte: 0}       // Wall is not available to clients if pin is -1
+        }).lean();
 
-    query.exec(function(error, wall) {
-        if(error) {
-            res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
-                message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error});
-        }
-        else {
-            // Remove nickname from the wall users list (message manager)
-            mm.removeUserFromQuestion(wall._id, req.params.question_id, req.params.nickname, true);
-            mm.removeUserFromWall(wall._id, req.params.nickname, true);
-            res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-                message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message, result: wall});
-        }
-    });
+        query.exec(function (error, wall) {
+            if (error) {
+                res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
+                    message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error
+                });
+            }
+            else {
+                // Remove nickname from the wall users list (message manager)
+                mm.removeUserFromWall(wall._id, req.params.nickname, true);
+                res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+                    message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message
+                });
+            }
+        });
+    }
 
 };
 

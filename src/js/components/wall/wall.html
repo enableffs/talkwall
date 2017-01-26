@@ -3,10 +3,13 @@
 	<md-toolbar class="wall-topToolbar">
 		<div flex layout="row" layout-align="start center">
 			<div hide-xs hide-sm flex="33" layout="row" layout-align="start center">
-				<md-button aria-label="Open left-side message feed" ng-show="wallC.dataService.data.question !== null" class="md-icon-button" role="button" ng-click="wallC.showFeed()">
+				<md-button aria-label="Open left-side message feed" ng-show="wallC.dataService.data.question !== null && !wallC.feedView" class="md-icon-button" role="button" ng-click="wallC.showFeed()">
 					<md-icon md-svg-src="images/ic_chat_bubble_outline_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
-				<md-button aria-label="Open left-side participants list" ng-if="wallC.dataService.data.status.authorised" ng-show="wallC.dataService.data.question !== null" class="md-icon-button" role="button" ng-click="wallC.showScreenContributors()">
+				<md-button aria-label="Close left-side panel" ng-if="!wallC.dataService.data.status.phoneMode" ng-show="wallC.feedView || wallC.participantView" class="md-icon-button" role="button" ng-click="wallC.closeLeftSidenav()">
+					<md-icon md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
+				</md-button>
+				<md-button aria-label="Open left-side participants list" ng-if="wallC.dataService.data.status.authorised" ng-show="wallC.dataService.data.question !== null && !wallC.participantView" class="md-icon-button" role="button" ng-click="wallC.showScreenContributors()">
 					<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 			</div>
@@ -69,19 +72,16 @@
 	<section flex layout="row" id="wallSection">
 
 		<!-- left sidenav of the wall -->
-		<md-sidenav md-component-id="left" class="md-sidenav-left wall-sidenav" layout="column" ng-class="{'wall-sidemenuLarge' :  wallC.magnified}" md-is-locked-open="$mdMedia('max-width: 960px')">
+		<md-sidenav md-component-id="left" class="md-sidenav-left wall-sidenav" layout="column" ng-class="{'wall-sidemenuLarge' :  wallC.magnifyFeed}" md-is-locked-open="$mdMedia('max-width: 960px')">
 			<md-toolbar>
 				<div flex layout="row" layout-align="start center">
 					<div ng-if="wallC.feedView" flex class="wall-toolbarText" layout-align="center center">{{ 'WALL_MESSAGES' | translate }}</div>
 					<div ng-if="!wallC.feedView && !wallC.dataService.data.status.phoneMode" flex class="wall-toolbarText" layout-align="center center">{{ 'WALL_SELECTWALLS' | translate }}</div>
-					<md-button aria-label="Zoom in messages" ng-if="!wallC.magnified && wallC.feedView && !wallC.dataService.data.status.phoneMode" class="md-icon-button" role="button" ng-click="wallC.toggleMagnified()">
+					<md-button aria-label="Zoom in messages" ng-if="!wallC.magnifyFeed && wallC.feedView && !wallC.dataService.data.status.phoneMode" class="md-icon-button" role="button" ng-click="wallC.togglemagnifyFeed()">
 						<md-icon md-svg-src="images/ic_zoom_in_white_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
-					<md-button aria-label="Zoom out messages" ng-if="wallC.magnified && wallC.feedView && !wallC.dataService.data.status.phoneMode" class="md-icon-button" role="button" ng-click="wallC.toggleMagnified()">
+					<md-button aria-label="Zoom out messages" ng-if="wallC.magnifyFeed && wallC.feedView && !wallC.dataService.data.status.phoneMode" class="md-icon-button" role="button" ng-click="wallC.togglemagnifyFeed()">
 						<md-icon md-svg-src="images/ic_zoom_out_white_24px.svg" aria-hidden="true"></md-icon>
-					</md-button>
-					<md-button aria-label="Close left-side panel" ng-if="!wallC.dataService.data.status.phoneMode" class="md-icon-button" role="button" ng-click="wallC.closeLeftSidenav()">
-						<md-icon md-svg-src="images/ic_close_white_24px.svg" aria-hidden="true"></md-icon>
 					</md-button>
 				</div>
 			</md-toolbar>
@@ -205,7 +205,15 @@
 									</md-checkbox>
 									<md-divider></md-divider>
 								</md-list-item>
-								<md-list-item ng-repeat="tag in wallC.dataService.data.status.tags | orderBy: 'toString()'">
+								<md-list-item>
+									<div flex="80">
+										<md-label class="wall-username">{{::wallC.noTag}}</md-label>
+									</div>
+									<md-checkbox class="user-checkbox" ng-checked="wallC.tagExists(wallC.noTag)" ng-click="wallC.tagToggle(wallC.noTag)">
+									</md-checkbox>
+									<md-divider></md-divider>
+								</md-list-item>
+								<md-list-item ng-repeat="tag in wallC.dataService.data.status.tags | orderBy: 'toString()'" ng-if="tag !== wallC.noTag">
 									<div flex="80">
 										<md-label class="wall-username">{{tag}}</md-label>
 									</div>
