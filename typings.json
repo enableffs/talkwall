@@ -1,12 +1,15 @@
 {
   "name": "samtavla-services",
   "globalDependencies": {
-    "angular-material": "github:DefinitelyTyped/DefinitelyTyped/angular-material/angular-material.d.ts#421d6610bdb09e1015b71f5991d7a68d079eca21",
     "angular": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular.d.ts#a9680ac2efd3add0d38cd0331f30ad497d9dd1e0",
-    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#a9680ac2efd3add0d38cd0331f30ad497d9dd1e0",
+    "angular-material": "github:DefinitelyTyped/DefinitelyTyped/angular-material/angular-material.d.ts#421d6610bdb09e1015b71f5991d7a68d079eca21",
+    "angular-route": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular-route.d.ts#421d6610bdb09e1015b71f5991d7a68d079eca21",
     "angular-translate": "github:DefinitelyTyped/DefinitelyTyped/angular-translate/angular-translate.d.ts#421d6610bdb09e1015b71f5991d7a68d079eca21",
+    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#a9680ac2efd3add0d38cd0331f30ad497d9dd1e0",
     "moment": "github:DefinitelyTyped/DefinitelyTyped/moment/moment.d.ts#bcd5761826eb567876c197ccc6a87c4d05731054",
-    "moment-node": "github:DefinitelyTyped/DefinitelyTyped/moment/moment-node.d.ts#bcd5761826eb567876c197ccc6a87c4d05731054",
-    "angular-route": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular-route.d.ts#421d6610bdb09e1015b71f5991d7a68d079eca21"
+    "moment-node": "github:DefinitelyTyped/DefinitelyTyped/moment/moment-node.d.ts#bcd5761826eb567876c197ccc6a87c4d05731054"
+  },
+  "dependencies": {
+    "d3": "registry:npm/d3#3.0.0+20160723033700"
   }
 }

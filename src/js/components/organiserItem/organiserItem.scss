@@ -22,6 +22,18 @@
   margin-left: 10px !important;
 }
 
+.orgItem-input {
+  padding: 20px;
+}
+
+.orgItem-input-ok {
+  color: green !important;
+}
+
+.orgItem-submit-orange {
+  background-color: $color-orange !important;
+}
+
 .organiserItem-close {
   background-color: $color-white !important;
 }
@@ -32,6 +44,15 @@
     padding: 2px;
     margin: 0;
   }
+}
+
+.organiserItem-metadataArea {
+  font-size: 0.8em;
+  color: $color-grey;
+}
+
+.organiserItem-pin {
+  font-size: initial;
 }
 
 .organiserItem-messageControl {
@@ -67,14 +88,9 @@
   height: 40px;
 }
 
-.organiserItem-organisers {
-  font-size: 0.5em;
-  color: $color-darkgrey;
-}
-
 .organiserItem-counters {
-  font-size: 0.75em;
-  color: $color-darkgrey;
+  font-size: 1em;
+  color: $color-grey;
   img {
     width: 13px;
   }
