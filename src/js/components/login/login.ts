@@ -1,40 +1,55 @@
-/// <reference path="../../_references.ts"/>
-/// <reference path="../../services/urlservice.ts"/>
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
 
-module TalkwallApp {
-	"use strict";
-	import IDialogService = angular.material.IDialogService;
-	export class LoginController {
-		static $inject = ['$mdDialog'];
+ This file is part of Talkwall.
 
-		constructor(
-			private $mdDialog: IDialogService) {
-			console.log('--> LoginController: started: ');
-		}
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-		/**
-		 * hide this dialog (see angular.material.IDialogService)
-		 * @aparam response a possible reponse
-		 */
-		hide(response?: any): void {
-			console.log('--> LoginController: hide');
-			this.$mdDialog.hide();
-		};
-		/**
-		 * cancel this dialog (see angular.material.IDialogService)
-		 * @aparam response a possible reponse
-		 */
-		cancel(response?: any) : void {
-			console.log('--> LoginController: cancel');
-			this.$mdDialog.cancel();
-		};
-		/**
-		 * answer this dialog
-		 * @aparam answer aa a string
-		 */
-		answer(answer: string): void {
-			console.log('--> LoginController: answer: ' + answer);
-			this.$mdDialog.hide(answer);
-		};
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import IDialogService = angular.material.IDialogService;
+
+
+export class LoginController {
+	static $inject = ['$mdDialog'];
+
+	constructor(
+		private $mdDialog: IDialogService) {
+		console.log('--> LoginController: started: ');
 	}
+
+	/**
+	 * hide this dialog (see angular.material.IDialogService)
+	 * @aparam response a possible reponse
+	 */
+	hide(response?: any): void {
+		console.log('--> LoginController: hide');
+		this.$mdDialog.hide();
+	};
+	/**
+	 * cancel this dialog (see angular.material.IDialogService)
+	 * @aparam response a possible reponse
+	 */
+	cancel(response?: any) : void {
+		console.log('--> LoginController: cancel');
+		this.$mdDialog.cancel();
+	};
+	/**
+	 * answer this dialog
+	 * @aparam answer aa a string
+	 */
+	answer(answer: string): void {
+		console.log('--> LoginController: answer: ' + answer);
+		this.$mdDialog.hide(answer);
+	};
 }

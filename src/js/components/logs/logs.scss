@@ -1,0 +1,62 @@
+@import "../../../scss/colors";
+
+.log-content {
+  background-color: white;
+}
+
+.calendarDisplay {
+  //max-height: 300px;
+  background-color: #ccc;
+  font: 10px sans-serif;
+  shape-rendering: crispEdges;
+}
+
+.day {
+  fill: #fff;
+  stroke: #ccc;
+}
+
+.month {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.year .color0 {
+  fill: rgb(255, 0, 0)
+}
+
+.year .color1 {
+  fill: rgb(255, 51, 51)
+}
+
+.year .color2 {
+  fill: rgb(255, 102, 102)
+}
+.year .color3 {
+  fill: rgb(255, 153, 153)
+}
+
+.year .color4 {
+  fill: rgb(255, 204, 204)
+}
+
+.year .color5 {
+  fill: rgb(255, 255, 204)
+}
+
+.year .color6 {
+  fill: rgb(204, 255, 204)
+}
+.year .color7 {
+  fill: rgb(153, 255, 153)
+}
+.year .color8 {
+  fill: rgb(102, 255, 102)
+}
+.year .color9 {
+  fill: rgb(51, 255, 51)
+}
+.year .color10 {
+  fill: rgb(0, 255, 0)
+}
