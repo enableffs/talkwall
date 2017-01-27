@@ -12,3 +12,4 @@ src/**/*.js
 src/**/*.map
 src/css
 newrelic_agent.log
+src/dji.csv

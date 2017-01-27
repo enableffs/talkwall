@@ -1,109 +1,155 @@
-/// <reference path="../../_references.ts"/>
-/// <reference path="../../models/models.ts"/>
-/// <reference path="../../services/dataservice.ts"/>
-/// <reference path="../../services/utilityservice.ts"/>
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
 
-module TalkwallApp {
-	"use strict";
+ This file is part of Talkwall.
 
-    export interface IOrganiserItemController {
-        deleteWall(): void;
-        editDetails(): void;
-        toggleLock(): void;
-        editOrganisers(): void;
-        shareWall(): void;
-        deleteWall(): void;
-        submitEditedDetails(): void;
-    }
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-	class OrganiserItemController implements IOrganiserItemController {
-		static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window'];
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-		public wall: Wall;
-		private showControls: boolean = false;
-		private showEditor: boolean = false;
-		private timeFromNow: string;
-		private totalContributors: number;
-		private totalMessages: number;
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-		constructor(
-			private isolatedScope: OrganiserItemDirectiveScope,
-			public dataService: DataService,
-			public $document: ng.IDocumentService,
-            public utilityService: UtilityService,
-			public $window: ng.IWindowService) {
+import {Wall} from '../../models/models';
+import {DataService} from "../../services/dataservice";
+import {UtilityService} from "../../services/utilityservice";
 
-            this.wall = isolatedScope.data;
-            this.timeFromNow = UtilityService.getFormattedDateTimeFromNow(this.wall.lastOpenedAt);
+export interface IOrganiserItemController {
+	deleteWall(): void;
+	editDetails(): void;
+	toggleLock(): void;
+	editOrganisers(): void;
+	shareWall(): void;
+	deleteWall(): void;
+	submitEditedDetails(): void;
+}
 
-			this.totalContributors = this.totalMessages = 0;
-			this.wall.questions.forEach((q) => {
-				this.totalContributors += q.contributors.length;
-				this.totalMessages += q.messages.length;
+class OrganiserItemController implements IOrganiserItemController {
+	static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window', '$location', '$timeout'];
+
+	public wall: Wall;
+	private showControls: boolean = false;
+	private showEditor: boolean = false;
+	private timeFromNow: string;
+	private totalContributors: number;
+	private totalMessages: number;
+	private newOrganiserEmail: string = '';
+	private checkNameTimeout: any;
+	private nameExists: boolean = false;
+
+	constructor(
+		private isolatedScope: OrganiserItemDirectiveScope,
+		public dataService: DataService,
+		public $document: ng.IDocumentService,
+		public utilityService: UtilityService,
+		public $window: ng.IWindowService,
+		public $location: ng.ILocationService,
+		public $timeout: ng.ITimeoutService) {
+
+		this.wall = isolatedScope.data;
+		this.timeFromNow = UtilityService.getFormattedDateTimeFromNow(this.wall.lastOpenedAt);
+
+		this.totalContributors = this.totalMessages = 0;
+		this.wall.questions.forEach((q) => {
+			this.totalContributors += q.contributors.length;
+			this.totalMessages += q.messages.length;
+		});
+
+	};
+
+	organiserFilter = (item: any) => {
+	    return item.nickname !== this.dataService.data.user.nickname;
+    };
+
+	toggleShowControls(): void {
+		this.showControls = !this.showControls;
+	}
+
+	editDetails(): void {
+		this.showEditor = true;
+        this.nameExists = false;
+		this.showControls = false;
+	}
+
+	toggleLock(): void {
+		this.wall.closed = !this.wall.closed;
+		this.dataService.updateWall(this.wall, (wall: Wall) => {
+			this.wall.pin = wall.pin;
+		}, () => {
+			console.log('error updating wall');
+		});
+		this.showControls = false;
+	}
+
+	editOrganisers(): void {
+		this.showControls = false;
+	}
+
+	shareWall(): void {
+		this.showControls = false;
+	}
+
+	exportWall(): void {
+		this.$location.url('/export?wid=' + this.wall._id);
+	}
+
+	deleteWall(): void {
+		this.wall.deleted = true;
+		this.dataService.updateWall(this.wall, null, null);
+		this.showControls = false;
+	}
+
+	checkOrganiserEmail(): void {
+		this.$timeout.cancel(this.checkNameTimeout);
+		this.checkNameTimeout = this.$timeout(() => {
+			this.dataService.userExists(this.newOrganiserEmail, (exists) => {
+				this.nameExists = exists;
+			}, () => {
+				console.log('Error checking organiser exists');
 			});
-
-		};
-
-		toggleShowControls(): void {
-			this.showControls = !this.showControls;
-		}
-
-		editDetails(): void {
-		    this.showEditor = true;
-			this.showControls = false;
-		}
-
-		toggleLock(): void {
-		    this.wall.closed = !this.wall.closed;
-		    this.dataService.updateWall(this.wall, (wall) => {
-		        this.wall.pin = wall.pin;
-            }, () => {
-		        console.log('error updating wall');
-            });
-			this.showControls = false;
-		}
-
-		editOrganisers(): void {
-            this.showControls = false;
-		}
-
-		shareWall(): void {
-			this.showControls = false;
-		}
-
-		deleteWall(): void {
-		    this.wall.deleted = true;
-            this.dataService.updateWall(this.wall, null, null);
-			this.showControls = false;
-		}
-
-        submitEditedDetails(): void {
-            this.dataService.updateWall(this.wall, null, null);
-            this.showEditor = false;
-        }
-
+		}, 1000);
 	}
 
-	//isolated scope interface
-	export interface OrganiserItemDirectiveScope extends ng.IScope {
-		data: Wall;
-		showEditPanel(): void;
-		openThisWall(): void;
+	submitEditedDetails(): void {
+		if (this.newOrganiserEmail !== '') {
+			this.wall['newOrganiser'] = this.newOrganiserEmail;
+		}
+		this.dataService.updateWall(this.wall, (updatedWall) => {
+			this.wall = updatedWall;
+		}, null);
+		this.newOrganiserEmail = '';
+        this.nameExists = false;
+		//this.showEditor = false;
 	}
 
-	//directive declaration
-	export function OrganiserItem(): ng.IDirective {
-		return {
-			restrict: 'A',
-			scope: {
-				data: '=',
-				showEditPanel: "&",
-				openThisWall: "&"
-			},
-			templateUrl: 'js/components/organiserItem/organiserItem.html',
-			controller: OrganiserItemController,
-			controllerAs: 'orgItemC',
-			replace: true
-		};
-	}
+}
+
+//isolated scope interface
+export interface OrganiserItemDirectiveScope extends ng.IScope {
+	data: Wall;
+	showEditPanel(): void;
+	openThisWall(): void;
+}
+
+//directive declaration
+export function OrganiserItem(): ng.IDirective {
+	return {
+		restrict: 'A',
+		scope: {
+			data: '=',
+			showEditPanel: "&",
+			openThisWall: "&"
+		},
+		templateUrl: 'js/components/organiserItem/organiserItem.html',
+		controller: OrganiserItemController,
+		controllerAs: 'orgItemC',
+		replace: true
+	};
 }

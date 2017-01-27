@@ -16,12 +16,16 @@
 					<md-icon md-svg-icon="images/ic_mode_edit_orange_24px.svg"></md-icon>
 				</md-button>
 				
-				<md-button aria-label="Edit organisers" ng-click="orgItemC.editOrganisers()" class="organiserItem-showControlButton">
+				<!--md-button aria-label="Edit organisers" ng-click="orgItemC.editOrganisers()" class="organiserItem-showControlButton">
 					<md-icon md-svg-icon="images/ic_person_add_orange_24px.svg"></md-icon>
-				</md-button>
+				</md-button-->
 				
-				<md-button aria-label="Share wall" ng-click="orgItemC.shareWall()" class="organiserItem-showControlButton">
+				<!--md-button aria-label="Share wall" ng-click="orgItemC.shareWall()" class="organiserItem-showControlButton">
 					<md-icon md-svg-icon="images/ic_share_orange_24px.svg"></md-icon>
+				</md-button-->
+
+				<md-button aria-label="Export wall" ng-click="orgItemC.exportWall()" class="organiserItem-showControlButton">
+					<md-icon md-svg-icon="images/ic_archive_orange_24px.svg"></md-icon>
 				</md-button>
 
 				<md-button aria-label="Delete wall" ng-click="orgItemC.deleteWall()" class="organiserItem-showControlButton">
@@ -42,8 +46,8 @@
 		<!-- Wall info content -->
 		<div layout="row" layout-align="space-between none" flex-grow="true" class="organiserItem-messageBody organiserItem-wordWrap" ng-show="!orgItemC.showControls">
 
-            <div flex layout="row" ng-show="orgItemC.showEditor" layout-align="space-between none">
-                <div layout="row" layout-align="space-around start">
+            <div flex layout="column" ng-show="orgItemC.showEditor" class="orgItem-input">
+                <div flex="50" layout="row" layout-align="space-between">
                     <md-input-container class="md-block">
                         <label>{{'ORG_GROUP' | translate}}</label>
                         <input ng-model="orgItemC.wall.label" type="text">
@@ -52,37 +56,46 @@
                         <label>{{'ORG_THEME' | translate}}</label>
                         <input ng-model="orgItemC.wall.theme" type="text">
                     </md-input-container>
+					<md-divider></md-divider>
                 </div>
+				<div layout="row" layout-align="space-between">
+					<md-input-container class="md-block">
+						<label>{{'ADD_ORGANISER_HERE' | translate}}</label>
+						<input ng-model="orgItemC.newOrganiserEmail" type="text" ng-change="orgItemC.checkOrganiserEmail()" ng-class="{ 'orgItem-input-ok': orgItemC.nameExists }">
+					</md-input-container>
+					<div layout="column" style="min-width: 200px;">
+						<span style="font-weight: bold;">{{'ORG_ORGANISERS' | translate}}</span>
+						<span ng-repeat="user in orgItemC.wall.organisers">{{user.defaultEmail}}</span>
+					</div>
+				</div>
                 <div>
-                    <md-button aria-label="Submit edited text" class="organiserItem-addWallButton" ng-click="orgItemC.submitEditedDetails()" >
+                    <md-button aria-label="Submit edited text" ng-class="{'orgItem-submit-orange': orgItemC.nameExists || orgItemC.newOrganiserEmail === ''}"
+							   ng-click="orgItemC.submitEditedDetails()" ng-disabled="!orgItemC.nameExists && orgItemC.newOrganiserEmail !== ''" >
                         <md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
                     </md-button>
                 </div>
 			</div>
 
-            <div ng-hide="orgItemC.showEditor" flex layout="row" layout-align="space-between none">
-                <div flex layout="column">
+            <div ng-hide="orgItemC.showEditor" flex layout="column" layout-align="space-between none">
+                <div flex layout="row">
 					<div>
                     	<span>{{orgItemC.wall.label}}</span>&nbsp;-&nbsp;<span>{{orgItemC.wall.theme}}</span>
 					</div>
+                </div>
+                <div flex layout="row" layout-align="space-between start" class="organiserItem-metadataArea">
 					<div class="organiserItem-counters" layout="row">
-						<img ng-src="/images/ic_group_black_24px.svg"/>&nbsp;
+						<img ng-src="/images/ic_group_grey_24px.svg"/>&nbsp;
 						<span style="margin-right: 5px;">{{::orgItemC.totalContributors}}</span>
-						<img ng-src="/images/ic_message_black_24px.svg"/>&nbsp;
+						<img ng-src="/images/ic_message_grey_24px.svg"/>&nbsp;
 						<span>{{::orgItemC.totalMessages}}</span>
 					</div>
-                </div>
-                <div flex layout="row" layout-align="space-around center">
-					<div layout="column" class="organiserItem-organisers">
-						<span ng-repeat="item in orgItemC.wall.organisers">{{::item.nickname}}</span>
+					<div layout="column">
+						<span ng-repeat="item in orgItemC.wall.organisers | filter: orgItemC.organiserFilter">{{::item.nickname}}</span>
 					</div>
-                    <div>
-                        <span ng-hide="orgItemC.wall.closed">{{orgItemC.wall.pin}}</span>
+                    <div layout="row">
+                        <span ng-hide="orgItemC.wall.closed" class="organiserItem-pin">{{orgItemC.wall.pin}}</span>
                         <md-icon ng-show="orgItemC.wall.closed" md-svg-icon="images/ic_lock_outline_grey_24px.svg"></md-icon>
-                    </div>
-                    <div style="font-size: 0.5em;" layout="column">
-						<!--span>{{'ORG_LAST_OPENED' | translate}}</span-->
-                        <span> {{::orgItemC.timeFromNow}}</span>
+						<span style="margin-left: 5px;"> {{::orgItemC.timeFromNow}}</span>
                     </div>
                 </div>
             </div>

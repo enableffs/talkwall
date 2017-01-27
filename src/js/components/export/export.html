@@ -11,9 +11,9 @@
 				<div ng-repeat="question in exportC.wall.questions" layout-padding="true">
 					<h1>{{ 'Question: ' + question.label }} | {{ exportC.getFormattedDate(question.createdAt) }}</h1>
 					<div class="export-messageArea" layout="column" ng-show="question.messages.length > 0">
-						<div ng-repeat="participant in question.participants">
-							<h2>{{ participant }}</h2>
-							<div ng-repeat="message in exportC.getBoardMessagesForParticipant(participant, question._id)" layout="column" ng-class="{'export-messageOnBoardSelected': message.board[participant].pinned, 'export-feedMessage': !message.board[participant].pinned }">
+						<div ng-repeat="c in question.contributors">
+							<h2>{{ c }}</h2>
+							<div ng-repeat="message in exportC.getBoardMessagesForContributor(c, question._id)" layout="column" ng-class="{'export-messageOnBoardSelected': message.board[c].pinned, 'export-feedMessage': !message.board[c].pinned }">
 								<div>{{ message.text }}</div>
 								<div layout="row" layout-align="end center">
 									<span class="export-nicknameChip" ng-repeat="origin in message.origin">{{ origin.nickname }}</span>

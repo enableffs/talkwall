@@ -1,44 +1,58 @@
-/// <reference path="../_references.ts"/>
-/// <reference path="../services/dataservice.ts"/>
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
 
-module TalkwallApp {
+ This file is part of Talkwall.
 
-	"use strict";
-	export interface WatchBoardSizeControllerDirectiveScope extends ng.IScope {
-		getWindowDimensions(): {};
-	}
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-	class WatchBoardSizeController {
-		static $inject: string[] = ['DataService', '$window'];
-		constructor(public dataService: DataService, public $window: angular.IWindowService) {
-		};
-	}
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-	function linker(scope: WatchBoardSizeControllerDirectiveScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes,
-	                ctrl: WatchBoardSizeController) {
-		var w = angular.element(ctrl.$window);
-		scope.getWindowDimensions = function () {
-			return {
-				'VIEW_HEIGHT': element.prop('offsetHeight'),
-				'VIEW_WIDTH': element.prop('offsetWidth')
-			};
-		};
-		scope.$watch(scope.getWindowDimensions, function (newValue, oldValue) {
-			ctrl.dataService.setBoardDivSize(newValue);
-		}, true);
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-		w.bind('resize', function () {
-			scope.$apply();
-		});
+"use strict";
+import {DataService} from "../services/dataservice";
+export interface WatchBoardSizeControllerDirectiveScope extends ng.IScope {
+	getWindowDimensions(): {};
+}
 
-		ctrl.dataService.setBoardDivSize(scope.getWindowDimensions());
-	}
+class WatchBoardSizeController {
+	static $inject: string[] = ['DataService', '$window'];
+	constructor(public dataService: DataService, public $window: angular.IWindowService) {
+	};
+}
 
-	export function WatchBoardSize(): ng.IDirective {
+function linker(scope: WatchBoardSizeControllerDirectiveScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes,
+				ctrl: WatchBoardSizeController) {
+	let w = angular.element(ctrl.$window);
+	scope.getWindowDimensions = function () {
 		return {
-			restrict: 'A',
-			controller: WatchBoardSizeController,
-			link: linker
+			'VIEW_HEIGHT': element.prop('offsetHeight'),
+			'VIEW_WIDTH': element.prop('offsetWidth')
 		};
-	}
+	};
+	scope.$watch(scope.getWindowDimensions, function (newValue, oldValue) {
+		ctrl.dataService.setBoardDivSize(newValue);
+	}, true);
+
+	w.bind('resize', function () {
+		scope.$apply();
+	});
+
+	ctrl.dataService.setBoardDivSize(scope.getWindowDimensions());
+}
+
+export function WatchBoardSize(): ng.IDirective {
+	return {
+		restrict: 'A',
+		controller: WatchBoardSizeController,
+		link: linker
+	};
 }

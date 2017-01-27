@@ -1,3 +1,22 @@
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * This message manager keeps track of which messages need to be updated on a client polling round
  * It also notifies a client of change of status
@@ -209,14 +228,30 @@ Mm.prototype.removeUserFromQuestion = function(wall_id, question_id, nickname, i
  *
  */
 Mm.prototype.removeUserFromWall = function(wall_id, nickname, isTeacher) {
-    // Remove this nickname from the wall's connected users
-    if (typeof this.data.walls[wall_id] !== 'undefined') {
+
+    if (this.data.walls.hasOwnProperty(wall_id)) {
+
+        // Remove user from all questions
+        var qs = this.data.walls[wall_id].questions;
+        for (var q in qs) {
+            if (qs.hasOwnProperty(q)) {
+                if (qs[q].created.hasOwnProperty(nickname)) {
+                    delete qs[q].created[nickname];
+                }
+                if (qs[q].updated.hasOwnProperty(nickname)) {
+                    delete qs[q].created[nickname];
+                }
+            }
+        }
+
+        // Remove this nickname from the wall's connected users
         var clientType = isTeacher ? 'connected_teachers' : 'connected_students';
         if (this.data.walls[wall_id].status[clientType].hasOwnProperty(nickname)) {
             delete this.data.walls[wall_id].status[clientType][nickname];
             this.data.total_talkwall_connections--;
         }
     }
+
 };
 
 /**
@@ -272,9 +307,11 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  */
 Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
 
-    // Note that someone is using this wall
+    // Note that someone is using this wall, or return if it has been removed
     if (this.data.walls.hasOwnProperty(wall_id)) {
         this.data.walls[wall_id].status.last_access = Date.now();
+    } else {
+        return;
     }
     function editUpdate(userQueue) {
 
@@ -297,6 +334,22 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
 
     // Make note of my changes in other users' lists on the same question
     switch(controlString) {
+
+       /* // In this case an Organiser is deleting someone else's message
+        case 'delete':
+            for (var user3 in thisQuestion.updated) {
+
+                // If the nickname is not our own, make a notification
+                if (user3 !== nickname && thisQuestion.updated.hasOwnProperty(user3)) {
+                    userQueue = thisQuestion.updated[user3];
+                    editUpdate(userQueue);
+
+                    // Update may already have position data, so mark it now as mixed data
+                    userQueue[updated_message._id].updateType
+                        = userQueue[updated_message._id].updateType === 'position' ? 'mixed' : 'edit';
+                }
+            }
+            break;*/
 
         // Only the originator of a message can make a 'create' ( a new message )
         case 'create':
@@ -377,7 +430,18 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
 Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
     
     if (typeof this.data.walls[wall_id] === 'undefined') {
-        return null;
+        return {
+            totalOnTalkwall: this.data.total_talkwall_connections,
+            status: {
+                last_update: Date.now(),
+                last_access: null,
+                teacher_current_question: 'none',
+                connected_teachers: {},
+                connected_students: {}
+            },
+            created: {},
+            updated: {}
+        }
     }
 
     var created = {};
