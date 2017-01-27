@@ -239,7 +239,7 @@ Mm.prototype.removeUserFromWall = function(wall_id, nickname, isTeacher) {
                     delete qs[q].created[nickname];
                 }
                 if (qs[q].updated.hasOwnProperty(nickname)) {
-                    delete qs[q].created[nickname];
+                    delete qs[q].updated[nickname];
                 }
             }
         }

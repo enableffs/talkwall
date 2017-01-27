@@ -100,7 +100,7 @@ gulp.task("typescripts", function () {
 
 gulp.task('javascripts', function() {
     return gulp.src('src/js/bundle.js')
-        .pipe(rename('main.min.js'))
+        //.pipe(rename('main.min.js'))
         .pipe(gulp.dest(config.dist.js));
 });
 
@@ -113,8 +113,8 @@ gulp.task('images', function() {
 });
 
 gulp.task('copy-index-html', function() {
-    return gulp.src('src/index_dist.html')
-        .pipe(rename("index.html"))
+    return gulp.src('src/index.html')
+        //.pipe(rename("index.html"))
         .pipe(gulp.dest(config.dist.root));
 });
 

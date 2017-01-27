@@ -88,6 +88,9 @@ export class OrganiserController implements IOrganiserControllerService {
     };
 
     activate(): void {
+        if(!this.dataService.data.status.authorised) {
+            this.$window.location.href = this.urlService.getHost() + '/#/';
+        }
         this.user = this.dataService.data.user;
         this.newNickname = this.user.nickname;
         this.dataService.requestWalls((walls: Wall[]) => {

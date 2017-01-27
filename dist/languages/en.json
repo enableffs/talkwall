@@ -69,7 +69,7 @@
   "ORG_THEME": "theme",
   "ORG_LAST_OPENED": "last opened",
   "ADD_ORGANISER_HERE": "Add organisers here..",
-  "ORG_ORGANISERS": "Existing organisers",
+  "ORG_ORGANISERS": "Existing organisers:",
   "WALL_CLOSE_TOGGLE": "Wall open / closed state",
   "WALL_WILL_BE_CLOSED": "The wall will be closed upon exit",
   "WALL_WILL_BE_OPEN": "The wall will be left open upon exit",
