@@ -17,18 +17,19 @@
  along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Wall} from '../../models/models';
+import {Wall, User} from '../../models/models';
 import {DataService} from "../../services/dataservice";
 import {UtilityService} from "../../services/utilityservice";
 
 export interface IOrganiserItemController {
 	deleteWall(): void;
-	editDetails(): void;
+	toggleEditDetails(): void;
 	toggleLock(): void;
 	editOrganisers(): void;
 	shareWall(): void;
 	deleteWall(): void;
-	submitEditedDetails(): void;
+	submitOrganiser(): void;
+	submitGroupTheme(): void;
 }
 
 class OrganiserItemController implements IOrganiserItemController {
@@ -40,9 +41,12 @@ class OrganiserItemController implements IOrganiserItemController {
 	private timeFromNow: string;
 	private totalContributors: number;
 	private totalMessages: number;
+	private newGroup: string;
+	private newTheme: string;
+	private organisers: string[] = [];
 	private newOrganiserEmail: string = '';
 	private checkNameTimeout: any;
-	private nameExists: boolean = false;
+	private nameExists: boolean = true;
 
 	constructor(
 		private isolatedScope: OrganiserItemDirectiveScope,
@@ -55,7 +59,11 @@ class OrganiserItemController implements IOrganiserItemController {
 
 		this.wall = isolatedScope.data;
 		this.timeFromNow = UtilityService.getFormattedDateTimeFromNow(this.wall.lastOpenedAt);
-
+		this.newGroup = this.wall.label;
+		this.newTheme = this.wall.theme;
+		this.wall.organisers.forEach((o: User) => {
+			this.organisers.push(o.defaultEmail);
+		});
 		this.totalContributors = this.totalMessages = 0;
 		this.wall.questions.forEach((q) => {
 			this.totalContributors += q.contributors.length;
@@ -70,10 +78,11 @@ class OrganiserItemController implements IOrganiserItemController {
 
 	toggleShowControls(): void {
 		this.showControls = !this.showControls;
+		this.showEditor = false;
 	}
 
-	editDetails(): void {
-		this.showEditor = true;
+	toggleEditDetails(): void {
+		this.showEditor = !this.showEditor;
         this.nameExists = false;
 		this.showControls = false;
 	}
@@ -117,16 +126,25 @@ class OrganiserItemController implements IOrganiserItemController {
 		}, 1000);
 	}
 
-	submitEditedDetails(): void {
+	submitGroupTheme(): void {
+		if (this.newGroup !== this.wall.label || this.newTheme !== this.wall.theme) {
+			this.wall.label = this.newGroup;
+			this.wall.theme = this.newTheme;
+			this.dataService.updateWall(this.wall, (updatedWall: Wall) => {
+				this.wall = updatedWall;
+			}, null);
+		}
+	}
+
+	submitOrganiser(): void {
 		if (this.newOrganiserEmail !== '') {
 			this.wall['newOrganiser'] = this.newOrganiserEmail;
 		}
-		this.dataService.updateWall(this.wall, (updatedWall) => {
-			this.wall = updatedWall;
+		this.dataService.updateWall(this.wall, () => {
+			this.organisers.push(this.newOrganiserEmail);
+			this.newOrganiserEmail = '';
+			this.nameExists = false;
 		}, null);
-		this.newOrganiserEmail = '';
-        this.nameExists = false;
-		//this.showEditor = false;
 	}
 
 }
