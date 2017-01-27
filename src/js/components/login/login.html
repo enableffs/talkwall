@@ -9,8 +9,8 @@
 				</md-button>
 			</div>
 		</md-toolbar>
-		<md-dialog-content flex layout="column">
-				<md-button class="loginMenuItem" ng-click="loginC.answer('/auth/google')" aria-label="Login med Google">
+		<md-dialog-content flex layout="column" layout-align="space-around center">
+				<md-button  ng-click="loginC.answer('/auth/google')" aria-label="Login med Google">
 					<div layout="row" layout-padding>
 						<div style="width: 40px;">
 							<img ng-src="images/google.svg">
@@ -21,7 +21,7 @@
 					</div>
 				</md-button>
 
-				<md-button class="loginMenuItem" ng-click="loginC.answer('/auth/facebook')" aria-label="Login med Facebook">
+				<md-button ng-click="loginC.answer('/auth/facebook')" aria-label="Login med Facebook">
 					<div layout="row" layout-padding>
 						<div style="width: 40px;">
 							<img ng-src="images/facebook.svg">
@@ -32,7 +32,7 @@
 					</div>
 				</md-button>
 
-				<md-button class="loginMenuItem" ng-click="loginC.hide()" disabled="true" aria-label="Login med Feide">
+				<!--md-button class="loginMenuItem" ng-click="loginC.hide()" disabled="true" aria-label="Login med Feide">
 					<div layout="row" layout-padding>
 						<div style="width: 40px;">
 							<img ng-src="images/nokkelhull-48px.png" width="40px">
@@ -41,7 +41,7 @@
 							<div layout-align="center center">{{ 'MENUPAGE_CREATEDRAWER_FEIDE' | translate }}</div>
 						</div>
 					</div>
-				</md-button>
+				</md-button-->
 
 		</md-dialog-content>
 

@@ -49,6 +49,7 @@ import {NvivoLogController} from "./components/nvivologs/nvivologs";
 let dependencies = [
     'ngRoute',
     'ngAria',
+    'ngMessages',
     'ngAnimate',
     'pascalprecht.translate',
     'ngMaterial',

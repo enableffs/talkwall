@@ -68,7 +68,7 @@
   "ORG_GROUP": "group",
   "ORG_THEME": "theme",
   "ADD_ORGANISER_HERE": "Existing organiser here..",
-  "ORG_ORGANISERS": "Existing organisers",
+  "ORG_ORGANISERS": "Existing organisers:",
   "ORG_LAST_OPENED": "last opened",
   "WALL_CLOSE_TOGGLE": "Wall open / closed state",
   "WALL_WILL_BE_CLOSED": "The wall will be closed upon exit",

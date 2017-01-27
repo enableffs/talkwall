@@ -23,7 +23,6 @@ You should have received a copy of the GNU Affero General Public License
 along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-
 <head>
     <base href="/">
     <title>Talkwall</title>
@@ -31,7 +30,7 @@ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
     <meta charset="UTF-8">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/angular-material/angular-material.min.css"><!--link rel="stylesheet" href="../bower_components/angular-material/angular-material.min.css"--> <!-- WARNING: Adding this interferes with existing styling -->
+    <link rel="stylesheet" href="/angular-material/angular-material.min.css">
     <link rel="stylesheet" href="/angular-moment-picker/dist/angular-moment-picker.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link href="images/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
@@ -42,6 +41,7 @@ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
 
     <script type="text/javascript" src="/angular/angular.min.js"></script>
     <script type="text/javascript" src="/angular-route/angular-route.min.js"></script>
+    <script type="text/javascript" src="/angular-messages/angular-messages.min.js"></script>
     <script type="text/javascript" src="/angular-animate/angular-animate.min.js"></script>
     <script type="text/javascript" src="/angular-aria/angular-aria.min.js"></script>
     <script type="text/javascript" src="/angular-material/angular-material.min.js"></script>
@@ -51,9 +51,40 @@ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
 
 </head>
 
-<body layout="row" >
-    <div layout flex ng-view id="appContent"></div>
+<body layout="row">
+    <div layout flex ng-view></div>
 </body>
-    <!-- Application files  -->
-    <script type="text/javascript" src="./js/main.min.js"></script>
+
+<!-- Application files  -->
+
+<!--script type="text/javascript" src="js/app.constants.js"></script>
+<script type="text/javascript" src="js/directives/autoresize.js"></script>
+<script type="text/javascript" src="js/directives/watchboardsize.js"></script>
+<script type="text/javascript" src="js/directives/twMaxlength.js"></script>
+<script type="text/javascript" src="js/models/models.js"></script>
+<script type="text/javascript" src="js/services/utilityservice.js"></script>
+<script type="text/javascript" src="js/services/tokenservice.js"></script>
+<script type="text/javascript" src="js/services/authenticationservice.js"></script>
+<script type="text/javascript" src="js/services/urlservice.js"></script>
+<script type="text/javascript" src="js/services/dataservice.js"></script>
+<script type="text/javascript" src="js/components/feedMessage/feedMessage.js"></script>
+<script type="text/javascript" src="js/components/organiserItem/organiserItem.js"></script>
+<script type="text/javascript" src="js/components/taskQuestion/taskQuestion.js"></script>
+<script type="text/javascript" src="js/app.config.js"></script>
+<script type="text/javascript" src="js/app.run.js"></script>
+<script type="text/javascript" src="js/components/login/login.js"></script>
+<script type="text/javascript" src="js/components/join/join.js"></script>
+<script type="text/javascript" src="js/components/close/close.js"></script>
+<script type="text/javascript" src="js/components/landing/landing.js"></script>
+<script type="text/javascript" src="js/components/sessioninfo/sessioninfo.js"></script>
+<script type="text/javascript" src="js/components/archive/archive.js"></script>
+<script type="text/javascript" src="js/components/export/export.js"></script>
+<script type="text/javascript" src="js/components/wall/wall.js"></script>
+<script type="text/javascript" src="js/components/organiser/organiser.js"></script>
+<script type="text/javascript" src="js/components/logs/logs.js"></script>
+<script type="text/javascript" src="js/components/editMessagePanel/editMessagePanel.js"></script>
+<script type="text/javascript" src="js/app.js"></script-->
+
+<script type="text/javascript" src="./js/bundle.js"></script>
+
 </html>
