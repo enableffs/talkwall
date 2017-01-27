@@ -23,6 +23,7 @@
  * @param $httpProvider  Used for registering an interceptor (TokenInterceptor).
  * @param $routeProvider  Used for defining default routing.
  * @param $mdThemingProvider Used to set Angular Material theme settings
+ * @param momentPickerProvider settings for date and time picker
  */
 export function configApp($translateProvider: angular.translate.ITranslateProvider, $httpProvider: ng.IHttpProvider,
                           $routeProvider: ng.route.IRouteProvider, $mdThemingProvider: ng.material.IThemingProvider, momentPickerProvider: any) {
