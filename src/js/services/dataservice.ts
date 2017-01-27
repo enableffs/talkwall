@@ -216,6 +216,12 @@ export interface IDataService {
      * @return the user
      */
     getAuthenticatedUser(): models.User;
+    /**
+     *
+     * @param successCallbackFn
+     * @param errorCallbackFn
+     */
+    disconnectFromWall(successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void
 }
 
 let constants = TalkwallConstants.Constants;
@@ -899,6 +905,9 @@ export class DataService implements IDataService {
                 let resultKey = 'result';
                 this.data.question.messages.push(new models.Message().updateMe(result.data[resultKey]));
                 this.parseMessageForTags(result.data[resultKey]);
+                if (this.data.status.contributors.indexOf(this.data.user.nickname) === -1) {
+                    this.data.status.contributors.push(this.data.user.nickname);
+                }
                 this.data.status.messageToEdit = null;
                 if (this.data.status.updateOrigin) {
                     //the new cloned message was created from a message on the board, so remove my nickname from the old one
@@ -1125,28 +1134,27 @@ export class DataService implements IDataService {
             this.data.status.idleTerminationTime = pollUpdateObject.status.idleTerminationTime;
         }
 
-        // Run on student connections only
-        else {
-            // Status update
-            if (pollUpdateObject.status.last_update > this.data.status.last_status_update && this.data.wall !== null) {
-                this.data.status.last_status_update = pollUpdateObject.status.last_update;
+        // Status update, get the updated Wall
+        if (pollUpdateObject.status.last_update > this.data.status.last_status_update && this.data.wall !== null) {
+            this.data.status.last_status_update = pollUpdateObject.status.last_update;
 
-                // Refresh the wall
                 this.requestWallUnauthorised(this.data.wall._id, () => {
 
-                    // Set a new question if available
-                    let new_question_id = pollUpdateObject.status.teacher_current_question;
-                    if (new_question_id !== 'none') {
-                        let new_question_index = UtilityService.getQuestionIndexFromWallById(new_question_id, this.data.wall);
+                    // If we are a student, set to a new question if available
+                    if (!this.data.status.authorised) {
+                        let new_question_id = pollUpdateObject.status.teacher_current_question;
+                        if (new_question_id !== 'none') {
+                            let new_question_index = UtilityService.getQuestionIndexFromWallById(new_question_id, this.data.wall);
 
-                        // Trigger a question and message update
-                        this.data.question = null;
-                        this.setQuestion(new_question_index, null, null);
+                            // Trigger a question and message update
+                            this.data.question = null;
+                            this.setQuestion(new_question_index, null, null);
+                        }
                     }
 
                 }, null);
-            }
         }
+
 
         // Check that a deleted user is removed the contributor list
         let self = this;
@@ -1227,21 +1235,30 @@ export class DataService implements IDataService {
         this.$rootScope.$broadcast('talkwallMessageUpdate', this.data.status.selectedParticipant);
     }
 
+    disconnectFromWall(successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
+        let closingUrl = this.urlService.getHost() + (this.data.status.authorised ? '/#/organiser' : '/#/');
+        let disconnectUrl = this.urlService.getHost() + (this.data.status.authorised ? '/disconnectteacher/' : '/disconnect/')
+            + this.data.user.nickname + '/' + this.data.wall._id;
+        this.$http.get(disconnectUrl)
+            .then(() => {
+                this.stopPolling();
+                this.data.wall = null;
+                this.data.question = null;
+                this.data.status.currentQuestionIndex = -1;
+                this.$window.location.href = closingUrl;
+            }, () => {
+                this.stopPolling();
+                this.data.wall = null;
+                this.data.question = null;
+                this.data.status.currentQuestionIndex = -1;
+                this.$window.location.href = closingUrl;
+            });
+    }
+
     showClosingDialog() : void {
         //detects if the device is small
         // let useFullScreen = (this.$mdMedia('sm') || this.$mdMedia('xs'))  && this.customFullscreen;
-
         let self = this;
-        let disconnect = function() {
-            let url = self.urlService.getHost() + '/#/';
-            self.$http.get(url + 'disconnect/' + self.data.user.nickname + '/' + self.data.wall._id + '/' + self.data.question._id)
-                .then(() => {
-                    self.$window.location.href = url;
-                }, () => {
-                    self.$window.location.href = url;
-                });
-        };
-
         //show the dialog
         this.$mdDialog.show({
             controller: CloseController,
@@ -1252,11 +1269,11 @@ export class DataService implements IDataService {
         })
             .then(function() {
                 console.log('--> ClosingController: answered');
-                disconnect();
+                self.disconnectFromWall(null, null);
             }, function() {
                 //dialog dismissed
                 console.log('--> LandingController: dismissed');
-                disconnect();
+                self.disconnectFromWall(null, null);
             });
     }
 

@@ -62,6 +62,8 @@
 				<md-button aria-label="Zoom out board messages" ng-if="wallC.dataService.data.status.magnifyBoard" class="md-icon-button" role="button" ng-click="wallC.dataService.toggleMagnifyBoard()">
 					<md-icon md-svg-src="images/ic_zoom_out_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
+			</div>
+			<div hide-xs hide-sm flex="33" layout="row" layout-align="end center">
 				<button aria-label="Toggle right-side panel" class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle(); wallC.toggleRightMenu(0)">
 					<md-icon ng-show="!wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_menu_orange_24px.svg" aria-hidden="true"></md-icon>
 					<md-icon ng-show="wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
@@ -119,7 +121,7 @@
 			<div layout-fill="true" layout="column" style="overflow: hidden">
 
 				<!-- Join with PIN section -->
-				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1, 'wall-rightMenuFlexClosed' : !wallC.rightMenu1}">
+				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu1, 'wall-rightMenuFlexClosed' : !wallC.rightMenu1}" ng-if="wallC.dataService.data.status.authorised">
 					<md-toolbar ng-click="wallC.toggleRightMenu(1)">
 						<div layout-fill="true" layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">{{ 'WALL_JOINWITHPIN' | translate }}</div>
@@ -228,7 +230,7 @@
                 </section>
 
 				<!-- Edit tasks section -->
-				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3, 'wall-rightMenuFlexClosed' : !wallC.rightMenu3}">
+				<section class="wall-rightMenuSection" ng-class="{'wall-rightMenuFlexOpen' :  wallC.rightMenu3, 'wall-rightMenuFlexClosed' : !wallC.rightMenu3}" ng-if="wallC.dataService.data.status.authorised">
 					<md-toolbar ng-click="wallC.toggleRightMenu(3)">
 						<div layout-fill="true" layout="row" layout-align="start center">
 							<div flex class="wall-toolbarText" layout-align="center center">{{ 'WALL_EDITTASKS' | translate }}</div>
@@ -287,7 +289,7 @@
 								<input ng-model="wallC.owneremail" type="email">
 							</md-input-container-->
 
-							<div layout="row" layout-align="space-around center">
+							<div layout="row" layout-align="space-around center" ng-if="wallC.dataService.data.status.authorised">
 								<md-button class="wall-lockButton" aria-label="Toggle lock wall" ng-click="wallC.toggleLock()">
 									<md-icon ng-hide="wallC.closeOnExit" md-svg-icon="images/ic_lock_open_orange_24px.svg"></md-icon>
 									<md-icon ng-show="wallC.closeOnExit" md-svg-icon="images/ic_lock_outline_orange_24px.svg"></md-icon>

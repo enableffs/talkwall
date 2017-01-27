@@ -117,6 +117,9 @@ class OrganiserItemController implements IOrganiserItemController {
 
 	checkOrganiserEmail(): void {
 		this.$timeout.cancel(this.checkNameTimeout);
+		if (this.newOrganiserEmail === '') {
+			return;
+		}
 		this.checkNameTimeout = this.$timeout(() => {
 			this.dataService.userExists(this.newOrganiserEmail, (exists) => {
 				this.nameExists = exists;

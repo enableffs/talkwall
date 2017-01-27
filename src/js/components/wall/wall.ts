@@ -93,7 +93,7 @@ export class WallController implements IWallControllerService {
 	private rightMenu3: boolean = false;
 	private rightMenu4: boolean = false;
 	private owneremail: string = undefined;
-	private closeOnExit: boolean = false;
+	private closeOnExit: boolean = true;
 
 	private savedGridType: string = 'none';
 	private selectedParticipant: string;
@@ -201,9 +201,12 @@ export class WallController implements IWallControllerService {
 
 			this.$timeout(() => {
 				this.showFeed();
-				this.rightMenu1 = true;
 				if (this.dataService.data.status.authorised) {
-					this.rightMenu1 = true;
+					if (question_index === -1) {
+						this.rightMenu3 = true;
+					} else {
+						this.rightMenu1 = true;
+					}
 					this.$mdSidenav('right').open();
 				}
 			}, 2000);
@@ -258,21 +261,15 @@ export class WallController implements IWallControllerService {
 	}
 
 	exitWall() {
-		if (this.closeOnExit && !this.dataService.data.wall.closed) {
+		if (this.dataService.data.status.authorised && this.closeOnExit && !this.dataService.data.wall.closed) {
 			this.dataService.data.wall.closed = true;
 			this.dataService.updateWall(null, () => {
-				this.dataService.stopPolling();
-				this.dataService.data.wall = null;
-				this.dataService.data.question = null;
-				this.$window.location.href = this.urlService.getHost() + '/#/organiser';
+				this.dataService.disconnectFromWall(null, null);
 			}, () => {
 				console.log('error updating wall');
 			});
 		} else {
-			this.dataService.stopPolling();
-			this.dataService.data.wall = null;
-			this.dataService.data.question = null;
-			this.$window.location.href = this.urlService.getHost() + '/#/organiser';
+			this.dataService.disconnectFromWall(null, null);
 		}
 	}
 
@@ -374,14 +371,7 @@ export class WallController implements IWallControllerService {
 						basedOnText = this.dataService.data.status.messageOrigin.text;
 					}
 					this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
-					handle.dataService.addMessage(
-						function () {
-							//success
-						},
-						function () {
-							//TODO: handle message create error
-						}
-					);
+					handle.dataService.addMessage( null, null);
 				} else {
 					console.log('--> WallController: Edit message - edited');
 					this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, '');
