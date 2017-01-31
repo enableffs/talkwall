@@ -955,12 +955,15 @@ exports.getLogs = function(req, res) {
                 } else if (logs !== null) {
 
                     var data = '';
-                    var diff = {x: '', y: ''};
+                    var diff = {x: '-', y: '-'};
+                    var basedOn = '';
                     var columns = {
                         eventTime: 'Event time',
                         minsIntoSession: 'Minutes into session',
                         eventType: 'Event type',
                         nickname: 'Nickname',
+                        text: 'Text',
+                        basedOn: 'Based On',
                         diffX: 'Diff X',
                         diffY: 'Diff Y',
                         itemId: 'Message or Question ID'
@@ -987,7 +990,10 @@ exports.getLogs = function(req, res) {
                             diff.x = log.diff.x;
                             diff.y = log.diff.y;
                         }
-                        stringifier.write([ moment(log.stamp).format(), relativeTime, common.LogType[log.type], log.nick, diff.x, diff.y, log.itemid ]);
+                        if (typeof log.basedOn !== 'undefined' && log.diff !== null) {
+                            basedOn = 'item:' + log.basedOn.itemid + ' nick: ' + log.basedOn.nick + ' text: ' + log.basedOn.text;
+                        }
+                        stringifier.write([ moment(log.stamp).format(), relativeTime, common.LogType[log.type], log.nick, log.text, basedOn, diff.x, diff.y, log.itemid ]);
                     });
 
                     stringifier.end();
