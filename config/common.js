@@ -44,7 +44,8 @@ exports.LogType = {
 };
 
 exports.trackedOrganiserWalls = [
-    'richardn@uio.im'
+    'richardn@uio.im',
+    'ole.smordal@gmail.com'
 ];
 
 exports.StatusMessages = {
