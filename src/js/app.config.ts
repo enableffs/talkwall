@@ -135,7 +135,8 @@ export function configApp($translateProvider: angular.translate.ITranslateProvid
         minutesFormat: 'mm', //moment.localeData().longDateFormat('LT').replace(/[aA]/, ''),
         secondsFormat: 'ss',
         minutesStep:   1,
-        secondsStep:   1
+        secondsStep:   1,
+        showHeader:     false
     });
 
 
