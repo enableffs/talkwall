@@ -80,6 +80,18 @@ module.exports = function(passport) {
                     // if the user is found, then log them in
                     if (user) {
                         user.lastLogin = Date.now;
+                        // Check that facebook details are included
+                        if (typeof user.facebook.email === 'undefined' || user.facebook.email === null ) {
+                            if(typeof profile.name.givenName === 'undefined' && typeof profile.name.familyName === 'undefined') {
+                                user.facebook.name = profile.displayName;
+                            }
+                            else {
+                                user.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                            }
+                            if(profile.emails !== undefined) {
+                                user.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+                            }
+                        }
                         user.save();
 
                         return done(null, user); // user found, return that user

@@ -330,9 +330,11 @@ export class DataService implements IDataService {
     }
 
     logAnEvent(type: LogType, id: string, diff: {x: number, y: number}, text: string, origin: {}[], basedOnText: string) {
+        /*
         if(!this.data.wall.trackLogs) {
             return;
         }
+        */
         // In cases where we record a question event, the itemid will match the q_id
         let questionId = type === models.LogType.CreateTask ? id : this.data.question._id;
         let basedOn: {itemid: string, nick: string, text: string} = null;

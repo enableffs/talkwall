@@ -982,6 +982,8 @@ exports.getLogs = function(req, res) {
 
                     stringifier.on('finish', function(){
                         res.send(data);
+                        //res.attachment('hello.csv');
+                        //res.end(JSON.stringify(data, null, 2), 'utf8')
                     });
 
                     logs.forEach( function(log) {
