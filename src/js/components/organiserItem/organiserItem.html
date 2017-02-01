@@ -74,9 +74,9 @@
 					<div layout="column" layout-align="space-between" style="max-height: 300px;">
 						<div layout="row">
 							<md-input-container class="md-block">
-								<label>{{'ADD_ORGANISER_HERE' | translate}}</label>
+								<label>{{'ORG_ADD_ORGANISER_HERE' | translate}}</label>
 								<input ng-model="orgItemC.newOrganiserEmail" type="text" ng-change="orgItemC.checkOrganiserEmail()" ng-class="{ 'orgItem-input-ok': orgItemC.nameExists }">
-								<div class="hint" ng-show="!orgItemC.nameExists">No matching email found</div>
+								<div class="hint" ng-show="!orgItemC.nameExists">{{'ORG_ADD_ORGANISER_NOEMAIL' | translate}}</div>
 							</md-input-container>
 							<md-button aria-label="Submit edited text" ng-class="{'orgItem-submit-orange': orgItemC.nameExists && orgItemC.newOrganiserEmail !== ''}"
 									   class="organiserItem-showControlButton" ng-click="orgItemC.submitOrganiser()" ng-disabled="!orgItemC.nameExists || orgItemC.newOrganiserEmail === ''" >
