@@ -142,8 +142,8 @@ export function configApp($translateProvider: angular.translate.ITranslateProvid
 
 
     let lang: string = null;
-    if (navigator['language'] !== null) {
-        lang = navigator['language'][0];
+    if (typeof navigator['languages'] !== 'undefined' && navigator['languages'] !== null && navigator['languages'].length > 0) {
+        lang = navigator['languages'][0];
     } else {
         lang = navigator.language || navigator['userLanguage'];
     }
