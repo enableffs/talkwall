@@ -1,10 +1,10 @@
 <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
 <div layout flex ng-controller="LandingController as landingC">
     <div flex layout id="landing-main">
-        <md-content flex md-scroll-y>
+        <md-content flex md-scroll-y >
             <div ng-style="{'width': windowWidth+'px', 'background-color': '#00BCD4'}" style="height: 800px; position: relative;" autoresize="">
 
-                <div class="landing-betalabel" ng-click="showBetaMessage()">
+                <div class="landing-betalabel">
                     <img src="../images/beta_icon.png">
                 </div>
 
@@ -37,15 +37,15 @@
 
             <!-- arrow down -->
 
-            <div class="landing-under" layout="column" layout-align="space-around center">
+            <div>
 
                 <!-- digitalised dialogues illustration -->
 
-                <div class="landing-illustration" layout="column" layout-align="start center" style="position: relative; height: 400px;">
+                <div class="landing-illustration" layout="column" layout-align="start center" style="position: relative; height: auto;">
 
                     <div layout="column" layout-align="start center">
                         <a href="{{ 'MENUPAGE_DD_HREF' | translate }}">
-                            <img alt="Digitalised-dialogue" src="../images/digitalised-dialogue.svg" style="width: auto;">
+                            <img alt="Digitalised-dialogue" src="../images/digitalised-dialogue.svg" style="width: 100%; height: 400px;">
                         </a>
                     </div>
 
@@ -61,9 +61,9 @@
                 <div class="landing-subtitle"><h2>{{ 'MENUPAGE_HEADING_2' | translate }}</h2></div>
 
 				<!-- video -->		
-				<div>
-					<iframe width="980" height="551" src="https://www.youtube.com/embed/RnzUhA6PHRY" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='no'"></iframe>
-					<iframe width="980" height="551" src="https://www.youtube.com/embed/erl3T46MDm0" frameborder="0" allowfullscreen ng-show="landingC.languageCode=='en'"></iframe>
+				<div class="landing-video" layout="column" layout-align="start center" layout-fill>
+					<iframe src="https://www.youtube.com/embed/RnzUhA6PHRY" frameborder="0" allowfullscreen ng-if="landingC.languageCode=='no'"></iframe>
+					<iframe src="https://www.youtube.com/embed/erl3T46MDm0" frameborder="0" allowfullscreen ng-if="landingC.languageCode=='en'"></iframe>
 				</div>
 			</div>
 
@@ -97,7 +97,7 @@
             </div>-->
 
               <!-- respond - question - share -->
-              <div class="landing-rqs-row" layout="row" layout-xs="column" layout-align="space-around start" layout-align-xs="center center">
+              <div layout="column" layout-gt-sm="row" layout-align="center center" layout-align-gt-sm="space-around start" >
 
                 <div class="landing-rqs" flex="noshrink" >
                     <h2>{{ 'MENUPAGE_Q_TITLE' | translate }}</h2>
@@ -124,7 +124,7 @@
 
             </div>
 
-              <div class="landing-statements" layout="column" layout-align="center center">
+            <div class="landing-statements" layout="column" layout-align="center center">
                 <p><a href="{{ 'MENUPAGE_Q_HREF' | translate }}">{{ 'MENUPAGE_Q_REF' | translate }}</a></p>
                 <p><a href="{{ 'MENUPAGE_R_HREF' | translate }}">{{ 'MENUPAGE_R_REF' | translate }}</a></p>
             </div>

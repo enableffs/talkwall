@@ -1,10 +1,22 @@
 /*
- *
- * Main App file App.js
- * @author Jeremy Toussaint & Richard Nesnass
- *
- *
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 require('newrelic');
 
 /********* load environment variables locally *********/
@@ -68,7 +80,7 @@ app.use(passport.initialize());
 
 /********* express *********/
 app.use(express.static(path.join(__dirname, process.env.STATIC_FOLDER)));
-app.use(express.static(path.join(__dirname, 'bower_components')));
+app.use(express.static(path.join(__dirname, 'node_modules')));
 
 app.all('*', function(req, res, next) {
     res.set('Access-Control-Allow-Origin', '*');
@@ -93,6 +105,7 @@ app.get('/auth/localapikey',        passport.authenticate('localapikey'),       
 
 /********* authenticated (teacher only) operations *********/
 app.get('/user',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getUser);
+app.get('/userexists/:email',       jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.userExists);
 app.put('/user',                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateUser);
 app.get('/walls',                   jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWalls);
 app.get('/wall/:id',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.getWall);
@@ -105,14 +118,16 @@ app.delete('/question/:wall_id/:question_id',           jwt({secret: secret.secr
 app.get('/change/:nickname/:wall_id/:question_id/:previous_question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
 app.put('/wall/close/:wall_id',                         jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
 app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,  routes.teacher.poll);
-app.get('/disconnectteacher/:nickname/:wall_id/:question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.disconnectWall);
+app.get('/disconnectteacher/:nickname/:wall_id',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.disconnectWall);
 app.post('/messageteacher',                                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.createMessage);
 app.put('/messageteacher',                                     jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.updateMessages);
+app.post('/logs/:wall_id/:startdatetime/:enddatetime/:timelinetime/:selectedtypes',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,        routes.teacher.getLogs);
 
 /********* student / teacher operations *********/
-app.get('/clientwall/:nickname/:pin',                                                               routes.client.getWall);
-app.get('/disconnect/:nickname/:wall_id/:question_id',                                                  routes.client.disconnectWall);
-app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',                     routes.client.poll);
+app.get('/clientwall/:nickname/:pin',                                                               routes.client.getWallByPin);
+app.get('/clientwall/:wall_id',                                                                     routes.client.getWallById);
+app.get('/disconnect/:nickname/:wall_id',                                                           routes.client.disconnectWall);
+app.get('/poll/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',               routes.client.poll);
 app.post('/message',                                                                                routes.client.createMessage);
 app.put('/message',                                                                                 routes.client.updateMessages);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
@@ -129,7 +144,7 @@ if(process.env.STATIC_FOLDER === 'src') {   // Only enable this route if we are 
 // middleware which blocks requests when we're too busy
 app.use(function(req, res, next) {
     if (toobusy()) {
-        res.send(503, "I'm busy right now, sorry.");
+        res.status(503).send("I'm busy right now, sorry.");
     } else {
         next();
     }

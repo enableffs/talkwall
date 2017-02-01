@@ -24,6 +24,11 @@
   color: $color-darkgrey;
 }
 
+.wall-lockButton {
+  min-width: 40px;
+  background-color: lightgrey;
+}
+
 .wall-question div,
 .wall-question {
   max-height: 50px !important;

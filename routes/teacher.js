@@ -1,6 +1,22 @@
-/**
- * Created by richardnesnass on 02/06/16.
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 var utilities = require('../config/utilities.js');
 var common = require('../config/common');
@@ -10,6 +26,9 @@ var Wall = require('../models/wall');
 var User = require('../models/user');
 var Question = require('../models/question');
 var Message = require('../models/message');
+var Log = require('../models/log');
+var moment = require('moment');
+var stringify = require('csv-stringify');
 
 // Given an integer range, generate a random number within it
 function randomNumberInRange(min, max) {
@@ -45,6 +64,32 @@ exports.getUser = function(req, res) {
     })
 };
 
+/**
+ * @api {get} /userexists Confirm a user exists
+ * @apiName userExists
+ * @apiGroup authorised
+ *
+ * @apiSuccess {Boolean} boolean
+ */
+exports.userExists = function(req, res) {
+    if (typeof req.params.email === 'undefined' || req.params.email == null) {
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+    User.count({
+        defaultEmail : req.params.email
+    }, function(error, count) {
+        if (error) {
+            res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message});
+        }
+        else {
+            res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                message: common.StatusMessages.GET_SUCCESS.message, exists: count > 0});
+        }
+    })
+};
+
 
 /**
  * @api {put} /user Update a users details
@@ -59,25 +104,27 @@ exports.updateUser = function(req, res) {
         || typeof req.body.user === 'undefined' || req.body.user == null) {
         res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    } else {
+        var query = User.findOne({
+            _id: req.user.id
+        });
+
+        query.exec(function (error, user) {
+            if (error) {
+                res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                    message: common.StatusMessages.UPDATE_ERROR.message, result: error
+                });
+            }
+            else {
+                user.defaultEmail = req.body.user.defaultEmail;
+                user.nickname = req.body.user.nickname;
+                user.save();
+                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                    message: common.StatusMessages.UPDATE_SUCCESS.message, result: user
+                });
+            }
+        })
     }
-
-    var query = User.findOne({
-        _id : req.user.id
-    });
-
-    query.exec(function(error, user) {
-        if(error) {
-            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
-        }
-        else {
-            user.lastOpenedWall = req.body.user.lastOpenedWall;
-            user.defaultEmail = req.body.user.defaultEmail;
-            user.save();
-            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                message: common.StatusMessages.UPDATE_SUCCESS.message, result: user});
-        }
-    })
 };
 
 /**
@@ -97,37 +144,52 @@ exports.createWall = function(req, res) {
     while(redisClient.exists(newPin) === 1) {
         newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
     }
-
-    // Create a new Wall model and include the pin
-    var newWall = new Wall({
-        pin: newPin,
-        label: req.body.label,
-        createdBy: req.user.id
-    });
-
-    newWall.save(function(error, wall) {
-        if (error) {
+    var trackLogs = false;
+    User.findOne({ _id: req.user.id}).lean().exec(function(error, user) {
+        if(error) {
             res.status(common.StatusMessages.CREATE_ERROR.status).json({
                 message: common.StatusMessages.CREATE_ERROR.message, result: error});
         }
-        else {
-            // Save the new pin and wall ID to redis
-            redisClient.set(newPin, wall.id);
-            redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
-            User.findOneAndUpdate( { _id: req.user.id }, { lastOpenedWall : wall.id }, function(error, user) {
-                if(error) {
-                    res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                        message: common.StatusMessages.UPDATE_ERROR.message, result: error});
-                } else {
-                    mm.setup(wall._id, user.nickname);
+
+        trackLogs = common.trackedOrganiserWalls.indexOf(user.defaultEmail) > -1;
+
+        // Create a new Wall model and include the pin
+        var newWall = new Wall({
+            pin: newPin,
+            label: req.body.label,
+            theme: req.body.theme,
+            createdBy: req.user.id,
+            organisers: [req.user.id],
+            trackLogs: trackLogs
+        });
+
+        newWall.save(function(error, wall) {
+            if (error) {
+                res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                    message: common.StatusMessages.CREATE_ERROR.message, result: error});
+            }
+            else {
+                // Save the new pin and wall ID to redis
+                redisClient.set(newPin, wall.id.toString());
+                redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
+                //mm.setup(wall._id, req.user.nickname);
+
+                Wall.populate(newWall, { path: "organisers" }, function(err, wallWithOrganisers) {
+                    if(error) {
+                        res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                            message: common.StatusMessages.CREATE_SUCCESS.message,
+                            result: wall
+                        });
+                    }
                     res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message,
-                        result: wall
+                        result: wallWithOrganisers
                     });
-                }
-            });
-        }
-    })
+                });
+            }
+        })
+    });
+
 };
 
 /**
@@ -144,32 +206,66 @@ exports.updateWall = function(req, res) {
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    // Close this wall to clients by expiring the pin
-    if (req.body.wall.closed) {
-        redisClient.EXPIRE(req.body.wall.pin, 1);
-        req.body.wall.pin = '0000';
-        mm.removeWall(req.body.wall._id);
-    }
-
-    var query = Wall.findOneAndUpdate({
+    var query = Wall.findOne({
         _id : req.body.wall._id
-    }, req.body.wall, { new: true });
+    }).populate('organisers');
 
     query.exec(function(error, wall) {
         if(error) {
             res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error});
         } else {
-            if (wall.closed) {
+            if (!wall.closed && req.body.wall.closed) {     // Wall has been closed (locked)
+                // Expire the pin
+                if (req.body.wall.closed) {
+                    redisClient.EXPIRE(req.body.wall.pin, 1);
+                    wall.pin = '0000';
+                    mm.removeWall(req.body.wall._id);
+                }
+
+                wall.closed = true;
+
                 //send an email to the wall creator with the permalink.
+                /*
                 console.log('--> updateWall: sending export link: targetemail: ' + req.body.wall.targetEmail);
-                sendExportLinkToOwner(wall.createdBy, req.body.wall.targetEmail).then(function() {
-                    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});                    
+                sendExportLinkToOwner(wall.createdBy, req.body.wall.targetEmail).then(function () {
+                    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                        message: common.StatusMessages.UPDATE_SUCCESS.message,
+                        result: wall
+                    });
                 });
+                */
+
+            } else if (wall.closed && !req.body.wall.closed) {  // Wall has been opened (unlocked)
+                // Choose a fresh pin
+                var newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
+                while(redisClient.exists(newPin) === 1) {
+                    newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
+                }
+                wall.pin = newPin;
+                redisClient.set(newPin, wall._id.toString());
+                wall.closed = false;
+            }
+
+            wall.label = req.body.wall.label;
+            wall.theme = req.body.wall.theme;
+            wall.deleted = req.body.wall.deleted;
+            mm.statusUpdate(wall._id, 'none');
+
+            if (typeof req.body.wall['newOrganiser'] !== 'undefined' && req.body.wall['newOrganiser'] !== null) {
+                User.findOne({ defaultEmail: req.body.wall['newOrganiser'] }).exec(function(error, user) {
+                    wall.organisers.push(user._id);
+                    wall.save(function(error, savedWall) {
+                        res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                            message: common.StatusMessages.UPDATE_SUCCESS.message, result: savedWall});
+                    });
+
+                })
             } else {
-                mm.statusUpdate(wall._id, 'none');
-                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                    message: common.StatusMessages.UPDATE_SUCCESS.message, result: wall});
+                wall.save(function(error, savedWall) {
+                    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                        message: common.StatusMessages.UPDATE_SUCCESS.message, result: savedWall});
+                });
             }
         }
     });
@@ -242,7 +338,7 @@ exports.closeWall = function(req, res) {
 
     var query = Wall.findOneAndUpdate({
         _id : req.params.wall_id
-    }, {closed: true, pin: '0000'}, { new: true });
+    }, {closed: true}, { new: true });
 
     query.exec(function(error, wall) {
         if(error) {
@@ -280,8 +376,24 @@ exports.notifyChangeQuestion = function(req, res) {
     }
     mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     mm.statusUpdate(req.params.wall_id, req.params.question_id);
-    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-        message: common.StatusMessages.UPDATE_SUCCESS.message});
+    Wall.findOne({
+        '_id': req.params.wall_id
+    }, function(error, wall) {
+        if(error) {
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                message: common.StatusMessages.UPDATE_ERROR.message
+            });
+        } else {
+            wall.questions.forEach(function(question, index) {
+                if (question._id.toString() === req.params.question_id) {
+                    wall.questionIndex = index;
+                }
+            });
+            wall.save();
+            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+                message: common.StatusMessages.UPDATE_SUCCESS.message });
+        }
+    });
 };
 
 
@@ -299,30 +411,32 @@ exports.notifyChangeQuestion = function(req, res) {
 exports.disconnectWall = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
-        || typeof req.params.question_id === 'undefined' || req.params.question_id == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
         res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
     }
 
-    var query = Wall.findOne({
-        _id : req.params.wall_id,
-        pin : { $gte: 0 }       // Wall is not available to clients if pin is -1
-    }).lean();
+    if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
+        var query = Wall.findOne({
+            _id: req.params.wall_id,
+            pin: {$gte: 0}       // Wall is not available to clients if pin is -1
+        }).lean();
 
-    query.exec(function(error, wall) {
-        if(error) {
-            res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
-                message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error});
-        }
-        else {
-            // Remove nickname from the wall users list (message manager)
-            mm.removeUserFromQuestion(wall._id, req.params.question_id, req.params.nickname, true);
-            mm.removeUserFromWall(wall._id, req.params.nickname, true);
-            res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-                message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message, result: wall});
-        }
-    });
+        query.exec(function (error, wall) {
+            if (error) {
+                res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
+                    message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error
+                });
+            }
+            else {
+                // Remove nickname from the wall users list (message manager)
+                mm.removeUserFromWall(wall._id, req.params.nickname, true);
+                res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+                    message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message
+                });
+            }
+        });
+    }
 
 };
 
@@ -373,8 +487,10 @@ exports.deleteWall = function(req, res) {
  */
 exports.getWalls = function(req, res) {
     var query = Wall.find({
-        'createdBy' : req.user.id
-    }, '-createdBy -questions').lean();
+        'organisers' : req.user.id,
+        'deleted': false
+    // }, '-createdBy -questions').lean();
+    }).populate('organisers');
 
     query.exec(function(error, walls) {
         if(error) {
@@ -413,6 +529,7 @@ exports.getWall = function(req, res) {
                 message: common.StatusMessages.GET_ERROR.message, result: error});
         }
         else if (wall !== null) {
+            wall.lastOpenedAt = new Date();
             redisClient.get(wall.pin, function(error, redis_wall_id) {
                 if(redis_wall_id === null || wall.pin === '0000') {
                     // Pin has expired while we were away or deliberately - Reallocate a pin to this wall
@@ -421,12 +538,12 @@ exports.getWall = function(req, res) {
                     while (redisClient.exists(newPin) === 1) {
                         newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
                     }
-                    redisClient.set(newPin, wall._id);
+                    redisClient.set(newPin, wall._id.toString());
                     redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
                     wall.pin = newPin;
                     wall.save();
                 }
-                User.findOneAndUpdate({_id: req.user.id}, {lastOpenedWall: wall.id}, function (error, user) {
+                User.findOne({_id: req.user.id}, function (error, user) {
                     if (error) {
                         res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                             message: common.StatusMessages.UPDATE_ERROR.message, result: error
@@ -436,8 +553,20 @@ exports.getWall = function(req, res) {
                         //mm.addUserToQuestion(wall._id, '', user.nickname, true);
                         //mm.putUpdate(wall.id, 'none', '', null, true);
                         mm.statusUpdate(wall._id, 'none');
+                        var idIndex = user.recentWalls.indexOf(wall._id);
+                        if (idIndex > -1) {
+                            var item = user.recentWalls.splice(idIndex, 1);
+                            user.recentWalls.unshift(item);
+                        } else {
+                            if (user.recentWalls.length === 4) {
+                                user.recentWalls.pop();
+                            }
+                            user.recentWalls.unshift(wall._id);
+                        }
+                        user.save();
                         res.status(common.StatusMessages.GET_SUCCESS.status).json({
-                            message: common.StatusMessages.GET_SUCCESS.message, result: wall
+                            message: common.StatusMessages.GET_SUCCESS.message,
+                            result: wall
                         });
                     }
                 });
@@ -445,7 +574,6 @@ exports.getWall = function(req, res) {
         }
     })
 };
-
 
 exports.getQuestionContributors = function(req, res) {
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
@@ -681,6 +809,40 @@ exports.updateMessages = function(req, res) {
 
 };
 
+/**
+ * @api {delete} /message Delete a message
+ * @apiName deleteMessage
+ * @apiGroup authorised
+ *
+ */
+/*
+
+exports.deleteMessage = function(req, res) {
+
+    if (typeof req.params.message_id === 'undefined' || req.params.message_id == null ||
+        typeof req.params.nickname === 'undefined' || req.params.nickname == null ||
+        typeof req.params.wall_id === 'undefined' || req.params.wall_id == null) {
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Message.update(
+        { _id : req.params.message_id },
+        { deleted : true },
+        { new: true } );
+
+    query.exec(function(error, updated_message) {
+        if(error) {
+            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
+        } else {
+            mm.postUpdate(req.params.wall_id, updated_message.question_id, req.params.nickname, updated_message, 'delete', true);
+            res.status(common.StatusMessages.DELETE_SUCCESS.status).json({
+                message: common.StatusMessages.DELETE_SUCCESS.message, result: wall});
+        }
+    })
+};
+*/
 
 
 exports.createTestUser = function() {
@@ -740,4 +902,97 @@ exports.poll = function(req, res) {
     res.status(common.StatusMessages.POLL_SUCCESS.status)
         .json({message: common.StatusMessages.POLL_SUCCESS.message, result: update});
 
+};
+
+
+
+/**
+ * @api {get} /logs Get Logs
+ * @apiName getLogs
+ * @apiGroup authorised
+ *
+ * @apiParam {String} id ID of the wall to get logs for
+ *
+ * @apiSuccess {log[]} log object array
+ */
+exports.getLogs = function(req, res) {
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null ||
+        typeof req.params.startdatetime === 'undefined' || req.params.startdatetime == null ||
+        typeof req.params.enddatetime === 'undefined' || req.params.enddatetime == null ||
+        typeof req.params.timelinetime === 'undefined' || req.params.timelinetime == null ||
+        typeof req.params.selectedtypes === 'undefined' || req.params.selectedtypes == null) {
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var selectedTypes = JSON.parse(req.params.selectedtypes);
+
+    var query = Wall.findOne({
+        _id : req.params.wall_id
+    }).lean();
+
+    query.exec(function(error, wall) {
+        if(error) {
+            res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message, result: error});
+        }
+        else if (wall !== null) {
+            var question_ids = [];
+            var start = new Date(parseInt(req.params.startdatetime));
+            var end = new Date(parseInt(req.params.enddatetime));
+            wall.questions.forEach(function(question) {
+                question_ids.push(question._id);
+            });
+            var logQuery = Log.find({
+                'q_id' : { $in: question_ids },
+                'type' : { $in: selectedTypes },
+                'stamp' : { $gte: start, $lt: end }
+            }).lean();
+            logQuery.exec(function(error, logs) {
+                if(error) {
+                    res.status(common.StatusMessages.GET_ERROR.status).json({
+                        message: common.StatusMessages.GET_ERROR.message, result: error});
+                } else if (logs !== null) {
+
+                    var data = '';
+                    var diff = {x: '', y: ''};
+                    var columns = {
+                        eventTime: 'Event time',
+                        minsIntoSession: 'Minutes into session',
+                        eventType: 'Event type',
+                        nickname: 'Nickname',
+                        diffX: 'Diff X',
+                        diffY: 'Diff Y',
+                        itemId: 'Message or Question ID'
+                    };
+                    var stringifier = stringify({ header: true, columns: columns, delimiter: ',' });
+
+                    res.setHeader('Content-disposition', 'attachment; filename=\"talkwall-logs-' + req.params.startdatetime + '.csv\"');
+                    res.setHeader('Content-type', 'text/csv');
+                    res.charset = 'UTF-8';
+
+                    stringifier.on('readable', function(){
+                        while(row = stringifier.read()){
+                            data += row;
+                        }
+                    });
+
+                    stringifier.on('finish', function(){
+                        res.send(data);
+                    });
+
+                    logs.forEach( function(log) {
+                        var relativeTime = moment(parseInt(req.params.timelinetime)).add(moment(log['stamp'], moment.ISO_8601).diff(moment(parseInt(req.params.startdatetime)))).format('HH:mm:ss');
+                        if (typeof log.diff !== 'undefined' && log.diff !== null) {
+                            diff.x = log.diff.x;
+                            diff.y = log.diff.y;
+                        }
+                        stringifier.write([ moment(log.stamp).format(), relativeTime, common.LogType[log.type], log.nick, diff.x, diff.y, log.itemid ]);
+                    });
+
+                    stringifier.end();
+                }
+            })
+        }
+    })
 };

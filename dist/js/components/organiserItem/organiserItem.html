@@ -1,0 +1,123 @@
+<div layout="row" style="width: 100%;">
+
+		<div layout="column" ng-if="orgItemC.showControls" layout-align="center center" class="organiserItem-messageControl" class="organiserItem">
+			<div layout="row">
+				
+				<md-button aria-label="Hide message controls" ng-click="orgItemC.toggleShowControls()" class="organiserItem-showControlButton organiserItem-messageNotSelected">
+					<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
+				</md-button>
+
+				<md-button aria-label="Toggle lock wall" ng-click="orgItemC.toggleLock()" class="organiserItem-showControlButton">
+					<md-icon ng-show="orgItemC.wall.closed" md-svg-icon="images/ic_lock_open_orange_24px.svg"></md-icon>
+					<md-icon ng-hide="orgItemC.wall.closed" md-svg-icon="images/ic_lock_outline_orange_24px.svg"></md-icon>
+				</md-button>
+				
+				<md-button aria-label="Edit details" ng-click="orgItemC.toggleEditDetails()" class="organiserItem-showControlButton">
+					<md-icon md-svg-icon="images/ic_mode_edit_orange_24px.svg"></md-icon>
+				</md-button>
+				
+				<!--md-button aria-label="Edit organisers" ng-click="orgItemC.editOrganisers()" class="organiserItem-showControlButton">
+					<md-icon md-svg-icon="images/ic_person_add_orange_24px.svg"></md-icon>
+				</md-button-->
+				
+				<!--md-button aria-label="Share wall" ng-click="orgItemC.shareWall()" class="organiserItem-showControlButton">
+					<md-icon md-svg-icon="images/ic_share_orange_24px.svg"></md-icon>
+				</md-button-->
+
+				<md-button aria-label="Export wall" ng-click="orgItemC.exportWall()" class="organiserItem-showControlButton">
+					<md-icon md-svg-icon="images/ic_archive_orange_24px.svg"></md-icon>
+				</md-button>
+
+				<md-button aria-label="Delete wall" ng-click="orgItemC.deleteWall()" class="organiserItem-showControlButton">
+					<md-icon md-svg-icon="images/ic_delete_forever_orange_24px.svg"></md-icon>
+				</md-button>
+				
+			</div>
+		</div>
+
+		<!-- Wall controls -->
+		<div layout="column" ng-show="!orgItemC.showControls && !orgItemC.showEditor" layout-align="center center">
+			<md-button aria-label="Show wall controls" ng-show="!orgItemC.showControls" ng-click="orgItemC.toggleShowControls()" class="organiserItem-showControlButton">
+				<md-icon md-svg-icon="images/ic_menu_grey_24px.svg"></md-icon>
+			</md-button>
+		</div>
+
+
+		<!-- Wall info content -->
+		<div layout="row" layout-align="space-between none" flex-grow="true" class="organiserItem-messageBody organiserItem-wordWrap" ng-show="!orgItemC.showControls">
+
+            <div flex layout="row" layout-align="start center" ng-show="orgItemC.showEditor" style="padding-top: 10px;">
+
+				<div flex="15" layout="column" layout-align="center center">
+					<md-button aria-label="Hide message controls" ng-click="orgItemC.toggleEditDetails()" class="organiserItem-showControlButton organiserItem-messageNotSelected">
+						<md-icon md-svg-icon="images/ic_close_grey_24px.svg"></md-icon>
+					</md-button>
+				</div>
+
+				<div flex layout="column" class="orgItem-input">
+
+					<div flex="50" layout="row" layout-align="space-between">
+						<md-input-container class="md-block">
+							<label>{{'ORG_GROUP' | translate}}</label>
+							<input ng-model="orgItemC.newGroup" type="text">
+						</md-input-container>
+						<md-input-container class="md-block">
+							<label>{{'ORG_THEME' | translate}}</label>
+							<input ng-model="orgItemC.newTheme" type="text">
+						</md-input-container>
+						<md-button aria-label="Submit edited text" ng-class="{'orgItem-submit-orange': orgItemC.newGroup !== orgItemC.wall.label || orgItemC.newTheme !== orgItemC.wall.theme}"
+								   class="organiserItem-showControlButton" ng-click="orgItemC.submitGroupTheme()" ng-disabled="orgItemC.newGroup === '' || (orgItemC.newGroup === orgItemC.wall.label && orgItemC.newTheme === orgItemC.wall.theme)" >
+							<md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
+						</md-button>
+
+					</div>
+					<div layout="column" layout-align="space-between" style="max-height: 300px;">
+						<div layout="row">
+							<md-input-container class="md-block">
+								<label>{{'ADD_ORGANISER_HERE' | translate}}</label>
+								<input ng-model="orgItemC.newOrganiserEmail" type="text" ng-change="orgItemC.checkOrganiserEmail()" ng-class="{ 'orgItem-input-ok': orgItemC.nameExists }">
+								<div class="hint" ng-show="!orgItemC.nameExists">No matching email found</div>
+							</md-input-container>
+							<md-button aria-label="Submit edited text" ng-class="{'orgItem-submit-orange': orgItemC.nameExists && orgItemC.newOrganiserEmail !== ''}"
+									   class="organiserItem-showControlButton" ng-click="orgItemC.submitOrganiser()" ng-disabled="!orgItemC.nameExists || orgItemC.newOrganiserEmail === ''" >
+								<md-icon md-svg-src="images/ic_keyboard_arrow_right_black_24px.svg"></md-icon>
+							</md-button>
+						</div>
+						<div layout="row" layout-align="space-between">
+							<span style="font-weight: bold;">{{'ORG_ORGANISERS' | translate}}</span>
+							<div layout="column">
+								<span style="overflow-y: auto;" ng-repeat="userEmail in orgItemC.organisers">{{userEmail}}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+            <div ng-hide="orgItemC.showEditor" flex layout="column" layout-align="space-between none">
+                <div flex layout="row">
+					<div>
+                    	<span>{{orgItemC.wall.label}}</span>&nbsp;-&nbsp;<span>{{orgItemC.wall.theme}}</span>
+					</div>
+                </div>
+                <div flex layout="row" layout-align="space-between start" class="organiserItem-metadataArea">
+					<div class="organiserItem-counters" layout="row">
+						<img ng-src="/images/ic_group_grey_24px.svg"/>&nbsp;
+						<span style="margin-right: 5px;">{{::orgItemC.totalContributors}}</span>
+						<img ng-src="/images/ic_message_grey_24px.svg"/>&nbsp;
+						<span>{{::orgItemC.totalMessages}}</span>
+					</div>
+					<!--div layout="column">
+						<span ng-repeat="item in orgItemC.wall.organisers | filter: orgItemC.organiserFilter">{{::item.nickname}}</span>
+					</div-->
+					<div>
+						<span ng-hide="orgItemC.wall.closed" class="organiserItem-pin">{{orgItemC.wall.pin}}</span>
+						<md-icon ng-show="orgItemC.wall.closed" md-svg-icon="images/ic_lock_outline_grey_24px.svg"></md-icon>
+					</div>
+                    <div layout="row">
+						<span> {{::orgItemC.timeFromNow}}</span>
+                    </div>
+                </div>
+            </div>
+		</div>
+
+</div>

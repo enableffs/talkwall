@@ -1,0 +1,97 @@
+<div layout flex ng-controller="OrganiserController as orgC">
+    <div flex layout id="landing-main">
+
+        <div ng-style="{'width': windowWidth+'px', 'background-color': '#00BCD4'}" style="position: relative;" autoresize="">
+
+            <div class="organiser-overlay"></div>
+
+            <div class="organiser-clouds">
+                <img src="../images/cloud.svg">
+            </div>
+
+            <div class="landing-betalabel">
+                <img src="../images/beta_icon.png">
+            </div>
+
+            <!--div class="organiser-logo" layout="row" layout-align="center start">
+                <img class="landing-samtavlaLogo" src="../images/logo.svg" ng-show="orgC.languageCode=='no'">
+                <img class="landing-samtavlaLogo" src="../images/logo_en.svg" ng-show="orgC.languageCode=='en'">
+            </div-->
+
+            <div class="landing-centered-button-panel" layout="column" layout-align="start center">
+                <div flex-gt-sm="50" flex="" class="organiser">
+
+                    <md-toolbar layout="row" style="background-color: #65B4CE !important;" class="borderradius-top">
+                        <div class="md-toolbar-tools">
+                            <span class="organiser-title">{{ 'ORG_TITLE' | translate }}</span>
+                        </div>
+                    </md-toolbar>
+
+                    <div>
+                        <md-list flex="">
+
+                            <md-list-item class="md-2-line organiser-nickname" style="background-color: #D8EdF3; padding: 15px 15px 0 15px;"  layout="row" layout-align="space-between center" >
+                                <img ng-src="/images/ic_person_black_24px.svg" class="md-avatar" />
+                                <md-input-container class="md-icon-float md-block" flex>
+                                    <label>{{'ORG_NICKNAME' | translate}}</label>
+                                    <input ng-model="orgC.newNickname" type="text" minlength="1" maxlength="{{::orgC.maxNicknameChars}}" md-maxlength="{{::orgC.maxNicknameChars}}" ng-change="orgC.filterNickname()">
+                                </md-input-container>
+                                <md-button aria-label="Submit update to nickname" class="organiser-saveNicknameButton" ng-show="orgC.newNickname !== orgC.user.nickname" ng-click="orgC.updateNickname()">
+                                    <md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
+                                </md-button>
+                            </md-list-item>
+
+                        </md-list>
+
+                        <md-content class="organiser-content">
+                            <md-list flex="">
+
+                                <md-subheader class="md-no-sticky">{{'ORG_RECENT_TALKWALLS' | translate}}</md-subheader>
+                                <md-list-item class="md-2-line" ng-repeat-start="recentWall in orgC.recentWalls | filter: orgC.itemFilter | orderBy: '-lastOpenedAt'" ng-click="orgC.openWall(recentWall)">
+                                    <div organiser-item data="recentWall"></div>
+                                </md-list-item>
+                                <md-divider ng-repeat-end></md-divider>
+
+                                <md-subheader class="md-no-sticky">{{'ORG_ALL_TALKWALLS' | translate}}</md-subheader>
+                                <md-list-item class="md-2-line" ng-repeat-start="wall in orgC.walls | filter: orgC.itemFilter" ng-click="orgC.openWall(wall)">
+                                    <div organiser-item data="wall"></div>
+                                </md-list-item>
+                                <md-divider ng-repeat-end></md-divider>
+
+                            </md-list>
+                        </md-content>
+
+                        <md-list flex="">
+
+                            <md-list-item class="md-3-line borderradius-bottom" style="background-color: #D8EdF3; padding: 15px 15px 0 15px;" layout="row">
+                                <img ng-src="/images/ic_group_black_24px.svg" class="md-avatar" />
+                                <div class="md-list-item-text">
+                                <md-input-container class="md-block">
+                                    <label>{{'ORG_GROUP' | translate}}</label>
+                                    <input ng-model="orgC.newWall.label" type="text">
+                                </md-input-container>
+                                </div>
+                                <img ng-src="/images/ic_center_focus_strong_black_24px.svg" class="md-avatar" />
+                                <md-input-container class="md-block">
+                                    <label>{{'ORG_THEME' | translate}}</label>
+                                    <input ng-model="orgC.newWall.theme" type="text">
+                                </md-input-container>
+                                <md-button aria-label="Create a new wall" class="md-fab organiser-addWallButton" ng-click="orgC.createWall()" ng-disabled="orgC.newWall.label === ''">
+                                    <md-icon md-svg-src="images/ic_add_black_24px.svg"></md-icon>
+                                </md-button>
+                            </md-list-item>
+
+                        </md-list>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+
+    </div>
+</div>

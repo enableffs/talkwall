@@ -1,0 +1,111 @@
+@import "../../../scss/colors";
+
+.organiserItem-messageSelected {
+  background-color: rgba(255, 119, 0, 0.5);
+}
+
+.organiserItem-messageNotSelected {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.organiserItem-messageNotPinned {
+  background-color: #c0c0c0 !important
+}
+
+.organiserItem-showControlButton {
+  height: 40px !important;
+  min-width: 40px !important;
+  max-height: 40px !important;
+}
+
+.organiserItem-textMargin {
+  margin-left: 10px !important;
+}
+
+.orgItem-input {
+  padding: 20px;
+}
+
+.orgItem-input-ok {
+  color: green !important;
+}
+
+.orgItem-submit-orange {
+  background-color: $color-orange !important;
+}
+
+.organiserItem-close {
+  background-color: $color-white !important;
+}
+
+.organiserItem-messageBody {
+  padding: 5px;
+  md-input-container {
+    padding: 2px;
+    margin: 0;
+  }
+}
+
+.organiserItem-metadataArea {
+  font-size: 0.8em;
+  color: $color-grey;
+}
+
+.organiserItem-pin {
+  font-size: initial;
+}
+
+.organiserItem-messageControl {
+  //background-color: $color-grey;
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+}
+
+.organiserItem-wordWrap {
+  width: 100%;
+  overflow: hidden;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+.organiserItem-messageOnBoard {
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  background-color: $color-white;
+  position: absolute !important;
+  cursor: move;
+}
+
+.organiserItem-messageOnBoardSelected {
+  background-color: rgba(255, 119, 0, 0.5) !important;
+}
+
+.organiserItem-addWallButton {
+  background-color: $color-grey !important;
+  min-width: 10px;
+  height: 40px;
+}
+
+.organiserItem-counters {
+  font-size: 1.2em;
+  color: $color-grey;
+  img {
+    width: 15px;
+  }
+}
+
+.hint {
+  /* Position the hint */
+  position: absolute;
+  left: 2px;
+  right: auto;
+  bottom: 7px;
+  /* Copy styles from ng-messages */
+  font-size: 12px;
+  line-height: 14px;
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+  /* Set our own color */
+  color: grey;
+}
