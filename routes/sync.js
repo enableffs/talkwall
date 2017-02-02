@@ -17,10 +17,6 @@
  along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Created by jeremyt on 01/04/15.
- */
-
 'use strict';
 
 var common = require('../config/common.js');
