@@ -1,5 +1,4 @@
 {
-  "ADD_ORGANISER_HERE": "Add organisers here...",
   "ARCHIVE_ACTIVEWALL": "Active wall detected!",
   "ARCHIVE_CONTINUTEEXISTING": "Continue",
   "ARCHIVE_CREATENEW": "Create new",
@@ -65,12 +64,14 @@
   "NVIVO_CLIPLENGTH": "Length of clip",
   "NVIVO_DATETIMESTRING": "Date & time on ID screen",
   "NVIVO_TIMESPANVALUE": "Timespan value in NVivo",
-  "ORG_ALL_TALKWALLS": "All talkwalls",
+  "ORG_ADD_ORGANISER_HERE": "Add owner...",
+  "ORG_ADD_ORGANISER_NOEMAIL": "No owners match this email",
+  "ORG_ALL_TALKWALLS": "All Talkwalls",
   "ORG_GROUP": "group",
   "ORG_LAST_OPENED": "last opened",
   "ORG_NICKNAME": "nickname",
-  "ORG_ORGANISERS": "Existing organisers:",
-  "ORG_RECENT_TALKWALLS": "Recently used talkwalls",
+  "ORG_ORGANISERS": "Existing owners:",
+  "ORG_RECENT_TALKWALLS": "Recently used Talkwalls",
   "ORG_THEME": "theme",
   "ORG_TITLE": "Your Talkwalls",
   "WALL_ADDBTN": "Add task",
@@ -97,6 +98,6 @@
   "WALL_TALKWALLPARTICIPANTS": "in total using talkwall",
   "WALL_TASKNAME": "Task name",
   "WALL_UN": "un",
-  "WALL_WILL_BE_CLOSED": "The wall will be closed upon exit",
-  "WALL_WILL_BE_OPEN": "The wall will be left open upon exit"
+  "WALL_WILL_BE_CLOSED": "Close this Talkwall upon exit",
+  "WALL_WILL_BE_OPEN": "Leave the Talkwall open upon exit"
 }

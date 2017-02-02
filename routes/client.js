@@ -17,10 +17,6 @@
  along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Created by richardnesnass on 31/05/16.
- */
-
 var common = require('../config/common.js');
 var mm = require('../config/message_manager').mm;
 var redisClient = require('../config/redis_database').redisClient;

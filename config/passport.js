@@ -90,6 +90,7 @@ module.exports = function(passport) {
                             }
                             if(profile.emails !== undefined) {
                                 user.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+                                user.defaultEmail = user.facebook.email;
                             }
                         }
                         user.save();
@@ -112,6 +113,7 @@ module.exports = function(passport) {
                         
                         if(profile.emails !== undefined) {
                             newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+                            newUser.defaultEmail = user.facebook.email;
                         }
                         
                         // save our user to the database
@@ -165,6 +167,7 @@ module.exports = function(passport) {
                         newUser.google.token    = accessToken; // we will save the token that google provides to the user
                         newUser.google.name     = profile.displayName; // look at the passport user profile to see how names are returned
                         newUser.google.email    = profile.emails[0].value; // google can return multiple emails so we'll take the first
+                        newUser.defaultEmail    = newUser.google.email;
 
                         // save our user to the database
                         newUser.save(function(err) {
