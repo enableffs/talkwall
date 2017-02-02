@@ -1,5 +1,4 @@
-{ 
-  "ADD_ORGANISER_HERE": "Legg til organisator...",
+ {
   "ARCHIVE_ACTIVEWALL": "Aktiv samtavle",
   "ARCHIVE_CONTINUTEEXISTING": "Fortsett",
   "ARCHIVE_CREATENEW": "Opprett ny",
@@ -65,11 +64,13 @@
   "NVIVO_CLIPLENGTH": "Lengde på video",
   "NVIVO_DATETIMESTRING": "Dato og klokkeslett fra tidssynkronisering",
   "NVIVO_TIMESPANVALUE": "Timespan verdi i NVivo",
+  "ORG_ADD_ORGANISER_HERE": "Legg til eier...",
+  "ORG_ADD_ORGANISER_NOEMAIL": "Ingen eiere med denne epostadressen funnet",
   "ORG_ALL_TALKWALLS": "Alle Samtavler",
   "ORG_GROUP": "gruppe",
   "ORG_LAST_OPENED": "sist åpnet",
   "ORG_NICKNAME": "kallenavn",
-  "ORG_ORGANISERS": "Organisatorer for denne Samtavla:",
+  "ORG_ORGANISERS": "Eiere av denne Samtavla:",
   "ORG_RECENT_TALKWALLS": "Nylig brukte Samtavler",
   "ORG_THEME": "tema",
   "ORG_TITLE": "Dine Samtavler",
@@ -94,9 +95,9 @@
   "WALL_SAVEBTN": "Lagre",
   "WALL_SELECTALL": "velg alle",
   "WALL_SELECTWALLS": "Deltagernes tavler",
-  "WALL_TALKWALLPARTICIPANTS": "deltagere i alt bruker Samtavla nå",
+  "WALL_TALKWALLPARTICIPANTS": "totalt bruker Samtavla nå",
   "WALL_TASKNAME": "Oppgavetekst",
   "WALL_UN": "ikke ",
-  "WALL_WILL_BE_CLOSED": "Denne Samtavla blir låst når den avsluttes",
-  "WALL_WILL_BE_OPEN": "Denne Samtavla holdes åpen når den avsluttes"
+  "WALL_WILL_BE_CLOSED": "Lås denne Samtavla når den avsluttes",
+  "WALL_WILL_BE_OPEN": "Hold denne Samtavla åpen når den avsluttes"
 }
