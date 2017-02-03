@@ -31,6 +31,7 @@ export class LogType {
     public static readonly CreateTask = "tc";
     public static readonly EditTask = "te";
     public static readonly DeleteTask = "td";
+    public static readonly SelectWall = "sw";
 }
 
 export class User {

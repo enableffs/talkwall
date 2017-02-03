@@ -173,6 +173,7 @@ export class WallController implements IWallControllerService {
 			this.$scope.$watch(() => { return this.selectedParticipant }, (newVar, oldVar) => {
 				if(newVar !== oldVar) {
 					this.dataService.data.status.selectedParticipant = newVar;
+					this.dataService.logAnEvent(LogType.SelectWall, this.dataService.data.question._id, null, newVar, null, '');
 					this.dataService.refreshBoardMessages();
 				}
 			}, true);

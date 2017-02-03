@@ -30,17 +30,18 @@ exports.Constants = {
 };
 
 exports.LogType = {
-    mc: 'CreateMessage',
-    me: 'EditMessage',
-    mp: 'PinMessage',
-    mup: 'UnPinMessage',
-    md: 'DeleteMessage',
-    mh: 'HighlightMessage',
-    muh: 'UnHighlightMessage',
-    mm: 'MoveMessage',
-    tc: 'CreateTask',
-    te: 'EditTask',
-    td: 'DeleteTask'
+    mc: 'Create Message',
+    me: 'Edit Message',
+    mp: 'Pin Message',
+    mup: 'UnPin Message',
+    md: 'Delete Message',
+    mh: 'Highlight Message',
+    muh: 'UnHighlight Message',
+    mm: 'Move Message',
+    tc: 'Create Task',
+    te: 'Edit Task',
+    td: 'Delete Task',
+    sw: 'Select Wall'
 };
 
 exports.trackedOrganiserWalls = [
