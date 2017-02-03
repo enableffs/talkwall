@@ -233,4 +233,4 @@ gulp.task('uglify', function () {
 
 gulp.task('dev', gulp.series('sass', 'browserify'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'browserify', 'uglify', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'browserify', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
