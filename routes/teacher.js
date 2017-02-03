@@ -541,8 +541,8 @@ exports.getWall = function(req, res) {
                     redisClient.set(newPin, wall._id.toString());
                     redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
                     wall.pin = newPin;
-                    wall.save();
                 }
+                wall.save();
                 User.findOne({_id: req.user.id}, function (error, user) {
                     if (error) {
                         res.status(common.StatusMessages.UPDATE_ERROR.status).json({

@@ -339,9 +339,9 @@ export class DataService implements IDataService {
         let questionId = type === models.LogType.CreateTask ? id : this.data.question._id;
         let basedOn: {itemid: string, nick: string, text: string} = null;
         if (origin !== null && origin.length > 0) {
-            basedOn = { itemid: origin[0]['message_id'], nick: origin[0]['nickname'], text: basedOnText }
+            basedOn = { itemid: origin[0]['message_id'], nick: origin[0]['nickname'], text: basedOnText.replace(/\r?\n|\r/g, '') }
         }
-        this.data.log.push(new models.LogEntry(type, id, this.data.user.nickname, text, questionId, diff, basedOn));
+        this.data.log.push(new models.LogEntry(type, id, this.data.user.nickname, text.replace(/\r?\n|\r/g, ''), questionId, diff, basedOn));
     }
 
     toggleMagnifyBoard() {
@@ -1124,9 +1124,12 @@ export class DataService implements IDataService {
         // Update participant list
         let participants = Object.keys(pollUpdateObject.status.connected_students);
         this.data.status.participants = participants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
+
         // We should not be here! Go back to the landing page
         if (this.data.status.participants.indexOf(this.data.user.nickname) === -1) {
-            this.$window.location.href = this.urlService.getHost() + '/';
+            this.stopPolling();
+            this.showClosingDialog();
+            return;
         }
 
         // Run on teacher connections only
@@ -1268,13 +1271,9 @@ export class DataService implements IDataService {
             templateUrl: 'js/components/close/close.html',
             parent: angular.element(document.body),
             clickOutsideToClose: false
-        })
-            .then(function() {
-                console.log('--> ClosingController: answered');
+        }).then(function() {
                 self.disconnectFromWall(null, null);
             }, function() {
-                //dialog dismissed
-                console.log('--> LandingController: dismissed');
                 self.disconnectFromWall(null, null);
             });
     }

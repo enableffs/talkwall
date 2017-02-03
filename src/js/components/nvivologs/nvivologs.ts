@@ -48,6 +48,7 @@ export class NvivoLogController {
             'tc': boolean;
             'te': boolean;
             'td': boolean;
+            'sw': boolean;
         }
     };
     private wall: models.Wall = null;
@@ -82,7 +83,8 @@ export class NvivoLogController {
                 'mm': false,
                 'tc': false,
                 'te': false,
-                'td': false
+                'td': false,
+                'sw': false
             }
         };
         let langKey: string = 'lang';
