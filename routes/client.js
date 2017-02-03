@@ -1,5 +1,20 @@
-/**
- * Created by richardnesnass on 31/05/16.
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 var common = require('../config/common.js');
@@ -8,6 +23,7 @@ var redisClient = require('../config/redis_database').redisClient;
 var Wall = require('../models/wall');
 var Message = require('../models/message');
 var Log = require('../models/log');
+var moment = require('moment');
 
 /**
  * @api {get} /poll Respond to this call with any changed messages and status
@@ -54,14 +70,14 @@ exports.poll = function(req, res) {
 /**
  * @api {get} /clientwall Get a wall by pin - simply returns wall details if the pin exists and wall is open.
  *
- * @apiName clientWall
+ * @apiName getWallByPin
  * @apiGroup non-authorised
  *
  * @apiParam {String} pin Pin of the wall to get
  * @apiParam {String} nickname Connecting client's nickname
  *
  */
-exports.getWall = function(req, res) {
+exports.getWallByPin = function(req, res) {
 
     if (typeof req.params.pin === 'undefined' || req.params.pin == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
@@ -72,21 +88,31 @@ exports.getWall = function(req, res) {
     // Check for the pin in Redis. If exists, look up the value == wall ID
     redisClient.get(req.params.pin, function(error, wall_id) {
         if(wall_id !== null) {
-            var query = Wall.findOne({
-                _id : wall_id,
-                pin : { $gte: 0 }       // Wall is not available to clients if pin is -1
-            }).lean().populate({ path: 'createdBy', select: 'google.name facebook.name local.name' });
 
-            query.exec(function(error, wall) {
-                if(error) {
-                    res.status(common.StatusMessages.GET_ERROR.status).json({
-                        message: common.StatusMessages.GET_ERROR.message, result: error});
-                }
-                else {
-                    res.status(common.StatusMessages.CLIENT_CONNECT_SUCCESS.status).json({
-                        message: common.StatusMessages.CLIENT_CONNECT_SUCCESS.message, result: wall});
-                }
-            });
+            if (mm.userIsOnWall(wall_id, req.params.nickname)) {
+                res.status(common.StatusMessages.INVALID_USER.status).json({
+                    message: common.StatusMessages.INVALID_USER.message});
+            } else {
+
+                var query = Wall.findOne({
+                    _id: wall_id,
+                    pin: {$gte: 0}       // Wall is not available to clients if pin is -1
+                }).lean().populate({path: 'createdBy', select: 'google.name facebook.name local.name'});
+
+                query.exec(function (error, wall) {
+                    if (error) {
+                        res.status(common.StatusMessages.GET_ERROR.status).json({
+                            message: common.StatusMessages.GET_ERROR.message, result: error
+                        });
+                    }
+                    else {
+                        res.status(common.StatusMessages.CLIENT_CONNECT_SUCCESS.status).json({
+                            message: common.StatusMessages.CLIENT_CONNECT_SUCCESS.message,
+                            result: wall
+                        });
+                    }
+                });
+            }
         } else {        // Pin has expired or does not exist
             res.status(common.StatusMessages.PIN_DOES_NOT_EXIST.status).json({
                 message: common.StatusMessages.PIN_DOES_NOT_EXIST.message});
@@ -94,6 +120,37 @@ exports.getWall = function(req, res) {
     });
 };
 
+/**
+ * @api {get} /clientwall/:wall_id Get wall by wall_id
+ *
+ * @apiName getWallById
+ * @apiGroup non-authorised
+ *
+ * @apiParam {String} wall_id ID of the wall to get
+ *
+ */
+exports.getWallById = function(req, res) {
+
+    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null) {
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
+            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+    }
+
+    var query = Wall.findOne({ _id: req.params.wall_id }).lean();
+    query.exec(function (error, wall) {
+        if (error) {
+            res.status(common.StatusMessages.GET_ERROR.status).json({
+                message: common.StatusMessages.GET_ERROR.message, result: error
+            });
+        }
+        else {
+            res.status(common.StatusMessages.GET_SUCCESS.status).json({
+                message: common.StatusMessages.GET_SUCCESS.message,
+                result: wall
+            });
+        }
+    });
+};
 
 /**
  * @api {get} /disconnect Disconnect from a wall with pin - Removes user from wall nickname list
@@ -109,7 +166,6 @@ exports.getWall = function(req, res) {
 exports.disconnectWall = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
-        || typeof req.params.question_id === 'undefined' || req.params.question_id == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
         res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
             .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
@@ -129,10 +185,9 @@ exports.disconnectWall = function(req, res) {
             }
             else {
                 // Remove nickname from the wall users list (message manager)
-                mm.removeUserFromQuestion(wall._id, req.params.question_id, req.params.nickname, false);
                 mm.removeUserFromWall(wall._id, req.params.nickname, false);
                 res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-                    message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message, result: wall});
+                    message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
             }
         });
     } else {        // Pin has expired or does not exist
@@ -251,7 +306,7 @@ exports.updateMessages = function(req, res) {
                 var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true});
 
                 query.exec(function (err, updated_message) {
-                    if (err) {
+                    if (err || typeof updated_message === 'undefined') {
                         reject(err);
                     }
                     // Update the message manager to notify other clients
@@ -283,6 +338,7 @@ exports.updateMessages = function(req, res) {
 
 };
 
+
 /**
  * @api {get} /export/:wallid Get a wall to be formatted for export purposes
  * @apiName exportWall
@@ -306,7 +362,7 @@ exports.exportWall = function(req, res) {
             res.status(common.StatusMessages.DELETE_ERROR.status).json({
                 message: common.StatusMessages.DELETE_ERROR.message, result: error});
         }
-        else {
+        else if (wall !== null) {
 
             var expandedResultsPromise = [];
             wall.questions.forEach(function(question) {    // Collect Fixtures for the user and include in return

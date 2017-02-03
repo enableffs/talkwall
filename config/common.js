@@ -1,3 +1,22 @@
+/*
+ Copyright 2016, 2017 Richard Nesnass and Jeremy Toussaint
+
+ This file is part of Talkwall.
+
+ Talkwall is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ Talkwall is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 'use strict';
 
 exports.Constants = {
@@ -9,6 +28,26 @@ exports.Constants = {
     TERMINATE_MESSAGE_MANAGER_MINUTES: 10080,  // 1440 = 24 hours  10080 = 7 days   // Remove an entire MM wall if this idle period is exceeded
     TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS: 60   // 600 = 10 minutes   // How often to check for the idle period expiry
 };
+
+exports.LogType = {
+    mc: 'Create Message',
+    me: 'Edit Message',
+    mp: 'Pin Message',
+    mup: 'UnPin Message',
+    md: 'Delete Message',
+    mh: 'Highlight Message',
+    muh: 'UnHighlight Message',
+    mm: 'Move Message',
+    tc: 'Create Task',
+    te: 'Edit Task',
+    td: 'Delete Task',
+    sw: 'Select Wall'
+};
+
+exports.trackedOrganiserWalls = [
+    'richardn@uio.im',
+    'ole.smordal@gmail.com'
+];
 
 exports.StatusMessages = {
     PING_OK: {
