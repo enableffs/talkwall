@@ -113,7 +113,7 @@ module.exports = function(passport) {
                         
                         if(profile.emails !== undefined) {
                             newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
-                            newUser.defaultEmail = user.facebook.email;
+                            newUser.defaultEmail = newUser.facebook.email;
                         }
                         
                         // save our user to the database
