@@ -55,19 +55,21 @@
 					</md-button>
 				</div>
 			</div>
-			<div ng-if="wallC.dataService.data.status.authorised" hide-xs hide-sm flex="33" layout="row" layout-align="end center">
-				<md-button aria-label="Zoom in board messages" ng-if="!wallC.dataService.data.status.magnifyBoard" class="md-icon-button" role="button" ng-click="wallC.dataService.toggleMagnifyBoard()">
-					<md-icon md-svg-src="images/ic_zoom_in_orange_24px.svg" aria-hidden="true"></md-icon>
-				</md-button>
-				<md-button aria-label="Zoom out board messages" ng-if="wallC.dataService.data.status.magnifyBoard" class="md-icon-button" role="button" ng-click="wallC.dataService.toggleMagnifyBoard()">
-					<md-icon md-svg-src="images/ic_zoom_out_orange_24px.svg" aria-hidden="true"></md-icon>
-				</md-button>
-			</div>
-			<div hide-xs hide-sm flex="33" layout="row" layout-align="end center">
-				<button aria-label="Toggle right-side panel" class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle(); wallC.toggleRightMenu(0)">
-					<md-icon ng-show="!wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_menu_orange_24px.svg" aria-hidden="true"></md-icon>
-					<md-icon ng-show="wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
-				</button>
+			<div flex="33" layout="row" layout-align="end center">
+				<div ng-if="wallC.dataService.data.status.authorised" hide-xs hide-sm>
+					<md-button aria-label="Zoom in board messages" ng-if="!wallC.dataService.data.status.magnifyBoard" class="md-icon-button" role="button" ng-click="wallC.dataService.toggleMagnifyBoard()">
+						<md-icon md-svg-src="images/ic_zoom_in_orange_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+					<md-button aria-label="Zoom out board messages" ng-if="wallC.dataService.data.status.magnifyBoard" class="md-icon-button" role="button" ng-click="wallC.dataService.toggleMagnifyBoard()">
+						<md-icon md-svg-src="images/ic_zoom_out_orange_24px.svg" aria-hidden="true"></md-icon>
+					</md-button>
+				</div>
+				<div hide-xs hide-sm>
+					<button aria-label="Toggle right-side panel" class="md-button md-icon-button" role="button" ng-click="wallC.$mdSidenav('right').toggle(); wallC.toggleRightMenu(0)">
+						<md-icon ng-show="!wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_menu_orange_24px.svg" aria-hidden="true"></md-icon>
+						<md-icon ng-show="wallC.$mdSidenav('right').isOpen()" md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
+					</button>
+				</div>
 			</div>
 		</div>
 	</md-toolbar>
