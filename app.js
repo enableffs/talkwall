@@ -17,7 +17,7 @@
  along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require('newrelic');
+//require('newrelic');
 
 /********* load environment variables locally *********/
 require('dotenv').config({ silent: process.env.NODE_ENV === 'production' });
@@ -31,7 +31,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var async = require('async');
 var morgan = require('morgan');
-mongoose.Promise = global.Promise;
+mongoose.Promise = require('q').Promise;
 var jwt = require('express-jwt');
 var bodyParser = require('body-parser');
 var tokenManager = require('./config/token_manager');
@@ -116,7 +116,7 @@ app.post('/question',               jwt({secret: secret.secretToken}),  tokenMan
 app.put('/question',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateQuestion);
 app.delete('/question/:wall_id/:question_id',           jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.deleteQuestion);
 app.get('/change/:nickname/:wall_id/:question_id/:previous_question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
-app.put('/wall/close/:wall_id',                         jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
+//app.put('/wall/close/:wall_id',                         jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
 app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,  routes.teacher.poll);
 app.get('/disconnectteacher/:nickname/:wall_id',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.disconnectWall);
 app.post('/messageteacher',                                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.createMessage);

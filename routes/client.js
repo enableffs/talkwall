@@ -282,7 +282,7 @@ exports.getMessages = function(req, res) {
 };
 
 /**
- * @api {put} /message Edit a message by submitting a Message object and pin
+ * @api {put} /message Edit a message by submitting a Message array and pin
  * @apiName updateMessages
  * @apiGroup non-authorised
  *
@@ -302,33 +302,27 @@ exports.updateMessages = function(req, res) {
         var multiUpdatePromise = [];
         req.body.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
 
-            var p = new Promise(function(resolve, reject) {
-                var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true});
-
-                query.exec(function (err, updated_message) {
-                    if (err || typeof updated_message === 'undefined') {
-                        reject(err);
-                    }
-                    // Update the message manager to notify other clients
-                    if (req.body.controlString !== 'none') {
-                        mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, false);
-                    }
-                    resolve(updated_message);
-                });
-            });
+            var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true});
+            var p = query.exec();
             multiUpdatePromise.push(p);
         });
 
         Promise.all(multiUpdatePromise).then(function(messages) {
+            if (req.body.controlString !== 'none') {
+                messages.forEach(function(m) {
+                    if (m.hasOwnProperty('question_id')) {
+                        mm.postUpdate(req.body.wall_id, m.question_id, req.body.nickname, m, req.body.controlString, false);
+                    }
+                });
+            }
             res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages
             });
-        }).catch(function(err) {
+        }).catch(function(error) {
             res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error
             });
         });
-
 
     } else {
         res.status(common.StatusMessages.INVALID_USER.status).json({

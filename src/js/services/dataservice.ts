@@ -690,6 +690,7 @@ export class DataService implements IDataService {
         }
     }
 
+    /*
     closeWallNow(targetEmail: string): void {
         let handle = this;
         this.data.wall.closed = true;
@@ -698,6 +699,7 @@ export class DataService implements IDataService {
             handle.$window.location.href = handle.urlService.getHost() + '/#/organise';
         }, null);
     }
+    */
 
     /*
      getNickname(): string {
@@ -1033,8 +1035,8 @@ export class DataService implements IDataService {
 
     // Update messages on the server
     updateMessages(messages: Array<models.Message>, controlString: string): void {
-
         // Queue the updated message to be sent later - this saves unnecessary server polls
+        // At this time only position requests are queued
         if (this.data.status.restrictPositionRequests && controlString === 'position') {
             messages.forEach((message) => {
                 this.data.status.restrictPositionRequestMessages[message._id] = message;
@@ -1043,7 +1045,7 @@ export class DataService implements IDataService {
             // Send updated messages to the server
             let clientType = this.data.status.authorised ? '/messageteacher' : '/message';
             this.$http.put(this.urlService.getHost() + clientType, {
-                messages: messages,
+                messages: messages,         // if messages.length is > 1, messages are for a position update
                 wall_id: this.data.wall._id,
                 nickname: this.data.status.selectedParticipant,
                 controlString: controlString
@@ -1120,17 +1122,13 @@ export class DataService implements IDataService {
 
     // Process updated messages retrieved on the poll response
     processUpdatedMessages(pollUpdateObject: models.PollUpdate) {
-
-        // Update participant list
-        let participants = Object.keys(pollUpdateObject.status.connected_students);
-        this.data.status.participants = participants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
-
-        // We should not be here! Go back to the landing page
-        if (this.data.status.participants.indexOf(this.data.user.nickname) === -1) {
-            this.stopPolling();
-            this.showClosingDialog();
+        if (typeof pollUpdateObject === 'undefined' || pollUpdateObject === null) {
             return;
         }
+
+        // Update participant list
+        let studentParticipants = Object.keys(pollUpdateObject.status.connected_students);
+        this.data.status.participants = studentParticipants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
 
         // Run on teacher connections only
         if (this.data.status.authorised) {
@@ -1145,8 +1143,16 @@ export class DataService implements IDataService {
 
                 this.requestWallUnauthorised(this.data.wall._id, () => {
 
-                    // If we are a student, set to a new question if available
+                    // Check to see if the wall is still open
                     if (!this.data.status.authorised) {
+
+                        if (this.data.wall.closed) {
+                            this.stopPolling();
+                            this.showClosingDialog();
+                            return;
+                        }
+
+                        // If we are a student, set to a new question if available
                         let new_question_id = pollUpdateObject.status.teacher_current_question;
                         if (new_question_id !== 'none') {
                             let new_question_index = UtilityService.getQuestionIndexFromWallById(new_question_id, this.data.wall);
