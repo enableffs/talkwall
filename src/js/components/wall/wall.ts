@@ -373,6 +373,7 @@ export class WallController implements IWallControllerService {
 					}
 					this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
 					handle.dataService.addMessage( null, null);
+					this.showFeed();
 				} else {
 					console.log('--> WallController: Edit message - edited');
 					this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, '');
