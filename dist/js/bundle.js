@@ -23117,6 +23117,7 @@ var WallController = (function () {
                     }
                     _this.dataService.logAnEvent(models_1.LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
                     handle.dataService.addMessage(null, null);
+                    _this.showFeed();
                 }
                 else {
                     console.log('--> WallController: Edit message - edited');
