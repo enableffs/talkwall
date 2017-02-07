@@ -312,12 +312,10 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  */
 Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
 
-    // Note that someone is using this wall, or return if it has been removed
-    if (this.data.walls.hasOwnProperty(wall_id)) {
-        this.data.walls[wall_id].status.last_access = Date.now();
-    } else {
+    if (!this.data.walls.hasOwnProperty(wall_id) || !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
         return;
     }
+
     function editUpdate(userQueue) {
 
         // Has an update to this message already been registered?  Further updates will overwrite..
@@ -334,6 +332,10 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         }
     }
 
+    // Note that someone is using this wall
+    this.data.walls[wall_id].status.last_access = Date.now();
+
+    // Short reference to the question in question
     var thisQuestion = this.data.walls[wall_id].questions[question_id];
     var userQueue = null;
 
