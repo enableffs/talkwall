@@ -1,12 +1,12 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// https://d3js.org Version 4.4.2. Copyright 2017 Mike Bostock.
+// https://d3js.org Version 4.5.0. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	(factory((global.d3 = global.d3 || {})));
 }(this, (function (exports) { 'use strict';
 
-var version = "4.4.2";
+var version = "4.5.0";
 
 var ascending = function(a, b) {
   return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
@@ -2960,7 +2960,7 @@ function sleep(time) {
     if (time < Infinity) timeout = setTimeout(wake, delay);
     if (interval) interval = clearInterval(interval);
   } else {
-    if (!interval) interval = setInterval(poke, pokeDelay);
+    if (!interval) clockLast = clockNow, interval = setInterval(poke, pokeDelay);
     frame = 1, setFrame(wake);
   }
 }
@@ -9393,6 +9393,19 @@ var cluster = function() {
   return cluster;
 };
 
+function count(node) {
+  var sum = 0,
+      children = node.children,
+      i = children && children.length;
+  if (!i) sum = 1;
+  else while (--i >= 0) sum += children[i].value;
+  node.value = sum;
+}
+
+var node_count = function() {
+  return this.eachAfter(count);
+};
+
 var node_each = function(callback) {
   var node = this, current, next = [node], children, i, n;
   do {
@@ -9571,6 +9584,7 @@ function Node(data) {
 
 Node.prototype = hierarchy.prototype = {
   constructor: Node,
+  count: node_count,
   each: node_each,
   eachAfter: node_eachAfter,
   eachBefore: node_eachBefore,
@@ -9731,7 +9745,13 @@ function intersects(a, b) {
   var dx = b.x - a.x,
       dy = b.y - a.y,
       dr = a.r + b.r;
-  return dr * dr > dx * dx + dy * dy;
+  return dr * dr - 1e-6 > dx * dx + dy * dy;
+}
+
+function distance1(a, b) {
+  var l = a._.r;
+  while (a !== b) l += 2 * (a = a.next)._.r;
+  return l - b._.r;
 }
 
 function distance2(circle, x, y) {
@@ -9781,35 +9801,27 @@ function packEnclose(circles) {
   pack: for (i = 3; i < n; ++i) {
     place(a._, b._, c = circles[i]), c = new Node$1(c);
 
-    // If there are only three elements in the front-chain…
-    if ((k = a.previous) === (j = b.next)) {
-      // If the new circle intersects the third circle,
-      // rotate the front chain to try the next position.
-      if (intersects(j._, c._)) {
-        a = b, b = j, --i;
-        continue pack;
-      }
-    }
-
     // Find the closest intersecting circle on the front-chain, if any.
-    else {
-      sj = j._.r, sk = k._.r;
-      do {
-        if (sj <= sk) {
-          if (intersects(j._, c._)) {
-            b = j, a.next = b, b.previous = a, --i;
-            continue pack;
-          }
-          j = j.next, sj += j._.r;
-        } else {
-          if (intersects(k._, c._)) {
-            a = k, a.next = b, b.previous = a, --i;
-            continue pack;
-          }
-          k = k.previous, sk += k._.r;
+    // “Closeness” is determined by linear distance along the front-chain.
+    // “Ahead” or “behind” is likewise determined by linear distance.
+    j = b.next, k = a.previous, sj = b._.r, sk = a._.r;
+    do {
+      if (sj <= sk) {
+        if (intersects(j._, c._)) {
+          if (sj + a._.r + b._.r > distance1(j, b)) a = j; else b = j;
+          a.next = b, b.previous = a, --i;
+          continue pack;
         }
-      } while (j !== k.next);
-    }
+        sj += j._.r, j = j.next;
+      } else {
+        if (intersects(k._, c._)) {
+          if (distance1(a, k) > sk + a._.r + b._.r) a = k; else b = k;
+          a.next = b, b.previous = a, --i;
+          continue pack;
+        }
+        sk += k._.r, k = k.previous;
+      }
+    } while (j !== k.next);
 
     // Success! Insert the new circle c between a and b.
     c.previous = a, c.next = b, a.next = b.previous = b = c;
@@ -16395,7 +16407,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 },{}],2:[function(require,module,exports){
 //! moment.js
-//! version : 2.17.0
+//! version : 2.17.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -20660,7 +20672,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.17.0';
+hooks.version = '2.17.1';
 
 setHookCallback(createLocal);
 
@@ -21058,9 +21070,9 @@ var ArchiveWallController = (function () {
         this.$mdDialog.hide(answer);
     };
     ;
-    ArchiveWallController.$inject = ['$mdDialog', 'DataService'];
     return ArchiveWallController;
 }());
+ArchiveWallController.$inject = ['$mdDialog', 'DataService'];
 exports.ArchiveWallController = ArchiveWallController;
 
 },{}],8:[function(require,module,exports){
@@ -21117,9 +21129,9 @@ var CloseController = (function () {
         this.$mdDialog.hide(this.theanswer);
     };
     ;
-    CloseController.$inject = ['$mdDialog'];
     return CloseController;
 }());
+CloseController.$inject = ['$mdDialog'];
 exports.CloseController = CloseController;
 
 },{}],9:[function(require,module,exports){
@@ -21188,9 +21200,9 @@ var EditMessageController = (function () {
         this.$mdBottomSheet.hide();
     };
     ;
-    EditMessageController.$inject = ['$mdBottomSheet', '$document', '$timeout', 'DataService'];
     return EditMessageController;
 }());
+EditMessageController.$inject = ['$mdBottomSheet', '$document', '$timeout', 'DataService'];
 exports.EditMessageController = EditMessageController;
 
 },{}],10:[function(require,module,exports){
@@ -21281,9 +21293,9 @@ var ExportController = (function () {
         }
         return result;
     };
-    ExportController.$inject = ['DataService', '$routeParams', '$mdDialog'];
     return ExportController;
 }());
+ExportController.$inject = ['DataService', '$routeParams', '$mdDialog'];
 exports.ExportController = ExportController;
 
 },{"moment":2}],11:[function(require,module,exports){
@@ -21306,7 +21318,7 @@ exports.ExportController = ExportController;
  along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
 "use strict";
-var models_1 = require('../../models/models');
+var models_1 = require("../../models/models");
 var FeedMessageController = (function () {
     function FeedMessageController(isolatedScope, dataService, $document, utilityService, $window) {
         this.isolatedScope = isolatedScope;
@@ -21393,9 +21405,9 @@ var FeedMessageController = (function () {
             return 'feedMessage-messageNotSelected';
         }
     };
-    FeedMessageController.$inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window'];
     return FeedMessageController;
 }());
+FeedMessageController.$inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window'];
 function linker(isolatedScope, element, attributes, ctrl) {
     var viewWidthKey = 'VIEW_WIDTH', viewHeightKey = 'VIEW_HEIGHT';
     var messageWidth = element.prop('offsetWidth');
@@ -21620,9 +21632,9 @@ var JoinController = (function () {
         }
     };
     ;
-    JoinController.$inject = ['$mdDialog', '$document'];
     return JoinController;
 }());
+JoinController.$inject = ['$mdDialog', '$document'];
 exports.JoinController = JoinController;
 
 },{"../../app.constants":4}],13:[function(require,module,exports){
@@ -21722,9 +21734,9 @@ var LandingController = (function () {
             console.log('--> LandingController: dismissed');
         });
     };
-    LandingController.$inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$window', 'DataService'];
     return LandingController;
 }());
+LandingController.$inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$window', 'DataService'];
 exports.LandingController = LandingController;
 
 },{"../join/join":12,"../login/login":14}],14:[function(require,module,exports){
@@ -21779,9 +21791,9 @@ var LoginController = (function () {
         this.$mdDialog.hide(answer);
     };
     ;
-    LoginController.$inject = ['$mdDialog'];
     return LoginController;
 }());
+LoginController.$inject = ['$mdDialog'];
 exports.LoginController = LoginController;
 
 },{}],15:[function(require,module,exports){
@@ -22295,9 +22307,9 @@ var LogController = (function () {
             render(data);
         });
     };
-    LogController.$inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
     return LogController;
 }());
+LogController.$inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 exports.LogController = LogController;
 
 },{"d3":1}],16:[function(require,module,exports){
@@ -22320,7 +22332,7 @@ exports.LogController = LogController;
  along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
 "use strict";
-var moment = require('moment');
+var moment = require("moment");
 var NvivoLogController = (function () {
     function NvivoLogController(dataService, $mdSidenav, $mdBottomSheet, $translate, $scope, $timeout, urlService, $window, utilityService) {
         this.dataService = dataService;
@@ -22389,9 +22401,9 @@ var NvivoLogController = (function () {
         }, function (error) {
         });
     };
-    NvivoLogController.$inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
     return NvivoLogController;
 }());
+NvivoLogController.$inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 exports.NvivoLogController = NvivoLogController;
 
 },{"moment":2}],17:[function(require,module,exports){
@@ -22492,9 +22504,9 @@ var OrganiserController = (function () {
             console.log('error updating user nickname');
         });
     };
-    OrganiserController.$inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
     return OrganiserController;
 }());
+OrganiserController.$inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 exports.OrganiserController = OrganiserController;
 
 },{"../../app.constants":4}],18:[function(require,module,exports){
@@ -22618,9 +22630,9 @@ var OrganiserItemController = (function () {
             _this.nameExists = false;
         }, null);
     };
-    OrganiserItemController.$inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window', '$location', '$timeout'];
     return OrganiserItemController;
 }());
+OrganiserItemController.$inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window', '$location', '$timeout'];
 //directive declaration
 function OrganiserItem() {
     return {
@@ -22737,9 +22749,9 @@ var SessionInfoController = (function () {
         return { date: tday[nday] + ", " + tmonth[nmonth] + " " + ndate + ", " + nyear,
             time: nhour + ":" + nminString + ":" + nsecString + ap + "" };
     };
-    SessionInfoController.$inject = ['URLService', '$translate', '$http', '$window', '$interval'];
     return SessionInfoController;
 }());
+SessionInfoController.$inject = ['URLService', '$translate', '$http', '$window', '$interval'];
 exports.SessionInfoController = SessionInfoController;
 
 },{}],20:[function(require,module,exports){
@@ -22794,9 +22806,9 @@ var TaskQuestionController = (function () {
         console.log('--> TaskController edit');
         this.dataService.setQuestionToEdit(this.question);
     };
-    TaskQuestionController.$inject = ['$scope', 'DataService', '$mdDialog'];
     return TaskQuestionController;
 }());
+TaskQuestionController.$inject = ['$scope', 'DataService', '$mdDialog'];
 //directive declaration
 function TaskQuestion() {
     return {
@@ -23105,6 +23117,7 @@ var WallController = (function () {
                     }
                     _this.dataService.logAnEvent(models_1.LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
                     handle.dataService.addMessage(null, null);
+                    _this.showFeed();
                 }
                 else {
                     console.log('--> WallController: Edit message - edited');
@@ -23198,9 +23211,9 @@ var WallController = (function () {
             });
         }
     };
-    WallController.$inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
     return WallController;
 }());
+WallController.$inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 exports.WallController = WallController;
 
 },{"../../models/models":25,"../editMessagePanel/editMessagePanel":9}],22:[function(require,module,exports){
@@ -23339,9 +23352,9 @@ var WatchBoardSizeController = (function () {
         this.$window = $window;
     }
     ;
-    WatchBoardSizeController.$inject = ['DataService', '$window'];
     return WatchBoardSizeController;
 }());
+WatchBoardSizeController.$inject = ['DataService', '$window'];
 function linker(scope, element, attrs, ctrl) {
     var w = angular.element(ctrl.$window);
     scope.getWindowDimensions = function () {
@@ -23390,20 +23403,20 @@ exports.WatchBoardSize = WatchBoardSize;
 var LogType = (function () {
     function LogType() {
     }
-    LogType.CreateMessage = "mc";
-    LogType.EditMessage = "me";
-    LogType.PinMessage = "mp";
-    LogType.UnPinMessage = "mup";
-    LogType.DeleteMessage = "md";
-    LogType.HighlightMessage = "mh";
-    LogType.UnHighlightMessage = "muh";
-    LogType.MoveMessage = "mm";
-    LogType.CreateTask = "tc";
-    LogType.EditTask = "te";
-    LogType.DeleteTask = "td";
-    LogType.SelectWall = "sw";
     return LogType;
 }());
+LogType.CreateMessage = "mc";
+LogType.EditMessage = "me";
+LogType.PinMessage = "mp";
+LogType.UnPinMessage = "mup";
+LogType.DeleteMessage = "md";
+LogType.HighlightMessage = "mh";
+LogType.UnHighlightMessage = "muh";
+LogType.MoveMessage = "mm";
+LogType.CreateTask = "tc";
+LogType.EditTask = "te";
+LogType.DeleteTask = "td";
+LogType.SelectWall = "sw";
 exports.LogType = LogType;
 var User = (function () {
     function User() {
@@ -24053,14 +24066,16 @@ var DataService = (function () {
             successCallbackFn(this.data.wall);
         }
     };
-    DataService.prototype.closeWallNow = function (targetEmail) {
-        var handle = this;
+    /*
+    closeWallNow(targetEmail: string): void {
+        let handle = this;
         this.data.wall.closed = true;
         this.data.wall.targetEmail = targetEmail;
-        this.updateWall(null, function () {
+        this.updateWall(null, function() {
             handle.$window.location.href = handle.urlService.getHost() + '/#/organise';
         }, null);
-    };
+    }
+    */
     /*
      getNickname(): string {
      return this.data.status.authorised ? this.data.user.nickname : this.data.status.studentNickname;
@@ -24393,6 +24408,7 @@ var DataService = (function () {
     DataService.prototype.updateMessages = function (messages, controlString) {
         var _this = this;
         // Queue the updated message to be sent later - this saves unnecessary server polls
+        // At this time only position requests are queued
         if (this.data.status.restrictPositionRequests && controlString === 'position') {
             messages.forEach(function (message) {
                 _this.data.status.restrictPositionRequestMessages[message._id] = message;
@@ -24469,15 +24485,12 @@ var DataService = (function () {
     // Process updated messages retrieved on the poll response
     DataService.prototype.processUpdatedMessages = function (pollUpdateObject) {
         var _this = this;
-        // Update participant list
-        var participants = Object.keys(pollUpdateObject.status.connected_students);
-        this.data.status.participants = participants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
-        // We should not be here! Go back to the landing page
-        if (this.data.status.participants.indexOf(this.data.user.nickname) === -1) {
-            this.stopPolling();
-            this.showClosingDialog();
+        if (typeof pollUpdateObject === 'undefined' || pollUpdateObject === null) {
             return;
         }
+        // Update participant list
+        var studentParticipants = Object.keys(pollUpdateObject.status.connected_students);
+        this.data.status.participants = studentParticipants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
         // Run on teacher connections only
         if (this.data.status.authorised) {
             // Update total number of talkwall users
@@ -24488,8 +24501,14 @@ var DataService = (function () {
         if (pollUpdateObject.status.last_update > this.data.status.last_status_update && this.data.wall !== null) {
             this.data.status.last_status_update = pollUpdateObject.status.last_update;
             this.requestWallUnauthorised(this.data.wall._id, function () {
-                // If we are a student, set to a new question if available
+                // Check to see if the wall is still open
                 if (!_this.data.status.authorised) {
+                    if (_this.data.wall.closed) {
+                        _this.stopPolling();
+                        _this.showClosingDialog();
+                        return;
+                    }
+                    // If we are a student, set to a new question if available
                     var new_question_id = pollUpdateObject.status.teacher_current_question;
                     if (new_question_id !== 'none') {
                         var new_question_index = utilityservice_1.UtilityService.getQuestionIndexFromWallById(new_question_id, _this.data.wall);
@@ -24618,10 +24637,10 @@ var DataService = (function () {
             }
         });
     };
-    DataService.$inject = ['$http', '$window', '$routeParams', '$rootScope', '$location', '$interval', '$timeout', '$mdDialog', '$translate',
-        'UtilityService', 'URLService', '$mdMedia', '$mdToast'];
     return DataService;
 }());
+DataService.$inject = ['$http', '$window', '$routeParams', '$rootScope', '$location', '$interval', '$timeout', '$mdDialog', '$translate',
+    'UtilityService', 'URLService', '$mdMedia', '$mdToast'];
 exports.DataService = DataService;
 
 },{"../app.constants":4,"../components/close/close":8,"../models/models":25,"./utilityservice":30}],28:[function(require,module,exports){
@@ -24684,9 +24703,9 @@ var TokenInterceptor = (function () {
         };
         console.log('--> ITokenInterceptor started ...');
     }
-    TokenInterceptor.$inject = ['$q', '$window', '$location', 'AuthenticationService'];
     return TokenInterceptor;
 }());
+TokenInterceptor.$inject = ['$q', '$window', '$location', 'AuthenticationService'];
 exports.TokenInterceptor = TokenInterceptor;
 
 },{}],29:[function(require,module,exports){
@@ -24722,9 +24741,9 @@ var URLService = (function () {
             return this.$location.protocol() + '://' + this.$location.host() + ':' + this.$location.port();
         }
     };
-    URLService.$inject = ['$location'];
     return URLService;
 }());
+URLService.$inject = ['$location'];
 exports.URLService = URLService;
 
 },{}],30:[function(require,module,exports){
