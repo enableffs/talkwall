@@ -762,7 +762,7 @@ exports.updateMessages = function(req, res) {
     var multiUpdatePromise = [];
     req.body.messages.forEach(function (message) {    // Collect Fixtures for the user and include in return
 
-        var query = Message.findOneAndUpdate({_id: message._id}, message, {new: true});
+        var query = Message.findOneAndUpdate({_id: message._id}, message, {new: true}).lean();
         var p = query.exec();
         multiUpdatePromise.push(p);
     });
@@ -771,7 +771,7 @@ exports.updateMessages = function(req, res) {
         if (req.body.controlString !== 'none') {
             messages.forEach(function (m) {
                 if (m.hasOwnProperty('question_id')) {
-                    mm.postUpdate(req.body.wall_id, m.question_id, req.body.nickname, m, req.body.controlString, false);
+                    mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
                 }
             });
         }
