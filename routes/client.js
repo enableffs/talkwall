@@ -173,26 +173,10 @@ exports.disconnectWall = function(req, res) {
 
     // Check for the student on the wall
     if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
-        var query = Wall.findOne({
-            _id : req.params.wall_id,
-            pin : { $gte: 0 }       // Wall is not available to clients if pin is -1
-        }).lean();
-
-        query.exec(function(error, wall) {
-            if(error) {
-                res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
-                    message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error});
-            }
-            else {
-                // Remove nickname from the wall users list (message manager)
-                mm.removeUserFromWall(wall._id, req.params.nickname, false);
-                res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-                    message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
-            }
-        });
-    } else {        // Pin has expired or does not exist
-        res.status(common.StatusMessages.PIN_DOES_NOT_EXIST.status).json({
-            message: common.StatusMessages.PIN_DOES_NOT_EXIST.message});
+        // Remove nickname from the wall users list (message manager)
+        mm.removeUserFromWall(req.params.wall_id, req.params.nickname, false);
+        res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+            message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
     }
 };
 
@@ -302,7 +286,7 @@ exports.updateMessages = function(req, res) {
         var multiUpdatePromise = [];
         req.body.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
 
-            var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true});
+            var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true}).lean();
             var p = query.exec();
             multiUpdatePromise.push(p);
         });
@@ -311,7 +295,7 @@ exports.updateMessages = function(req, res) {
             if (req.body.controlString !== 'none') {
                 messages.forEach(function(m) {
                     if (m.hasOwnProperty('question_id')) {
-                        mm.postUpdate(req.body.wall_id, m.question_id, req.body.nickname, m, req.body.controlString, false);
+                        mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
                     }
                 });
             }
