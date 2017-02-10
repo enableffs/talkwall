@@ -2,10 +2,11 @@
 	<div flex layout="row" class="editMessage-editContainer">
 		<md-input-container flex class="md-block" >
 			<label>{{ 'EDITMESSAGEPANEL_EDITMESSAGE' | translate }}</label>
-			<textarea ng-model="editMessageC.messageToEdit.text" tw-maxlength="140" type="text" rows="5" md-auto-focus="" id="editMessageInputTextBox"></textarea>
+			<textarea ng-model="editMessageC.dataService.data.status.messageToEdit.text" tw-maxlength="140" type="text" rows="5" md-auto-focus="" id="editMessageInputTextBox"></textarea>
 		</md-input-container>
 		<div flex="15" layout="column" layout-align="space-around center">
-			<md-button aria-label="Post message" ng-disabled="editMessageC.messageToEdit.text === ''" class="md-fab" ng-class="{'editMessage-validateButton' : editMessageC.messageToEdit.text !== ''}" ng-click="editMessageC.answer()">
+			<md-button aria-label="Post message" ng-disabled="editMessageC.dataService.data.status.messageToEdit.text === ''" class="md-fab"
+					   ng-class="{'editMessage-validateButton' : editMessageC.dataService.data.status.messageToEdit.text !== ''}" ng-click="editMessageC.answer()">
 				<md-icon md-svg-src="images/ic_check_black_24px.svg"></md-icon>
 			</md-button>
 			<md-button aria-label="Cancel message" class="md-fab editMessage-cancelButton" ng-click="editMessageC.cancel()">

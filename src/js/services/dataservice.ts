@@ -620,7 +620,7 @@ export class DataService implements IDataService {
             this.data.status.messageToEdit = new models.Message().createFromOrigin(this.data.status.messageOrigin, this.data.user.nickname);
             this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.user.nickname] !== 'undefined';
         } else {
-            this.data.status.messageToEdit = message;
+            this.data.status.messageToEdit = new models.Message().createFromOrigin(message, this.data.user.nickname);
         }
     }
 
@@ -912,7 +912,7 @@ export class DataService implements IDataService {
                 if (this.data.status.contributors.indexOf(this.data.user.nickname) === -1) {
                     this.data.status.contributors.push(this.data.user.nickname);
                 }
-                this.data.status.messageToEdit = null;
+                this.clearMessageToEdit();
                 if (this.data.status.updateOrigin) {
                     //the new cloned message was created from a message on the board, so remove my nickname from the old one
                     delete this.data.status.messageOrigin.board[this.data.user.nickname];
@@ -1051,7 +1051,6 @@ export class DataService implements IDataService {
                 controlString: controlString
             })
                 .then(() => {
-                    this.clearMessageToEdit();
                     messages.forEach((message) => {
                         this.parseMessageForTags(message);
                     });
