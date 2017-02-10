@@ -21162,7 +21162,6 @@ var EditMessageController = (function () {
         this.$timeout = $timeout;
         this.dataService = dataService;
         console.log('--> EditMessageController: started: ');
-        this.messageToEdit = dataService.data.status.messageToEdit;
         this.$timeout(function () {
             _this.$document[0].activeElement['focus']();
         }, 100);
@@ -21353,15 +21352,11 @@ var FeedMessageController = (function () {
         this.showControls = false;
     };
     FeedMessageController.prototype.editMessage = function () {
-        // Either we are the creator or teacher is editing another's message
-        if (this.message.creator === this.isolatedScope.selectedParticipant) {
-            this.dataService.setMessageToEdit(this.message);
-        }
-        else {
-            // Otherwise we are going to clone someone else's message
+        if (this.message.creator !== this.isolatedScope.selectedParticipant) {
+            // we are going to clone someone else's message
             this.dataService.data.status.messageOrigin = this.message;
-            this.dataService.setMessageToEdit(null);
         }
+        this.dataService.setMessageToEdit(this.message);
         this.isolatedScope.showEditPanel();
         this.showControls = false;
     };
@@ -23097,7 +23092,7 @@ var WallController = (function () {
             templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
         };
         if (newMessage) {
-            handle.dataService.setMessageToEdit(null);
+            handle.dataService.clearMessageToEdit();
         }
         //this.dataService.stopPolling();
         //this.showFeed(null);
@@ -23129,9 +23124,6 @@ var WallController = (function () {
         }, function () {
             //dialog dismissed
             _this.$window.document.activeElement['blur']();
-            //console.log('--> WallController: Edit message dismissed');
-            //handle.dataService.clearMessageToEdit();
-            //handle.dataService.startPolling();
         });
     };
     WallController.prototype.closeLeftSidenav = function () {
@@ -24007,7 +23999,7 @@ var DataService = (function () {
             this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.user.nickname] !== 'undefined';
         }
         else {
-            this.data.status.messageToEdit = message;
+            this.data.status.messageToEdit = new models.Message().createFromOrigin(message, this.data.user.nickname);
         }
     };
     DataService.prototype.clearMessageToEdit = function () {
@@ -24284,7 +24276,7 @@ var DataService = (function () {
             if (_this.data.status.contributors.indexOf(_this.data.user.nickname) === -1) {
                 _this.data.status.contributors.push(_this.data.user.nickname);
             }
-            _this.data.status.messageToEdit = null;
+            _this.clearMessageToEdit();
             if (_this.data.status.updateOrigin) {
                 //the new cloned message was created from a message on the board, so remove my nickname from the old one
                 delete _this.data.status.messageOrigin.board[_this.data.user.nickname];
@@ -24424,7 +24416,6 @@ var DataService = (function () {
                 controlString: controlString
             })
                 .then(function () {
-                _this.clearMessageToEdit();
                 messages.forEach(function (message) {
                     _this.parseMessageForTags(message);
                 });
