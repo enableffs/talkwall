@@ -352,7 +352,7 @@ export class WallController implements IWallControllerService {
 			templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
 		};
 		if (newMessage) {
-			handle.dataService.setMessageToEdit(null);
+			handle.dataService.clearMessageToEdit();
 		}
 
 		//this.dataService.stopPolling();
@@ -384,9 +384,6 @@ export class WallController implements IWallControllerService {
 		}, () => {
 			//dialog dismissed
 			this.$window.document.activeElement['blur']();
-			//console.log('--> WallController: Edit message dismissed');
-			//handle.dataService.clearMessageToEdit();
-			//handle.dataService.startPolling();
 		});
 	}
 
