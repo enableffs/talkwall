@@ -21185,7 +21185,7 @@ var EditMessageController = (function () {
      */
     EditMessageController.prototype.cancel = function (response) {
         console.log('--> EditMessageController: cancel');
-        this.dataService.setMessageToEdit(null);
+        this.dataService.clearMessageToEdit();
         this.$document[0].activeElement['blur']();
         this.$mdBottomSheet.cancel();
     };
@@ -23129,8 +23129,8 @@ var WallController = (function () {
         }, function () {
             //dialog dismissed
             _this.$window.document.activeElement['blur']();
-            console.log('--> WallController: Edit message dismissed');
-            handle.dataService.clearMessageToEdit();
+            //console.log('--> WallController: Edit message dismissed');
+            //handle.dataService.clearMessageToEdit();
             //handle.dataService.startPolling();
         });
     };

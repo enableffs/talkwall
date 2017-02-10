@@ -60,7 +60,7 @@ export class EditMessageController {
 	 */
 	cancel(response?: any) : void {
 		console.log('--> EditMessageController: cancel');
-		this.dataService.setMessageToEdit(null);
+		this.dataService.clearMessageToEdit();
 		this.$document[0].activeElement['blur']();
 		this.$mdBottomSheet.cancel();
 	};
