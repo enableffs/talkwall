@@ -384,8 +384,8 @@ export class WallController implements IWallControllerService {
 		}, () => {
 			//dialog dismissed
 			this.$window.document.activeElement['blur']();
-			console.log('--> WallController: Edit message dismissed');
-			handle.dataService.clearMessageToEdit();
+			//console.log('--> WallController: Edit message dismissed');
+			//handle.dataService.clearMessageToEdit();
 			//handle.dataService.startPolling();
 		});
 	}
