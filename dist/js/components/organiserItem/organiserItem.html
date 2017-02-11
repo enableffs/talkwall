@@ -56,7 +56,7 @@
 
 				<div flex layout="column" class="orgItem-input">
 
-					<div flex="50" layout="row" layout-align="space-between">
+					<div layout="row" layout-align="space-between">
 						<md-input-container class="md-block">
 							<label>{{'ORG_GROUP' | translate}}</label>
 							<input ng-model="orgItemC.newGroup" type="text">
@@ -71,12 +71,12 @@
 						</md-button>
 
 					</div>
-					<div layout="column" layout-align="space-between" style="max-height: 300px;">
+					<div layout="column" layout-align="space-between" >
 						<div layout="row">
 							<md-input-container class="md-block">
-								<label>{{'ADD_ORGANISER_HERE' | translate}}</label>
+								<label>{{'ORG_ADD_ORGANISER_HERE' | translate}}</label>
 								<input ng-model="orgItemC.newOrganiserEmail" type="text" ng-change="orgItemC.checkOrganiserEmail()" ng-class="{ 'orgItem-input-ok': orgItemC.nameExists }">
-								<div class="hint" ng-show="!orgItemC.nameExists">No matching email found</div>
+								<div class="hint" ng-show="!orgItemC.nameExists">{{'ORG_ADD_ORGANISER_NOEMAIL' | translate}}</div>
 							</md-input-container>
 							<md-button aria-label="Submit edited text" ng-class="{'orgItem-submit-orange': orgItemC.nameExists && orgItemC.newOrganiserEmail !== ''}"
 									   class="organiserItem-showControlButton" ng-click="orgItemC.submitOrganiser()" ng-disabled="!orgItemC.nameExists || orgItemC.newOrganiserEmail === ''" >
@@ -111,7 +111,7 @@
 					</div-->
 					<div>
 						<span ng-hide="orgItemC.wall.closed" class="organiserItem-pin">{{orgItemC.wall.pin}}</span>
-						<md-icon ng-show="orgItemC.wall.closed" md-svg-icon="images/ic_lock_outline_grey_24px.svg"></md-icon>
+						<md-icon ng-show="orgItemC.wall.closed" md-svg-icon="images/ic_lock_outline_grey_24px.svg" style="height: 30px;"></md-icon>
 					</div>
                     <div layout="row">
 						<span> {{::orgItemC.timeFromNow}}</span>

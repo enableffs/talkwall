@@ -135,14 +135,15 @@ export function configApp($translateProvider: angular.translate.ITranslateProvid
         minutesFormat: 'mm', //moment.localeData().longDateFormat('LT').replace(/[aA]/, ''),
         secondsFormat: 'ss',
         minutesStep:   1,
-        secondsStep:   1
+        secondsStep:   1,
+        showHeader:     false
     });
 
 
 
     let lang: string = null;
-    if (navigator['language'] !== null) {
-        lang = navigator['language'][0];
+    if (typeof navigator['languages'] !== 'undefined' && navigator['languages'] !== null && navigator['languages'].length > 0) {
+        lang = navigator['languages'][0];
     } else {
         lang = navigator.language || navigator['userLanguage'];
     }

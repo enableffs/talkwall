@@ -162,8 +162,13 @@ Mm.prototype.setup = function(wall_id, nickname) {
  */
 Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeacher) {
 
+    // Possible that a client is here after the wall is closed, return gracefully
+    if (!this.data.walls.hasOwnProperty(wall_id)) {
+        return;
+    }
+
     // Create the question structure if it doesn't exist
-    if (question_id !== 'none' && !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
+    if (isTeacher && question_id !== 'none' && !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
         this.data.walls[wall_id].questions[question_id] = {
             updated: {},
             created: {}
@@ -287,11 +292,11 @@ Mm.prototype.removeWall = function(wall_id) {
  * question_id can be 'none' if the teacher wants students to refresh wall (e.g. on wall closure, new question added)
  */
 Mm.prototype.statusUpdate = function(wall_id, question_id) {
-    if (question_id !== 'none') {
-        this.data.walls[wall_id].status.teacher_current_question = question_id;
-    }
     if (this.data.walls.hasOwnProperty(wall_id)) {
         this.data.walls[wall_id].status.last_update = Date.now();
+        if (question_id !== 'none') {
+            this.data.walls[wall_id].status.teacher_current_question = question_id;
+        }
     }
 };
 
@@ -307,12 +312,10 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  */
 Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
 
-    // Note that someone is using this wall, or return if it has been removed
-    if (this.data.walls.hasOwnProperty(wall_id)) {
-        this.data.walls[wall_id].status.last_access = Date.now();
-    } else {
+    if (!this.data.walls.hasOwnProperty(wall_id) || !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
         return;
     }
+
     function editUpdate(userQueue) {
 
         // Has an update to this message already been registered?  Further updates will overwrite..
@@ -329,6 +332,10 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         }
     }
 
+    // Note that someone is using this wall
+    this.data.walls[wall_id].status.last_access = Date.now();
+
+    // Short reference to the question in question
     var thisQuestion = this.data.walls[wall_id].questions[question_id];
     var userQueue = null;
 

@@ -31,6 +31,7 @@ export class LogType {
     public static readonly CreateTask = "tc";
     public static readonly EditTask = "te";
     public static readonly DeleteTask = "td";
+    public static readonly SelectWall = "sw";
 }
 
 export class User {
@@ -138,6 +139,7 @@ export class Message implements IMessage {
     creator: string;        //nickname
     deleted: boolean;
     isHighlighted: boolean;  // dynamic local attribute - not stored at server
+    controlString: string;   // dynamic local attribute - not stored at server
     origin: {}[];
     edits: {}[];
     board: { [nickname: string] : Nickname };

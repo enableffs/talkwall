@@ -17,10 +17,6 @@
  along with Talkwall.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Created by richardnesnass on 31/05/16.
- */
-
 var common = require('../config/common.js');
 var mm = require('../config/message_manager').mm;
 var redisClient = require('../config/redis_database').redisClient;
@@ -177,26 +173,10 @@ exports.disconnectWall = function(req, res) {
 
     // Check for the student on the wall
     if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
-        var query = Wall.findOne({
-            _id : req.params.wall_id,
-            pin : { $gte: 0 }       // Wall is not available to clients if pin is -1
-        }).lean();
-
-        query.exec(function(error, wall) {
-            if(error) {
-                res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
-                    message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error});
-            }
-            else {
-                // Remove nickname from the wall users list (message manager)
-                mm.removeUserFromWall(wall._id, req.params.nickname, false);
-                res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-                    message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
-            }
-        });
-    } else {        // Pin has expired or does not exist
-        res.status(common.StatusMessages.PIN_DOES_NOT_EXIST.status).json({
-            message: common.StatusMessages.PIN_DOES_NOT_EXIST.message});
+        // Remove nickname from the wall users list (message manager)
+        mm.removeUserFromWall(req.params.wall_id, req.params.nickname, false);
+        res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+            message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
     }
 };
 
@@ -228,7 +208,7 @@ exports.createMessage = function(req, res) {
             }
             else {
                 // Update the message manager to notify other clients
-                mm.postUpdate(req.body.wall_id, message.question_id, req.body.nickname, message, 'create', false);
+                mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, message, 'create', false);
 
                 // Update the question with this new message, and return
                 Wall.findOneAndUpdate({
@@ -286,7 +266,7 @@ exports.getMessages = function(req, res) {
 };
 
 /**
- * @api {put} /message Edit a message by submitting a Message object and pin
+ * @api {put} /message Edit a message by submitting a Message array and pin
  * @apiName updateMessages
  * @apiGroup non-authorised
  *
@@ -306,33 +286,27 @@ exports.updateMessages = function(req, res) {
         var multiUpdatePromise = [];
         req.body.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
 
-            var p = new Promise(function(resolve, reject) {
-                var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true});
-
-                query.exec(function (err, updated_message) {
-                    if (err || typeof updated_message === 'undefined') {
-                        reject(err);
-                    }
-                    // Update the message manager to notify other clients
-                    if (req.body.controlString !== 'none') {
-                        mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, false);
-                    }
-                    resolve(updated_message);
-                });
-            });
+            var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true}).lean();
+            var p = query.exec();
             multiUpdatePromise.push(p);
         });
 
         Promise.all(multiUpdatePromise).then(function(messages) {
+            if (req.body.controlString !== 'none') {
+                messages.forEach(function(m) {
+                    if (m.hasOwnProperty('question_id')) {
+                        mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
+                    }
+                });
+            }
             res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages
             });
-        }).catch(function(err) {
+        }).catch(function(error) {
             res.status(common.StatusMessages.UPDATE_ERROR.status).json({
                 message: common.StatusMessages.UPDATE_ERROR.message, result: error
             });
         });
-
 
     } else {
         res.status(common.StatusMessages.INVALID_USER.status).json({

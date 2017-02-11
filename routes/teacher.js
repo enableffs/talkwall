@@ -217,12 +217,9 @@ exports.updateWall = function(req, res) {
         } else {
             if (!wall.closed && req.body.wall.closed) {     // Wall has been closed (locked)
                 // Expire the pin
-                if (req.body.wall.closed) {
-                    redisClient.EXPIRE(req.body.wall.pin, 1);
-                    wall.pin = '0000';
-                    mm.removeWall(req.body.wall._id);
-                }
-
+                redisClient.EXPIRE(req.body.wall.pin, 1);
+                wall.pin = '0000';
+                mm.removeWall(req.body.wall._id);
                 wall.closed = true;
 
                 //send an email to the wall creator with the permalink.
@@ -283,8 +280,6 @@ function sendExportLinkToOwner(userid, targetEmail) {
             }
 
             if (user != null) {
-                console.log('--> user search - got results');
-
                 var host;
                 if (process.env.STATIC_FOLDER === 'src') {
                     host = 'http://' + process.env.HOST_NAME + ':' + process.env.PORT;
@@ -329,6 +324,7 @@ function sendExportLinkToOwner(userid, targetEmail) {
 * @apiGroup authorised
 *
 */
+/*
 exports.closeWall = function(req, res) {
 
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null ) {
@@ -347,7 +343,6 @@ exports.closeWall = function(req, res) {
         } else {
             redisClient.EXPIRE(wall.pin, 1);
             mm.removeWall(wall._id);
-            console.log('--> closeWall: sending export link');
             sendExportLinkToOwner(wall.createdBy, req.body.targetEmail).then(function() {
                 res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                     message: common.StatusMessages.UPDATE_SUCCESS.message});
@@ -355,6 +350,7 @@ exports.closeWall = function(req, res) {
         }
     })
 };
+*/
 
 /**
  * @api {get} /change Notify change of question
@@ -417,24 +413,10 @@ exports.disconnectWall = function(req, res) {
     }
 
     if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
-        var query = Wall.findOne({
-            _id: req.params.wall_id,
-            pin: {$gte: 0}       // Wall is not available to clients if pin is -1
-        }).lean();
-
-        query.exec(function (error, wall) {
-            if (error) {
-                res.status(common.StatusMessages.CLIENT_DISCONNECT_ERROR.status).json({
-                    message: common.StatusMessages.CLIENT_DISCONNECT_ERROR.message, result: error
-                });
-            }
-            else {
-                // Remove nickname from the wall users list (message manager)
-                mm.removeUserFromWall(wall._id, req.params.nickname, true);
-                res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-                    message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message
-                });
-            }
+        // Remove nickname from the wall users list (message manager)
+        mm.removeUserFromWall(req.params.wall_id, req.params.nickname, true);
+        res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+            message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message
         });
     }
 
@@ -541,8 +523,8 @@ exports.getWall = function(req, res) {
                     redisClient.set(newPin, wall._id.toString());
                     redisClient.EXPIRE(newPin, common.Constants.WALL_EXPIRATION_SECONDS);
                     wall.pin = newPin;
-                    wall.save();
                 }
+                wall.save();
                 User.findOne({_id: req.user.id}, function (error, user) {
                     if (error) {
                         res.status(common.StatusMessages.UPDATE_ERROR.status).json({
@@ -778,71 +760,31 @@ exports.updateMessages = function(req, res) {
     }
 
     var multiUpdatePromise = [];
-    req.body.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
+    req.body.messages.forEach(function (message) {    // Collect Fixtures for the user and include in return
 
-        var p = new Promise(function(resolve, reject) {
-            var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true});
-
-            query.exec(function (err, updated_message) {
-                if (err) {
-                    reject(err);
-                }
-                // Update the message manager to notify other clients
-                if (req.body.controlString !== 'none') {
-                    mm.postUpdate(req.body.wall_id, updated_message.question_id, req.body.nickname, updated_message, req.body.controlString, true);
-                }
-                resolve(updated_message);
-            });
-        });
+        var query = Message.findOneAndUpdate({_id: message._id}, message, {new: true}).lean();
+        var p = query.exec();
         multiUpdatePromise.push(p);
     });
 
-    Promise.all(multiUpdatePromise).then(function(messages) {
+    Promise.all(multiUpdatePromise).then(function (messages) {
+        if (req.body.controlString !== 'none') {
+            messages.forEach(function (m) {
+                if (m.hasOwnProperty('question_id')) {
+                    mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
+                }
+            });
+        }
         res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
             message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages
         });
-    }).catch(function(err) {
+    }).catch(function (error) {
         res.status(common.StatusMessages.UPDATE_ERROR.status).json({
             message: common.StatusMessages.UPDATE_ERROR.message, result: error
         });
     });
 
 };
-
-/**
- * @api {delete} /message Delete a message
- * @apiName deleteMessage
- * @apiGroup authorised
- *
- */
-/*
-
-exports.deleteMessage = function(req, res) {
-
-    if (typeof req.params.message_id === 'undefined' || req.params.message_id == null ||
-        typeof req.params.nickname === 'undefined' || req.params.nickname == null ||
-        typeof req.params.wall_id === 'undefined' || req.params.wall_id == null) {
-        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
-            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
-    }
-
-    var query = Message.update(
-        { _id : req.params.message_id },
-        { deleted : true },
-        { new: true } );
-
-    query.exec(function(error, updated_message) {
-        if(error) {
-            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
-        } else {
-            mm.postUpdate(req.params.wall_id, updated_message.question_id, req.params.nickname, updated_message, 'delete', true);
-            res.status(common.StatusMessages.DELETE_SUCCESS.status).json({
-                message: common.StatusMessages.DELETE_SUCCESS.message, result: wall});
-        }
-    })
-};
-*/
 
 
 exports.createTestUser = function() {
@@ -955,12 +897,15 @@ exports.getLogs = function(req, res) {
                 } else if (logs !== null) {
 
                     var data = '';
-                    var diff = {x: '', y: ''};
+                    var diff = {x: '-', y: '-'};
+                    var basedOn = '';
                     var columns = {
                         eventTime: 'Event time',
                         minsIntoSession: 'Minutes into session',
                         eventType: 'Event type',
                         nickname: 'Nickname',
+                        text: 'Text',
+                        basedOn: 'Based On',
                         diffX: 'Diff X',
                         diffY: 'Diff Y',
                         itemId: 'Message or Question ID'
@@ -979,6 +924,8 @@ exports.getLogs = function(req, res) {
 
                     stringifier.on('finish', function(){
                         res.send(data);
+                        //res.attachment('hello.csv');
+                        //res.end(JSON.stringify(data, null, 2), 'utf8')
                     });
 
                     logs.forEach( function(log) {
@@ -987,7 +934,10 @@ exports.getLogs = function(req, res) {
                             diff.x = log.diff.x;
                             diff.y = log.diff.y;
                         }
-                        stringifier.write([ moment(log.stamp).format(), relativeTime, common.LogType[log.type], log.nick, diff.x, diff.y, log.itemid ]);
+                        if (typeof log.basedOn !== 'undefined' && log.diff !== null) {
+                            basedOn = 'item:' + log.basedOn.itemid + ' nick: ' + log.basedOn.nick + ' text: ' + log.basedOn.text;
+                        }
+                        stringifier.write([ moment(log.stamp).format(), relativeTime, common.LogType[log.type], log.nick, log.text, basedOn, diff.x, diff.y, log.itemid ]);
                     });
 
                     stringifier.end();

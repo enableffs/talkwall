@@ -173,6 +173,7 @@ export class WallController implements IWallControllerService {
 			this.$scope.$watch(() => { return this.selectedParticipant }, (newVar, oldVar) => {
 				if(newVar !== oldVar) {
 					this.dataService.data.status.selectedParticipant = newVar;
+					this.dataService.logAnEvent(LogType.SelectWall, this.dataService.data.question._id, null, newVar, null, '');
 					this.dataService.refreshBoardMessages();
 				}
 			}, true);
@@ -372,6 +373,7 @@ export class WallController implements IWallControllerService {
 					}
 					this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
 					handle.dataService.addMessage( null, null);
+					this.showFeed();
 				} else {
 					console.log('--> WallController: Edit message - edited');
 					this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, '');

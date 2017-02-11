@@ -24,27 +24,29 @@ exports.Constants = {
     TOKEN_EXPIRATION: 86400, //24hrs
     MINIMUM_PIN: 1000,
     MAXIMUM_PIN: 9999,
-    POLL_USER_EXPIRY_TIME_MINUTES: 2,  // 30 seconds = 30000            // Remove a user's MM queue if this idle period is exceeded
+    POLL_USER_EXPIRY_TIME_MINUTES: 1,  // 30 seconds = 30000            // Remove a user's MM queue if this idle period is exceeded
     TERMINATE_MESSAGE_MANAGER_MINUTES: 10080,  // 1440 = 24 hours  10080 = 7 days   // Remove an entire MM wall if this idle period is exceeded
     TERMINATE_MESSAGE_MANAGER_CHECK_SECONDS: 60   // 600 = 10 minutes   // How often to check for the idle period expiry
 };
 
 exports.LogType = {
-    mc: 'CreateMessage',
-    me: 'EditMessage',
-    mp: 'PinMessage',
-    mup: 'UnPinMessage',
-    md: 'DeleteMessage',
-    mh: 'HighlightMessage',
-    muh: 'UnHighlightMessage',
-    mm: 'MoveMessage',
-    tc: 'CreateTask',
-    te: 'EditTask',
-    td: 'DeleteTask'
+    mc: 'Create Message',
+    me: 'Edit Message',
+    mp: 'Pin Message',
+    mup: 'UnPin Message',
+    md: 'Delete Message',
+    mh: 'Highlight Message',
+    muh: 'UnHighlight Message',
+    mm: 'Move Message',
+    tc: 'Create Task',
+    te: 'Edit Task',
+    td: 'Delete Task',
+    sw: 'Select Wall'
 };
 
 exports.trackedOrganiserWalls = [
-    'richardn@uio.im'
+    'richardn@uio.im',
+    'ole.smordal@gmail.com'
 ];
 
 exports.StatusMessages = {
