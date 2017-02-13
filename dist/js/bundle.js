@@ -21167,24 +21167,11 @@ var EditMessageController = (function () {
         }, 100);
     }
     /**
-     * hide this dialog (see angular.material.IDialogService)
-     * @aparam response a possible reponse
-     */
-    /*
-    hide(response?: any): void {
-        console.log('--> EditMessageController: hide');
-        this.dataService.setMessageToEdit(null);
-        this.$document[0].activeElement['blur']();
-        this.$mdBottomSheet.hide();
-    };
-    */
-    /**
      * cancel this dialog (see angular.material.IDialogService)
      * @aparam response a possible reponse
      */
     EditMessageController.prototype.cancel = function (response) {
         console.log('--> EditMessageController: cancel');
-        this.dataService.clearMessageToEdit();
         this.$document[0].activeElement['blur']();
         this.$mdBottomSheet.cancel();
     };
@@ -21352,10 +21339,6 @@ var FeedMessageController = (function () {
         this.showControls = false;
     };
     FeedMessageController.prototype.editMessage = function () {
-        if (this.message.creator !== this.isolatedScope.selectedParticipant) {
-            // we are going to clone someone else's message
-            this.dataService.data.status.messageOrigin = this.message;
-        }
         this.dataService.setMessageToEdit(this.message);
         this.isolatedScope.showEditPanel();
         this.showControls = false;
@@ -23092,35 +23075,28 @@ var WallController = (function () {
             templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
         };
         if (newMessage) {
-            handle.dataService.clearMessageToEdit();
+            handle.dataService.setMessageToEdit(null);
         }
-        //this.dataService.stopPolling();
-        //this.showFeed(null);
         this.$mdBottomSheet.show(dialogOptions).then(function () {
-            //dialog answered
             _this.$window.document.activeElement['blur']();
-            //post message to server and add returned object to question feed
             var message = handle.dataService.data.status.messageToEdit;
-            if (message !== null) {
-                if (typeof message._id === 'undefined') {
-                    console.log('--> WallController: Edit message - created');
-                    var origin = [];
-                    var basedOnText = '';
-                    if (_this.dataService.data.status.messageOrigin !== null) {
-                        origin = _this.dataService.data.status.messageOrigin.origin;
-                        basedOnText = _this.dataService.data.status.messageOrigin.text;
-                    }
-                    _this.dataService.logAnEvent(models_1.LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
-                    handle.dataService.addMessage(null, null);
-                    _this.showFeed();
+            // We created a new message, possibly a copy of someone else's
+            if (typeof message._id === 'undefined') {
+                // Log details including the origin
+                var origin = [];
+                var basedOnText = '';
+                if (_this.dataService.data.status.messageOrigin !== null) {
+                    origin = _this.dataService.data.status.messageOrigin.origin;
+                    basedOnText = _this.dataService.data.status.messageOrigin.text;
                 }
-                else {
-                    console.log('--> WallController: Edit message - edited');
-                    _this.dataService.logAnEvent(models_1.LogType.EditMessage, message._id, null, message.text, null, '');
-                    handle.dataService.updateMessages([message], 'edit');
-                }
+                _this.dataService.logAnEvent(models_1.LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
+                handle.dataService.addMessage(null, null);
+                _this.showFeed();
             }
-            //handle.dataService.startPolling();
+            else {
+                _this.dataService.logAnEvent(models_1.LogType.EditMessage, message._id, null, message.text, null, '');
+                handle.dataService.updateMessages([message], 'edit');
+            }
         }, function () {
             //dialog dismissed
             _this.$window.document.activeElement['blur']();
@@ -23692,7 +23668,7 @@ var DataService = (function () {
                 questionToEdit: null,
                 messageToEdit: null,
                 messageOrigin: null,
-                updateOrigin: false,
+                replaceOnBoard: false,
                 currentQuestionIndex: -1,
                 phoneMode: false,
                 contributors: [],
@@ -23986,24 +23962,23 @@ var DataService = (function () {
     };
     // Accessor functions for passing messages between directives
     DataService.prototype.setMessageToEdit = function (message) {
-        if (message === null && this.data.status.messageOrigin === null) {
-            //no message, create a new one
+        this.data.status.messageOrigin = null;
+        this.data.status.replaceOnBoard = false;
+        // A fresh new message is to be created
+        if (message === null) {
             this.data.status.messageToEdit = new models.Message();
             this.data.status.messageToEdit.creator = this.data.user.nickname;
             this.data.status.messageToEdit.origin.push({ nickname: this.data.user.nickname, message_id: null });
             this.data.status.messageToEdit.question_id = this.data.question._id;
         }
-        else if (message === null && this.data.status.messageOrigin !== null) {
-            //we have an origin to create the new message, clone it
-            this.data.status.messageToEdit = new models.Message().createFromOrigin(this.data.status.messageOrigin, this.data.user.nickname);
-            this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.user.nickname] !== 'undefined';
+        else if (message.creator !== this.data.status.selectedParticipant) {
+            this.data.status.messageToEdit = new models.Message().createFromOrigin(message, this.data.user.nickname);
+            this.data.status.messageOrigin = message;
+            this.data.status.replaceOnBoard = typeof this.data.status.messageOrigin.board[this.data.user.nickname] !== 'undefined';
         }
         else {
-            this.data.status.messageToEdit = new models.Message().createFromOrigin(message, this.data.user.nickname);
+            this.data.status.messageToEdit = message;
         }
-    };
-    DataService.prototype.clearMessageToEdit = function () {
-        this.data.status.messageToEdit = null;
     };
     // If we are changing questions, or a new question, set the polling params correctly. Input new question index.
     DataService.prototype.setQuestion = function (newIndex, successCallbackFn, errorCallbackFn) {
@@ -24255,12 +24230,11 @@ var DataService = (function () {
     //generate a new message on server with _id and returns it
     DataService.prototype.addMessage = function (successCallbackFn, errorCallbackFn) {
         var _this = this;
-        var nickname = this.data.user.nickname;
         if (this.data.status.messageToEdit === null) {
             errorCallbackFn({ status: '400', message: "message is not defined" });
         }
         this.data.status.messageToEdit.edits.push({ date: new Date(), text: this.data.status.messageToEdit.text });
-        if (this.data.status.updateOrigin) {
+        if (this.data.status.replaceOnBoard) {
             // If the message was created from another, add it to the board, it will replace the origin message's location
             this.data.status.messageToEdit.board[this.data.user.nickname] = this.data.status.messageOrigin.board[this.data.user.nickname];
         }
@@ -24268,7 +24242,7 @@ var DataService = (function () {
         this.$http.post(this.urlService.getHost() + clientType, {
             message: this.data.status.messageToEdit,
             wall_id: this.data.wall._id,
-            nickname: nickname
+            nickname: this.data.user.nickname
         }).then(function (result) {
             var resultKey = 'result';
             _this.data.question.messages.push(new models.Message().updateMe(result.data[resultKey]));
@@ -24276,9 +24250,8 @@ var DataService = (function () {
             if (_this.data.status.contributors.indexOf(_this.data.user.nickname) === -1) {
                 _this.data.status.contributors.push(_this.data.user.nickname);
             }
-            _this.clearMessageToEdit();
-            if (_this.data.status.updateOrigin) {
-                //the new cloned message was created from a message on the board, so remove my nickname from the old one
+            //the new cloned message was created from a message on the board, so remove my nickname from the old one
+            if (_this.data.status.replaceOnBoard) {
                 delete _this.data.status.messageOrigin.board[_this.data.user.nickname];
                 _this.$http.put(_this.urlService.getHost() + clientType, {
                     messages: [_this.data.status.messageOrigin],
@@ -24288,8 +24261,6 @@ var DataService = (function () {
                 })
                     .then(function (response) {
                     var resultKey = 'result';
-                    _this.data.status.updateOrigin = false;
-                    _this.data.status.messageOrigin = null;
                     //update the messages array with the updated object, so that all references are in turn updated
                     var idKey = '_id';
                     _this.data.question.messages.forEach(function (m) {
@@ -24299,13 +24270,7 @@ var DataService = (function () {
                     });
                 }, function (error) {
                     console.log('--> DataService: updateMessage failure: ' + error);
-                    //TODO: fire a notification with the problem
                 });
-            }
-            else {
-                //make sure to reset the message origin ...
-                _this.data.status.messageOrigin = null;
-                _this.data.status.messageToEdit = null;
             }
             if (typeof successCallbackFn === "function") {
                 successCallbackFn(null);
@@ -24400,7 +24365,7 @@ var DataService = (function () {
     DataService.prototype.updateMessages = function (messages, controlString) {
         var _this = this;
         // Queue the updated message to be sent later - this saves unnecessary server polls
-        // At this time only position requests are queued
+        // At this time only 'position' requests are queued
         if (this.data.status.restrictPositionRequests && controlString === 'position') {
             messages.forEach(function (message) {
                 _this.data.status.restrictPositionRequestMessages[message._id] = message;

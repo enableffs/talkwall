@@ -352,35 +352,34 @@ export class WallController implements IWallControllerService {
 			templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
 		};
 		if (newMessage) {
-			handle.dataService.clearMessageToEdit();
+			handle.dataService.setMessageToEdit(null);
 		}
 
-		//this.dataService.stopPolling();
-		//this.showFeed(null);
 		this.$mdBottomSheet.show(dialogOptions).then(() => {
-			//dialog answered
 			this.$window.document.activeElement['blur']();
-			//post message to server and add returned object to question feed
+
 			let message = handle.dataService.data.status.messageToEdit;
-			if(message !== null) {
-				if (typeof message._id === 'undefined') {
-					console.log('--> WallController: Edit message - created');
-					let origin: {}[] = [];
-					let basedOnText: string = '';
-					if (this.dataService.data.status.messageOrigin !== null) {
-						origin = this.dataService.data.status.messageOrigin.origin;
-						basedOnText = this.dataService.data.status.messageOrigin.text;
-					}
-					this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
-					handle.dataService.addMessage( null, null);
-					this.showFeed();
-				} else {
-					console.log('--> WallController: Edit message - edited');
-					this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, '');
-					handle.dataService.updateMessages([message], 'edit');
+
+			// We created a new message, possibly a copy of someone else's
+			if (typeof message._id === 'undefined') {
+
+				// Log details including the origin
+				let origin: {}[] = [];
+				let basedOnText: string = '';
+				if (this.dataService.data.status.messageOrigin !== null) {
+					origin = this.dataService.data.status.messageOrigin.origin;
+					basedOnText = this.dataService.data.status.messageOrigin.text;
 				}
+				this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
+				handle.dataService.addMessage( null, null);
+				this.showFeed();
 			}
-			//handle.dataService.startPolling();
+
+			// We edited our own existing message
+			else {
+				this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, '');
+				handle.dataService.updateMessages([message], 'edit');
+			}
 		}, () => {
 			//dialog dismissed
 			this.$window.document.activeElement['blur']();

@@ -184,10 +184,6 @@ export interface IDataService {
      */
     getGridStyle(type: string): {};
     /**
-     * clear the temporary editable message object
-     */
-    clearMessageToEdit(): void;
-    /**
      * run the polling timer
      */
     startPolling(previous_question_id: string, controlString: string): void;
@@ -245,7 +241,7 @@ export class DataService implements IDataService {
             questionToEdit: models.Question;
             messageToEdit: models.Message;
             messageOrigin: models.Message;
-            updateOrigin: boolean;
+            replaceOnBoard: boolean;
             currentQuestionIndex: number;
             phoneMode: boolean;
             contributors: Array<string>;
@@ -297,7 +293,7 @@ export class DataService implements IDataService {
                 questionToEdit: null,
                 messageToEdit: null,
                 messageOrigin: null,
-                updateOrigin: false,
+                replaceOnBoard: false,
                 currentQuestionIndex: -1,
                 phoneMode: false,
                 contributors: [],
@@ -609,23 +605,28 @@ export class DataService implements IDataService {
 
     // Accessor functions for passing messages between directives
     setMessageToEdit(message: models.Message) {
-        if (message === null && this.data.status.messageOrigin === null) {
-            //no message, create a new one
+        this.data.status.messageOrigin = null;
+        this.data.status.replaceOnBoard = false;
+
+        // A fresh new message is to be created
+        if (message === null) {
             this.data.status.messageToEdit = new models.Message();
             this.data.status.messageToEdit.creator = this.data.user.nickname;
             this.data.status.messageToEdit.origin.push({nickname: this.data.user.nickname, message_id: null});
             this.data.status.messageToEdit.question_id = this.data.question._id;
-        } else if (message === null && this.data.status.messageOrigin !== null) {
-            //we have an origin to create the new message, clone it
-            this.data.status.messageToEdit = new models.Message().createFromOrigin(this.data.status.messageOrigin, this.data.user.nickname);
-            this.data.status.updateOrigin = typeof this.data.status.messageOrigin.board[this.data.user.nickname] !== 'undefined';
-        } else {
-            this.data.status.messageToEdit = new models.Message().createFromOrigin(message, this.data.user.nickname);
         }
-    }
-
-    clearMessageToEdit() {
-        this.data.status.messageToEdit = null;
+        
+        // we are going to clone someone else's message (or teacher is editing a participant message?)
+        else if (message.creator !== this.data.status.selectedParticipant) {
+            this.data.status.messageToEdit = new models.Message().createFromOrigin(message, this.data.user.nickname);
+            this.data.status.messageOrigin = message;
+            this.data.status.replaceOnBoard = typeof this.data.status.messageOrigin.board[this.data.user.nickname] !== 'undefined';
+        }
+        
+        // we are editing our own message
+        else {
+            this.data.status.messageToEdit = message;
+        }
     }
 
     // If we are changing questions, or a new question, set the polling params correctly. Input new question index.
@@ -891,12 +892,11 @@ export class DataService implements IDataService {
 
     //generate a new message on server with _id and returns it
     addMessage(successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
-        let nickname = this.data.user.nickname;
         if (this.data.status.messageToEdit === null) {
             errorCallbackFn({status: '400', message: "message is not defined"});
         }
         this.data.status.messageToEdit.edits.push({date: new Date(), text: this.data.status.messageToEdit.text});
-        if (this.data.status.updateOrigin) {
+        if (this.data.status.replaceOnBoard) {
             // If the message was created from another, add it to the board, it will replace the origin message's location
             this.data.status.messageToEdit.board[this.data.user.nickname] = this.data.status.messageOrigin.board[this.data.user.nickname];
         }
@@ -904,7 +904,7 @@ export class DataService implements IDataService {
         this.$http.post(this.urlService.getHost() + clientType, {
             message: this.data.status.messageToEdit,
             wall_id: this.data.wall._id,
-            nickname: nickname
+            nickname: this.data.user.nickname
         }).then((result) => {
                 let resultKey = 'result';
                 this.data.question.messages.push(new models.Message().updateMe(result.data[resultKey]));
@@ -912,9 +912,9 @@ export class DataService implements IDataService {
                 if (this.data.status.contributors.indexOf(this.data.user.nickname) === -1) {
                     this.data.status.contributors.push(this.data.user.nickname);
                 }
-                this.clearMessageToEdit();
-                if (this.data.status.updateOrigin) {
-                    //the new cloned message was created from a message on the board, so remove my nickname from the old one
+
+                //the new cloned message was created from a message on the board, so remove my nickname from the old one
+                if (this.data.status.replaceOnBoard) {
                     delete this.data.status.messageOrigin.board[this.data.user.nickname];
                     this.$http.put(this.urlService.getHost() + clientType, {
                         messages: [this.data.status.messageOrigin],
@@ -924,8 +924,6 @@ export class DataService implements IDataService {
                     })
                         .then((response) => {
                             let resultKey = 'result';
-                            this.data.status.updateOrigin = false;
-                            this.data.status.messageOrigin = null;
                             //update the messages array with the updated object, so that all references are in turn updated
                             let idKey = '_id';
                             this.data.question.messages.forEach((m) => {
@@ -935,12 +933,7 @@ export class DataService implements IDataService {
                             });
                         }, (error) => {
                             console.log('--> DataService: updateMessage failure: ' + error);
-                            //TODO: fire a notification with the problem
                         });
-                } else {
-                    //make sure to reset the message origin ...
-                    this.data.status.messageOrigin = null;
-                    this.data.status.messageToEdit = null;
                 }
                 if (typeof successCallbackFn === "function") {
                     successCallbackFn(null);
@@ -1036,7 +1029,7 @@ export class DataService implements IDataService {
     // Update messages on the server
     updateMessages(messages: Array<models.Message>, controlString: string): void {
         // Queue the updated message to be sent later - this saves unnecessary server polls
-        // At this time only position requests are queued
+        // At this time only 'position' requests are queued
         if (this.data.status.restrictPositionRequests && controlString === 'position') {
             messages.forEach((message) => {
                 this.data.status.restrictPositionRequestMessages[message._id] = message;
