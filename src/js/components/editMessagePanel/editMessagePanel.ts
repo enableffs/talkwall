@@ -20,7 +20,6 @@
 import IBottomSheetService = angular.material.IBottomSheetService;
 import IDocumentService = angular.IDocumentService;
 import ITimeoutService = angular.ITimeoutService;
-import {Message} from '../../models/models';
 import {DataService} from "../../services/dataservice";
 
 export class EditMessageController {
@@ -40,24 +39,11 @@ export class EditMessageController {
 	}
 
 	/**
-	 * hide this dialog (see angular.material.IDialogService)
-	 * @aparam response a possible reponse
-	 */
-	/*
-	hide(response?: any): void {
-		console.log('--> EditMessageController: hide');
-		this.dataService.setMessageToEdit(null);
-		this.$document[0].activeElement['blur']();
-		this.$mdBottomSheet.hide();
-	};
-	*/
-	/**
 	 * cancel this dialog (see angular.material.IDialogService)
 	 * @aparam response a possible reponse
 	 */
 	cancel(response?: any) : void {
 		console.log('--> EditMessageController: cancel');
-		this.dataService.clearMessageToEdit();
 		this.$document[0].activeElement['blur']();
 		this.$mdBottomSheet.cancel();
 	};

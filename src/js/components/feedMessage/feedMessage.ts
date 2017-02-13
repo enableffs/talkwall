@@ -72,10 +72,6 @@ class FeedMessageController implements IFeedMessageController {
 	}
 
 	editMessage(): void {
-		if (this.message.creator !== this.isolatedScope.selectedParticipant) {
-			// we are going to clone someone else's message
-			this.dataService.data.status.messageOrigin = this.message;
-		}
 		this.dataService.setMessageToEdit(this.message);
 		this.isolatedScope.showEditPanel();
 		this.showControls = false;
