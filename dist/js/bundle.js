@@ -21161,7 +21161,9 @@ var EditMessageController = (function () {
         this.$document = $document;
         this.$timeout = $timeout;
         this.dataService = dataService;
+        this.messageText = '';
         console.log('--> EditMessageController: started: ');
+        this.messageText = dataService.data.status.messageToEdit.text;
         this.$timeout(function () {
             _this.$document[0].activeElement['focus']();
         }, 100);
@@ -21181,6 +21183,7 @@ var EditMessageController = (function () {
      * @aparam answer aa a string
      */
     EditMessageController.prototype.answer = function () {
+        this.dataService.data.status.messageToEdit.text = this.messageText;
         console.log('--> EditMessageController: answered: ');
         this.$document[0].activeElement['blur']();
         this.$mdBottomSheet.hide();

@@ -214,13 +214,14 @@ Mm.prototype.userIsOnWall = function(wall_id, nickname) {
  * @param {boolean} isTeacher
  */
 Mm.prototype.removeUserFromQuestion = function(wall_id, question_id, nickname, isTeacher) {
-    if (this.data.walls.hasOwnProperty(wall_id)) {
-        if (this.data.walls[wall_id].questions[question_id].created.hasOwnProperty(nickname)) {
-            delete this.data.walls[wall_id].questions[question_id].created[nickname];
-        }
-        if (this.data.walls[wall_id].questions[question_id].updated.hasOwnProperty(nickname)) {
-            delete this.data.walls[wall_id].questions[question_id].updated[nickname];
-        }
+    if (this.data.walls.hasOwnProperty(wall_id)
+        && this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
+            if (this.data.walls[wall_id].questions[question_id].created.hasOwnProperty(nickname)) {
+                delete this.data.walls[wall_id].questions[question_id].created[nickname];
+            }
+            if (this.data.walls[wall_id].questions[question_id].updated.hasOwnProperty(nickname)) {
+                delete this.data.walls[wall_id].questions[question_id].updated[nickname];
+            }
     }
 };
 
