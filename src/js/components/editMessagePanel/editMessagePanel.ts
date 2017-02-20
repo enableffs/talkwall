@@ -25,6 +25,7 @@ import {DataService} from "../../services/dataservice";
 export class EditMessageController {
 	static $inject = ['$mdBottomSheet', '$document', '$timeout', 'DataService'];
 
+	private messageText = '';
 
 	constructor(
 		private $mdBottomSheet: IBottomSheetService,
@@ -32,6 +33,8 @@ export class EditMessageController {
 		private $timeout: ITimeoutService,
 		private dataService: DataService) {
 		console.log('--> EditMessageController: started: ');
+
+		this.messageText = dataService.data.status.messageToEdit.text;
 
 		this.$timeout(() => {
 			this.$document[0].activeElement['focus']();
@@ -52,6 +55,7 @@ export class EditMessageController {
 	 * @aparam answer aa a string
 	 */
 	answer(): void {
+		this.dataService.data.status.messageToEdit.text = this.messageText;
 		console.log('--> EditMessageController: answered: ');
 		this.$document[0].activeElement['blur']();
 		this.$mdBottomSheet.hide();
