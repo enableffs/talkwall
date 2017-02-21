@@ -188,8 +188,11 @@ Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeac
         this.data.walls[wall_id].status.connected_students[nickname] = Date.now();
     }
 
-    this.data.walls[wall_id].questions[question_id].updated[nickname] = {};
-    this.data.walls[wall_id].questions[question_id].created[nickname] = {};
+    // Add user to the question
+    if (this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
+        this.data.walls[wall_id].questions[question_id].updated[nickname] = {};
+        this.data.walls[wall_id].questions[question_id].created[nickname] = {};
+    }
 };
 
 /**

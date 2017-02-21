@@ -175,9 +175,9 @@ exports.disconnectWall = function(req, res) {
     if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
         // Remove nickname from the wall users list (message manager)
         mm.removeUserFromWall(req.params.wall_id, req.params.nickname, false);
-        res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-            message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
     }
+    res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+        message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
 };
 
 /**
