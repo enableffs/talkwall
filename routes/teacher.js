@@ -415,11 +415,10 @@ exports.disconnectWall = function(req, res) {
     if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
         // Remove nickname from the wall users list (message manager)
         mm.removeUserFromWall(req.params.wall_id, req.params.nickname, true);
-        res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-            message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message
-        });
     }
-
+    res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+        message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message
+    });
 };
 
 
@@ -453,6 +452,9 @@ exports.deleteWall = function(req, res) {
                     wall.remove();
                     res.status(common.StatusMessages.DELETE_SUCCESS.status).json({
                         message: common.StatusMessages.DELETE_SUCCESS.message});
+                } else {
+                    res.status(common.StatusMessages.DELETE_ERROR.status).json({
+                        message: common.StatusMessages.DELETE_ERROR.message, result: error});
                 }
             });
         }
