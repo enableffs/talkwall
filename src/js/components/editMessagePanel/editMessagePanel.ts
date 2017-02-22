@@ -20,13 +20,12 @@
 import IBottomSheetService = angular.material.IBottomSheetService;
 import IDocumentService = angular.IDocumentService;
 import ITimeoutService = angular.ITimeoutService;
-import {Message} from '../../models/models';
 import {DataService} from "../../services/dataservice";
 
 export class EditMessageController {
 	static $inject = ['$mdBottomSheet', '$document', '$timeout', 'DataService'];
 
-	private messageToEdit: Message;
+	private messageText = '';
 
 	constructor(
 		private $mdBottomSheet: IBottomSheetService,
@@ -35,7 +34,7 @@ export class EditMessageController {
 		private dataService: DataService) {
 		console.log('--> EditMessageController: started: ');
 
-		this.messageToEdit = dataService.data.status.messageToEdit;
+		this.messageText = dataService.data.status.messageToEdit.text;
 
 		this.$timeout(() => {
 			this.$document[0].activeElement['focus']();
@@ -43,24 +42,11 @@ export class EditMessageController {
 	}
 
 	/**
-	 * hide this dialog (see angular.material.IDialogService)
-	 * @aparam response a possible reponse
-	 */
-	/*
-	hide(response?: any): void {
-		console.log('--> EditMessageController: hide');
-		this.dataService.setMessageToEdit(null);
-		this.$document[0].activeElement['blur']();
-		this.$mdBottomSheet.hide();
-	};
-	*/
-	/**
 	 * cancel this dialog (see angular.material.IDialogService)
 	 * @aparam response a possible reponse
 	 */
 	cancel(response?: any) : void {
 		console.log('--> EditMessageController: cancel');
-		this.dataService.setMessageToEdit(null);
 		this.$document[0].activeElement['blur']();
 		this.$mdBottomSheet.cancel();
 	};
@@ -69,6 +55,7 @@ export class EditMessageController {
 	 * @aparam answer aa a string
 	 */
 	answer(): void {
+		this.dataService.data.status.messageToEdit.text = this.messageText;
 		console.log('--> EditMessageController: answered: ');
 		this.$document[0].activeElement['blur']();
 		this.$mdBottomSheet.hide();

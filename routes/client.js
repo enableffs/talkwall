@@ -89,7 +89,10 @@ exports.getWallByPin = function(req, res) {
     redisClient.get(req.params.pin, function(error, wall_id) {
         if(wall_id !== null) {
 
-            if (mm.userIsOnWall(wall_id, req.params.nickname)) {
+            if (!mm.wallExists(wall_id)) {
+                res.status(common.StatusMessages.WALL_EXPIRED.status).json({
+                    message: common.StatusMessages.WALL_EXPIRED.message});
+            } else if (mm.userIsOnWall(wall_id, req.params.nickname)) {
                 res.status(common.StatusMessages.INVALID_USER.status).json({
                     message: common.StatusMessages.INVALID_USER.message});
             } else {
@@ -175,9 +178,9 @@ exports.disconnectWall = function(req, res) {
     if(mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
         // Remove nickname from the wall users list (message manager)
         mm.removeUserFromWall(req.params.wall_id, req.params.nickname, false);
-        res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
-            message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
     }
+    res.status(common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.status).json({
+        message: common.StatusMessages.CLIENT_DISCONNECT_SUCCESS.message});
 };
 
 /**
@@ -284,8 +287,7 @@ exports.updateMessages = function(req, res) {
     if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
 
         var multiUpdatePromise = [];
-        req.body.messages.forEach(function(message) {    // Collect Fixtures for the user and include in return
-
+        req.body.messages.forEach(function(message) {
             var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true}).lean();
             var p = query.exec();
             multiUpdatePromise.push(p);
@@ -298,6 +300,7 @@ exports.updateMessages = function(req, res) {
                         mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
                     }
                 });
+                //console.log('---Update to DB---: ' + messages.length);
             }
             res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages

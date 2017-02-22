@@ -72,14 +72,7 @@ class FeedMessageController implements IFeedMessageController {
 	}
 
 	editMessage(): void {
-		// Either we are the creator or teacher is editing another's message
-		if (this.message.creator === this.isolatedScope.selectedParticipant) {
-			this.dataService.setMessageToEdit(this.message);
-		} else {
-			// Otherwise we are going to clone someone else's message
-			this.dataService.data.status.messageOrigin = this.message;
-			this.dataService.setMessageToEdit(null);
-		}
+		this.dataService.setMessageToEdit(this.message);
 		this.isolatedScope.showEditPanel();
 		this.showControls = false;
 	}
@@ -141,7 +134,8 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 	let offset: {x: number, y: number, originalX: number, originalY: number} = null;
 	let pixelPosition = {x: 0, y: 0};
 	let oldPercentagePosition = {x: 0, y: 0};
-	let participant: {xpos: number, ypos: number} = null;
+	let participant: Nickname;
+	let restrictingRequestsAlready: boolean = false;
 
 	/*
 	if (isolatedScope.onBoard === 'true') {
@@ -151,6 +145,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 	}
 	*/
 
+	/*
 	isolatedScope.$on("talkwallMessageUpdate", function(event, newParticipant) {
 		if (isolatedScope.onBoard === 'true') {
 			if (typeof ctrl.message.board !== 'undefined' && typeof ctrl.message.board[newParticipant] !== 'undefined') {
@@ -159,12 +154,38 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 			}
 		}
 	});
+	*/
+
+	isolatedScope.$on("talkwallMessageRefresh", function() {
+		if (isolatedScope.onBoard === 'true' && ctrl.message.board.hasOwnProperty(isolatedScope.selectedParticipant)) {
+			participant = ctrl.message.board[isolatedScope.selectedParticipant];
+			setMessageCss();
+		}
+	});
 
 	function setMessageCss() {
 		element.css({
 			top: participant.ypos * 100 + '%',
 			left: participant.xpos * 100 + '%'
 		});
+	}
+
+	function setTransitionCss(active: boolean) {
+		if(active) {
+			element.css({
+				'-webkit-transition': 'all 0.5s linear',
+				'-moz-transition': 'all 0.5s linear',
+				'-o-transition': 'all 0.5s linear',
+				'transition': 'all 0.5s linear'
+			})
+		} else {
+			element.css({
+				'-webkit-transition-duration': '0s',
+				'-moz-transition-duration': '0s',
+				'-o-transition-duration': '0s',
+				'transition-duration': '0s'
+			})
+		}
 	}
 
 	function positionMessage() {
@@ -180,6 +201,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 			messageWidth = element.prop('offsetWidth');
 			messageHeight = element.prop('offsetHeight');
 			oldPercentagePosition = {x: participant.xpos, y: participant.ypos};
+			setTransitionCss(false);
 
 			if (event instanceof MouseEvent) {
 				offset = {
@@ -203,7 +225,6 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 				element.on('touchend', touchend);
 			}
 			ctrl.dataService.stopPolling();
-			ctrl.dataService.restrictRequests();
 		});
 	}
 
@@ -221,6 +242,9 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 	}
 
 	function doMove() {
+		if (!restrictingRequestsAlready) {
+			ctrl.dataService.restrictRequests();
+		}
 		if (pixelPosition.x < 0) {
 			pixelPosition.x = 0;
 		}
@@ -233,18 +257,14 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		if (pixelPosition.y > (currentSize[viewHeightKey] - messageHeight)) {
 			pixelPosition.y = (currentSize[viewHeightKey] - messageHeight);
 		}
-		/*
-		element.css({
-			top: pixelPosition.y + 'px',
-			left: pixelPosition.x + 'px'
-		});
-		*/
+
 		participant.xpos = pixelPosition.x / currentSize[viewWidthKey];
 		participant.ypos = pixelPosition.y / currentSize[viewHeightKey];
 		setMessageCss();
 	}
 
 	function mouseup(event: JQueryEventObject) {
+		restrictingRequestsAlready = false;
 		let diffX = offset.originalX - event.pageX;
 		let diffY = offset.originalY - event.pageY;
 		//will only persist if move greater than a 10 * 10px box
@@ -256,6 +276,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		element.off('touchmove', touchmove);
 		element.off('mouseup', mouseup);
 		ctrl.dataService.startPolling();
+		setTransitionCss(true);
 	}
 
 	function touchend(event: JQueryEventObject) {
@@ -269,15 +290,16 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		ctrl.$document.off('mousemove', mousemove);
 		element.off('touchmove', touchmove);
 		element.off('touchend', touchend);
-
 		ctrl.dataService.startPolling();
 	}
 
-	if (isolatedScope.onBoard === 'true') {
+	if (isolatedScope.onBoard === 'true' && ctrl.message.board.hasOwnProperty(isolatedScope.selectedParticipant)) {
 		participant = ctrl.message.board[isolatedScope.selectedParticipant];
 		positionMessage();
 		setMessageCss();
+		setTransitionCss(true);
 	}
+
 }
 
 //isolated scope interface
