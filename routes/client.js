@@ -288,7 +288,6 @@ exports.updateMessages = function(req, res) {
 
         var multiUpdatePromise = [];
         req.body.messages.forEach(function(message) {
-
             var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true}).lean();
             var p = query.exec();
             multiUpdatePromise.push(p);
@@ -301,6 +300,7 @@ exports.updateMessages = function(req, res) {
                         mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
                     }
                 });
+                //console.log('---Update to DB---: ' + messages.length);
             }
             res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages

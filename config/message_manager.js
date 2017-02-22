@@ -426,6 +426,7 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
                         userQueue[updated_message._id].updateType
                             = userQueue[updated_message._id].updateType === 'edit' ? 'mixed' : 'position';
                     } else {
+                        //console.log('---Update to MM---: fresh update from ' + nickname + ' to ' + user3);
                         userQueue[updated_message._id] = {
                             board: updated_message.board,    // All users with this message on board need to be kept to account for those who remove it
                             text: null,
