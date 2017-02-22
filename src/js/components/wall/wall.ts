@@ -174,7 +174,7 @@ export class WallController implements IWallControllerService {
 				if(newVar !== oldVar) {
 					this.dataService.data.status.selectedParticipant = newVar;
 					this.dataService.logAnEvent(LogType.SelectWall, this.dataService.data.question._id, null, newVar, null, '');
-					//this.dataService.refreshBoardMessages();
+					this.dataService.refreshBoardMessages();
 				}
 			}, true);
 
