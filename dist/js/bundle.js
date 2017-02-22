@@ -21398,6 +21398,7 @@ function linker(isolatedScope, element, attributes, ctrl) {
     var pixelPosition = { x: 0, y: 0 };
     var oldPercentagePosition = { x: 0, y: 0 };
     var participant;
+    var restrictingRequestsAlready = false;
     /*
     if (isolatedScope.onBoard === 'true') {
         positionMessage();
@@ -21462,7 +21463,6 @@ function linker(isolatedScope, element, attributes, ctrl) {
                 element.on('touchend', touchend);
             }
             ctrl.dataService.stopPolling();
-            ctrl.dataService.restrictRequests();
         });
     }
     function mousemove(event) {
@@ -21477,6 +21477,9 @@ function linker(isolatedScope, element, attributes, ctrl) {
         doMove();
     }
     function doMove() {
+        if (!restrictingRequestsAlready) {
+            ctrl.dataService.restrictRequests();
+        }
         if (pixelPosition.x < 0) {
             pixelPosition.x = 0;
         }
@@ -21500,6 +21503,7 @@ function linker(isolatedScope, element, attributes, ctrl) {
         setMessageCss();
     }
     function mouseup(event) {
+        restrictingRequestsAlready = false;
         var diffX = offset.originalX - event.pageX;
         var diffY = offset.originalY - event.pageY;
         //will only persist if move greater than a 10 * 10px box
