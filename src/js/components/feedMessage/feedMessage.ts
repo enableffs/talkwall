@@ -170,6 +170,24 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		});
 	}
 
+	function setTransitionCss(active: boolean) {
+		if(active) {
+			element.css({
+				'-webkit-transition': 'all 0.5s linear',
+				'-moz-transition': 'all 0.5s linear',
+				'-o-transition': 'all 0.5s linear',
+				'transition': 'all 0.5s linear'
+			})
+		} else {
+			element.css({
+				'-webkit-transition-duration': '0s',
+				'-moz-transition-duration': '0s',
+				'-o-transition-duration': '0s',
+				'transition-duration': '0s'
+			})
+		}
+	}
+
 	function positionMessage() {
 
 		element.on('mousedown touchstart', function(event) {
@@ -183,6 +201,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 			messageWidth = element.prop('offsetWidth');
 			messageHeight = element.prop('offsetHeight');
 			oldPercentagePosition = {x: participant.xpos, y: participant.ypos};
+			setTransitionCss(false);
 
 			if (event instanceof MouseEvent) {
 				offset = {
@@ -238,12 +257,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		if (pixelPosition.y > (currentSize[viewHeightKey] - messageHeight)) {
 			pixelPosition.y = (currentSize[viewHeightKey] - messageHeight);
 		}
-		/*
-		element.css({
-			top: pixelPosition.y + 'px',
-			left: pixelPosition.x + 'px'
-		});
-		*/
+
 		participant.xpos = pixelPosition.x / currentSize[viewWidthKey];
 		participant.ypos = pixelPosition.y / currentSize[viewHeightKey];
 		setMessageCss();
@@ -262,6 +276,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		element.off('touchmove', touchmove);
 		element.off('mouseup', mouseup);
 		ctrl.dataService.startPolling();
+		setTransitionCss(true);
 	}
 
 	function touchend(event: JQueryEventObject) {
@@ -275,7 +290,6 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		ctrl.$document.off('mousemove', mousemove);
 		element.off('touchmove', touchmove);
 		element.off('touchend', touchend);
-
 		ctrl.dataService.startPolling();
 	}
 
@@ -283,6 +297,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		participant = ctrl.message.board[isolatedScope.selectedParticipant];
 		positionMessage();
 		setMessageCss();
+		setTransitionCss(true);
 	}
 
 }
