@@ -78,7 +78,7 @@ export interface IWallControllerService {
 	tagIsChecked(): boolean;
 	toggleAllTags(event: Event): void;
 
-	showScreenContributors(event: Event): void;
+	showScreenParticipants(event: Event): void;
 	showFeed(event: Event): void;
 }
 
@@ -174,7 +174,7 @@ export class WallController implements IWallControllerService {
 				if(newVar !== oldVar) {
 					this.dataService.data.status.selectedParticipant = newVar;
 					this.dataService.logAnEvent(LogType.SelectWall, this.dataService.data.question._id, null, newVar, null, '');
-					this.dataService.refreshBoardMessages();
+					//this.dataService.refreshBoardMessages();
 				}
 			}, true);
 
@@ -214,6 +214,10 @@ export class WallController implements IWallControllerService {
 		}
 	}
 
+	hideMessageInParticipantView(message: Message): boolean {
+		return this.participantView && (typeof message.board[this.selectedParticipant] === 'undefined');
+	}
+
 	messageTagsNotPresent(message: Message): boolean {
 		let messageTags = this.utilityService.getPossibleTags(message.text);
 		if (messageTags.length > 0) {
@@ -237,7 +241,7 @@ export class WallController implements IWallControllerService {
 		this.$mdSidenav('left').open();
 	}
 
-	showScreenContributors(): void {
+	showScreenParticipants(): void {
 		this.magnifyFeed = false;
 		this.feedView = false;
 		this.participantView = true;

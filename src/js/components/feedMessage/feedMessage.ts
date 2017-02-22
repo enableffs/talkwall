@@ -134,7 +134,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 	let offset: {x: number, y: number, originalX: number, originalY: number} = null;
 	let pixelPosition = {x: 0, y: 0};
 	let oldPercentagePosition = {x: 0, y: 0};
-	let participant: {xpos: number, ypos: number} = null;
+	let participant: Nickname;
 
 	/*
 	if (isolatedScope.onBoard === 'true') {
@@ -144,12 +144,21 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 	}
 	*/
 
+	/*
 	isolatedScope.$on("talkwallMessageUpdate", function(event, newParticipant) {
 		if (isolatedScope.onBoard === 'true') {
 			if (typeof ctrl.message.board !== 'undefined' && typeof ctrl.message.board[newParticipant] !== 'undefined') {
 				participant = ctrl.message.board[newParticipant];
 				setMessageCss();
 			}
+		}
+	});
+	*/
+
+	isolatedScope.$on("talkwallMessageRefresh", function() {
+		if (isolatedScope.onBoard === 'true' && ctrl.message.board.hasOwnProperty(isolatedScope.selectedParticipant)) {
+			participant = ctrl.message.board[isolatedScope.selectedParticipant];
+			setMessageCss();
 		}
 	});
 
@@ -266,11 +275,12 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 		ctrl.dataService.startPolling();
 	}
 
-	if (isolatedScope.onBoard === 'true') {
+	if (isolatedScope.onBoard === 'true' && ctrl.message.board.hasOwnProperty(isolatedScope.selectedParticipant)) {
 		participant = ctrl.message.board[isolatedScope.selectedParticipant];
 		positionMessage();
 		setMessageCss();
 	}
+
 }
 
 //isolated scope interface

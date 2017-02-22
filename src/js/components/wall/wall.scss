@@ -179,7 +179,7 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 .animate-repeat.ng-move,
 //.animate-repeat.ng-enter,
 .animate-repeat.ng-leave {
-  transition:all linear 1s;
+  transition: all linear 0.5s;
 }
 
 .animate-repeat.ng-leave.ng-leave-active,

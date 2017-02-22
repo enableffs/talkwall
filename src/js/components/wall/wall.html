@@ -9,7 +9,7 @@
 				<md-button aria-label="Close left-side panel" ng-if="!wallC.dataService.data.status.phoneMode" ng-show="wallC.feedView || wallC.participantView" class="md-icon-button" role="button" ng-click="wallC.closeLeftSidenav()">
 					<md-icon md-svg-src="images/ic_close_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
-				<md-button aria-label="Open left-side participants list" ng-if="wallC.dataService.data.status.authorised" ng-show="wallC.dataService.data.question !== null && !wallC.participantView" class="md-icon-button" role="button" ng-click="wallC.showScreenContributors()">
+				<md-button aria-label="Open left-side participants list" ng-if="wallC.dataService.data.status.authorised" ng-show="wallC.dataService.data.question !== null && !wallC.participantView" class="md-icon-button" role="button" ng-click="wallC.showScreenParticipants()">
 					<md-icon md-svg-src="images/ic_cast_orange_24px.svg" aria-hidden="true"></md-icon>
 				</md-button>
 			</div>
@@ -98,7 +98,7 @@
 				</md-list>
 
 				<!-- left sidenav people's screen feed -->
-				<div layout layout-padding="true" ng-if="!wallC.feedView">
+				<div layout layout-padding="true" ng-if="wallC.participantView">
 					<md-radio-group ng-model="wallC.selectedParticipant" class="md-primary">
 						<md-radio-button ng-repeat="participant in wallC.dataService.data.status.participants"
 										 ng-value="participant">{{ participant }}</md-radio-button>
@@ -318,7 +318,7 @@
                     width="{{wallC.dataService.data.status.boardDivSize['VIEW_WIDTH']}}" size="3" ng-style="wallC.dataService.getGridStyle('horizontal')">
                 <div ng-repeat="message in wallC.dataService.data.question.messages | filter : wallC.messageFilterByContributorOnBoard" class="animate-repeat">
                     <div feed-message data="message" magnified="wallC.dataService.data.status.magnifyBoard" on-board="true" selected-participant="{{wallC.selectedParticipant}}"
-                         show-edit-panel="wallC.showMessageEditor(false)" class="feedMessage-messageOnBoard" id="message-{{message._id}}">
+                         show-edit-panel="wallC.showMessageEditor(false)" class="feedMessage-messageOnBoard" id="message-{{message._id}}" ng-hide="wallC.hideMessageInParticipantView(message)">
                     </div>
                 </div>
 
