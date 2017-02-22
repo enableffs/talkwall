@@ -135,6 +135,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 	let pixelPosition = {x: 0, y: 0};
 	let oldPercentagePosition = {x: 0, y: 0};
 	let participant: Nickname;
+	let restrictingRequestsAlready: boolean = false;
 
 	/*
 	if (isolatedScope.onBoard === 'true') {
@@ -205,7 +206,6 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 				element.on('touchend', touchend);
 			}
 			ctrl.dataService.stopPolling();
-			ctrl.dataService.restrictRequests();
 		});
 	}
 
@@ -223,6 +223,9 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 	}
 
 	function doMove() {
+		if (!restrictingRequestsAlready) {
+			ctrl.dataService.restrictRequests();
+		}
 		if (pixelPosition.x < 0) {
 			pixelPosition.x = 0;
 		}
@@ -247,6 +250,7 @@ function linker(isolatedScope: FeedMessageDirectiveScope , element: JQuery,
 	}
 
 	function mouseup(event: JQueryEventObject) {
+		restrictingRequestsAlready = false;
 		let diffX = offset.originalX - event.pageX;
 		let diffY = offset.originalY - event.pageY;
 		//will only persist if move greater than a 10 * 10px box
