@@ -189,7 +189,7 @@ export class Message implements IMessage {
         this.question_id = newMessage['question_id'];
 
         if (typeof newMessage['board'] !== 'undefined' && newMessage['board'] !== null) {
-            this.updateBoard(newMessage['board'], false, '');
+            this.updateBoard(newMessage['board'], true, '');
         } else {
             // Remove all nicknames
             for (let nickname in this.board) {
@@ -211,9 +211,9 @@ export class Message implements IMessage {
     }
 
     // If updateMyself is true, include my nickname in the update
-    updateBoard(newBoard: {}, excludeMyself: boolean, myNickname: string) {
+    updateBoard(newBoard: {}, includeMyself: boolean, myNickname: string) {
         for (let nickname in newBoard) {
-            if( (!excludeMyself || nickname !== myNickname) && newBoard.hasOwnProperty(nickname)) {
+            if( (includeMyself || nickname !== myNickname) && newBoard.hasOwnProperty(nickname)) {
 
                 // Update an existing nickname
                 if(this.board.hasOwnProperty(nickname)) {

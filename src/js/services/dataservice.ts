@@ -392,26 +392,6 @@ export class DataService implements IDataService {
             this.data.status.authorised = false;
             successCallbackFn();
         }
-
-
-
-        /*
-         // Alternative method for disconnect - causes a browser dialog to show and allows time for disconnect request
-         let handle = this;
-         this.$window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
-         let x = logout();
-         return x;
-         };
-
-         function logout() {
-         let url = handle.urlService.getHost() +
-         '/disconnect/' + handle.data.status.nickname + '/' + handle.wall.pin + '/' + handle.question._id;
-         handle.$window.location.href = handle.urlService.getHost() + '/';
-         handle.$http.get(url).then(function() { console.log('disconnect sent'); } );
-         return 'Are you sure you want to close Talkwall?';
-         }
-         */
-
     }
 
     getAuthenticatedUser(): models.User {
@@ -584,6 +564,16 @@ export class DataService implements IDataService {
                 if (error['data'][messageKey] === 'Invalid User') {
                     let messageTitle = this.$translate.instant('MENUPAGE_NICKNAME_IN_USE_TITLE');
                     let messageText = this.$translate.instant('MENUPAGE_NICKNAME_IN_USE');
+                    this.$mdDialog.show(
+                        this.$mdDialog.alert()
+                            .clickOutsideToClose(true)
+                            .title(messageTitle)
+                            .textContent(messageText)
+                            .ok('OK')
+                    );
+                } if (error['data'][messageKey] === 'Wall Expired') {
+                    let messageTitle = this.$translate.instant('MENUPAGE_WALL_EXPIRED_TITLE');
+                    let messageText = this.$translate.instant('MENUPAGE_WALL_EXPIRED');
                     this.$mdDialog.show(
                         this.$mdDialog.alert()
                             .clickOutsideToClose(true)
@@ -946,6 +936,7 @@ export class DataService implements IDataService {
             });
     }
 
+    // Get all the messages for this question fresh
     getMessages(successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
         if (this.data.question !== null) {
             this.$http.get(this.urlService.getHost() + '/messages/' + this.data.question._id)
@@ -966,6 +957,34 @@ export class DataService implements IDataService {
                     if(errorCallbackFn) {
                         errorCallbackFn(null);
                     }
+                });
+        }
+    }
+
+    // Update messages on the server
+    updateMessages(messages: Array<models.Message>, controlString: string): void {
+        // Queue the updated message to be sent later - this saves unnecessary server polls
+        // At this time only 'position' requests are queued
+        if (this.data.status.restrictPositionRequests && controlString === 'position') {
+            messages.forEach((message) => {
+                this.data.status.restrictPositionRequestMessages[message._id] = message;
+            });
+        } else {
+            // Send updated messages to the server
+            let clientType = this.data.status.authorised ? '/messageteacher' : '/message';
+            this.$http.put(this.urlService.getHost() + clientType, {
+                messages: messages,         // if messages.length is > 1, messages are for a position update
+                wall_id: this.data.wall._id,
+                nickname: this.data.status.selectedParticipant,
+                controlString: controlString
+            })
+                .then(() => {
+                    messages.forEach((message) => {
+                        this.parseMessageForTags(message);
+                    });
+                    console.log('--> DataService: updateMessage success');
+                }, (error) => {
+                    console.log('--> DataService: updateMessage failure: ' + error);
                 });
         }
     }
@@ -1024,35 +1043,6 @@ export class DataService implements IDataService {
         if (messages.length > 0) {
             this.updateMessages(messages, 'position');
         }
-    }
-
-    // Update messages on the server
-    updateMessages(messages: Array<models.Message>, controlString: string): void {
-        // Queue the updated message to be sent later - this saves unnecessary server polls
-        // At this time only 'position' requests are queued
-        if (this.data.status.restrictPositionRequests && controlString === 'position') {
-            messages.forEach((message) => {
-                this.data.status.restrictPositionRequestMessages[message._id] = message;
-            });
-        } else {
-            // Send updated messages to the server
-            let clientType = this.data.status.authorised ? '/messageteacher' : '/message';
-            this.$http.put(this.urlService.getHost() + clientType, {
-                messages: messages,         // if messages.length is > 1, messages are for a position update
-                wall_id: this.data.wall._id,
-                nickname: this.data.status.selectedParticipant,
-                controlString: controlString
-            })
-                .then(() => {
-                    messages.forEach((message) => {
-                        this.parseMessageForTags(message);
-                    });
-                    console.log('--> DataService: updateMessage success');
-                }, (error) => {
-                    console.log('--> DataService: updateMessage failure: ' + error);
-                });
-        }
-
     }
 
     getParticipants(): Array<string> {
@@ -1115,6 +1105,13 @@ export class DataService implements IDataService {
     // Process updated messages retrieved on the poll response
     processUpdatedMessages(pollUpdateObject: models.PollUpdate) {
         if (typeof pollUpdateObject === 'undefined' || pollUpdateObject === null) {
+            return;
+        }
+
+        // Wall has expired in server memory
+        if (pollUpdateObject.status.hasOwnProperty('expired')) {
+            this.stopPolling();
+            this.showClosingDialog();
             return;
         }
 
@@ -1186,57 +1183,60 @@ export class DataService implements IDataService {
 
         // Message notifications (newly created messages)
         for (let message_id in pollUpdateObject.created) {
-            let message = new models.Message().updateMe(pollUpdateObject.created[message_id]);
-            this.data.question.messages.push(message);
-            this.parseMessageForTags(message);
+            if(pollUpdateObject.created.hasOwnProperty(message_id)) {
+                let message = new models.Message().updateMe(pollUpdateObject.created[message_id]);
+                this.data.question.messages.push(message);
+                this.parseMessageForTags(message);
 
-            // Check that the user is in the contributor list
-            if(this.data.status.contributors.indexOf(message.creator) === -1) {
-                this.data.status.contributors.push(message.creator);
+                // Check that the user is in the contributor list
+                if (this.data.status.contributors.indexOf(message.creator) === -1) {
+                    this.data.status.contributors.push(message.creator);
+                }
             }
         }
 
         // Message notifications (updated messages)
         for (let message_id in pollUpdateObject.updated) {
-            let update = pollUpdateObject.updated[message_id];
-            let message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
-            if ( message !== null) {
+            if(pollUpdateObject.updated.hasOwnProperty(message_id)) {
+                let update = pollUpdateObject.updated[message_id];
+                let message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
+                if (message !== null) {
 
-                switch(pollUpdateObject.updated[message_id].updateType) {
+                    switch (update.updateType) {
 
-                    case 'edit':
-                        message.text = update.text;
-                        message.deleted = update.deleted;
-                        if (message.deleted) {
-                            checkAndRemoveDeletedContributor(message.creator);
-                        }
+                        case 'edit':
+                            message.text = update.text;
+                            message.deleted = update.deleted;
+                            if (message.deleted) {
+                                checkAndRemoveDeletedContributor(message.creator);
+                            }
 
-                        break;
+                            break;
 
-                    case 'position':
-                        message.updateBoard(update.board, true, this.data.user.nickname);
-                        break;
+                        case 'position':
+                            message.updateBoard(update.board, false, this.data.user.nickname);
+                            break;
 
-                    case 'mixed':
-                        message.text = update.text;
-                        message.deleted = update.deleted;
-                        if (message.deleted) {
-                            checkAndRemoveDeletedContributor(message.creator);
-                        }
-                        message.updateBoard(update.board, true, this.data.user.nickname);
-                        break;
+                        case 'mixed':
+                            message.text = update.text;
+                            message.deleted = update.deleted;
+                            if (message.deleted) {
+                                checkAndRemoveDeletedContributor(message.creator);
+                            }
+                            message.updateBoard(update.board, false, this.data.user.nickname);
+                            break;
+                    }
+                    this.parseMessageForTags(message);
                 }
-
             }
-
-            this.parseMessageForTags(message);
-            this.refreshBoardMessages();
         }
+        this.refreshBoardMessages();
     }
 
     refreshBoardMessages(): void {
-        this.$rootScope.$broadcast('talkwallMessageUpdate', this.data.status.selectedParticipant);
+        this.$rootScope.$broadcast('talkwallMessageRefresh');
     }
+
 
     disconnectFromWall(successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
         let closingUrl = this.urlService.getHost() + (this.data.status.authorised ? '/#/organiser' : '/#/');

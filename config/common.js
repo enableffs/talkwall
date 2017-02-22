@@ -58,6 +58,10 @@ exports.StatusMessages = {
         status: 400,
         message: 'Invalid User'
     },
+    WALL_EXPIRED: {
+        status: 400,
+        message: 'Wall Expired'
+    },
     LOGIN_SUCCESS: {
         status: 200,
         message: 'Login successfull'
