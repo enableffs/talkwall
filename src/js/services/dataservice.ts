@@ -1196,8 +1196,10 @@ export class DataService implements IDataService {
         }
 
         // Message notifications (updated messages)
+        let refreshMessages = false;
         for (let message_id in pollUpdateObject.updated) {
-            if(pollUpdateObject.updated.hasOwnProperty(message_id)) {
+            if (pollUpdateObject.updated.hasOwnProperty(message_id)) {
+                refreshMessages = true;
                 let update = pollUpdateObject.updated[message_id];
                 let message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
                 if (message !== null) {
@@ -1230,13 +1232,14 @@ export class DataService implements IDataService {
                 }
             }
         }
-        this.refreshBoardMessages();
+        if (refreshMessages) {
+            this.refreshBoardMessages();
+        }
     }
 
     refreshBoardMessages(): void {
         this.$rootScope.$broadcast('talkwallMessageRefresh');
     }
-
 
     disconnectFromWall(successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
         let closingUrl = this.urlService.getHost() + (this.data.status.authorised ? '/#/organiser' : '/#/');

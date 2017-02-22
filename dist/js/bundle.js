@@ -22914,6 +22914,7 @@ var WallController = (function () {
                 if (newVar !== oldVar) {
                     _this.dataService.data.status.selectedParticipant = newVar;
                     _this.dataService.logAnEvent(models_1.LogType.SelectWall, _this.dataService.data.question._id, null, newVar, null, '');
+                    _this.dataService.refreshBoardMessages();
                 }
             }, true);
             if (this.dataService.data.status.authorised &&
@@ -24526,8 +24527,10 @@ var DataService = (function () {
             }
         }
         // Message notifications (updated messages)
+        var refreshMessages = false;
         for (var message_id in pollUpdateObject.updated) {
             if (pollUpdateObject.updated.hasOwnProperty(message_id)) {
+                refreshMessages = true;
                 var update = pollUpdateObject.updated[message_id];
                 var message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
                 if (message !== null) {
@@ -24555,7 +24558,9 @@ var DataService = (function () {
                 }
             }
         }
-        this.refreshBoardMessages();
+        if (refreshMessages) {
+            this.refreshBoardMessages();
+        }
     };
     DataService.prototype.refreshBoardMessages = function () {
         this.$rootScope.$broadcast('talkwallMessageRefresh');
