@@ -21397,7 +21397,7 @@ function linker(isolatedScope, element, attributes, ctrl) {
     var offset = null;
     var pixelPosition = { x: 0, y: 0 };
     var oldPercentagePosition = { x: 0, y: 0 };
-    var participant = null;
+    var participant;
     /*
     if (isolatedScope.onBoard === 'true') {
         positionMessage();
@@ -21405,12 +21405,20 @@ function linker(isolatedScope, element, attributes, ctrl) {
         isolatedScope.$watch(() => { return ctrl.message.board[isolatedScope.selectedParticipant] }, (newValue) => { positionCSS() }, true);
     }
     */
-    isolatedScope.$on("talkwallMessageUpdate", function (event, newParticipant) {
+    /*
+    isolatedScope.$on("talkwallMessageUpdate", function(event, newParticipant) {
         if (isolatedScope.onBoard === 'true') {
             if (typeof ctrl.message.board !== 'undefined' && typeof ctrl.message.board[newParticipant] !== 'undefined') {
                 participant = ctrl.message.board[newParticipant];
                 setMessageCss();
             }
+        }
+    });
+    */
+    isolatedScope.$on("talkwallMessageRefresh", function () {
+        if (isolatedScope.onBoard === 'true' && ctrl.message.board.hasOwnProperty(isolatedScope.selectedParticipant)) {
+            participant = ctrl.message.board[isolatedScope.selectedParticipant];
+            setMessageCss();
         }
     });
     function setMessageCss() {
@@ -21517,7 +21525,7 @@ function linker(isolatedScope, element, attributes, ctrl) {
         element.off('touchend', touchend);
         ctrl.dataService.startPolling();
     }
-    if (isolatedScope.onBoard === 'true') {
+    if (isolatedScope.onBoard === 'true' && ctrl.message.board.hasOwnProperty(isolatedScope.selectedParticipant)) {
         participant = ctrl.message.board[isolatedScope.selectedParticipant];
         positionMessage();
         setMessageCss();
@@ -22906,7 +22914,6 @@ var WallController = (function () {
                 if (newVar !== oldVar) {
                     _this.dataService.data.status.selectedParticipant = newVar;
                     _this.dataService.logAnEvent(models_1.LogType.SelectWall, _this.dataService.data.question._id, null, newVar, null, '');
-                    _this.dataService.refreshBoardMessages();
                 }
             }, true);
             if (this.dataService.data.status.authorised &&
@@ -22942,6 +22949,9 @@ var WallController = (function () {
             }, 2000);
         }
     };
+    WallController.prototype.hideMessageInParticipantView = function (message) {
+        return this.participantView && (typeof message.board[this.selectedParticipant] === 'undefined');
+    };
     WallController.prototype.messageTagsNotPresent = function (message) {
         var messageTags = this.utilityService.getPossibleTags(message.text);
         if (messageTags.length > 0) {
@@ -22964,7 +22974,7 @@ var WallController = (function () {
         this.dataService.data.status.selectedParticipant = this.selectedParticipant;
         this.$mdSidenav('left').open();
     };
-    WallController.prototype.showScreenContributors = function () {
+    WallController.prototype.showScreenParticipants = function () {
         this.magnifyFeed = false;
         this.feedView = false;
         this.participantView = true;
@@ -23476,7 +23486,7 @@ var Message = (function () {
         this.text = newMessage['text'];
         this.question_id = newMessage['question_id'];
         if (typeof newMessage['board'] !== 'undefined' && newMessage['board'] !== null) {
-            this.updateBoard(newMessage['board'], false, '');
+            this.updateBoard(newMessage['board'], true, '');
         }
         else {
             // Remove all nicknames
@@ -23495,9 +23505,9 @@ var Message = (function () {
         return this;
     };
     // If updateMyself is true, include my nickname in the update
-    Message.prototype.updateBoard = function (newBoard, excludeMyself, myNickname) {
+    Message.prototype.updateBoard = function (newBoard, includeMyself, myNickname) {
         for (var nickname in newBoard) {
-            if ((!excludeMyself || nickname !== myNickname) && newBoard.hasOwnProperty(nickname)) {
+            if ((includeMyself || nickname !== myNickname) && newBoard.hasOwnProperty(nickname)) {
                 // Update an existing nickname
                 if (this.board.hasOwnProperty(nickname)) {
                     this.board[nickname].updateMe(newBoard[nickname]['xpos'], newBoard[nickname]['ypos'], newBoard[nickname]['highlighted']);
@@ -23766,22 +23776,6 @@ var DataService = (function () {
             this.data.status.authorised = false;
             successCallbackFn();
         }
-        /*
-         // Alternative method for disconnect - causes a browser dialog to show and allows time for disconnect request
-         let handle = this;
-         this.$window.onbeforeunload = function(ev: BeforeUnloadEvent): any {
-         let x = logout();
-         return x;
-         };
-
-         function logout() {
-         let url = handle.urlService.getHost() +
-         '/disconnect/' + handle.data.status.nickname + '/' + handle.wall.pin + '/' + handle.question._id;
-         handle.$window.location.href = handle.urlService.getHost() + '/';
-         handle.$http.get(url).then(function() { console.log('disconnect sent'); } );
-         return 'Are you sure you want to close Talkwall?';
-         }
-         */
     };
     DataService.prototype.getAuthenticatedUser = function () {
         return this.data.user;
@@ -23946,6 +23940,15 @@ var DataService = (function () {
             if (error['data'][messageKey] === 'Invalid User') {
                 var messageTitle = _this.$translate.instant('MENUPAGE_NICKNAME_IN_USE_TITLE');
                 var messageText = _this.$translate.instant('MENUPAGE_NICKNAME_IN_USE');
+                _this.$mdDialog.show(_this.$mdDialog.alert()
+                    .clickOutsideToClose(true)
+                    .title(messageTitle)
+                    .textContent(messageText)
+                    .ok('OK'));
+            }
+            if (error['data'][messageKey] === 'Wall Expired') {
+                var messageTitle = _this.$translate.instant('MENUPAGE_WALL_EXPIRED_TITLE');
+                var messageText = _this.$translate.instant('MENUPAGE_WALL_EXPIRED');
                 _this.$mdDialog.show(_this.$mdDialog.alert()
                     .clickOutsideToClose(true)
                     .title(messageTitle)
@@ -24285,6 +24288,7 @@ var DataService = (function () {
             }
         });
     };
+    // Get all the messages for this question fresh
     DataService.prototype.getMessages = function (successCallbackFn, errorCallbackFn) {
         var _this = this;
         if (this.data.question !== null) {
@@ -24305,6 +24309,35 @@ var DataService = (function () {
                 if (errorCallbackFn) {
                     errorCallbackFn(null);
                 }
+            });
+        }
+    };
+    // Update messages on the server
+    DataService.prototype.updateMessages = function (messages, controlString) {
+        var _this = this;
+        // Queue the updated message to be sent later - this saves unnecessary server polls
+        // At this time only 'position' requests are queued
+        if (this.data.status.restrictPositionRequests && controlString === 'position') {
+            messages.forEach(function (message) {
+                _this.data.status.restrictPositionRequestMessages[message._id] = message;
+            });
+        }
+        else {
+            // Send updated messages to the server
+            var clientType = this.data.status.authorised ? '/messageteacher' : '/message';
+            this.$http.put(this.urlService.getHost() + clientType, {
+                messages: messages,
+                wall_id: this.data.wall._id,
+                nickname: this.data.status.selectedParticipant,
+                controlString: controlString
+            })
+                .then(function () {
+                messages.forEach(function (message) {
+                    _this.parseMessageForTags(message);
+                });
+                console.log('--> DataService: updateMessage success');
+            }, function (error) {
+                console.log('--> DataService: updateMessage failure: ' + error);
             });
         }
     };
@@ -24364,35 +24397,6 @@ var DataService = (function () {
             this.updateMessages(messages, 'position');
         }
     };
-    // Update messages on the server
-    DataService.prototype.updateMessages = function (messages, controlString) {
-        var _this = this;
-        // Queue the updated message to be sent later - this saves unnecessary server polls
-        // At this time only 'position' requests are queued
-        if (this.data.status.restrictPositionRequests && controlString === 'position') {
-            messages.forEach(function (message) {
-                _this.data.status.restrictPositionRequestMessages[message._id] = message;
-            });
-        }
-        else {
-            // Send updated messages to the server
-            var clientType = this.data.status.authorised ? '/messageteacher' : '/message';
-            this.$http.put(this.urlService.getHost() + clientType, {
-                messages: messages,
-                wall_id: this.data.wall._id,
-                nickname: this.data.status.selectedParticipant,
-                controlString: controlString
-            })
-                .then(function () {
-                messages.forEach(function (message) {
-                    _this.parseMessageForTags(message);
-                });
-                console.log('--> DataService: updateMessage success');
-            }, function (error) {
-                console.log('--> DataService: updateMessage failure: ' + error);
-            });
-        }
-    };
     DataService.prototype.getParticipants = function () {
         return this.data.status.participants;
     };
@@ -24445,6 +24449,12 @@ var DataService = (function () {
     DataService.prototype.processUpdatedMessages = function (pollUpdateObject) {
         var _this = this;
         if (typeof pollUpdateObject === 'undefined' || pollUpdateObject === null) {
+            return;
+        }
+        // Wall has expired in server memory
+        if (pollUpdateObject.status.hasOwnProperty('expired')) {
+            this.stopPolling();
+            this.showClosingDialog();
             return;
         }
         // Update participant list
@@ -24505,46 +24515,50 @@ var DataService = (function () {
         }
         // Message notifications (newly created messages)
         for (var message_id in pollUpdateObject.created) {
-            var message = new models.Message().updateMe(pollUpdateObject.created[message_id]);
-            this.data.question.messages.push(message);
-            this.parseMessageForTags(message);
-            // Check that the user is in the contributor list
-            if (this.data.status.contributors.indexOf(message.creator) === -1) {
-                this.data.status.contributors.push(message.creator);
+            if (pollUpdateObject.created.hasOwnProperty(message_id)) {
+                var message = new models.Message().updateMe(pollUpdateObject.created[message_id]);
+                this.data.question.messages.push(message);
+                this.parseMessageForTags(message);
+                // Check that the user is in the contributor list
+                if (this.data.status.contributors.indexOf(message.creator) === -1) {
+                    this.data.status.contributors.push(message.creator);
+                }
             }
         }
         // Message notifications (updated messages)
         for (var message_id in pollUpdateObject.updated) {
-            var update = pollUpdateObject.updated[message_id];
-            var message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
-            if (message !== null) {
-                switch (pollUpdateObject.updated[message_id].updateType) {
-                    case 'edit':
-                        message.text = update.text;
-                        message.deleted = update.deleted;
-                        if (message.deleted) {
-                            checkAndRemoveDeletedContributor(message.creator);
-                        }
-                        break;
-                    case 'position':
-                        message.updateBoard(update.board, true, this.data.user.nickname);
-                        break;
-                    case 'mixed':
-                        message.text = update.text;
-                        message.deleted = update.deleted;
-                        if (message.deleted) {
-                            checkAndRemoveDeletedContributor(message.creator);
-                        }
-                        message.updateBoard(update.board, true, this.data.user.nickname);
-                        break;
+            if (pollUpdateObject.updated.hasOwnProperty(message_id)) {
+                var update = pollUpdateObject.updated[message_id];
+                var message = this.utilityService.getMessageFromQuestionById(message_id, this.data.question);
+                if (message !== null) {
+                    switch (update.updateType) {
+                        case 'edit':
+                            message.text = update.text;
+                            message.deleted = update.deleted;
+                            if (message.deleted) {
+                                checkAndRemoveDeletedContributor(message.creator);
+                            }
+                            break;
+                        case 'position':
+                            message.updateBoard(update.board, false, this.data.user.nickname);
+                            break;
+                        case 'mixed':
+                            message.text = update.text;
+                            message.deleted = update.deleted;
+                            if (message.deleted) {
+                                checkAndRemoveDeletedContributor(message.creator);
+                            }
+                            message.updateBoard(update.board, false, this.data.user.nickname);
+                            break;
+                    }
+                    this.parseMessageForTags(message);
                 }
             }
-            this.parseMessageForTags(message);
-            this.refreshBoardMessages();
         }
+        this.refreshBoardMessages();
     };
     DataService.prototype.refreshBoardMessages = function () {
-        this.$rootScope.$broadcast('talkwallMessageUpdate', this.data.status.selectedParticipant);
+        this.$rootScope.$broadcast('talkwallMessageRefresh');
     };
     DataService.prototype.disconnectFromWall = function (successCallbackFn, errorCallbackFn) {
         var _this = this;

@@ -147,8 +147,10 @@ Mm.prototype.setup = function(wall_id, nickname) {
     }
 
     // The first user (only a teacher can run this) goes into the lists
+    if (typeof this.data.walls[wall_id].status.connected_teachers[nickname] === 'undefined') {
+        this.data.total_talkwall_connections++;
+    }
     this.data.walls[wall_id].status.connected_teachers[nickname] = Date.now();
-    this.data.total_talkwall_connections++;
 
 };
 
@@ -164,7 +166,7 @@ Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeac
 
     // Possible that a client is here after the wall is closed, return gracefully
     if (!this.data.walls.hasOwnProperty(wall_id)) {
-        return;
+        return false;
     }
 
     // Create the question structure if it doesn't exist
@@ -188,8 +190,12 @@ Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeac
         this.data.walls[wall_id].status.connected_students[nickname] = Date.now();
     }
 
-    this.data.walls[wall_id].questions[question_id].updated[nickname] = {};
-    this.data.walls[wall_id].questions[question_id].created[nickname] = {};
+    // Add user to the question
+    if (this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
+        this.data.walls[wall_id].questions[question_id].updated[nickname] = {};
+        this.data.walls[wall_id].questions[question_id].created[nickname] = {};
+    }
+    return true;
 };
 
 /**
@@ -204,6 +210,15 @@ Mm.prototype.userIsOnWall = function(wall_id, nickname) {
         || this.data.walls[wall_id].status.connected_teachers.hasOwnProperty(nickname));
 };
 
+
+/**
+ * Check that a wall exists on the MM
+ *
+ * @param {string} wall_id
+ */
+Mm.prototype.wallExists = function(wall_id) {
+    return this.data.walls.hasOwnProperty(wall_id);
+};
 
 /**
  * Remove user from a question
@@ -371,7 +386,6 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
         // Only the originator of a message can make an 'edit' ( change text or mark as deleted )
         case 'edit':
 
-
             for (var user2 in thisQuestion.updated) {
 
                 // If the nickname is not our own, make a notification
@@ -387,26 +401,28 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
             break;
 
         // Anyone can report position changes, but only the teacher will see them (spec as at December 2016)
+        // 'position' includes adding a message to board, highlighting, x and y coordinates
         case 'position':
 
             for (var user3 in thisQuestion.updated) {
 
                 // Make a notification to all.
-                // This is necessary to prevent interference between wall messages dependent on update / poll timing
+                // This is necessary to prevent interference between wall messages depending on update / poll timing
                 if (thisQuestion.updated.hasOwnProperty(user3)) {
                     userQueue = thisQuestion.updated[user3];
 
                     // Has an update to this message already been registered?
                     if (userQueue.hasOwnProperty(updated_message._id)) {
 
-                        // Check if the updated message contains this nickname. This user may remove it from their board
+                        // Check if the updated message contains this nickname.
+                        // Each user has their own nickname space on a message. A user may only remove their own nickname
                         if (updated_message.board.hasOwnProperty(nickname)) {
                             userQueue[updated_message._id].board[nickname] = updated_message.board[nickname];
                         } else {
                             delete userQueue[updated_message._id].board[nickname];
                         }
 
-                        // Teacher's update may already have edit data, so mark it now as mixed data
+                        // Update may already have edit data, so mark it now as mixed data
                         userQueue[updated_message._id].updateType
                             = userQueue[updated_message._id].updateType === 'edit' ? 'mixed' : 'position';
                     } else {
@@ -445,7 +461,8 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
                 last_access: null,
                 teacher_current_question: 'none',
                 connected_teachers: {},
-                connected_students: {}
+                connected_students: {},
+                expired: true
             },
             created: {},
             updated: {}
