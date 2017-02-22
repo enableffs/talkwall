@@ -336,6 +336,7 @@
   background-color: #FFFFFF;
   position: absolute !important;
   cursor: move;
+  transition: all 0.5s linear;
 }
 
 .feedMessage-messageOnBoardSelected {
