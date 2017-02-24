@@ -219,8 +219,12 @@ exports.createMessage = function(req, res) {
     if (typeof req.body.message === 'undefined' || req.body.message == null
         || typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
         || typeof req.body.nickname === 'undefined' || req.body.nickname == null) {
-        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
-            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+        console.log('TW: POST /message ( nick: ' + req.body.nickname +
+            ' wall: ' + req.body.wall_id + ' )  : ' +
+            common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status + ' ' +
+            common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message);
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status).json({
+            message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
     }
 
     if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
@@ -229,9 +233,12 @@ exports.createMessage = function(req, res) {
         var newMessage = new Message(req.body.message);
         newMessage.save(function (error, message) {
             if (error) {
+                console.log('TW: POST /message ( nick: ' + req.body.nickname +
+                    ' wall: ' + req.body.wall_id + ' )  : ' +
+                    common.StatusMessages.CREATE_ERROR.status + ' ' +
+                    common.StatusMessages.CREATE_ERROR.message + '(message save)');
                 res.status(common.StatusMessages.CREATE_ERROR.status).json({
-                    message: common.StatusMessages.CREATE_ERROR.message, result: error
-                });
+                    message: common.StatusMessages.CREATE_ERROR.message, result: error });
             }
             else {
                 // Update the message manager to notify other clients
@@ -243,9 +250,12 @@ exports.createMessage = function(req, res) {
                     'questions._id': req.body.message.question_id
                 }, { $push: { "questions.$.messages" : message}, $addToSet: { "questions.$.contributors" : req.body.nickname }}, function(error, wall) {
                     if(error) {
+                        console.log('TW: POST /message ( nick: ' + req.body.nickname +
+                            ' wall: ' + req.body.wall_id + ' )  : ' +
+                            common.StatusMessages.CREATE_ERROR.status + ' ' +
+                            common.StatusMessages.CREATE_ERROR.message  + '(wall update)');
                         res.status(common.StatusMessages.CREATE_ERROR.status).json({
-                            message: common.StatusMessages.CREATE_ERROR.message
-                        });
+                            message: common.StatusMessages.CREATE_ERROR.message });
                     } else {
                         res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                             message: common.StatusMessages.CREATE_SUCCESS.message, result: message
@@ -255,9 +265,12 @@ exports.createMessage = function(req, res) {
             }
         })
     } else {
+        console.log('TW: POST /message ( nick: ' + req.body.nickname +
+            ' wall: ' + req.body.wall_id + ' )  : ' +
+            common.StatusMessages.INVALID_USER.status + ' ' +
+            common.StatusMessages.INVALID_USER.message);
         res.status(common.StatusMessages.INVALID_USER.status).json({
-            message: common.StatusMessages.INVALID_USER.message
-        });
+            message: common.StatusMessages.INVALID_USER.message });
     }
 
 };
@@ -329,8 +342,13 @@ exports.updateMessages = function(req, res) {
         || typeof req.body.wall_id === 'undefined' || req.body.wall_id == null
         || typeof req.body.controlString === 'undefined' || req.body.controlString == null
         || typeof req.body.nickname === 'undefined' || req.body.nickname == null) {
-        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
-            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+
+        console.log('TW: PUT /message ( nick: ' + req.body.nickname + ' control: ' +
+            req.body.controlString + ' wall: ' + req.body.wall_id + ' )  : ' +
+            common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status + ' ' +
+            common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message);
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status).json({
+            message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
     }
 
     if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
@@ -355,15 +373,21 @@ exports.updateMessages = function(req, res) {
                 message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages
             });
         }).catch(function(error) {
+            console.log('TW: PUT /message ( nick: ' + req.body.nickname + ' control: ' +
+                req.body.controlString + ' wall: ' + req.body.wall_id + ' )  : ' +
+                common.StatusMessages.UPDATE_ERROR.status + ' ' +
+                common.StatusMessages.UPDATE_ERROR.message);
             res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                message: common.StatusMessages.UPDATE_ERROR.message, result: error
-            });
+                message: common.StatusMessages.UPDATE_ERROR.message, result: error });
         });
 
     } else {
+        console.log('TW: PUT /message ( nick: ' + req.body.nickname + ' control: ' +
+            req.body.controlString + ' wall: ' + req.body.wall_id + ' )  : ' +
+            common.StatusMessages.INVALID_USER.status + ' ' +
+            common.StatusMessages.INVALID_USER.message);
         res.status(common.StatusMessages.INVALID_USER.status).json({
-            message: common.StatusMessages.INVALID_USER.message
-        });
+            message: common.StatusMessages.INVALID_USER.message });
     }
 };
 
@@ -468,8 +492,11 @@ exports.createLogs = function(req, res) {
     if (typeof req.body.logs === 'undefined' || req.body.logs == null
         || typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
         || typeof req.params.nickname === 'undefined' || req.params.nickname == null) {
-        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
-            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
+        console.log('TW: logs/' + req.params.wall_id + '/' + req.params.nickname +
+            ' : ' + common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status + ' ' +
+            common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message);
+        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status).json({
+            message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
     }
 
     if (mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
@@ -486,16 +513,19 @@ exports.createLogs = function(req, res) {
                 message: common.StatusMessages.CREATE_SUCCESS.message
             });
         }).catch(function(error) {
+            console.log('TW: logs/' + req.params.wall_id + '/' + req.params.nickname +
+                ' : ' + common.StatusMessages.CREATE_ERROR.status + ' ' +
+                common.StatusMessages.CREATE_ERROR.message);
             res.status(common.StatusMessages.CREATE_ERROR.status).json({
-                message: common.StatusMessages.CREATE_ERROR.message, result: error
-            });
+                message: common.StatusMessages.CREATE_ERROR.message });
         });
-
 
     } else {
+        console.log('TW: logs/' + req.params.wall_id + '/' + req.params.nickname +
+            ' : ' + common.StatusMessages.INVALID_USER.status + ' ' +
+            common.StatusMessages.INVALID_USER.message);
         res.status(common.StatusMessages.INVALID_USER.status).json({
-            message: common.StatusMessages.INVALID_USER.message
-        });
+            message: common.StatusMessages.INVALID_USER.message });
     }
 
 };
