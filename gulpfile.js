@@ -18,7 +18,8 @@ var gulp = require('gulp'),
     browserify  = require('browserify'),
     tsify       = require('tsify'),
     vinylsourcestream = require('vinyl-source-stream'),
-    vinylbuffer = require('vinyl-buffer');
+    vinylbuffer = require('vinyl-buffer'),
+    apidoc = require('gulp-apidoc');
 
 var config = {
     project: '/',
@@ -61,6 +62,12 @@ function showError (error) {
     this.emit('end');
 }
 
+gulp.task('apidoc', function(done){
+    apidoc({
+        src: "routes/",
+        dest: "docs/api/"
+    },done);
+});
 
 gulp.task('clean:dist', function () {
     return del([
@@ -233,4 +240,4 @@ gulp.task('uglify', function () {
 
 gulp.task('dev', gulp.series('sass', 'browserify'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'browserify', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'browserify', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc', 'apidoc'));

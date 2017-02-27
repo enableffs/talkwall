@@ -36,9 +36,11 @@ function randomNumberInRange(min, max) {
 }
 
 /**
- * @api {get} /user Get a user details
+ * @api {get} /user Get user
  * @apiName getUser
  * @apiGroup authorised
+ *
+ * @apiDescription Return details for the currently authenticated user
  *
  * @apiSuccess {User} user User object
  */
@@ -65,9 +67,11 @@ exports.getUser = function(req, res) {
 };
 
 /**
- * @api {get} /userexists Confirm a user exists
+ * @api {get} /userexists/:email Confirm user exists
  * @apiName userExists
  * @apiGroup authorised
+ *
+ * @apiParam {String} email
  *
  * @apiSuccess {Boolean} boolean
  */
@@ -92,9 +96,19 @@ exports.userExists = function(req, res) {
 
 
 /**
- * @api {put} /user Update a users details
+ * @api {put} /user Update user
  * @apiName updateUser
  * @apiGroup authorised
+ *
+ * @apiParamExample {json} User
+ *  {
+ *      "user": {
+ *           "defaultEmail": "user@talkwall.net",
+ *           "nickname": "user"
+ *      }
+ *  }
+ *
+ * @apiDescription Update details for the currently authorised user
  *
  * @apiSuccess {User} user Updated user object (at this time, only 'lastOpenedWall' and 'defaultEmail')
  */
@@ -128,13 +142,19 @@ exports.updateUser = function(req, res) {
 };
 
 /**
- * @api {post} /wall Create a new wall with generated pin number
+ * @api {post} /wall Create new wall
  * @apiName createWall
  * @apiGroup authorised
  *
- * @apiParam {String} label A label for the new wall.
+ * @apiParamExample {json} Input
+ *  {
+ *           "label": "New wall",
+ *           "theme": "New theme"
+ *  }
  *
- * @apiSuccess {Wall} wall Newly created wall
+ * @apiDescription Create a new wall and allocate a PIN
+ *
+ * @apiSuccess {Wall} wall Newly created wall with populated Organisers list
  *
  */
 exports.createWall = function(req, res) {
@@ -193,10 +213,24 @@ exports.createWall = function(req, res) {
 };
 
 /**
- * @api {put} /wall Update a wall details
+ * @api {put} /wall Update a wall
  * @apiName updateWall
  * @apiGroup authorised
  *
+ * @apiParamExample {json} Input
+ *  {
+ *      "wall": {
+ *           "_id": "ab2b6cd12243abba48278935",
+ *           "pin": "1234",
+ *           "closed": false,
+ *           "label": "New wall",
+ *           "theme": "New theme",
+ *           "deleted": false,
+ *           "newOrganiser": "newOrganiserEmail@abc.net"
+ *      }
+ *  }
+ *
+ * @apiDescription Create a new question
  * @apiSuccess {Wall} wall Updated wall object
  */
 exports.updateWall = function(req, res) {
@@ -221,18 +255,6 @@ exports.updateWall = function(req, res) {
                 wall.pin = '0000';
                 mm.removeWall(req.body.wall._id);
                 wall.closed = true;
-
-                //send an email to the wall creator with the permalink.
-                /*
-                console.log('--> updateWall: sending export link: targetemail: ' + req.body.wall.targetEmail);
-                sendExportLinkToOwner(wall.createdBy, req.body.wall.targetEmail).then(function () {
-                    res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                        message: common.StatusMessages.UPDATE_SUCCESS.message,
-                        result: wall
-                    });
-                });
-                */
-
             } else if (wall.closed && !req.body.wall.closed) {  // Wall has been opened (unlocked)
                 // Choose a fresh pin
                 var newPin = randomNumberInRange(common.Constants.MINIMUM_PIN, common.Constants.MAXIMUM_PIN);
@@ -319,43 +341,16 @@ function sendExportLinkToOwner(userid, targetEmail) {
 
 
 /**
-* @api {put} /wall/close/:wall_id Close a wall
-* @apiName closeWall
-* @apiGroup authorised
-*
-*/
-/*
-exports.closeWall = function(req, res) {
-
-    if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null ) {
-        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
-            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
-    }
-
-    var query = Wall.findOneAndUpdate({
-        _id : req.params.wall_id
-    }, {closed: true}, { new: true });
-
-    query.exec(function(error, wall) {
-        if(error) {
-            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                message: common.StatusMessages.UPDATE_ERROR.message, result: error});
-        } else {
-            redisClient.EXPIRE(wall.pin, 1);
-            mm.removeWall(wall._id);
-            sendExportLinkToOwner(wall.createdBy, req.body.targetEmail).then(function() {
-                res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                    message: common.StatusMessages.UPDATE_SUCCESS.message});
-            });
-        }
-    })
-};
-*/
-
-/**
- * @api {get} /change Notify change of question
+ * @api {get} /change/:nickname/:wall_id/:question_id/:previous_question_id Notify change question
  * @apiName changeQuestion
  * @apiGroup authorised
+ *
+ * @apiParam {String} wall_id
+ * @apiParam {String} question_id
+ * @apiParam {String="none","id_hex_string"} previous_question_id
+ * @apiParam {String} nickname
+ *
+ * @apiDescription Send notification to all users that we are changing the question
  *
  */
 exports.notifyChangeQuestion = function(req, res) {
@@ -394,15 +389,15 @@ exports.notifyChangeQuestion = function(req, res) {
 
 
 /**
- * @api {get} /disconnect Disconnect teacher from a wall with pin
+ * @api {get} /disconnectteacher/:nickname/:wall_id Disconnect teacher
  *
  * @apiName disconnectWall
  * @apiGroup authorised
  *
- * @apiParam {String} wall_id ID of the wall to get
- * @apiParam {String} question_id ID of the question to get
- * @apiParam {String} nickname Connecting client's nickname
+ * @apiParam {String} wall_id ID of the wall to disconnect from
+ * @apiParam {String} nickname This user's nickname
  *
+ * @apiDescription Disconnect the nickname from the given wall
  */
 exports.disconnectWall = function(req, res) {
 
@@ -422,14 +417,7 @@ exports.disconnectWall = function(req, res) {
 };
 
 
-/**
- * @api {delete} /wall Delete a wall   (ONLY USED FOR TESTING. Also deletes questions!)
- * @apiName deleteWall
- * @apiGroup authorised
- *
- * @apiParam {String} id ID of the wall to delete
- *
- */
+
 exports.deleteWall = function(req, res) {
 
     if (typeof req.params.id === 'undefined' || req.params.id == null) {
@@ -463,11 +451,13 @@ exports.deleteWall = function(req, res) {
 };
 
 /**
- * @api {get} /walls Get all walls (limited details) for a user
+ * @api {get} /walls Get user's walls
  * @apiName getWalls
  * @apiGroup authorised
  *
- * @apiSuccess {Array<Wall>} walls List of walls found
+ * @apiDescription Get all walls (limited details) for a user
+ *
+ * @apiSuccess {[Wall]} walls List of walls found
  */
 exports.getWalls = function(req, res) {
     var query = Wall.find({
@@ -489,13 +479,15 @@ exports.getWalls = function(req, res) {
 };
 
 /**
- * @api {get} /wall Get a wall details
+ * @api {get} /wall/:id Get a wall
  * @apiName getWallAuthorised
  * @apiGroup authorised
  *
- * @apiParam {String} id ID of the wall to get
+ * @apiParam {String} id ID of the wall
  *
  * @apiSuccess {Wall} wall Wall object
+ *
+ * @apiDescription Get the wall by its id. If the wall was closed it will be re-opned with a new pin
  */
 exports.getWall = function(req, res) {
     if (typeof req.params.id === 'undefined' || req.params.id == null) {
@@ -559,6 +551,18 @@ exports.getWall = function(req, res) {
     })
 };
 
+/**
+ * @api {get} /wall/:wall_id/question/:question_id/contributors Get contributors
+ * @apiName getQuestionContributors
+ * @apiGroup authorised
+ *
+ * @apiParam {String} wall_id ID of the wall
+ * @apiParam {String} question_id ID of the question
+ *
+ * @apiSuccess {[String]} contributors A list of nicknames
+ *
+ * @apiDescription Return a list of contributor nicknames for the given wall and question
+ */
 exports.getQuestionContributors = function(req, res) {
     if (typeof req.params.wall_id === 'undefined' || req.params.wall_id == null
         || typeof req.params.question_id === 'undefined' || req.params.question_id == null) {
@@ -590,11 +594,22 @@ exports.getQuestionContributors = function(req, res) {
 };
 
 /**
- * @api {post} /question Create a new question
+ * @api {post} /question Create question
  * @apiName createQuestion
  * @apiGroup authorised
  *
- * @apiSuccess {Question} question Newly created question
+ * @apiParamExample {json} Input
+ *  {
+ *      "wall_id": "123412341234123412341234",
+ *      "question": {
+ *           "label": "New question";
+ *           "grid": "horizontal";
+ *      }
+ *  }
+ *
+ * @apiDescription Create a new question
+ *
+ * @apiSuccess {Question} question The newly created question
  */
 exports.createQuestion = function(req, res) {
 
@@ -637,6 +652,20 @@ exports.createQuestion = function(req, res) {
  * @apiName updateQuestion
  * @apiGroup authorised
  *
+ * @apiParamExample {json} Input
+ *  {
+ *      "wall_id": "123412341234123412341234",
+ *      "question": {
+ *           "_id": "dcbadcbadcbadcbadcbadcba"
+ *           "label": "string";
+ *           "grid": "string";
+ *      }
+ *  }
+ *
+ * @apiDescription Update an existing question
+ *
+ * @apiSuccess {Wall} The wall that contains this question
+ *
  */
 exports.updateQuestion = function(req, res) {
 
@@ -664,10 +693,16 @@ exports.updateQuestion = function(req, res) {
 };
 
 /**
- * @api {delete} /question Delete a question
+ * @api {delete} /question/:wall_id/:question_id Delete a question
  * @apiName deleteQuestion
  * @apiGroup authorised
  *
+ * @apiParam {String} wall_id ID of the wall
+ * @apiParam {String} question_id ID of the question
+ *
+ * @apiSuccess {Wall} wall The wall that contained this question
+ *
+ * @apiDescription Remove a question for a given wall id
  */
 exports.deleteQuestion = function(req, res) {
 
@@ -696,11 +731,30 @@ exports.deleteQuestion = function(req, res) {
 
 
 /**
- * @api {post} /messageteacher Create a new message and add it to the Question
+ * @api {post} /messageteacher Create message
+ *
  * @apiName createMessage
  * @apiGroup authorised
  *
- * @apiSuccess {Message} message Newly created message
+ * @apiParamExample {json} Input
+ *  {
+ *      "wall_id": "123412341234123412341234",
+ *      "nickname": "my_nickname",
+ *      "message": {
+ *          "question_id": "dcbadcbadcbadcbadcbadcba",
+ *          "text": "New message text content",
+ *          "creator": "my_nickname",
+ *          "origin": [
+ *              {
+ *                  "nickname": "my_nickname"
+ *              }
+ *          ]
+ *      }
+ *  }
+ *
+ * @apiDescription Create a new message and add its ID to the Question on the given wall
+ *
+ * @apiSuccess {Message} message The created message
  */
 exports.createMessage = function(req, res) {
 
@@ -746,10 +800,33 @@ exports.createMessage = function(req, res) {
 
 
 /**
- * @api {put} /messageteacher Edit a message by submitting a Message object and pin
+ * @api {put} /messageteacher Edit a message
  * @apiName updateMessages
  * @apiGroup authorised
  *
+ * @apiParamExample {json} Input
+ *  {
+ *      "wall_id": "123412341234123412341234",
+ *      "nickname": "my_nickname",
+ *      "controlString": "none | edit | position"
+ *      "messages": [
+ *          {
+ *              "_id": "567856785678567856785678",
+ *              "question_id": "dcbadcbadcbadcbadcbadcba",
+ *              "text": "New message text content",
+ *              "creator": "my_nickname",
+ *              "origin": [
+ *                  {
+ *                      "nickname": "my_nickname"
+ *                  }
+ *              ]
+ *          }
+ *       ]
+ *  }
+ *
+ * @apiDescription Update a list of messages
+ *
+ * @apiSuccess {[Message]} messages List of updated messages
  */
 exports.updateMessages = function(req, res) {
 
@@ -773,7 +850,7 @@ exports.updateMessages = function(req, res) {
         if (req.body.controlString !== 'none') {
             messages.forEach(function (m) {
                 if (m.hasOwnProperty('question_id')) {
-                    mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
+                    mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, true);
                 }
             });
         }
@@ -807,7 +884,7 @@ exports.createTestUser = function() {
 
 
 /**
- * @api {get} /poll Respond to this call with any changed messages and status
+ * @api {get} /pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:controlString Poll for updates
  *
  * @apiName poll
  * @apiGroup non-authorised
@@ -818,7 +895,9 @@ exports.createTestUser = function() {
  * @apiParam {String} previous_question_id ID of the previous question to assist removal from polling when changing question
  *                      Can be 'none' if not changing questions.
  * @apiParam {String} nickname Connecting client's nickname
- * @apiParam {String} control type of poll ('new', 'change', 'poll')
+ * @apiParam {String} controlString type of poll ('new', 'change', 'poll')
+ *
+ * @apiDescription Respond with any changed messages and status
  *
  */
 exports.poll = function(req, res) {
@@ -851,11 +930,15 @@ exports.poll = function(req, res) {
 
 
 /**
- * @api {get} /logs Get Logs
+ * @api {post} /logs/:wall_id/:startdatetime/:enddatetime/:timelinetime/:selectedtypes Get Logs
  * @apiName getLogs
  * @apiGroup authorised
  *
- * @apiParam {String} id ID of the wall to get logs for
+ * @apiParam {String} wall_id ID of the wall to get logs for
+ * @apiParam {String} startdatetime Unix datetime
+ * @apiParam {String} enddatetime Unix datetime
+ * @apiParam {String} timelinetime Unix datetime
+ * @apiParam {String} selectedtypes JSON encoded types
  *
  * @apiSuccess {log[]} log object array
  */

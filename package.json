@@ -2,6 +2,10 @@
   "name": "talkwall-services",
   "version": "0.2.0",
   "description": "",
+  "apidoc": {
+    "title": "Talkwall API Documentation",
+    "url" : "https://www.talkwall.net/docs"
+  },
   "main": "app.js",
   "repository": {
     "type": "git",
@@ -80,6 +84,8 @@
     "mocha": "^3.1.2",
     "node-normalize-scss": "^1.4.0",
     "tslint": "4.0.1",
-    "typedoc": "0.5.1"
+    "typedoc": "0.5.1",
+    "apidoc": "0.17.x",
+    "gulp-apidoc": "0.2.x"
   }
 }

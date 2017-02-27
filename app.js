@@ -116,7 +116,6 @@ app.post('/question',               jwt({secret: secret.secretToken}),  tokenMan
 app.put('/question',                jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.updateQuestion);
 app.delete('/question/:wall_id/:question_id',           jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.deleteQuestion);
 app.get('/change/:nickname/:wall_id/:question_id/:previous_question_id',      jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.notifyChangeQuestion);
-//app.put('/wall/close/:wall_id',                         jwt({secret: secret.secretToken}),  tokenManager.verifyToken,   routes.teacher.closeWall);
 app.get('/pollteacher/:nickname/:wall_id/:question_id/:previous_question_id/:controlString',          jwt({secret: secret.secretToken}),  tokenManager.verifyToken,  routes.teacher.poll);
 app.get('/disconnectteacher/:nickname/:wall_id',               jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.disconnectWall);
 app.post('/messageteacher',                                    jwt({secret: secret.secretToken}),  tokenManager.verifyToken,     routes.teacher.createMessage);
@@ -132,7 +131,7 @@ app.post('/message',                                                            
 app.put('/message',                                                                                 routes.client.updateMessages);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
 app.get('/export/:wall_id',                                                                         routes.client.exportWall);
-app.post('/logs/:wall_id/:nickname',                                                                routes.client.createLogs);
+app.post('logs/:wall_id/:nickname',                                                                 routes.client.createLogs);
 
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());
