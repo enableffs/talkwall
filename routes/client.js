@@ -417,8 +417,8 @@ exports.exportWall = function(req, res) {
     query.select('-closed');
     query.exec(function(error, wall) {
         if(error) {
-            res.status(common.StatusMessages.DELETE_ERROR.status).json({
-                message: common.StatusMessages.DELETE_ERROR.message, result: error});
+            res.status(common.StatusMessages.DATABASE_ERROR.status).json({
+                message: common.StatusMessages.DATABASE_ERROR.message, result: error});
         }
         else if (wall !== null) {
 
@@ -434,6 +434,9 @@ exports.exportWall = function(req, res) {
                 res.status(common.StatusMessages.DATABASE_ERROR.status)
                     .json({message: common.StatusMessages.DATABASE_ERROR.message});
             });
+        } else {
+            res.status(common.StatusMessages.GET_ERROR.status)
+                .json({message: common.StatusMessages.GET_ERROR.message});
         }
     });
 };
