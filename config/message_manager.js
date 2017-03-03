@@ -468,65 +468,66 @@ Mm.prototype.getUpdate = function(wall_id, question_id, nickname, isTeacher) {
             created: {},
             updated: {}
         }
-    }
+    } else {
 
-    var created = {};
-    var updated = {};
-    var connectedStudents = this.data.walls[wall_id].status.connected_students;
-    var connectedTeachers = this.data.walls[wall_id].status.connected_teachers;
+        var created = {};
+        var updated = {};
+        var connectedStudents = this.data.walls[wall_id].status.connected_students;
+        var connectedTeachers = this.data.walls[wall_id].status.connected_teachers;
 
-    // Check for disconnected users (done on the teacher cycle only). If a user has not been polling, remove their queue.
-    if (isTeacher) {
-        var timeNow = Date.now();
-        for (var student in connectedStudents) {
-            if (connectedStudents.hasOwnProperty(student) && (timeNow - connectedStudents[student] > (common.Constants.POLL_USER_EXPIRY_TIME_MINUTES * 60000))) {
-                this.removeUserFromWall(wall_id, student, false);
-            }
-        }
-        for (var teacher in connectedTeachers) {
-            if (nickname !== teacher && connectedTeachers.hasOwnProperty(teacher) && (timeNow - connectedTeachers[teacher] > (common.Constants.POLL_USER_EXPIRY_TIME_MINUTES * 60000))) {
-                this.removeUserFromWall(wall_id, teacher, true);
-            }
-        }
-    }
-
-    // Collect any new notifications and clear my queue
-    if (question_id !== 'none') {
-        var queue = this.data.walls[wall_id].questions[question_id].created;
-
-         if (queue.hasOwnProperty(nickname)) {
-             for (var message_id in queue[nickname]) {
-                 if (queue[nickname].hasOwnProperty(message_id)) {
-                     created[message_id] = queue[nickname][message_id];
-                 }
-             }
-             queue[nickname] = {};
-         }
-
-        queue = this.data.walls[wall_id].questions[question_id].updated;
-
-        if (queue.hasOwnProperty(nickname)) {
-            for (var message_id2 in queue[nickname]) {
-                if (queue[nickname].hasOwnProperty(message_id2)) {
-                    updated[message_id2] = queue[nickname][message_id2];
+        // Check for disconnected users (done on the teacher cycle only). If a user has not been polling, remove their queue.
+        if (isTeacher) {
+            var timeNow = Date.now();
+            for (var student in connectedStudents) {
+                if (connectedStudents.hasOwnProperty(student) && (timeNow - connectedStudents[student] > (common.Constants.POLL_USER_EXPIRY_TIME_MINUTES * 60000))) {
+                    this.removeUserFromWall(wall_id, student, false);
                 }
             }
-            queue[nickname] = {};
+            for (var teacher in connectedTeachers) {
+                if (nickname !== teacher && connectedTeachers.hasOwnProperty(teacher) && (timeNow - connectedTeachers[teacher] > (common.Constants.POLL_USER_EXPIRY_TIME_MINUTES * 60000))) {
+                    this.removeUserFromWall(wall_id, teacher, true);
+                }
+            }
         }
-    }
 
-    // Update my poll timestamp.  If I am not polling I will be removed from the Message Manager.
-    var clientType = isTeacher ? 'connected_teachers' : 'connected_students';
-    if(this.data.walls[wall_id].status[clientType].hasOwnProperty(nickname)) {
-        this.data.walls[wall_id].status[clientType][nickname] = Date.now();
-    }
+        // Collect any new notifications and clear my queue
+        if (question_id !== 'none') {
+            var queue = this.data.walls[wall_id].questions[question_id].created;
 
-    // Return my pending updates and any change to status
-    return {
-        totalOnTalkwall: this.data.total_talkwall_connections,
-        status: this.data.walls[wall_id].status,
-        created: created,
-        updated: updated
+            if (queue.hasOwnProperty(nickname)) {
+                for (var message_id in queue[nickname]) {
+                    if (queue[nickname].hasOwnProperty(message_id)) {
+                        created[message_id] = queue[nickname][message_id];
+                    }
+                }
+                queue[nickname] = {};
+            }
+
+            queue = this.data.walls[wall_id].questions[question_id].updated;
+
+            if (queue.hasOwnProperty(nickname)) {
+                for (var message_id2 in queue[nickname]) {
+                    if (queue[nickname].hasOwnProperty(message_id2)) {
+                        updated[message_id2] = queue[nickname][message_id2];
+                    }
+                }
+                queue[nickname] = {};
+            }
+        }
+
+        // Update my poll timestamp.  If I am not polling I will be removed from the Message Manager.
+        var clientType = isTeacher ? 'connected_teachers' : 'connected_students';
+        if (this.data.walls[wall_id].status[clientType].hasOwnProperty(nickname)) {
+            this.data.walls[wall_id].status[clientType][nickname] = Date.now();
+        }
+
+        // Return my pending updates and any change to status
+        return {
+            totalOnTalkwall: this.data.total_talkwall_connections,
+            status: this.data.walls[wall_id].status,
+            created: created,
+            updated: updated
+        }
     }
 };
 

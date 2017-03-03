@@ -914,9 +914,10 @@ exports.poll = function(req, res) {
     if (req.params.controlString === 'change' && req.params.previous_question_id !== 'none') {
         // We are changing questions, so remove the user from previous question and add them to the new one
         mm.removeUserFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname, true);
-        mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
-    } else if (req.params.controlString === 'new' && req.params.question_id !== 'none') {
-        // We are entering for the first time, so add the user
+    }
+
+    if(!mm.userIsOnWall(req.params.wall_id, req.params.nickname)
+        || (req.params.controlString === 'new' && req.params.question_id !== 'none')) {
         mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     }
 
