@@ -56,10 +56,11 @@ exports.poll = function(req, res) {
     if (req.params.controlString === 'change' && req.params.previous_question_id !== 'none') {
         // We are changing questions, so remove the user from previous question and add them to the new one
         mm.removeUserFromQuestion(req.params.wall_id, req.params.previous_question_id, req.params.nickname, false);
-        mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, false);
-    } else if (req.params.controlString === 'new' && req.params.question_id !== 'none') {
-        // We are entering for the first time, so add the user
-        mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, false);
+    }
+
+    if(!mm.userIsOnWall(req.params.wall_id, req.params.nickname)
+        || (req.params.controlString === 'new' && req.params.question_id !== 'none')) {
+            mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, false);
     }
 
     // Return an update to the user
@@ -227,51 +228,51 @@ exports.createMessage = function(req, res) {
             message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
     }
 
-    if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
+    // if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
 
-        // Create a new Message with the supplied object, including board properties   *** Not vetted!! :S
-        var newMessage = new Message(req.body.message);
-        newMessage.save(function (error, message) {
-            if (error) {
-                console.log('TW: POST /message ( nick: ' + req.body.nickname +
-                    ' wall: ' + req.body.wall_id + ' )  : ' +
-                    common.StatusMessages.CREATE_ERROR.status + ' ' +
-                    common.StatusMessages.CREATE_ERROR.message + '(message save)');
-                res.status(common.StatusMessages.CREATE_ERROR.status).json({
-                    message: common.StatusMessages.CREATE_ERROR.message, result: error });
-            }
-            else {
-                // Update the message manager to notify other clients
-                mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, message, 'create', false);
+    // Create a new Message with the supplied object, including board properties   *** Not vetted!! :S
+    var newMessage = new Message(req.body.message);
+    newMessage.save(function (error, message) {
+        if (error) {
+            console.log('TW: POST /message ( nick: ' + req.body.nickname +
+                ' wall: ' + req.body.wall_id + ' )  : ' +
+                common.StatusMessages.CREATE_ERROR.status + ' ' +
+                common.StatusMessages.CREATE_ERROR.message + '(message save)');
+            res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                message: common.StatusMessages.CREATE_ERROR.message, result: error });
+        }
+        else {
+            // Update the message manager to notify other clients
+            mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, message, 'create', false);
 
-                // Update the question with this new message, and return
-                Wall.findOneAndUpdate({
-                    '_id': req.body.wall_id,
-                    'questions._id': req.body.message.question_id
-                }, { $push: { "questions.$.messages" : message}, $addToSet: { "questions.$.contributors" : req.body.nickname }}, function(error, wall) {
-                    if(error) {
-                        console.log('TW: POST /message ( nick: ' + req.body.nickname +
-                            ' wall: ' + req.body.wall_id + ' )  : ' +
-                            common.StatusMessages.CREATE_ERROR.status + ' ' +
-                            common.StatusMessages.CREATE_ERROR.message  + '(wall update)');
-                        res.status(common.StatusMessages.CREATE_ERROR.status).json({
-                            message: common.StatusMessages.CREATE_ERROR.message });
-                    } else {
-                        res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
-                            message: common.StatusMessages.CREATE_SUCCESS.message, result: message
-                        });
-                    }
-                });
-            }
-        })
-    } else {
-        console.log('TW: POST /message ( nick: ' + req.body.nickname +
-            ' wall: ' + req.body.wall_id + ' )  : ' +
-            common.StatusMessages.INVALID_USER.status + ' ' +
-            common.StatusMessages.INVALID_USER.message);
-        res.status(common.StatusMessages.INVALID_USER.status).json({
-            message: common.StatusMessages.INVALID_USER.message });
-    }
+            // Update the question with this new message, and return
+            Wall.findOneAndUpdate({
+                '_id': req.body.wall_id,
+                'questions._id': req.body.message.question_id
+            }, { $push: { "questions.$.messages" : message}, $addToSet: { "questions.$.contributors" : req.body.nickname }}, function(error, wall) {
+                if(error) {
+                    console.log('TW: POST /message ( nick: ' + req.body.nickname +
+                        ' wall: ' + req.body.wall_id + ' )  : ' +
+                        common.StatusMessages.CREATE_ERROR.status + ' ' +
+                        common.StatusMessages.CREATE_ERROR.message  + '(wall update)');
+                    res.status(common.StatusMessages.CREATE_ERROR.status).json({
+                        message: common.StatusMessages.CREATE_ERROR.message });
+                } else {
+                    res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+                        message: common.StatusMessages.CREATE_SUCCESS.message, result: message
+                    });
+                }
+            });
+        }
+    });
+    // } else {
+    //     console.log('TW: POST /message ( nick: ' + req.body.nickname +
+    //         ' wall: ' + req.body.wall_id + ' )  : ' +
+    //         common.StatusMessages.INVALID_USER.status + ' ' +
+    //         common.StatusMessages.INVALID_USER.message);
+    //     res.status(common.StatusMessages.INVALID_USER.status).json({
+    //         message: common.StatusMessages.INVALID_USER.message });
+    // }
 
 };
 
@@ -351,44 +352,44 @@ exports.updateMessages = function(req, res) {
             message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
     }
 
-    if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
+    // if (mm.userIsOnWall(req.body.wall_id, req.body.nickname)) {
 
-        var multiUpdatePromise = [];
-        req.body.messages.forEach(function(message) {
-            var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true}).lean();
-            var p = query.exec();
-            multiUpdatePromise.push(p);
-        });
+    var multiUpdatePromise = [];
+    req.body.messages.forEach(function(message) {
+        var query = Message.findOneAndUpdate({ _id: message._id }, message, {new: true}).lean();
+        var p = query.exec();
+        multiUpdatePromise.push(p);
+    });
 
-        Promise.all(multiUpdatePromise).then(function(messages) {
-            if (req.body.controlString !== 'none') {
-                messages.forEach(function(m) {
-                    if (m.hasOwnProperty('question_id')) {
-                        mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
-                    }
-                });
-                //console.log('---Update to DB---: ' + messages.length);
-            }
-            res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-                message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages
+    Promise.all(multiUpdatePromise).then(function(messages) {
+        if (req.body.controlString !== 'none') {
+            messages.forEach(function(m) {
+                if (m.hasOwnProperty('question_id')) {
+                    mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
+                }
             });
-        }).catch(function(error) {
-            console.log('TW: PUT /message ( nick: ' + req.body.nickname + ' control: ' +
-                req.body.controlString + ' wall: ' + req.body.wall_id + ' )  : ' +
-                common.StatusMessages.UPDATE_ERROR.status + ' ' +
-                common.StatusMessages.UPDATE_ERROR.message);
-            res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-                message: common.StatusMessages.UPDATE_ERROR.message, result: error });
+            //console.log('---Update to DB---: ' + messages.length);
+        }
+        res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+            message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages
         });
-
-    } else {
+    }).catch(function(error) {
         console.log('TW: PUT /message ( nick: ' + req.body.nickname + ' control: ' +
             req.body.controlString + ' wall: ' + req.body.wall_id + ' )  : ' +
-            common.StatusMessages.INVALID_USER.status + ' ' +
-            common.StatusMessages.INVALID_USER.message);
-        res.status(common.StatusMessages.INVALID_USER.status).json({
-            message: common.StatusMessages.INVALID_USER.message });
-    }
+            common.StatusMessages.UPDATE_ERROR.status + ' ' +
+            common.StatusMessages.UPDATE_ERROR.message);
+        res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+            message: common.StatusMessages.UPDATE_ERROR.message, result: error });
+    });
+
+    // } else {
+    //     console.log('TW: PUT /message ( nick: ' + req.body.nickname + ' control: ' +
+    //         req.body.controlString + ' wall: ' + req.body.wall_id + ' )  : ' +
+    //         common.StatusMessages.INVALID_USER.status + ' ' +
+    //         common.StatusMessages.INVALID_USER.message);
+    //     res.status(common.StatusMessages.INVALID_USER.status).json({
+    //         message: common.StatusMessages.INVALID_USER.message });
+    // }
 };
 
 
@@ -502,27 +503,30 @@ exports.createLogs = function(req, res) {
             message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
     }
 
+    /*
     if (mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
+    */
 
-        var multiSavePromise = [];
-        req.body.logs.forEach(function(log) {
-            var newLog = new Log(log);
-            var p = newLog.save();
-            multiSavePromise.push(p);
+    var multiSavePromise = [];
+    req.body.logs.forEach(function(log) {
+        var newLog = new Log(log);
+        var p = newLog.save();
+        multiSavePromise.push(p);
+    });
+
+    Promise.all(multiSavePromise).then(function() {
+        res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+            message: common.StatusMessages.CREATE_SUCCESS.message
         });
+    }).catch(function(error) {
+        console.log('TW: logs/' + req.params.wall_id + '/' + req.params.nickname +
+            ' : ' + common.StatusMessages.CREATE_ERROR.status + ' ' +
+            common.StatusMessages.CREATE_ERROR.message);
+        res.status(common.StatusMessages.CREATE_ERROR.status).json({
+            message: common.StatusMessages.CREATE_ERROR.message });
+    });
 
-        Promise.all(multiSavePromise).then(function() {
-            res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
-                message: common.StatusMessages.CREATE_SUCCESS.message
-            });
-        }).catch(function(error) {
-            console.log('TW: logs/' + req.params.wall_id + '/' + req.params.nickname +
-                ' : ' + common.StatusMessages.CREATE_ERROR.status + ' ' +
-                common.StatusMessages.CREATE_ERROR.message);
-            res.status(common.StatusMessages.CREATE_ERROR.status).json({
-                message: common.StatusMessages.CREATE_ERROR.message });
-        });
-
+    /*
     } else {
         console.log('TW: logs/' + req.params.wall_id + '/' + req.params.nickname +
             ' : ' + common.StatusMessages.INVALID_USER.status + ' ' +
@@ -530,5 +534,5 @@ exports.createLogs = function(req, res) {
         res.status(common.StatusMessages.INVALID_USER.status).json({
             message: common.StatusMessages.INVALID_USER.message });
     }
-
+    */
 };
