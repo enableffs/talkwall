@@ -141,13 +141,16 @@ if(process.env.STATIC_FOLDER === 'src') {   // Only enable this route if we are 
 }
 
 // middleware which blocks requests when we're too busy
+/*
 app.use(function(req, res, next) {
     if (toobusy()) {
         res.status(503).send("I'm busy right now, sorry.");
+        console.log('Im busy right now, sorry.');
     } else {
         next();
     }
 });
+*/
 
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
