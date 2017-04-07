@@ -24136,7 +24136,7 @@ var DataService = (function () {
             }
         }, function (error) {
             console.log('Poll FAILED at ' + Date.now().toString());
-            if (error.status === 503) {
+            if (error.status === 102) {
                 _this.showToast('Server very busy..');
                 _this.stopPolling();
                 _this.$timeout(function () {

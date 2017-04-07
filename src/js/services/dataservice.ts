@@ -758,7 +758,7 @@ export class DataService implements IDataService {
                 }
             }, (error) => {
                 console.log('Poll FAILED at ' + Date.now().toString());
-                if (error.status === 503) {
+                if (error.status === 102) {
                     this.showToast('Server very busy..');
                     this.stopPolling();
                     this.$timeout(() => {
