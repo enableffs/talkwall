@@ -170,7 +170,7 @@ Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeac
     }
 
     // Create the question structure if it doesn't exist
-    if (isTeacher && question_id !== 'none' && !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
+    if (question_id !== 'none' && !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
         this.data.walls[wall_id].questions[question_id] = {
             updated: {},
             created: {}

@@ -931,7 +931,8 @@ exports.poll = function(req, res) {
     }
 
     if(!mm.userIsOnWall(req.params.wall_id, req.params.nickname)
-        || (req.params.controlString === 'new' && req.params.question_id !== 'none')) {
+        || (req.params.controlString === 'new' && req.params.question_id !== 'none')
+	    || (req.params.controlString === 'change' && req.params.previous_question_id !== 'none')) {
         mm.addUserToQuestion(req.params.wall_id, req.params.question_id, req.params.nickname, true);
     }
 
