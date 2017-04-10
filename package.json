@@ -4,7 +4,7 @@
   "description": "",
   "apidoc": {
     "title": "Talkwall API Documentation",
-    "url" : "https://www.talkwall.net/docs"
+    "url": "https://www.talkwall.net/docs"
   },
   "main": "app.js",
   "repository": {
@@ -19,6 +19,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@types/d3": "^4.4.0",
+    "@types/twitter-text": "^1.13.16",
     "angular": "1.5.10",
     "angular-animate": "1.5.10",
     "angular-aria": "1.5.10",
@@ -50,6 +51,7 @@
     "redis": "2.6.3",
     "superagent": "3.0.0",
     "toobusy-js": "0.5.1",
+    "twitter-text": "^1.14.3",
     "underscore": "1.8.3"
   },
   "bugs": {
