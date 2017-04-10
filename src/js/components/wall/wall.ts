@@ -221,7 +221,7 @@ export class WallController implements IWallControllerService {
 	}
 
 	messageTagsNotPresent(message: Message): boolean {
-		let messageTags = this.utilityService.getPossibleTags(message.text);
+		let messageTags = this.utilityService.extractHashtags(message.text);
 		if (messageTags.length > 0) {
 			let present: boolean = false;
 			for (let i = 0; i < messageTags.length; i++) {
