@@ -24510,7 +24510,7 @@ var DataService = (function () {
                 }
             }, null);
         }
-        // Check that a deleted user is removed the contributor list
+        // Check that a deleted user is removed from the contributor list
         var self = this;
         function checkAndRemoveDeletedContributor(nickname) {
             var counter = 0, foundIndex = -1;

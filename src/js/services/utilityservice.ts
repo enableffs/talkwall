@@ -18,6 +18,7 @@
  */
 
 import * as models from "../models/models";
+import * as twttr from "twitter-text";
 
 export interface IUtilityService {
     /**
@@ -31,7 +32,8 @@ export interface IUtilityService {
      */
     getRandomBetween(min: number, max: number): number;
 
-    getPossibleTags(content: string): Array<string>;
+    getPossibleTags(content: string): string[];
+    extractHashtags(text: string): string[];
 }
 
 export class UtilityService implements IUtilityService {
@@ -54,6 +56,10 @@ export class UtilityService implements IUtilityService {
             }
         }
         return id;
+    }
+
+    extractHashtags(text: string): string[] {
+        return twttr.extractHashtags(text);
     }
 
     static getRandom(max: number): number {

@@ -530,7 +530,7 @@ export class DataService implements IDataService {
     // For non-authorised users
     connectClientWall(joinModel: any, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
         let resultKey = 'result', dataKey = 'data', statusKey = 'status', messageKey = 'message';
-        this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin)
+        this.$http.get(this.urlService.getHost() + '/clientwall/' + encodeURIComponent(joinModel.nickname) + '/' + joinModel.pin)
             .then((success) => {
 
 
@@ -652,9 +652,6 @@ export class DataService implements IDataService {
             }
             this.data.question = new models.Question("").updateMe(this.data.wall.questions[newIndex]);
             this.data.status.currentQuestionIndex = newIndex;
-            this.data.status.contributors = this.data.question.contributors;
-            // Re-do the hashtag list
-            this.buildTagArray();
         }
 
         // Get the whole message list if we are 'new' or 'changing'
@@ -718,7 +715,7 @@ export class DataService implements IDataService {
     }
 
     notifyChangedQuestion(new_question_id: string, previous_question_id: string, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
-        this.$http.get(this.urlService.getHost() + '/change/' + this.data.user.nickname + '/' + this.data.wall._id + '/' + new_question_id + '/' + previous_question_id)
+        this.$http.get(this.urlService.getHost() + '/change/' + encodeURIComponent(this.data.user.nickname) + '/' + this.data.wall._id + '/' + new_question_id + '/' + previous_question_id)
             .then(() => {
                 if (typeof successCallbackFn === "function") {
                     successCallbackFn(null);
@@ -742,7 +739,7 @@ export class DataService implements IDataService {
         if (this.data.status.authorised) {
             pollRoute = '/pollteacher/';
         }
-        this.$http.get(this.urlService.getHost() + pollRoute + this.data.user.nickname + '/' + this.data.wall._id +
+        this.$http.get(this.urlService.getHost() + pollRoute + encodeURIComponent(this.data.user.nickname) + '/' + this.data.wall._id +
             '/' + question_id + '/' + previousQuestionId + '/' + control)
             .then((result) => {
                 let resultKey = 'result';
@@ -779,7 +776,7 @@ export class DataService implements IDataService {
             this.logCycleCounter = 0;
             if(this.data.log.length > 0) {
                 this.$http.post(this.urlService.getHost() + '/logs/' + this.data.wall._id +
-                    '/' + this.data.user.nickname, {logs: this.data.log})
+                    '/' + encodeURIComponent(this.data.user.nickname), {logs: this.data.log})
                     .then(() => {
                         this.data.log.length = 0;
                         console.log('--> DataService: log success');
@@ -942,12 +939,14 @@ export class DataService implements IDataService {
             this.$http.get(this.urlService.getHost() + '/messages/' + this.data.question._id)
                 .then((result) => {
                     this.data.question.messages = [];
+                    this.data.status.contributors = [];
                     let resultKey = 'result';
                     result.data[resultKey].forEach((m: any) => {
                         this.data.question.messages.push(new models.Message().updateMe(m));
                     });
 
-                    this.buildTagArray();
+                    this.resetTags();
+                    this.resetContributors();
                     this.refreshBoardMessages();
                     if(successCallbackFn) {
                         successCallbackFn(null);
@@ -989,7 +988,18 @@ export class DataService implements IDataService {
         }
     }
 
-    buildTagArray(): void {
+    // Re-calculate the contributor list
+    resetContributors() {
+        this.data.status.contributors = [];
+        this.data.question.messages.forEach((message) => {
+            if (this.data.status.contributors.indexOf(message.creator) === -1) {
+                this.data.status.contributors.push(message.creator);
+            }
+        })
+    }
+
+    // Re-calculate the hash tags found in messages
+    resetTags(): void {
         let handle = this;
         this.data.status.tagCounter = {};
         this.data.status.tags = [];
@@ -1002,7 +1012,7 @@ export class DataService implements IDataService {
 
     parseMessageForTags(message: models.Message): void {
         if (message !== null) {
-            let foundTags = this.utilityService.getPossibleTags(message.text);
+            let foundTags = this.utilityService.extractHashtags(message.text);
             if (foundTags.length > 0) {
                 foundTags.forEach((tag) => {
                     if (this.data.status.tags.indexOf(tag) === -1) {
@@ -1156,7 +1166,7 @@ export class DataService implements IDataService {
         }
 
 
-        // Check that a deleted user is removed the contributor list
+        // Check that a deleted user is removed from the contributor list, if this was their last message
         let self = this;
         function checkAndRemoveDeletedContributor(nickname: string) {
             let counter = 0, foundIndex = -1;
@@ -1244,7 +1254,7 @@ export class DataService implements IDataService {
     disconnectFromWall(successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
         let closingUrl = this.urlService.getHost() + (this.data.status.authorised ? '/#/organiser' : '/#/');
         let disconnectUrl = this.urlService.getHost() + (this.data.status.authorised ? '/disconnectteacher/' : '/disconnect/')
-            + this.data.user.nickname + '/' + this.data.wall._id;
+            + encodeURIComponent(this.data.user.nickname) + '/' + this.data.wall._id;
         this.$http.get(disconnectUrl)
             .then(() => {
                 this.stopPolling();
