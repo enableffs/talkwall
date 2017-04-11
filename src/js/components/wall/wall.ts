@@ -350,7 +350,7 @@ export class WallController implements IWallControllerService {
 	/**** end tag filtering ******/
 
 	showMessageEditor(newMessage: boolean): void {
-		let handle = this;
+		let basedOnText: string = '';
 		let dialogOptions: IDialogOptions = {
 			controller: EditMessageController,
 			controllerAs: 'editMessageC',
@@ -358,33 +358,35 @@ export class WallController implements IWallControllerService {
 			templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
 		};
 		if (newMessage) {
-			handle.dataService.setMessageToEdit(null);
+			this.dataService.setMessageToEdit(null);
+		} else {
+			basedOnText = this.dataService.data.status.messageToEdit.text;
 		}
 
 		this.$mdBottomSheet.show(dialogOptions).then(() => {
 			this.$window.document.activeElement['blur']();
 
-			let message = handle.dataService.data.status.messageToEdit;
+			let message = this.dataService.data.status.messageToEdit;
 
 			// We created a new message, possibly a copy of someone else's
 			if (typeof message._id === 'undefined') {
 
 				// Log details including the origin
 				let origin: {}[] = [];
-				let basedOnText: string = '';
+
 				if (this.dataService.data.status.messageOrigin !== null) {
 					origin = this.dataService.data.status.messageOrigin.origin;
 					basedOnText = this.dataService.data.status.messageOrigin.text;
 				}
 				this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
-				handle.dataService.addMessage( null, null);
+				this.dataService.addMessage( null, null);
 				this.showFeed();
 			}
 
 			// We edited our own existing message
 			else {
-				this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, '');
-				handle.dataService.updateMessages([message], 'edit');
+				this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, basedOnText);
+				this.dataService.updateMessages([message], 'edit');
 			}
 		}, () => {
 			//dialog dismissed

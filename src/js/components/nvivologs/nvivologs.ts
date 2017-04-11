@@ -69,9 +69,9 @@ export class NvivoLogController {
 
         this.data = {
             wall_id: '',
-            startDateTime: moment(),
-            timelineDateTime: moment(0),
-            videoLength: moment(0),
+            startDateTime: moment().utc(),
+            timelineDateTime: moment(0).utc(),
+            videoLength: moment(0).utc(),
             selectedTypes: {
                 'mc': true,
                 'me': true,
@@ -118,6 +118,7 @@ export class NvivoLogController {
         });
         this.dataService.requestLogs(this.data.wall_id, this.data.startDateTime.valueOf(), endDateTime.valueOf(), this.data.timelineDateTime.valueOf(), angular.toJson(selectedTypesArray), (logs: {}[]) => {
             console.log('Logs requested');
+
         }, (error: {status: number, message: string}) => {
 
         })
