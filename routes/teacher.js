@@ -1000,6 +1000,16 @@ exports.getLogs = function(req, res) {
                     var data = '';
                     var diff = {x: '-', y: '-'};
                     var basedOn = '';
+                    var fromId = '';
+                    var fromText = '';
+                    var fromNick = '';
+
+	                var timelineDateTime = moment(parseInt(req.params.timelinetime)).utc();
+                    var startDateTime = moment(parseInt(req.params.startdatetime));
+	                var relativeTimeDuration;
+	                var relativeTime;
+	                var nvivoDuration;
+
                     var columns = {
                         eventTime: 'Event time',
                         minsIntoSession: 'Minutes into session',
@@ -1017,28 +1027,47 @@ exports.getLogs = function(req, res) {
                     res.setHeader('Content-type', 'text/csv');
                     res.charset = 'UTF-8';
 
-                    stringifier.on('readable', function(){
+                    stringifier.on('readable', function() {
                         while(row = stringifier.read()){
                             data += row;
                         }
                     });
 
-                    stringifier.on('finish', function(){
+                    stringifier.on('finish', function() {
                         res.send(data);
                         //res.attachment('hello.csv');
                         //res.end(JSON.stringify(data, null, 2), 'utf8')
                     });
 
                     logs.forEach( function(log) {
-                        var relativeTime = moment(parseInt(req.params.timelinetime)).add(moment(log['stamp'], moment.ISO_8601).diff(moment(parseInt(req.params.startdatetime)))).format('HH:mm:ss');
+	                    nvivoDuration = moment.duration({
+		                    seconds: timelineDateTime.seconds(),
+		                    minutes: timelineDateTime.minutes(),
+		                    hours: timelineDateTime.hours()
+	                    });
+
+	                    // Offset of this log in ms from the starting time, plus the nvivo time difference
+                        relativeTimeDuration = nvivoDuration.add( moment(log['stamp'], moment.ISO_8601).utc().diff(startDateTime), 'ms');
+                        relativeTime = relativeTimeDuration.hours() + ':' + relativeTimeDuration.minutes() + ':' + relativeTimeDuration.seconds();
+
                         if (typeof log.diff !== 'undefined' && log.diff !== null) {
                             diff.x = log.diff.x;
                             diff.y = log.diff.y;
+                        } else {
+	                        diff.x = "-";
+	                        diff.y = "-";
                         }
-                        if (typeof log.basedOn !== 'undefined' && log.diff !== null) {
-                            basedOn = 'item:' + log.basedOn.itemid + ' nick: ' + log.basedOn.nick + ' text: ' + log.basedOn.text;
+
+                        if (typeof log.basedOn !== 'undefined' && log.basedOn !== null) {
+                            fromId = log.basedOn.itemid !== '' ? ( log.basedOn.itemid + ' ' ) : '';
+	                        fromNick = log.basedOn.nick !== '' ? ( log.basedOn.nick + ' ' ) : '';
+                            fromText = log.basedOn.text !== '' ? ('<<' + log.basedOn.text + '>>') : '';
+                            basedOn = fromId + fromNick + fromText;
+                        } else {
+	                        basedOn = "";
                         }
-                        stringifier.write([ moment(log.stamp).format(), relativeTime, common.LogType[log.type], log.nick, log.text, basedOn, diff.x, diff.y, log.itemid ]);
+
+                        stringifier.write([ moment(log.stamp).utc().format(), relativeTime, common.LogType[log.type], log.nick, log.text, basedOn, diff.x, diff.y, log.itemid ]);
                     });
 
                     stringifier.end();
