@@ -333,9 +333,18 @@ export class DataService implements IDataService {
         */
         // In cases where we record a question event, the itemid will match the q_id
         let questionId = type === models.LogType.CreateTask ? id : this.data.question._id;
-        let basedOn: {itemid: string, nick: string, text: string} = null;
+        let basedOn: { itemid: string, nick: string, text: string } = { itemid: "", nick: "", text: ""};
         if (origin !== null && origin.length > 0) {
-            basedOn = { itemid: origin[0]['message_id'], nick: origin[0]['nickname'], text: basedOnText.replace(/\r?\n|\r/g, '') }
+            basedOn.itemid = "";
+            for (let i = 0; i < origin.length; i++) {
+                basedOn.nick += origin[i]['nickname'] + " ";
+            }
+            if (origin[0]['message_id'] !== null) {
+                basedOn.itemid = origin[0]['message_id'];
+            }
+        }
+        if (basedOnText !== "") {
+            basedOn.text = basedOnText.replace(/\r?\n|\r/g, '');
         }
         this.data.log.push(new models.LogEntry(type, id, this.data.user.nickname, text.replace(/\r?\n|\r/g, ''), questionId, diff, basedOn));
     }

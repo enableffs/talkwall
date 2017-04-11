@@ -19,6 +19,8 @@
 
 import {Wall} from '../../models/models';
 import {URLService} from "../../services/urlservice";
+import * as moment from 'moment';
+import Moment = moment.Moment;
 
 export class SessionInfoController {
 	static $inject = ['URLService', '$translate', '$http', '$window', '$interval'];
@@ -71,9 +73,9 @@ export class SessionInfoController {
 				}
 				this.data.showResult = true;
 
-				SessionInfoController.GetClock();
+				SessionInfoController.GetMomentClock();
 				this.$interval(() => {
-					let data = SessionInfoController.GetClock();
+					let data = SessionInfoController.GetMomentClock();
 					this.datestring = data.date;
 					this.timestring = data.time;
 					this.clapper = this.clapper === 'images/clapper1.png' ? 'images/clapper2.png' : 'images/clapper1.png';
@@ -84,6 +86,10 @@ export class SessionInfoController {
 			});
 	}
 
+	static GetMomentClock() {
+	    let d = moment().utc();
+	    return { date: d.format('YYYY-MM-DD'), time: d.format('HH:mm:ss') }
+    }
 
 	static GetClock() {
 		let tday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
