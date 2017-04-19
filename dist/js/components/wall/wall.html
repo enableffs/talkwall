@@ -100,8 +100,8 @@
 				<!-- left sidenav people's screen feed -->
 				<div layout layout-padding="true" ng-if="wallC.participantView">
 					<md-radio-group ng-model="wallC.selectedParticipant" class="md-primary">
-						<md-radio-button ng-repeat="participant in wallC.dataService.data.status.participants"
-										 ng-value="participant">{{ participant }}</md-radio-button>
+						<md-radio-button ng-repeat="contributor in wallC.dataService.data.status.contributors"
+										 ng-value="contributor">{{ contributor }}<span ng-show="wallC.participantIsActive(contributor)" class="wall-participant-is-active">&nbsp;active</span></md-radio-button>
 					</md-radio-group>
 				</div>
 
@@ -145,7 +145,7 @@
 							</div>
 							<div class="wall-joinRow wall-joinRow3" layout="row">
 								<!--<md-icon md-svg-src="images/ic_people_black_24px.svg" aria-hidden="true"></md-icon>-->
-								<span flex>{{wallC.dataService.data.status.participants.length}} {{ 'WALL_NUMBERPARTICIPANTS' | translate }}</span>
+								<span flex>{{wallC.dataService.data.status.activeParticipants.length}} {{ 'WALL_NUMBERPARTICIPANTS' | translate }}</span>
 							</div>
 							<div class="wall-joinRow wall-joinRow4" layout="row">
 								<span flex>{{::wallC.dataService.data.wall.label}} - {{::wallC.dataService.data.wall.theme}}</span>
