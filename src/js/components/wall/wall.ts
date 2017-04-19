@@ -174,9 +174,7 @@ export class WallController implements IWallControllerService {
 				if(newVar !== oldVar) {
 					this.dataService.data.status.selectedParticipant = newVar;
 					this.dataService.logAnEvent(LogType.SelectWall, this.dataService.data.question._id, null, newVar, null, '');
-					this.$timeout(() => {
-						this.dataService.refreshBoardMessages();
-					}, 1000);
+					this.dataService.getMessages(null, null);
 				}
 			}, true);
 
@@ -348,6 +346,10 @@ export class WallController implements IWallControllerService {
 		}
 	};
 	/**** end tag filtering ******/
+
+	participantIsActive(p: string) {
+		return this.dataService.data.status.activeParticipants.indexOf(p) > -1;
+	}
 
 	showMessageEditor(newMessage: boolean): void {
 		let basedOnText: string = '';

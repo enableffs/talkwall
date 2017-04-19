@@ -24255,9 +24255,7 @@ var WallController = (function () {
                 if (newVar !== oldVar) {
                     _this.dataService.data.status.selectedParticipant = newVar;
                     _this.dataService.logAnEvent(models_1.LogType.SelectWall, _this.dataService.data.question._id, null, newVar, null, '');
-                    _this.$timeout(function () {
-                        _this.dataService.refreshBoardMessages();
-                    }, 1000);
+                    _this.dataService.getMessages(null, null);
                 }
             }, true);
             if (this.dataService.data.status.authorised &&
@@ -24422,6 +24420,9 @@ var WallController = (function () {
     };
     ;
     /**** end tag filtering ******/
+    WallController.prototype.participantIsActive = function (p) {
+        return this.dataService.data.status.activeParticipants.indexOf(p) > -1;
+    };
     WallController.prototype.showMessageEditor = function (newMessage) {
         var _this = this;
         var basedOnText = '';
@@ -25021,7 +25022,7 @@ var DataService = (function () {
             status: {
                 joinedWithPin: false,
                 authorised: false,
-                participants: [],
+                activeParticipants: [],
                 totalOnTalkwall: 0,
                 selectedParticipant: null,
                 questionToEdit: null,
@@ -25762,8 +25763,8 @@ var DataService = (function () {
             this.updateMessages(messages, 'position');
         }
     };
-    DataService.prototype.getParticipants = function () {
-        return this.data.status.participants;
+    DataService.prototype.getActiveParticipants = function () {
+        return this.data.status.activeParticipants;
     };
     DataService.prototype.setBoardDivSize = function (newSize) {
         console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));
@@ -25824,7 +25825,7 @@ var DataService = (function () {
         }
         // Update participant list
         var studentParticipants = Object.keys(pollUpdateObject.status.connected_students);
-        this.data.status.participants = studentParticipants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
+        this.data.status.activeParticipants = studentParticipants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
         // Run on teacher connections only
         if (this.data.status.authorised) {
             // Update total number of talkwall users

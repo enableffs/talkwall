@@ -160,7 +160,7 @@ export interface IDataService {
     /**
      * get array of all current participants in this question
      */
-    getParticipants(): Array<string>;
+    getActiveParticipants(): Array<string>;
     /**
      * Temporarily prevent the client from sending requests
      */
@@ -235,7 +235,7 @@ export class DataService implements IDataService {
         status: {
             joinedWithPin: boolean;
             authorised: boolean;
-            participants: Array<string>;
+            activeParticipants: string[];   // Currently connected users
             totalOnTalkwall: number,
             selectedParticipant: string;
             questionToEdit: models.Question;
@@ -244,10 +244,10 @@ export class DataService implements IDataService {
             replaceOnBoard: boolean;
             currentQuestionIndex: number;
             phoneMode: boolean;
-            contributors: Array<string>;
-            unselected_contributors: Array<string>;
-            tags: Array<string>;
-            unselected_tags: Array<string>;
+            contributors: string[];         // Any user who has posted a message at some time
+            unselected_contributors: string[];
+            tags: string[];
+            unselected_tags: string[];
             tagCounter: {};
             boardDivSize: {};
             last_status_update: number;
@@ -287,7 +287,7 @@ export class DataService implements IDataService {
             status: {
                 joinedWithPin: false,
                 authorised: false,
-                participants: [],
+                activeParticipants: [],
                 totalOnTalkwall: 0,
                 selectedParticipant: null,
                 questionToEdit: null,
@@ -1064,17 +1064,15 @@ export class DataService implements IDataService {
         }
     }
 
-    getParticipants(): Array<string> {
-        return this.data.status.participants;
+    getActiveParticipants(): string[] {
+        return this.data.status.activeParticipants;
     }
-
 
     setBoardDivSize(newSize: any): void {
         console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));
         this.data.status.phoneMode = this.$mdMedia('max-width: 960px');
         this.data.status.boardDivSize = newSize;
     }
-
 
     getBackgroundColour() {
         return constants.BACKGROUND_COLOURS[this.data.status.currentQuestionIndex];
@@ -1136,7 +1134,7 @@ export class DataService implements IDataService {
 
         // Update participant list
         let studentParticipants = Object.keys(pollUpdateObject.status.connected_students);
-        this.data.status.participants = studentParticipants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
+        this.data.status.activeParticipants = studentParticipants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
 
         // Run on teacher connections only
         if (this.data.status.authorised) {
