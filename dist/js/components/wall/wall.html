@@ -100,8 +100,8 @@
 				<!-- left sidenav people's screen feed -->
 				<div layout layout-padding="true" ng-if="wallC.participantView">
 					<md-radio-group ng-model="wallC.selectedParticipant" class="md-primary">
-						<md-radio-button ng-repeat="contributor in wallC.dataService.data.status.contributors"
-										 ng-value="contributor">{{ contributor }}<span ng-show="wallC.participantIsActive(contributor)" class="wall-participant-is-active">&nbsp;active</span></md-radio-button>
+						<md-radio-button ng-repeat="contributor in wallC.dataService.data.status.contributors" layout="row" layout-align="space-between center"
+										 ng-value="contributor"><span ng-class="{'wall-participant-is-active' : wallC.participantIsActive(contributor) }">{{ contributor }}</span></md-radio-button>
 					</md-radio-group>
 				</div>
 

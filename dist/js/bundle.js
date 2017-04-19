@@ -24256,9 +24256,6 @@ var WallController = (function () {
                     _this.dataService.data.status.selectedParticipant = newVar;
                     _this.dataService.logAnEvent(models_1.LogType.SelectWall, _this.dataService.data.question._id, null, newVar, null, '');
                     _this.dataService.getMessages(null, null);
-                    _this.$timeout(function () {
-                        _this.dataService.refreshBoardMessages();
-                    }, 1000);
                 }
             }, true);
             if (this.dataService.data.status.authorised &&
