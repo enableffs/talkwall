@@ -159,6 +159,11 @@
   margin-left: 20px;
 }
 
+.wall-participant-is-active {
+  font-weight: bold;
+  color: green;
+}
+
 md-checkbox.md-default-theme.md-checked.wall-user-checkbox .md-icon, md-checkbox.md-checked .md-icon  {
   background-color: $color-orange;
 }
