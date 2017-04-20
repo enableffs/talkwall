@@ -844,40 +844,60 @@ exports.createMessage = function(req, res) {
  */
 exports.updateMessages = function(req, res) {
 
-    if (typeof req.body.messages === 'undefined' || req.body.messages === null
-        || typeof req.body.wall_id === 'undefined' || req.body.wall_id === null
-        || typeof req.body.controlString === 'undefined' || req.body.controlString === null
-        || typeof req.body.nickname === 'undefined' || req.body.nickname === null) {
-        res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
-            .json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
-    }
+	if (typeof req.body.messages === 'undefined' || req.body.messages === null
+		|| typeof req.body.wall_id === 'undefined' || req.body.wall_id === null
+		|| typeof req.body.controlString === 'undefined' || req.body.controlString === null
+		|| typeof req.body.nickname === 'undefined' || req.body.nickname === null) {
 
-    var multiUpdatePromise = [];
-    req.body.messages.forEach(function (message) {    // Collect Fixtures for the user and include in return
+		console.log('TW: PUT /message ( nick: ' + req.body.nickname + ' control: ' +
+			req.body.controlString + ' wall: ' + req.body.wall_id + ' )  : ' +
+			common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status + ' ' +
+			common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message);
+		res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status).json({
+			message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
+	}
 
-        var query = Message.findOneAndUpdate({_id: message._id}, message, {new: true}).lean();
-        var p = query.exec();
-        multiUpdatePromise.push(p);
-    });
+	req.body.messages.forEach(function(incomingMessage) {
+		var query = Message.findOne({ _id: incomingMessage._id });
+		query.exec(function(error, foundMessage) {
+			if(error || foundMessage === null) {
+				res.status(common.StatusMessages.DATABASE_ERROR.status).json({
+					message: common.StatusMessages.DATABASE_ERROR.message, result: error});
+			} else {
+				switch (req.body.controlString) {
+					case "position":
+						if (incomingMessage.board.hasOwnProperty(req.body.nickname)) {
+							foundMessage.board[req.body.nickname] = {
+								xpos: incomingMessage.board[req.body.nickname].xpos,
+								ypos: incomingMessage.board[req.body.nickname].ypos,
+								highlighted: incomingMessage.board[req.body.nickname].highlighted
+							}
+						} else {
+							delete foundMessage.board[req.body.nickname];
+						}
+						foundMessage.markModified('board');
+						break;
+					case "edit":
+						foundMessage.deleted = incomingMessage.deleted;
+						foundMessage.text = incomingMessage.text;
+						break;
+					case "none":
+						break;
+				}
+				foundMessage.save();
 
-    Promise.all(multiUpdatePromise).then(function (messages) {
-        if (req.body.controlString !== 'none') {
-            messages.forEach(function (m) {
-                if (m.hasOwnProperty('question_id')) {
-                    mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, true);
-                }
-            });
-        }
-        res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-            message: common.StatusMessages.UPDATE_SUCCESS.message, result: messages
-        });
-    }).catch(function (error) {
-        res.status(common.StatusMessages.UPDATE_ERROR.status).json({
-            message: common.StatusMessages.UPDATE_ERROR.message, result: error
-        });
-    });
-
+				var m = foundMessage.toObject();
+				if (req.body.controlString !== "none" && m.hasOwnProperty('question_id')) {
+					mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
+				}
+				res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+					message: common.StatusMessages.UPDATE_SUCCESS.message, result: null
+				});
+			}
+		});
+	});
 };
+
 
 
 exports.createTestUser = function() {

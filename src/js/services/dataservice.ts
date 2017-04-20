@@ -602,7 +602,7 @@ export class DataService implements IDataService {
             });
     }
 
-    // Accessor functions for passing messages between directives
+    // Decide whether we create a new message to edit, clone an existing one, or edit our own
     setMessageToEdit(message: models.Message) {
         this.data.status.messageOrigin = null;
         this.data.status.replaceOnBoard = false;
