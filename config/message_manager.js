@@ -401,7 +401,7 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
             break;
 
         // Anyone can report position changes, but only the teacher will see them (spec as at December 2016)
-        // 'position' includes adding a message to board, highlighting, x and y coordinates
+        // 'position' calls arise from pinning / unpinning a message to board, highlight, move x and y position
         case 'position':
 
             for (var user3 in thisQuestion.updated) {
