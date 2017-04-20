@@ -25322,7 +25322,7 @@ var DataService = (function () {
             }
         });
     };
-    // Accessor functions for passing messages between directives
+    // Decide whether we create a new message to edit, clone an existing one, or edit our own
     DataService.prototype.setMessageToEdit = function (message) {
         this.data.status.messageOrigin = null;
         this.data.status.replaceOnBoard = false;
