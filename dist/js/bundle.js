@@ -25854,11 +25854,15 @@ var DataService = (function () {
                 }
             }, null);
         }
+        /*
+         BUGGY CODE.  REVISE..
+         */
         // Check that a deleted user is removed from the contributor list, if this was their last message
-        var self = this;
-        function checkAndRemoveDeletedContributor(nickname) {
-            var counter = 0, foundIndex = -1;
-            self.data.status.contributors.forEach(function (user, index) {
+        /*
+        let self = this;
+        function checkAndRemoveDeletedContributor(nickname: string) {
+            let counter = 0, foundIndex = -1;
+            self.data.status.contributors.forEach((user, index) => {
                 if (user === nickname) {
                     foundIndex = index;
                     counter++;
@@ -25867,9 +25871,8 @@ var DataService = (function () {
             if (counter === 1) {
                 self.data.status.contributors.splice(foundIndex, 1);
             }
-            counter = 0;
-            foundIndex = -1;
-            self.data.status.unselected_contributors.forEach(function (user, index) {
+            counter = 0; foundIndex = -1;
+            self.data.status.unselected_contributors.forEach((user, index) => {
                 if (user === nickname) {
                     foundIndex = index;
                     counter++;
@@ -25879,6 +25882,7 @@ var DataService = (function () {
                 self.data.status.unselected_contributors.splice(foundIndex, 1);
             }
         }
+        */
         // Message notifications (newly created messages)
         for (var message_id in pollUpdateObject.created) {
             if (pollUpdateObject.created.hasOwnProperty(message_id)) {
@@ -25903,9 +25907,9 @@ var DataService = (function () {
                         case 'edit':
                             message.text = update.text;
                             message.deleted = update.deleted;
-                            if (message.deleted) {
-                                checkAndRemoveDeletedContributor(message.creator);
-                            }
+                            /* if (message.deleted) {
+                                 checkAndRemoveDeletedContributor(message.creator);
+                             }*/
                             break;
                         case 'position':
                             message.updateBoard(update.board, false, this.data.user.nickname);
@@ -25913,9 +25917,9 @@ var DataService = (function () {
                         case 'mixed':
                             message.text = update.text;
                             message.deleted = update.deleted;
-                            if (message.deleted) {
+                            /*if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
-                            }
+                            }*/
                             message.updateBoard(update.board, false, this.data.user.nickname);
                             break;
                     }
