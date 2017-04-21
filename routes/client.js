@@ -302,6 +302,64 @@ exports.getMessages = function(req, res) {
 };
 
 /**
+ * Supporting function for updateMessages
+ * @param incomingMessage
+ * @param nickname
+ * @param control
+ * @param wall_id
+ * @returns {*}
+ */
+function updateMessage(incomingMessage, nickname, control, wall_id) {
+
+	return new Promise(function(resolve, reject) {
+
+		var query = Message.findOne({ _id: incomingMessage._id });
+		query.exec(function(error, foundMessage) {
+			if (error || foundMessage === null) {
+				res.status(common.StatusMessages.DATABASE_ERROR.status).json({
+					message: common.StatusMessages.DATABASE_ERROR.message, result: error});
+				reject(error);
+			} else {
+				switch (control) {
+					case "position":
+						if (incomingMessage.board.hasOwnProperty(nickname)) {
+							if (!foundMessage.hasOwnProperty("board")) {
+								foundMessage.board = {};
+							}
+							foundMessage.board[nickname] = {
+								xpos: incomingMessage.board[nickname].xpos,
+								ypos: incomingMessage.board[nickname].ypos,
+								highlighted: incomingMessage.board[nickname].highlighted
+							}
+						} else {
+							delete foundMessage.board[nickname];
+						}
+						foundMessage.markModified('board');
+						break;
+					case "edit":
+						foundMessage.deleted = incomingMessage.deleted;
+						foundMessage.text = incomingMessage.text;
+						break;
+					case "none":
+						break;
+				}
+				foundMessage.save().then(function() {
+					var m = foundMessage.toObject();
+					if (control !== "none" && m.hasOwnProperty('question_id')) {
+						mm.postUpdate(wall_id, m.question_id.toHexString(), nickname, m, control, false);
+					}
+					resolve(foundMessage);
+				}, function(error) {
+					console.log("TW: error saving message ID: " + foundMessage._id);
+					reject(error);
+				});
+			}
+		});
+
+	});
+}
+
+/**
  * @api {put} /message Edit a message
  * @apiName updateMessages
  * @apiGroup non-authorised
@@ -345,49 +403,21 @@ exports.updateMessages = function(req, res) {
 			message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
 	}
 
+	var multiUpdatePromise = [];
 	req.body.messages.forEach(function(incomingMessage) {
-		var query = Message.findOne({ _id: incomingMessage._id });
-		query.exec(function(error, foundMessage) {
-			if (error || foundMessage === null) {
-				res.status(common.StatusMessages.DATABASE_ERROR.status).json({
-					message: common.StatusMessages.DATABASE_ERROR.message, result: error});
-			} else {
-				switch (req.body.controlString) {
-					case "position":
-						if (!foundMessage.hasOwnProperty("board")) {
-							foundMessage.board = {};
-						}
-						if (incomingMessage.board.hasOwnProperty(req.body.nickname)) {
-							foundMessage.board[req.body.nickname] = {
-								xpos: incomingMessage.board[req.body.nickname].xpos,
-								ypos: incomingMessage.board[req.body.nickname].ypos,
-								highlighted: incomingMessage.board[req.body.nickname].highlighted
-							}
-						} else {
-							delete foundMessage.board[req.body.nickname];
-						}
-						foundMessage.markModified('board');
-						break;
-					case "edit":
-						foundMessage.deleted = incomingMessage.deleted;
-						foundMessage.text = incomingMessage.text;
-						break;
-					case "none":
-						break;
-				}
-				foundMessage.save().then(function() {
-					res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-						message: common.StatusMessages.UPDATE_SUCCESS.message, result: null
-					});
-					var m = foundMessage.toObject();
-					if (req.body.controlString !== "none" && m.hasOwnProperty('question_id')) {
-						mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
-					}
-				}, function(err) {
-					console.log("TW: error saving message ID: " + foundMessage._id);
-				});
-			}
+		multiUpdatePromise.push(updateMessage(incomingMessage, req.body.nickname, req.body.controlString, req.body.wall_id));
+	});
+
+	Promise.all(multiUpdatePromise).then(function() {
+		res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+			message: common.StatusMessages.UPDATE_SUCCESS.message, result: null
 		});
+	}).catch(function() {
+		console.log('TW: logs/' + req.body.wall_id + '/' + req.body.nickname +
+			' : ' + common.StatusMessages.UPDATE_ERROR.status + ' ' +
+			common.StatusMessages.UPDATE_ERROR.message);
+		res.status(common.StatusMessages.UPDATE_ERROR.status).json({
+			message: common.StatusMessages.UPDATE_ERROR.message });
 	});
 };
 
@@ -498,9 +528,6 @@ exports.createLogs = function(req, res) {
 			message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message });
 	}
 
-    /*
-     if (mm.userIsOnWall(req.params.wall_id, req.params.nickname)) {
-     */
 
 	var multiSavePromise = [];
 	req.body.logs.forEach(function(log) {
@@ -521,13 +548,5 @@ exports.createLogs = function(req, res) {
 			message: common.StatusMessages.CREATE_ERROR.message });
 	});
 
-    /*
-     } else {
-     console.log('TW: logs/' + req.params.wall_id + '/' + req.params.nickname +
-     ' : ' + common.StatusMessages.INVALID_USER.status + ' ' +
-     common.StatusMessages.INVALID_USER.message);
-     res.status(common.StatusMessages.INVALID_USER.status).json({
-     message: common.StatusMessages.INVALID_USER.message });
-     }
-     */
+
 };
