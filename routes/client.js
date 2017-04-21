@@ -348,7 +348,7 @@ exports.updateMessages = function(req, res) {
 	req.body.messages.forEach(function(incomingMessage) {
 		var query = Message.findOne({ _id: incomingMessage._id });
 		query.exec(function(error, foundMessage) {
-			if(error || foundMessage === null) {
+			if (error || foundMessage === null) {
 				res.status(common.StatusMessages.DATABASE_ERROR.status).json({
 					message: common.StatusMessages.DATABASE_ERROR.message, result: error});
 			} else {
@@ -375,14 +375,16 @@ exports.updateMessages = function(req, res) {
 					case "none":
 						break;
 				}
-				foundMessage.save();
-
-				var m = foundMessage.toObject();
-				if (req.body.controlString !== "none" && m.hasOwnProperty('question_id')) {
-					mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
-				}
-				res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
-					message: common.StatusMessages.UPDATE_SUCCESS.message, result: null
+				foundMessage.save().then(function() {
+					res.status(common.StatusMessages.UPDATE_SUCCESS.status).json({
+						message: common.StatusMessages.UPDATE_SUCCESS.message, result: null
+					});
+					var m = foundMessage.toObject();
+					if (req.body.controlString !== "none" && m.hasOwnProperty('question_id')) {
+						mm.postUpdate(req.body.wall_id, m.question_id.toHexString(), req.body.nickname, m, req.body.controlString, false);
+					}
+				}, function(err) {
+					console.log("TW: error saving message ID: " + foundMessage._id);
 				});
 			}
 		});
