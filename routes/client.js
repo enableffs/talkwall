@@ -354,6 +354,9 @@ exports.updateMessages = function(req, res) {
 			} else {
 				switch (req.body.controlString) {
 					case "position":
+						if (!foundMessage.hasOwnProperty("board")) {
+							foundMessage.board = {};
+						}
 						if (incomingMessage.board.hasOwnProperty(req.body.nickname)) {
 							foundMessage.board[req.body.nickname] = {
 								xpos: incomingMessage.board[req.body.nickname].xpos,
