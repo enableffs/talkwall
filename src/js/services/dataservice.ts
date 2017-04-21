@@ -1173,7 +1173,12 @@ export class DataService implements IDataService {
         }
 
 
+
+        /*
+         BUGGY CODE.  REVISE..
+         */
         // Check that a deleted user is removed from the contributor list, if this was their last message
+        /*
         let self = this;
         function checkAndRemoveDeletedContributor(nickname: string) {
             let counter = 0, foundIndex = -1;
@@ -1197,6 +1202,7 @@ export class DataService implements IDataService {
                 self.data.status.unselected_contributors.splice(foundIndex, 1);
             }
         }
+        */
 
         // Message notifications (newly created messages)
         for (let message_id in pollUpdateObject.created) {
@@ -1226,9 +1232,9 @@ export class DataService implements IDataService {
                         case 'edit':
                             message.text = update.text;
                             message.deleted = update.deleted;
-                            if (message.deleted) {
+                           /* if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
-                            }
+                            }*/
 
                             break;
 
@@ -1239,9 +1245,9 @@ export class DataService implements IDataService {
                         case 'mixed':
                             message.text = update.text;
                             message.deleted = update.deleted;
-                            if (message.deleted) {
+                            /*if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
-                            }
+                            }*/
                             message.updateBoard(update.board, false, this.data.user.nickname);
                             break;
                     }

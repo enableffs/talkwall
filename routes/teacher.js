@@ -833,10 +833,10 @@ function updateMessage(incomingMessage, nickname, control, wall_id) {
 			} else {
 				switch (control) {
 					case "position":
+						if (typeof foundMessage["board"] === 'undefined') {
+							foundMessage.board = {};
+						}
 						if (incomingMessage.board.hasOwnProperty(nickname)) {
-							if (!foundMessage.hasOwnProperty("board")) {
-								foundMessage.board = {};
-							}
 							foundMessage.board[nickname] = {
 								xpos: incomingMessage.board[nickname].xpos,
 								ypos: incomingMessage.board[nickname].ypos,

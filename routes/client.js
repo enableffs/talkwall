@@ -322,10 +322,10 @@ function updateMessage(incomingMessage, nickname, control, wall_id) {
 			} else {
 				switch (control) {
 					case "position":
+						if (typeof foundMessage["board"] === 'undefined') {
+							foundMessage.board = {};
+						}
 						if (incomingMessage.board.hasOwnProperty(nickname)) {
-							if (!foundMessage.hasOwnProperty("board")) {
-								foundMessage.board = {};
-							}
 							foundMessage.board[nickname] = {
 								xpos: incomingMessage.board[nickname].xpos,
 								ypos: incomingMessage.board[nickname].ypos,
@@ -471,7 +471,7 @@ function populateQuestion(question) {
 
 	return new Promise(function(resolve, reject) {
 
-		var query = Message.find({question_id: question._id});
+		var query = Message.find({question_id: question._id, deleted: false });
 		query.exec(function (err, messages) {
 			if (err || messages === null) {
 				reject(err);
