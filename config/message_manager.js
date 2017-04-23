@@ -326,7 +326,7 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  * @param {string} controlString                    the type of update to be performed
  * @param {boolean} isTeacher                       the teacher is making this request
  */
-Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
+Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString) {
 
     if (!this.data.walls.hasOwnProperty(wall_id) || !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
         return;
