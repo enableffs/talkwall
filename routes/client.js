@@ -244,7 +244,7 @@ exports.createMessage = function(req, res) {
 		}
 		else {
 			// Update the message manager to notify other clients
-			mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, message, 'create', false);
+			mm.postUpdate(req.body.wall_id, req.body.message.question_id, req.body.nickname, message, 'create');
 
 			// Update the question with this new message, and return
 			Wall.findOneAndUpdate({
@@ -316,8 +316,6 @@ function updateMessage(incomingMessage, nickname, control, wall_id) {
 		var query = Message.findOne({ _id: incomingMessage._id });
 		query.exec(function(error, foundMessage) {
 			if (error || foundMessage === null) {
-				res.status(common.StatusMessages.DATABASE_ERROR.status).json({
-					message: common.StatusMessages.DATABASE_ERROR.message, result: error});
 				reject(error);
 			} else {
 				switch (control) {
@@ -342,11 +340,13 @@ function updateMessage(incomingMessage, nickname, control, wall_id) {
 						break;
 					case "none":
 						break;
+					default:
+						break;
 				}
 				foundMessage.save().then(function() {
 					var m = foundMessage.toObject();
 					if (control !== "none" && m.hasOwnProperty('question_id')) {
-						mm.postUpdate(wall_id, m.question_id.toHexString(), nickname, m, control, false);
+						mm.postUpdate(wall_id, m.question_id.toHexString(), nickname, m, control);
 					}
 					resolve(foundMessage);
 				}, function(error) {

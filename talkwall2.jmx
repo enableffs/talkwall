@@ -19,7 +19,7 @@
           </elementProp>
           <elementProp name="PIN" elementType="Argument">
             <stringProp name="Argument.name">PIN</stringProp>
-            <stringProp name="Argument.value">8659</stringProp>
+            <stringProp name="Argument.value">2999</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="USERS" elementType="Argument">
@@ -184,9 +184,9 @@ catch (Exception ex){
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">20</stringProp>
-        <longProp name="ThreadGroup.start_time">1492686343000</longProp>
-        <longProp name="ThreadGroup.end_time">1492689943000</longProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <longProp name="ThreadGroup.start_time">1492780533000</longProp>
+        <longProp name="ThreadGroup.end_time">1492784133000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
