@@ -174,9 +174,7 @@ export class WallController implements IWallControllerService {
 				if(newVar !== oldVar) {
 					this.dataService.data.status.selectedParticipant = newVar;
 					this.dataService.logAnEvent(LogType.SelectWall, this.dataService.data.question._id, null, newVar, null, '');
-					this.$timeout(() => {
-						this.dataService.refreshBoardMessages();
-					}, 1000);
+					this.dataService.getMessages(null, null);
 				}
 			}, true);
 
@@ -221,7 +219,7 @@ export class WallController implements IWallControllerService {
 	}
 
 	messageTagsNotPresent(message: Message): boolean {
-		let messageTags = this.utilityService.getPossibleTags(message.text);
+		let messageTags = this.utilityService.extractHashtags(message.text);
 		if (messageTags.length > 0) {
 			let present: boolean = false;
 			for (let i = 0; i < messageTags.length; i++) {
@@ -349,8 +347,12 @@ export class WallController implements IWallControllerService {
 	};
 	/**** end tag filtering ******/
 
+	participantIsActive(p: string) {
+		return this.dataService.data.status.activeParticipants.indexOf(p) > -1;
+	}
+
 	showMessageEditor(newMessage: boolean): void {
-		let handle = this;
+		let basedOnText: string = '';
 		let dialogOptions: IDialogOptions = {
 			controller: EditMessageController,
 			controllerAs: 'editMessageC',
@@ -358,33 +360,35 @@ export class WallController implements IWallControllerService {
 			templateUrl: 'js/components/editMessagePanel/editMessagePanel.html'
 		};
 		if (newMessage) {
-			handle.dataService.setMessageToEdit(null);
+			this.dataService.setMessageToEdit(null);
+		} else {
+			basedOnText = this.dataService.data.status.messageToEdit.text;
 		}
 
 		this.$mdBottomSheet.show(dialogOptions).then(() => {
 			this.$window.document.activeElement['blur']();
 
-			let message = handle.dataService.data.status.messageToEdit;
+			let message = this.dataService.data.status.messageToEdit;
 
 			// We created a new message, possibly a copy of someone else's
 			if (typeof message._id === 'undefined') {
 
 				// Log details including the origin
 				let origin: {}[] = [];
-				let basedOnText: string = '';
+
 				if (this.dataService.data.status.messageOrigin !== null) {
 					origin = this.dataService.data.status.messageOrigin.origin;
 					basedOnText = this.dataService.data.status.messageOrigin.text;
 				}
 				this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
-				handle.dataService.addMessage( null, null);
+				this.dataService.addMessage( null, null);
 				this.showFeed();
 			}
 
 			// We edited our own existing message
 			else {
-				this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, '');
-				handle.dataService.updateMessages([message], 'edit');
+				this.dataService.logAnEvent(LogType.EditMessage, message._id, null, message.text, null, basedOnText);
+				this.dataService.updateMessages([message], 'edit');
 			}
 		}, () => {
 			//dialog dismissed

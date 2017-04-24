@@ -90,7 +90,7 @@ app.all('*', function(req, res, next) {
     res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.set('Expires', '-1');
     res.set('Pragma', 'no-cache');
-    if ('OPTIONS' == req.method) return res.status(200).end();
+    if ('OPTIONS' === req.method) return res.status(200).end();
     next();
 });
 
@@ -131,7 +131,7 @@ app.post('/message',                                                            
 app.put('/message',                                                                                 routes.client.updateMessages);
 app.get('/messages/:question_id',                                                                   routes.client.getMessages);
 app.get('/export/:wall_id',                                                                         routes.client.exportWall);
-app.post('/logs/:wall_id/:nickname',                                                                 routes.client.createLogs);
+app.post('/logs/:wall_id/:nickname',                                                                routes.client.createLogs);
 
 /********* setup & debug *********/
 app.get('/ping',                                                                                    routes.sync.ping());
@@ -141,16 +141,15 @@ if(process.env.STATIC_FOLDER === 'src') {   // Only enable this route if we are 
 }
 
 // middleware which blocks requests when we're too busy
-/*
 app.use(function(req, res, next) {
     if (toobusy()) {
-        res.status(503).send("I'm busy right now, sorry.");
+        res.status(102).send("I'm busy right now, sorry.");
         console.log('Im busy right now, sorry.');
     } else {
         next();
     }
 });
-*/
+
 
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {

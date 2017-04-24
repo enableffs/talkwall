@@ -170,7 +170,7 @@ Mm.prototype.addUserToQuestion = function(wall_id, question_id, nickname, isTeac
     }
 
     // Create the question structure if it doesn't exist
-    if (isTeacher && question_id !== 'none' && !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
+    if (question_id !== 'none' && !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
         this.data.walls[wall_id].questions[question_id] = {
             updated: {},
             created: {}
@@ -326,7 +326,7 @@ Mm.prototype.statusUpdate = function(wall_id, question_id) {
  * @param {string} controlString                    the type of update to be performed
  * @param {boolean} isTeacher                       the teacher is making this request
  */
-Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString, isTeacher) {
+Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_message, controlString) {
 
     if (!this.data.walls.hasOwnProperty(wall_id) || !this.data.walls[wall_id].questions.hasOwnProperty(question_id)) {
         return;
@@ -401,7 +401,7 @@ Mm.prototype.postUpdate = function(wall_id, question_id, nickname, updated_messa
             break;
 
         // Anyone can report position changes, but only the teacher will see them (spec as at December 2016)
-        // 'position' includes adding a message to board, highlighting, x and y coordinates
+        // 'position' calls arise from pinning / unpinning a message to board, highlight, move x and y position
         case 'position':
 
             for (var user3 in thisQuestion.updated) {

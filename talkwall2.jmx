@@ -2,7 +2,7 @@
 <jmeterTestPlan version="1.2" properties="3.1" jmeter="3.1 r1770033">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="talkwall" enabled="true">
-      <stringProp name="TestPlan.comments">A &apos;teacher&apos; must open the wall before running tests</stringProp>
+      <stringProp name="TestPlan.comments">A &apos;teacher&apos; must open the wall before running tests. Must have two questions</stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
@@ -12,19 +12,19 @@
             <stringProp name="Argument.value">dev.talkwall.net</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="PORT" elementType="Argument">
-            <stringProp name="Argument.name">PORT</stringProp>
+          <elementProp name="PORT80" elementType="Argument">
+            <stringProp name="Argument.name">PORT80</stringProp>
             <stringProp name="Argument.value">80</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="PIN" elementType="Argument">
             <stringProp name="Argument.name">PIN</stringProp>
-            <stringProp name="Argument.value">1197</stringProp>
+            <stringProp name="Argument.value">2999</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="USERS" elementType="Argument">
             <stringProp name="Argument.name">USERS</stringProp>
-            <stringProp name="Argument.value">4</stringProp>
+            <stringProp name="Argument.value">20</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -95,37 +95,53 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Extract wall ID" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">WALL_ID</stringProp>
-            <stringProp name="JSONPostProcessor.jsonPathExprs">$.[&apos;result&apos;][&apos;_id&apos;]</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-            <stringProp name="JSONPostProcessor.defaultValues">not_found!</stringProp>
-            <stringProp name="Scope.variable">WALL_ID</stringProp>
-            <stringProp name="Sample.scope">all</stringProp>
-          </JSONPostProcessor>
-          <hashTree/>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Extract question ID" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">QUESTION_ID</stringProp>
-            <stringProp name="JSONPostProcessor.jsonPathExprs">$.[&apos;result&apos;][&apos;questions&apos;][0][&apos;_id&apos;]</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-            <stringProp name="JSONPostProcessor.defaultValues">not_found!</stringProp>
-            <stringProp name="Scope.variable">QUESTION_ID</stringProp>
-            <stringProp name="Sample.scope">all</stringProp>
-          </JSONPostProcessor>
-          <hashTree/>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Save Wall and Question ID" enabled="true">
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Convert Wall JSON data" enabled="true">
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
-JMeterUtils.setProperty(&quot;WALL_ID&quot;, vars.get(&quot;WALL_ID&quot;));
-JMeterUtils.setProperty(&quot;QUESTION_ID&quot;, vars.get(&quot;QUESTION_ID&quot;));</stringProp>
+import org.json.*;
+
+// Storage of data for inter-thread use
+
+String data = prev.getResponseDataAsString();
+
+// Convert result to Java JSON object   http://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html
+
+try {
+	JSONObject jsonData = new JSONObject(data);
+	JSONObject jsonWall = jsonData.getJSONObject(&quot;result&quot;);
+	JSONArray jsonQuestions = jsonWall.getJSONArray(&quot;questions&quot;);
+	String wall_id = jsonWall.getString(&quot;_id&quot;);
+	
+	// Store Wall ID
+	vars.put(&quot;WALL_ID&quot;, wall_id);					// For use in this thread server calls
+	JMeterUtils.setProperty(&quot;WALL_ID&quot;, wall_id);		// For transfer to other threads
+	
+	// Store Questions
+	int questions_length = jsonQuestions.length();
+	for (int i = 0; i &lt; questions_length; i++) {
+		String qKey = &quot;QUESTION_&quot; + (i+1) + &quot;_ID&quot;;
+		String _id = jsonQuestions.getJSONObject(i).getString(&quot;_id&quot;);
+		vars.put(qKey, _id);
+		JMeterUtils.setProperty(qKey, _id);
+	}
+	
+	// Store the question count
+	JMeterUtils.setProperty(&quot;QUESTION_LENGTH&quot;, Integer.toString(questions_length));
+}
+catch (Exception ex){
+	log.warn(&quot;Error in my convert wall json data&quot;, ex);
+	throw ex; // elsewise JMeter will &quot;swallow&quot; the above exception
+}
+</stringProp>
           </BeanShellPostProcessor>
           <hashTree/>
         </hashTree>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">true</boolProp>
           <stringProp name="LoopController.loops">${USERS}</stringProp>
+          <stringProp name="TestPlan.comments">For each user create one message</stringProp>
         </LoopController>
         <hashTree>
           <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
@@ -137,7 +153,7 @@ JMeterUtils.setProperty(&quot;QUESTION_ID&quot;, vars.get(&quot;QUESTION_ID&quot
             <boolProp name="CounterConfig.per_user">false</boolProp>
           </CounterConfig>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="First poll - put the user in Message Manager" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="First poll - put the user in Message Manager on Question 1" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
@@ -147,7 +163,7 @@ JMeterUtils.setProperty(&quot;QUESTION_ID&quot;, vars.get(&quot;QUESTION_ID&quot
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/poll/user_${CONNECTION_COUNTER}/${WALL_ID}/${QUESTION_ID}/none/new</stringProp>
+            <stringProp name="HTTPSampler.path">/poll/user_${CONNECTION_COUNTER}/${WALL_ID}/${QUESTION_1_ID}/none/new</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -158,84 +174,61 @@ JMeterUtils.setProperty(&quot;QUESTION_ID&quot;, vars.get(&quot;QUESTION_ID&quot
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create one new message" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-	&quot;message&quot;: {&#xd;
-		&quot;creator&quot;: &quot;user_${__threadNum}&quot;,&#xd;
-		&quot;text&quot;: &quot;user_${__threadNum} test message&quot;,&#xd;
-		&quot;question_id&quot;: &quot;${QUESTION_ID}&quot;,&#xd;
-		&quot;origin&quot;: [{&#xd;
-      		&quot;nickname&quot;: &quot;user_${__threadNum}&quot;,&#xd;
-      		&quot;message_id&quot;: null&#xd;
-    		}]&#xd;
-	},&#xd;
-	&quot;wall_id&quot;: &quot;${WALL_ID}&quot;,&#xd;
-	&quot;nickname&quot;: &quot;user_${__threadNum}&quot;&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/message</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Extract user1 message ID" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">CREATED_MESSAGE_ID</stringProp>
-            <stringProp name="JSONPostProcessor.jsonPathExprs">$.[&apos;result&apos;][&apos;_id&apos;]</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-            <stringProp name="JSONPostProcessor.defaultValues">not_found!</stringProp>
-            <stringProp name="Scope.variable">USER1_MESSAGE_ID</stringProp>
-          </JSONPostProcessor>
-          <hashTree/>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Save Message ID" enabled="true">
-            <boolProp name="resetInterpreter">false</boolProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
-JMeterUtils.setProperty(&quot;USER_${__threadNum}_MESSAGE_ID&quot;, vars.get(&quot;CREATED_MESSAGE_ID&quot;));</stringProp>
-          </BeanShellPostProcessor>
-          <hashTree/>
-        </hashTree>
       </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Main loop" enabled="true">
         <stringProp name="TestPlan.comments">set number of threads by changing USERS at the top level config to simulate additional users</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">100</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${USERS}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <longProp name="ThreadGroup.start_time">1488282404000</longProp>
-        <longProp name="ThreadGroup.end_time">1488282404000</longProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.ramp_time">20</stringProp>
+        <longProp name="ThreadGroup.start_time">1492780533000</longProp>
+        <longProp name="ThreadGroup.end_time">1492784133000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay">5</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
         <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Load saved variables" enabled="true">
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">// Bring all Message IDs created in Setup into the Main Loop thread
+          <stringProp name="script">import org.json.*;
+import org.apache.jmeter.util.JMeterUtils;
+
+// Retrieval of inter-thread data
+
+
+//vars.put(&quot;ITERATION&quot;, vars.getIteration())
+
+
+// place all code in try - catch for easier debugging!
+try {
+	// Retrieve transferred properties
+	vars.put(&quot;WALL_ID&quot;, JMeterUtils.getProperty(&quot;WALL_ID&quot;));
+	vars.put(&quot;QUESTION_LENGTH&quot;, JMeterUtils.getProperty(&quot;QUESTION_LENGTH&quot;));
+	
+	// Get question IDs
+	int question_length = Integer.parseInt(vars.get(&quot;QUESTION_LENGTH&quot;));
+	for( int i = 0; i &lt; question_length; i++ ) {
+	    vars.put(&quot;QUESTION_&quot; + (i+1) + &quot;_ID&quot;, JMeterUtils.getProperty(&quot;QUESTION_&quot; + (i+1) + &quot;_ID&quot;));
+	}
+
+}
+catch (Exception ex){
+    log.warn(&quot;Error in my load saved variables&quot;, ex);
+    throw ex; // elsewise JMeter will &quot;swallow&quot; the above exception
+}
+
+
+
+
+
+
+
+// Bring all Message IDs created in Setup into the Main Loop thread
 // ${USERS} must be at least 2
 // Names will match the number of users defined at top level
 //
@@ -243,10 +236,7 @@ JMeterUtils.setProperty(&quot;USER_${__threadNum}_MESSAGE_ID&quot;, vars.get(&qu
 //
 // Then assign a variable with rotated message IDs to use for pinning another&apos;s message 
 //
-import org.apache.jmeter.util.JMeterUtils;
-vars.put(&quot;WALL_ID&quot;, JMeterUtils.getProperty(&quot;WALL_ID&quot;));
-vars.put(&quot;QUESTION_ID&quot;, JMeterUtils.getProperty(&quot;QUESTION_ID&quot;));
-
+/*
 int i = 1;  // ${__threadNum} starts at 1
 int users = Integer.parseInt(vars.get(&quot;USERS&quot;));
 String userKey;
@@ -269,9 +259,96 @@ if(users &gt; 1) {
 		}
 		i++;
 	}
-}</stringProp>
+}
+*/</stringProp>
         </BeanShellPreProcessor>
         <hashTree/>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only Controller" enabled="true"/>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create one new message on server in question 1" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+	&quot;message&quot;: {&#xd;
+		&quot;creator&quot;: &quot;user_${__threadNum}&quot;,&#xd;
+		&quot;text&quot;: &quot;user_${__threadNum} test message&quot;,&#xd;
+		&quot;question_id&quot;: &quot;${QUESTION_1_ID}&quot;,&#xd;
+		&quot;origin&quot;: [{&#xd;
+      		&quot;nickname&quot;: &quot;user_${__threadNum}&quot;,&#xd;
+      		&quot;message_id&quot;: null&#xd;
+    		}]&#xd;
+	},&#xd;
+	&quot;wall_id&quot;: &quot;${WALL_ID}&quot;,&#xd;
+	&quot;nickname&quot;: &quot;user_${__threadNum}&quot;&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/message</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Convert Message JSON data" enabled="true">
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">import org.json.*;
+import org.apache.jmeter.util.JMeterUtils;
+
+// Store new message details
+
+String data = prev.getResponseDataAsString();
+
+// Convert result to Java JSON object   http://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html
+
+try {
+	JSONObject jsonData = new JSONObject(data);
+	JSONObject jsonMessage = jsonData.getJSONObject(&quot;result&quot;);
+	String _id = jsonMessage.getString(&quot;_id&quot;);
+
+	// Store the new Message&apos;s ID
+	vars.put(&quot;MESSAGE_ID&quot;, _id);
+}
+catch (Exception ex){
+	log.warn(&quot;Error in my convert message data&quot;, ex);
+	throw ex; // elsewise JMeter will &quot;swallow&quot; the above exception
+}
+
+
+	
+</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="Pause" enabled="true">
+          <boolProp name="TransactionController.includeTimers">false</boolProp>
+          <boolProp name="TransactionController.parent">false</boolProp>
+        </TransactionController>
+        <hashTree>
+          <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Deliberate thread pause" enabled="true">
+            <intProp name="ActionProcessor.action">1</intProp>
+            <intProp name="ActionProcessor.target">0</intProp>
+            <stringProp name="ActionProcessor.duration">2000</stringProp>
+          </TestAction>
+          <hashTree/>
+        </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Poll" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
@@ -282,7 +359,7 @@ if(users &gt; 1) {
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/poll/user_${__threadNum}/${WALL_ID}/${QUESTION_ID}/none/none</stringProp>
+          <stringProp name="HTTPSampler.path">/poll/user_${__threadNum}/${WALL_ID}/${QUESTION_1_ID}/none/none</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -294,19 +371,19 @@ if(users &gt; 1) {
         <hashTree/>
         <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
           <stringProp name="CounterConfig.start">1</stringProp>
-          <stringProp name="CounterConfig.end">30</stringProp>
+          <stringProp name="CounterConfig.end">50</stringProp>
           <stringProp name="CounterConfig.incr">1</stringProp>
           <stringProp name="CounterConfig.name">COUNTER_VALUE</stringProp>
           <stringProp name="CounterConfig.format"></stringProp>
           <boolProp name="CounterConfig.per_user">true</boolProp>
         </CounterConfig>
         <hashTree/>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If counter == 15" enabled="true">
-          <stringProp name="IfController.condition">&quot;${COUNTER_VALUE}&quot;==15</stringProp>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If counter == 10" enabled="true">
+          <stringProp name="IfController.condition">&quot;${COUNTER_VALUE}&quot;==10</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Pin a message" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Pin the message created" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -314,10 +391,10 @@ if(users &gt; 1) {
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
 	&quot;messages&quot;: [{&#xd;
-		&quot;_id&quot;: &quot;USER_${__threadNum}_MESSAGE_ID&quot;,&#xd;
+		&quot;_id&quot;: &quot;${MESSAGE_ID}&quot;,&#xd;
 		&quot;creator&quot;: &quot;user_${__threadNum}&quot;,&#xd;
-		&quot;text&quot;: &quot;test message&quot;,&#xd;
-		&quot;question_id&quot;: &quot;${QUESTION_ID}&quot;,&#xd;
+		&quot;text&quot;: &quot;test message from user ${__threadNum}&quot;,&#xd;
+		&quot;question_id&quot;: &quot;${QUESTION_1_ID}&quot;,&#xd;
 		&quot;board&quot;: {&#xd;
 			&quot;user_${__threadNum}&quot;: {&#xd;
 				     &quot;highlighted&quot;: false,&#xd;
@@ -355,12 +432,12 @@ if(users &gt; 1) {
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If counter == 20 &amp;&amp; USERS &gt; 1" enabled="true">
-          <stringProp name="IfController.condition">&quot;${COUNTER_VALUE}&quot;==20 &amp;&amp; &quot;${USERS}&quot;&gt;1</stringProp>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If counter == 20" enabled="true">
+          <stringProp name="IfController.condition">&quot;${COUNTER_VALUE}&quot;==20</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Pin another user&apos;s message" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Un-Pin the pinned message" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -368,17 +445,11 @@ if(users &gt; 1) {
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
 	&quot;messages&quot;: [{&#xd;
-		&quot;_id&quot;: &quot;${CREATED_MESSAGE_ID}&quot;,&#xd;
+		&quot;_id&quot;: &quot;${MESSAGE_ID}&quot;,&#xd;
 		&quot;creator&quot;: &quot;user_${__threadNum}&quot;,&#xd;
-		&quot;text&quot;: &quot;user_${__threadNum} test message&quot;,&#xd;
-		&quot;question_id&quot;: &quot;${QUESTION_ID}&quot;,&#xd;
-		&quot;board&quot;: [{&#xd;
-			&quot;user_${__threadNum}&quot;: {&#xd;
-				     &quot;highlighted&quot;: false,&#xd;
-				     &quot;ypos&quot;: 0.8,&#xd;
-				     &quot;xpos&quot;: 0.8&#xd;
-				}&#xd;
-		}],&#xd;
+		&quot;text&quot;: &quot;test message&quot;,&#xd;
+		&quot;question_id&quot;: &quot;${QUESTION_1_ID}&quot;,&#xd;
+		&quot;board&quot;: {},&#xd;
 		&quot;origin&quot;: [{&#xd;
       		&quot;nickname&quot;: &quot;user_${__threadNum}&quot;,&#xd;
       		&quot;message_id&quot;: null&#xd;
@@ -444,7 +515,66 @@ if(users &gt; 1) {
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/poll/user_${__threadNum}/${WALL_ID}/${QUESTION_ID}/none/new</stringProp>
+            <stringProp name="HTTPSampler.path">/poll/user_${__threadNum}/${WALL_ID}/${QUESTION_1_ID}/none/new</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If counter == 40" enabled="true">
+          <stringProp name="IfController.condition">&quot;${COUNTER_VALUE}&quot;==40</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+        </IfController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Change to question 2" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/poll/user_${__threadNum}/${WALL_ID}/${QUESTION_1_ID}/${QUESTION_2_ID}/change</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If counter == 45" enabled="true">
+          <stringProp name="IfController.condition">&quot;${COUNTER_VALUE}&quot;==45</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+        </IfController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Change back to question 1" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value"></stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/poll/user_${__threadNum}/${WALL_ID}/${QUESTION_2_ID}/${QUESTION_1_ID}/change</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -548,8 +678,7 @@ if(users &gt; 1) {
           <stringProp name="parameters"></stringProp>
           <boolProp name="resetInterpreter">false</boolProp>
           <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
-vars.put(&quot;WALL_ID&quot;, JMeterUtils.getProperty(&quot;WALL_ID&quot;));
-vars.put(&quot;QUESTION_ID&quot;, JMeterUtils.getProperty(&quot;QUESTION_ID&quot;));</stringProp>
+vars.put(&quot;WALL_ID&quot;, JMeterUtils.getProperty(&quot;WALL_ID&quot;));</stringProp>
         </BeanShellPreProcessor>
         <hashTree/>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -587,123 +716,6 @@ vars.put(&quot;QUESTION_ID&quot;, JMeterUtils.getProperty(&quot;QUESTION_ID&quot
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
-      </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create a message" enabled="false">
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">1</stringProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <longProp name="ThreadGroup.start_time">1487453080000</longProp>
-        <longProp name="ThreadGroup.end_time">1487453080000</longProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-      </ThreadGroup>
-      <hashTree>
-        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Load saved variables" enabled="true">
-          <stringProp name="filename"></stringProp>
-          <stringProp name="parameters"></stringProp>
-          <boolProp name="resetInterpreter">false</boolProp>
-          <stringProp name="script">import org.apache.jmeter.util.JMeterUtils;
-vars.put(&quot;WALL_ID&quot;, JMeterUtils.getProperty(&quot;WALL_ID&quot;));
-vars.put(&quot;QUESTION_ID&quot;, JMeterUtils.getProperty(&quot;QUESTION_ID&quot;));</stringProp>
-        </BeanShellPreProcessor>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create one new message" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-	&quot;message&quot;: {&#xd;
-		&quot;creator&quot;: &quot;${USER1}&quot;,&#xd;
-		&quot;text&quot;: &quot;${USER1} test message&quot;,&#xd;
-		&quot;question_id&quot;: &quot;${QUESTION_ID}&quot;,&#xd;
-		&quot;origin&quot;: [{&#xd;
-      		&quot;nickname&quot;: &quot;${USER1}&quot;,&#xd;
-      		&quot;message_id&quot;: null&#xd;
-    		}]&#xd;
-	},&#xd;
-	&quot;wall_id&quot;: &quot;${WALL_ID}&quot;,&#xd;
-	&quot;nickname&quot;: &quot;${USER1}&quot;&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/message</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Extract user1 message ID" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">USER1_MESSAGE_ID</stringProp>
-            <stringProp name="JSONPostProcessor.jsonPathExprs">$.[&apos;result&apos;][&apos;_id&apos;]</stringProp>
-            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-            <stringProp name="JSONPostProcessor.defaultValues">not_found!</stringProp>
-            <stringProp name="Scope.variable">USER1_MESSAGE_ID</stringProp>
-          </JSONPostProcessor>
-          <hashTree/>
-        </hashTree>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
-          <boolProp name="ResultCollector.error_logging">false</boolProp>
-          <objProp>
-            <name>saveConfig</name>
-            <value class="SampleSaveConfiguration">
-              <time>true</time>
-              <latency>true</latency>
-              <timestamp>true</timestamp>
-              <success>true</success>
-              <label>true</label>
-              <code>true</code>
-              <message>true</message>
-              <threadName>true</threadName>
-              <dataType>true</dataType>
-              <encoding>false</encoding>
-              <assertions>true</assertions>
-              <subresults>true</subresults>
-              <responseData>false</responseData>
-              <samplerData>false</samplerData>
-              <xml>false</xml>
-              <fieldNames>true</fieldNames>
-              <responseHeaders>false</responseHeaders>
-              <requestHeaders>false</requestHeaders>
-              <responseDataOnError>false</responseDataOnError>
-              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-              <assertionsResultsToSave>0</assertionsResultsToSave>
-              <bytes>true</bytes>
-              <sentBytes>true</sentBytes>
-              <threadCounts>true</threadCounts>
-              <idleTime>true</idleTime>
-              <connectTime>true</connectTime>
-            </value>
-          </objProp>
-          <stringProp name="filename"></stringProp>
-        </ResultCollector>
-        <hashTree/>
-        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Save Message ID" enabled="true">
-          <stringProp name="BeanShellSampler.query">import org.apache.jmeter.util.JMeterUtils;
-JMeterUtils.setProperty(&quot;USER1_MESSAGE_ID&quot;, vars.get(&quot;USER1_MESSAGE_ID&quot;));</stringProp>
-          <stringProp name="BeanShellSampler.filename"></stringProp>
-          <stringProp name="BeanShellSampler.parameters"></stringProp>
-          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
-        </BeanShellSampler>
-        <hashTree/>
       </hashTree>
     </hashTree>
   </hashTree>

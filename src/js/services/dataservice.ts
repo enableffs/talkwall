@@ -160,7 +160,7 @@ export interface IDataService {
     /**
      * get array of all current participants in this question
      */
-    getParticipants(): Array<string>;
+    getActiveParticipants(): Array<string>;
     /**
      * Temporarily prevent the client from sending requests
      */
@@ -235,7 +235,7 @@ export class DataService implements IDataService {
         status: {
             joinedWithPin: boolean;
             authorised: boolean;
-            participants: Array<string>;
+            activeParticipants: string[];   // Currently connected users
             totalOnTalkwall: number,
             selectedParticipant: string;
             questionToEdit: models.Question;
@@ -244,10 +244,10 @@ export class DataService implements IDataService {
             replaceOnBoard: boolean;
             currentQuestionIndex: number;
             phoneMode: boolean;
-            contributors: Array<string>;
-            unselected_contributors: Array<string>;
-            tags: Array<string>;
-            unselected_tags: Array<string>;
+            contributors: string[];         // Any user who has posted a message at some time
+            unselected_contributors: string[];
+            tags: string[];
+            unselected_tags: string[];
             tagCounter: {};
             boardDivSize: {};
             last_status_update: number;
@@ -287,7 +287,7 @@ export class DataService implements IDataService {
             status: {
                 joinedWithPin: false,
                 authorised: false,
-                participants: [],
+                activeParticipants: [],
                 totalOnTalkwall: 0,
                 selectedParticipant: null,
                 questionToEdit: null,
@@ -333,9 +333,18 @@ export class DataService implements IDataService {
         */
         // In cases where we record a question event, the itemid will match the q_id
         let questionId = type === models.LogType.CreateTask ? id : this.data.question._id;
-        let basedOn: {itemid: string, nick: string, text: string} = null;
+        let basedOn: { itemid: string, nick: string, text: string } = { itemid: "", nick: "", text: ""};
         if (origin !== null && origin.length > 0) {
-            basedOn = { itemid: origin[0]['message_id'], nick: origin[0]['nickname'], text: basedOnText.replace(/\r?\n|\r/g, '') }
+            basedOn.itemid = "";
+            for (let i = 0; i < origin.length; i++) {
+                basedOn.nick += origin[i]['nickname'] + " ";
+            }
+            if (origin[0]['message_id'] !== null) {
+                basedOn.itemid = origin[0]['message_id'];
+            }
+        }
+        if (basedOnText !== "") {
+            basedOn.text = basedOnText.replace(/\r?\n|\r/g, '');
         }
         this.data.log.push(new models.LogEntry(type, id, this.data.user.nickname, text.replace(/\r?\n|\r/g, ''), questionId, diff, basedOn));
     }
@@ -530,7 +539,7 @@ export class DataService implements IDataService {
     // For non-authorised users
     connectClientWall(joinModel: any, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
         let resultKey = 'result', dataKey = 'data', statusKey = 'status', messageKey = 'message';
-        this.$http.get(this.urlService.getHost() + '/clientwall/' + joinModel.nickname + '/' + joinModel.pin)
+        this.$http.get(this.urlService.getHost() + '/clientwall/' + encodeURIComponent(joinModel.nickname) + '/' + joinModel.pin)
             .then((success) => {
 
 
@@ -593,7 +602,7 @@ export class DataService implements IDataService {
             });
     }
 
-    // Accessor functions for passing messages between directives
+    // Decide whether we create a new message to edit, clone an existing one, or edit our own
     setMessageToEdit(message: models.Message) {
         this.data.status.messageOrigin = null;
         this.data.status.replaceOnBoard = false;
@@ -652,9 +661,6 @@ export class DataService implements IDataService {
             }
             this.data.question = new models.Question("").updateMe(this.data.wall.questions[newIndex]);
             this.data.status.currentQuestionIndex = newIndex;
-            this.data.status.contributors = this.data.question.contributors;
-            // Re-do the hashtag list
-            this.buildTagArray();
         }
 
         // Get the whole message list if we are 'new' or 'changing'
@@ -718,7 +724,7 @@ export class DataService implements IDataService {
     }
 
     notifyChangedQuestion(new_question_id: string, previous_question_id: string, successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
-        this.$http.get(this.urlService.getHost() + '/change/' + this.data.user.nickname + '/' + this.data.wall._id + '/' + new_question_id + '/' + previous_question_id)
+        this.$http.get(this.urlService.getHost() + '/change/' + encodeURIComponent(this.data.user.nickname) + '/' + this.data.wall._id + '/' + new_question_id + '/' + previous_question_id)
             .then(() => {
                 if (typeof successCallbackFn === "function") {
                     successCallbackFn(null);
@@ -742,7 +748,7 @@ export class DataService implements IDataService {
         if (this.data.status.authorised) {
             pollRoute = '/pollteacher/';
         }
-        this.$http.get(this.urlService.getHost() + pollRoute + this.data.user.nickname + '/' + this.data.wall._id +
+        this.$http.get(this.urlService.getHost() + pollRoute + encodeURIComponent(this.data.user.nickname) + '/' + this.data.wall._id +
             '/' + question_id + '/' + previousQuestionId + '/' + control)
             .then((result) => {
                 let resultKey = 'result';
@@ -758,7 +764,7 @@ export class DataService implements IDataService {
                 }
             }, (error) => {
                 console.log('Poll FAILED at ' + Date.now().toString());
-                if (error.status === 503) {
+                if (error.status === 102) {
                     this.showToast('Server very busy..');
                     this.stopPolling();
                     this.$timeout(() => {
@@ -779,7 +785,7 @@ export class DataService implements IDataService {
             this.logCycleCounter = 0;
             if(this.data.log.length > 0) {
                 this.$http.post(this.urlService.getHost() + '/logs/' + this.data.wall._id +
-                    '/' + this.data.user.nickname, {logs: this.data.log})
+                    '/' + encodeURIComponent(this.data.user.nickname), {logs: this.data.log})
                     .then(() => {
                         this.data.log.length = 0;
                         console.log('--> DataService: log success');
@@ -942,12 +948,14 @@ export class DataService implements IDataService {
             this.$http.get(this.urlService.getHost() + '/messages/' + this.data.question._id)
                 .then((result) => {
                     this.data.question.messages = [];
+                    this.data.status.contributors = [];
                     let resultKey = 'result';
                     result.data[resultKey].forEach((m: any) => {
                         this.data.question.messages.push(new models.Message().updateMe(m));
                     });
 
-                    this.buildTagArray();
+                    this.resetTags();
+                    this.resetContributors();
                     this.refreshBoardMessages();
                     if(successCallbackFn) {
                         successCallbackFn(null);
@@ -989,7 +997,18 @@ export class DataService implements IDataService {
         }
     }
 
-    buildTagArray(): void {
+    // Re-calculate the contributor list
+    resetContributors() {
+        this.data.status.contributors = [];
+        this.data.question.messages.forEach((message) => {
+            if (this.data.status.contributors.indexOf(message.creator) === -1) {
+                this.data.status.contributors.push(message.creator);
+            }
+        })
+    }
+
+    // Re-calculate the hash tags found in messages
+    resetTags(): void {
         let handle = this;
         this.data.status.tagCounter = {};
         this.data.status.tags = [];
@@ -1002,7 +1021,7 @@ export class DataService implements IDataService {
 
     parseMessageForTags(message: models.Message): void {
         if (message !== null) {
-            let foundTags = this.utilityService.getPossibleTags(message.text);
+            let foundTags = this.utilityService.extractHashtags(message.text);
             if (foundTags.length > 0) {
                 foundTags.forEach((tag) => {
                     if (this.data.status.tags.indexOf(tag) === -1) {
@@ -1045,17 +1064,15 @@ export class DataService implements IDataService {
         }
     }
 
-    getParticipants(): Array<string> {
-        return this.data.status.participants;
+    getActiveParticipants(): string[] {
+        return this.data.status.activeParticipants;
     }
-
 
     setBoardDivSize(newSize: any): void {
         console.log('--> Dataservice: setBoardDivSize: ' + angular.toJson(newSize));
         this.data.status.phoneMode = this.$mdMedia('max-width: 960px');
         this.data.status.boardDivSize = newSize;
     }
-
 
     getBackgroundColour() {
         return constants.BACKGROUND_COLOURS[this.data.status.currentQuestionIndex];
@@ -1117,7 +1134,7 @@ export class DataService implements IDataService {
 
         // Update participant list
         let studentParticipants = Object.keys(pollUpdateObject.status.connected_students);
-        this.data.status.participants = studentParticipants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
+        this.data.status.activeParticipants = studentParticipants.concat(Object.keys(pollUpdateObject.status.connected_teachers));
 
         // Run on teacher connections only
         if (this.data.status.authorised) {
@@ -1156,7 +1173,12 @@ export class DataService implements IDataService {
         }
 
 
-        // Check that a deleted user is removed the contributor list
+
+        /*
+         BUGGY CODE.  REVISE..
+         */
+        // Check that a deleted user is removed from the contributor list, if this was their last message
+        /*
         let self = this;
         function checkAndRemoveDeletedContributor(nickname: string) {
             let counter = 0, foundIndex = -1;
@@ -1180,6 +1202,7 @@ export class DataService implements IDataService {
                 self.data.status.unselected_contributors.splice(foundIndex, 1);
             }
         }
+        */
 
         // Message notifications (newly created messages)
         for (let message_id in pollUpdateObject.created) {
@@ -1209,9 +1232,9 @@ export class DataService implements IDataService {
                         case 'edit':
                             message.text = update.text;
                             message.deleted = update.deleted;
-                            if (message.deleted) {
+                           /* if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
-                            }
+                            }*/
 
                             break;
 
@@ -1222,9 +1245,9 @@ export class DataService implements IDataService {
                         case 'mixed':
                             message.text = update.text;
                             message.deleted = update.deleted;
-                            if (message.deleted) {
+                            /*if (message.deleted) {
                                 checkAndRemoveDeletedContributor(message.creator);
-                            }
+                            }*/
                             message.updateBoard(update.board, false, this.data.user.nickname);
                             break;
                     }
@@ -1244,7 +1267,7 @@ export class DataService implements IDataService {
     disconnectFromWall(successCallbackFn: (success: {}) => void, errorCallbackFn: (error: {}) => void): void {
         let closingUrl = this.urlService.getHost() + (this.data.status.authorised ? '/#/organiser' : '/#/');
         let disconnectUrl = this.urlService.getHost() + (this.data.status.authorised ? '/disconnectteacher/' : '/disconnect/')
-            + this.data.user.nickname + '/' + this.data.wall._id;
+            + encodeURIComponent(this.data.user.nickname) + '/' + this.data.wall._id;
         this.$http.get(disconnectUrl)
             .then(() => {
                 this.stopPolling();
