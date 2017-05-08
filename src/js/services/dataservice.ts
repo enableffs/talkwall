@@ -903,8 +903,9 @@ export class DataService implements IDataService {
             nickname: this.data.user.nickname
         }).then((result) => {
                 let resultKey = 'result';
-                this.data.question.messages.push(new models.Message().updateMe(result.data[resultKey]));
-                this.parseMessageForTags(result.data[resultKey]);
+                let newMessage = result.data[resultKey];
+                this.data.question.messages.push(new models.Message().updateMe(newMessage));
+                this.parseMessageForTags(newMessage);
                 if (this.data.status.contributors.indexOf(this.data.user.nickname) === -1) {
                     this.data.status.contributors.push(this.data.user.nickname);
                 }
@@ -931,6 +932,15 @@ export class DataService implements IDataService {
                             console.log('--> DataService: updateMessage failure: ' + error);
                         });
                 }
+                // Log details including the origin
+                let origin: {}[] = [];
+                let basedOnText = "";
+
+                if (this.data.status.messageOrigin !== null) {
+                    origin = this.data.status.messageOrigin.origin;
+                    basedOnText = this.data.status.messageOrigin.text;
+                }
+                this.logAnEvent(LogType.CreateMessage, newMessage._id, null, newMessage.text, origin, basedOnText);
                 if (typeof successCallbackFn === "function") {
                     successCallbackFn(null);
                 }
