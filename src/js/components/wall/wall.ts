@@ -372,15 +372,6 @@ export class WallController implements IWallControllerService {
 
 			// We created a new message, possibly a copy of someone else's
 			if (typeof message._id === 'undefined') {
-
-				// Log details including the origin
-				let origin: {}[] = [];
-
-				if (this.dataService.data.status.messageOrigin !== null) {
-					origin = this.dataService.data.status.messageOrigin.origin;
-					basedOnText = this.dataService.data.status.messageOrigin.text;
-				}
-				this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
 				this.dataService.addMessage( null, null);
 				this.showFeed();
 			}
