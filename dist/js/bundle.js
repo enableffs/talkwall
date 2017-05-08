@@ -24443,13 +24443,6 @@ var WallController = (function () {
             var message = _this.dataService.data.status.messageToEdit;
             // We created a new message, possibly a copy of someone else's
             if (typeof message._id === 'undefined') {
-                // Log details including the origin
-                var origin = [];
-                if (_this.dataService.data.status.messageOrigin !== null) {
-                    origin = _this.dataService.data.status.messageOrigin.origin;
-                    basedOnText = _this.dataService.data.status.messageOrigin.text;
-                }
-                _this.dataService.logAnEvent(models_1.LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
                 _this.dataService.addMessage(null, null);
                 _this.showFeed();
             }
@@ -24994,6 +24987,7 @@ var models = require("../models/models");
 var app_constants_1 = require("../app.constants");
 var utilityservice_1 = require("./utilityservice");
 var close_1 = require("../components/close/close");
+var models_1 = require("../models/models");
 var constants = app_constants_1.TalkwallConstants.Constants;
 var DataService = (function () {
     function DataService($http, $window, $routeParams, $rootScope, $location, $interval, $timeout, $mdDialog, $translate, utilityService, urlService, $mdMedia, $mdToast) {
@@ -25604,8 +25598,9 @@ var DataService = (function () {
             nickname: this.data.user.nickname
         }).then(function (result) {
             var resultKey = 'result';
-            _this.data.question.messages.push(new models.Message().updateMe(result.data[resultKey]));
-            _this.parseMessageForTags(result.data[resultKey]);
+            var newMessage = result.data[resultKey];
+            _this.data.question.messages.push(new models.Message().updateMe(newMessage));
+            _this.parseMessageForTags(newMessage);
             if (_this.data.status.contributors.indexOf(_this.data.user.nickname) === -1) {
                 _this.data.status.contributors.push(_this.data.user.nickname);
             }
@@ -25631,6 +25626,14 @@ var DataService = (function () {
                     console.log('--> DataService: updateMessage failure: ' + error);
                 });
             }
+            // Log details including the origin
+            var origin = [];
+            var basedOnText = "";
+            if (_this.data.status.messageOrigin !== null) {
+                origin = _this.data.status.messageOrigin.origin;
+                basedOnText = _this.data.status.messageOrigin.text;
+            }
+            _this.logAnEvent(models_1.LogType.CreateMessage, newMessage._id, null, newMessage.text, origin, basedOnText);
             if (typeof successCallbackFn === "function") {
                 successCallbackFn(null);
             }
