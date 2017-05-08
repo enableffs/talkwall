@@ -1075,7 +1075,7 @@ exports.getLogs = function(req, res) {
                         diffY: 'Diff Y',
                         itemId: 'Message or Question ID'
                     };
-                    var stringifier = stringify({ header: true, columns: columns, delimiter: ',' });
+                    var stringifier = stringify({ header: true, columns: columns, delimiter: '◊' });
 
                     res.setHeader('Content-disposition', 'attachment; filename=\"talkwall-logs-' + req.params.startdatetime + '.csv\"');
                     res.setHeader('Content-type', 'text/csv');
@@ -1115,13 +1115,13 @@ exports.getLogs = function(req, res) {
                         if (typeof log.basedOn !== 'undefined' && log.basedOn !== null) {
                             fromId = log.basedOn.itemid !== '' ? ( log.basedOn.itemid + ' ' ) : '';
 	                        fromNick = log.basedOn.nick !== '' ? ( log.basedOn.nick + ' ' ) : '';
-                            fromText = log.basedOn.text !== '' ? ('<<' + log.basedOn.text + '>>') : '';
+                            fromText = log.basedOn.text !== '' ? ('<<' + log.basedOn.text.trim() + '>>') : '';
                             basedOn = fromId + fromNick + fromText;
                         } else {
 	                        basedOn = "";
                         }
 
-                        stringifier.write([ moment(log.stamp).utc().format(), relativeTime, common.LogType[log.type], log.nick, log.text, basedOn, diff.x, diff.y, log.itemid ]);
+                        stringifier.write([ moment(log.stamp).utc().format(), relativeTime, common.LogType[log.type], log.nick, log.text.trim(), basedOn, diff.x, diff.y, log.itemid ]);
                     });
 
                     stringifier.end();
