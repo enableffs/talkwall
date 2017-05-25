@@ -46,7 +46,7 @@
     "passport-facebook": "2.1.1",
     "passport-google-oauth": "1.0.0",
     "passport-localapikey-es6": "0.5.0",
-    "postmark": "1.3.1",
+    "sendgrid": "5.1.x",
     "q": "1.x.x",
     "redis": "2.6.3",
     "superagent": "3.0.0",

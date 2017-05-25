@@ -35,6 +35,61 @@ exports.getRandomBetween = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+
+exports.sendMail = function(mail) {
+
+	//create a send email promise and return it
+	return new Promise(function (resolve) {
+
+		//avoid sending emails all the time when testing
+		if(process.env.STATIC_FOLDER === 'src') {
+			console.log('sendMail (src) | From: ' + mail.from + ' | To: ' + mail.to + ' | TextBody: ' + mail.text);
+			resolve({code: 200, message: 'OK'});
+		}
+		else {
+			var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
+			var request = sg.emptyRequest({
+				method: 'POST',
+				path: '/v3/mail/send',
+				body: {
+					personalizations: [
+						{
+							to: [
+								{
+									email: mail.to
+								}
+							],
+							subject: mail.subject
+						}
+					],
+					from: {
+						email: mail.from
+					},
+					content: [
+						{
+							type: 'text/plain',
+							value: mail.text
+						},
+						{
+							type: 'text/html',
+							value: mail.html
+						}
+					]
+				}
+			});
+			sg.API(request, function (error, response) {
+				if (error) {
+					resolve({code: 400, message: error});
+				}
+				resolve({code: 200, message: common.StatusMessages.INVITE_EMAIL_SEND_SUCCESS.status});
+			});
+		}
+	});
+};
+/*
+ This is the old code for sending mail with Postmark service
+ */
+/*
 exports.sendMail = function(mail) {
 
     //create a send email promise and return it
@@ -64,4 +119,4 @@ exports.sendMail = function(mail) {
             });
         }
     });
-};
+};*/
