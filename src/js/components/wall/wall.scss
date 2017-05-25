@@ -24,6 +24,11 @@
   color: $color-darkgrey;
 }
 
+.wall-lockButton {
+  min-width: 40px;
+  background-color: lightgrey;
+}
+
 .wall-question div,
 .wall-question {
   max-height: 50px !important;
@@ -154,6 +159,11 @@
   margin-left: 20px;
 }
 
+.wall-participant-is-active {
+  font-weight: bold;
+  color: green;
+}
+
 md-checkbox.md-default-theme.md-checked.wall-user-checkbox .md-icon, md-checkbox.md-checked .md-icon  {
   background-color: $color-orange;
 }
@@ -174,7 +184,7 @@ md-switch.md-default-theme.md-checked.wall-user-checkbox .md-bar, md-switch.md-c
 .animate-repeat.ng-move,
 //.animate-repeat.ng-enter,
 .animate-repeat.ng-leave {
-  transition:all linear 1s;
+  transition: all linear 0.5s;
 }
 
 .animate-repeat.ng-leave.ng-leave-active,

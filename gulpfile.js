@@ -1,6 +1,5 @@
 var gulp = require('gulp'),
     browserSync = require('browser-sync'),
-    styledown = require('gulp-styledown'),
     newer = require('gulp-newer'),
     imagemin = require('gulp-imagemin'),
     svgstore = require('gulp-svgstore'),
@@ -8,23 +7,28 @@ var gulp = require('gulp'),
     cheerio = require('gulp-cheerio'),
     inject = require('gulp-inject'),
     path = require('path'),
-    concat = require('gulp-concat'),
     rename = require('gulp-rename'),
     uglify = require('gulp-uglify'),
     sass = require('gulp-sass'),
-    sourcemaps = require('gulp-sourcemaps'),
-    autoprefixer = require('gulp-autoprefixer'),
-    tslint = require("gulp-tslint"),
-    cssnano = require('gulp-cssnano'),
-    ts = require('gulp-typescript'),
     del = require('del'),
-    typedoc = require("gulp-typedoc");
+    autoprefixer = require('gulp-autoprefixer'),
+    ts = require('gulp-typescript'),
+    tslint = require("gulp-tslint"),
+    typedoc = require("gulp-typedoc"),
+    browserify  = require('browserify'),
+    tsify       = require('tsify'),
+    vinylsourcestream = require('vinyl-source-stream'),
+    vinylbuffer = require('vinyl-buffer'),
+    apidoc = require('gulp-apidoc');
 
 var config = {
     project: '/',
     bower: 'bower_components/',
     src: {
+        app: 'src/js/app.ts',
+        appbundle: 'src/js/bundle.js',
         root: 'src/',
+        jsroot: 'src/js',
         ts: 'src/js/**/*.ts',
         js: 'src/js/**/*.js',
         scss: 'src/scss/**/*.scss',
@@ -51,27 +55,19 @@ var sassOptions = {
     outputStyle: 'expanded'
 };
 
-/*
-var tsProject = ts.createProject({
-    "compilerOptions": {
-        "declaration": false,
-        "sourceMap": true,
-        "module": "commonjs",
-        "target": "ES5",
-        "outFile": 'output.js'
-    },
-    "exclude": [
-        "node_modules",
-        "wwwroot"
-    ]
-});
-*/
+var tsProject = ts.createProject('tsconfig.json');
 
 function showError (error) {
     console.log(error.toString());
     this.emit('end');
 }
 
+gulp.task('apidoc', function(done){
+    apidoc({
+        src: "routes/",
+        dest: "docs/api/"
+    },done);
+});
 
 gulp.task('clean:dist', function () {
     return del([
@@ -104,19 +100,14 @@ gulp.task("ts-lint", function() {
 
 gulp.task("typescripts", function () {
     return gulp.src(config.src.ts)
-        .pipe(ts({
-            "noImplicitAny": false,
-            "outFile": "output.js",
-            "target": "es5",
-            "sourceMap": false
-        }))
+        .pipe(tsProject())
         .pipe(gulp.dest('src/js/'));
 });
 
 
 gulp.task('javascripts', function() {
-    return gulp.src('src/js/output.js')
-        .pipe(rename('main.min.js'))
+    return gulp.src('src/js/bundle.js')
+        //.pipe(rename('main.min.js'))
         .pipe(gulp.dest(config.dist.js));
 });
 
@@ -129,8 +120,8 @@ gulp.task('images', function() {
 });
 
 gulp.task('copy-index-html', function() {
-    return gulp.src('src/index_dist.html')
-        .pipe(rename("index.html"))
+    return gulp.src('src/index.html')
+        //.pipe(rename("index.html"))
         .pipe(gulp.dest(config.dist.root));
 });
 
@@ -232,8 +223,21 @@ gulp.task("typedoc", function() {
         ;
 });
 
+gulp.task('browserify', function () {
+    return browserify(['./src/js/app.ts'])
+        .plugin(tsify, { noImplicitAny: true })
+        .bundle()
+        .pipe(vinylsourcestream('bundle.js'))
+        .pipe(vinylbuffer())
+        .pipe(gulp.dest('src/js/'));
+});
 
-gulp.task('css', gulp.series('sass'));
-gulp.task('dev', gulp.series('sass', 'typescripts', 'javascripts'));
+gulp.task('uglify', function () {
+    return gulp.src(config.src.appbundle)
+        .pipe(uglify())
+        .pipe(gulp.dest(config.src.jsroot));
+});
+
+gulp.task('dev', gulp.series('sass', 'browserify'));
 gulp.task('watchsass', gulp.series('sass', gulp.parallel('browserSync', 'watch')));
-gulp.task('default', gulp.series('clean:dist', 'sass', 'typescripts', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc'));
+gulp.task('default', gulp.series('clean:dist', 'sass', 'browserify', 'javascripts', 'images', 'copy-index-html', 'copy-images', 'copy-partials-html', 'copy-languages', 'copy-fonts', 'copy-json', 'typedoc', 'apidoc'));
