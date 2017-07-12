@@ -13,8 +13,8 @@
   },
   "author": "richarne@uv.uio.no",
   "engines": {
-    "node": "6.2.x",
-    "npm": "3.8.x"
+    "node": "6.11.x",
+    "npm": "4.3.x"
   },
   "license": "UNLICENSED",
   "dependencies": {
