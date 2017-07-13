@@ -21,7 +21,7 @@
 
 var moment = require('moment');
 var common = require('../config/common.js');
-var postmark = require('postmark');
+
 
 var systemOK = true;
 var error = '';
