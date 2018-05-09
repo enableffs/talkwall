@@ -626,7 +626,6 @@ exports.getQuestionContributors = function(req, res) {
  * @apiSuccess {Question} question The newly created question
  */
 exports.createQuestion = function(req, res) {
-
     if (typeof req.body.wall_id === 'undefined' || req.body.wall_id === null
         || typeof req.body.question.label === 'undefined' || req.body.question.label === null ){
         res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
@@ -636,7 +635,7 @@ exports.createQuestion = function(req, res) {
     var query = Wall.findOne({
         _id : req.body.wall_id
     });
-
+    
     query.exec(function(error, wall) {
         if(error || wall === null) {
             res.status(common.StatusMessages.CREATE_ERROR.status).json({
@@ -1075,7 +1074,7 @@ exports.getLogs = function(req, res) {
                         diffY: 'Diff Y',
                         itemId: 'Message or Question ID'
                     };
-                    var stringifier = stringify({ header: true, columns: columns, delimiter: ',' });
+                    var stringifier = stringify({ header: true, columns: columns, delimiter: '◊' });
 
                     res.setHeader('Content-disposition', 'attachment; filename=\"talkwall-logs-' + req.params.startdatetime + '.csv\"');
                     res.setHeader('Content-type', 'text/csv');
@@ -1115,13 +1114,13 @@ exports.getLogs = function(req, res) {
                         if (typeof log.basedOn !== 'undefined' && log.basedOn !== null) {
                             fromId = log.basedOn.itemid !== '' ? ( log.basedOn.itemid + ' ' ) : '';
 	                        fromNick = log.basedOn.nick !== '' ? ( log.basedOn.nick + ' ' ) : '';
-                            fromText = log.basedOn.text !== '' ? ('<<' + log.basedOn.text + '>>') : '';
+                            fromText = log.basedOn.text !== '' ? ('<<' + log.basedOn.text.trim() + '>>') : '';
                             basedOn = fromId + fromNick + fromText;
                         } else {
 	                        basedOn = "";
                         }
 
-                        stringifier.write([ moment(log.stamp).utc().format(), relativeTime, common.LogType[log.type], log.nick, log.text, basedOn, diff.x, diff.y, log.itemid ]);
+                        stringifier.write([ moment(log.stamp).utc().format(), relativeTime, common.LogType[log.type], log.nick, log.text.trim(), basedOn, diff.x, diff.y, log.itemid ]);
                     });
 
                     stringifier.end();

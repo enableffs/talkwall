@@ -23,9 +23,11 @@ import * as models from '../../models/models';
 import {DataService} from "../../services/dataservice";
 import * as moment from "moment";
 
-export class ExportController {
+export class ExportController implements angular.IController {
 	static $inject = ['DataService', '$routeParams', '$mdDialog'];
 
+	$onInit() { }
+	
 	private wall: models.Wall = null;
 
 	constructor(

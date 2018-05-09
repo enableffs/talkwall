@@ -20,6 +20,7 @@
 import {Wall, User} from '../../models/models';
 import {DataService} from "../../services/dataservice";
 import {UtilityService} from "../../services/utilityservice";
+import { IController } from 'angular';
 
 export interface IOrganiserItemController {
 	deleteWall(): void;
@@ -32,7 +33,7 @@ export interface IOrganiserItemController {
 	submitGroupTheme(): void;
 }
 
-class OrganiserItemController implements IOrganiserItemController {
+class OrganiserItemController implements IOrganiserItemController, IController {
 	static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window', '$location', '$timeout'];
 
 	public wall: Wall;
@@ -48,6 +49,8 @@ class OrganiserItemController implements IOrganiserItemController {
 	private checkNameTimeout: any;
 	private nameExists: boolean = true;
 
+	$onInit() { }
+	
 	constructor(
 		private isolatedScope: OrganiserItemDirectiveScope,
 		public dataService: DataService,

@@ -18,8 +18,10 @@
  */
 
 import IDialogService = angular.material.IDialogService;
-export class CloseController {
+export class CloseController implements angular.IController {
 	static $inject = ['$mdDialog'];
+
+	$onInit() { }
 
 	private theanswer = {
 		answered: true

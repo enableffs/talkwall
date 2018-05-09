@@ -20,6 +20,7 @@
 import {Message, LogType, Nickname} from '../../models/models';
 import {DataService} from "../../services/dataservice";
 import {UtilityService} from "../../services/utilityservice";
+import { IController } from 'angular';
 
 export interface IFeedMessageController {
 	deleteMessage(event: Event): void;
@@ -29,12 +30,14 @@ export interface IFeedMessageController {
 	isPinned(): boolean;
 }
 
-class FeedMessageController implements IFeedMessageController {
+class FeedMessageController implements IFeedMessageController, IController {
 	static $inject = ['$scope', 'DataService', '$document', 'UtilityService', '$window'];
 
 	public message: Message;
 	private showControls: boolean = false;
 
+	$onInit() { }
+	
 	constructor(
 		private isolatedScope: FeedMessageDirectiveScope,
 		public dataService: DataService,

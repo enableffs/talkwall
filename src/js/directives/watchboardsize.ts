@@ -19,12 +19,14 @@
 
 "use strict";
 import {DataService} from "../services/dataservice";
+import { IController } from "angular";
 export interface WatchBoardSizeControllerDirectiveScope extends ng.IScope {
 	getWindowDimensions(): {};
 }
 
-class WatchBoardSizeController {
+class WatchBoardSizeController implements IController {
 	static $inject: string[] = ['DataService', '$window'];
+	$onInit() { }
 	constructor(public dataService: DataService, public $window: angular.IWindowService) {
 	};
 }

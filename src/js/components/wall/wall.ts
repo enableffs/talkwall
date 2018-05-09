@@ -28,6 +28,7 @@ import {URLService} from "../../services/urlservice";
 import {DataService} from "../../services/dataservice";
 import {UtilityService} from "../../services/utilityservice";
 import IDialogOptions = angular.material.IDialogOptions;
+import { IController } from "angular";
 
 export interface IWallControllerService {
 	/**
@@ -82,7 +83,7 @@ export interface IWallControllerService {
 	showFeed(event: Event): void;
 }
 
-export class WallController implements IWallControllerService {
+export class WallController implements IWallControllerService, IController {
 	static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 	private magnifyFeed: boolean = false;
 	private magnifyBoard: boolean = false;
@@ -103,6 +104,7 @@ export class WallController implements IWallControllerService {
 
 	private noTag = 'no tag';
 
+	$onInit() { } 
 	constructor(
 		private dataService: DataService,
 		private $mdSidenav: ISidenavService,
@@ -372,15 +374,6 @@ export class WallController implements IWallControllerService {
 
 			// We created a new message, possibly a copy of someone else's
 			if (typeof message._id === 'undefined') {
-
-				// Log details including the origin
-				let origin: {}[] = [];
-
-				if (this.dataService.data.status.messageOrigin !== null) {
-					origin = this.dataService.data.status.messageOrigin.origin;
-					basedOnText = this.dataService.data.status.messageOrigin.text;
-				}
-				this.dataService.logAnEvent(LogType.CreateMessage, message._id, null, message.text, origin, basedOnText);
 				this.dataService.addMessage( null, null);
 				this.showFeed();
 			}

@@ -21,11 +21,13 @@
 import IDialogService = angular.material.IDialogService;
 import {DataService} from "../../services/dataservice";
 
-export class ArchiveWallController {
+export class ArchiveWallController implements angular.IController {
 	static $inject = ['$mdDialog', 'DataService'];
 
 	private showInput: boolean = false;
 	private owneremail: string = undefined;
+
+	$onInit() { }
 
 	constructor(
 		private $mdDialog: IDialogService,
