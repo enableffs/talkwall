@@ -626,7 +626,6 @@ exports.getQuestionContributors = function(req, res) {
  * @apiSuccess {Question} question The newly created question
  */
 exports.createQuestion = function(req, res) {
-
     if (typeof req.body.wall_id === 'undefined' || req.body.wall_id === null
         || typeof req.body.question.label === 'undefined' || req.body.question.label === null ){
         res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
@@ -636,7 +635,7 @@ exports.createQuestion = function(req, res) {
     var query = Wall.findOne({
         _id : req.body.wall_id
     });
-
+    
     query.exec(function(error, wall) {
         if(error || wall === null) {
             res.status(common.StatusMessages.CREATE_ERROR.status).json({

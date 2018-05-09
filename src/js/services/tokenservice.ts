@@ -27,7 +27,7 @@ export interface ITokenInterceptor {
     responseError(rejection: ng.IHttpPromiseCallbackArg<any>): ng.IHttpPromiseCallbackArg<any>;
 }
 
-export class TokenInterceptor implements ITokenInterceptor {
+export class TokenInterceptor {
     static $inject = ['$q', '$window', '$location', 'AuthenticationService'];
 
     constructor(

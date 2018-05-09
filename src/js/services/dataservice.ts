@@ -222,9 +222,12 @@ export interface IDataService {
 
 let constants = TalkwallConstants.Constants;
 
-export class DataService implements IDataService {
+//removed implements IDataService
+export class DataService {
     static $inject = ['$http', '$window', '$routeParams', '$rootScope', '$location', '$interval', '$timeout', '$mdDialog', '$translate',
         'UtilityService', 'URLService', '$mdMedia', '$mdToast'];
+
+     
 
     /*  New Version 3 data structure to improve binding between multiple views and this DataService */
 

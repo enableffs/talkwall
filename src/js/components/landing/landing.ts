@@ -26,8 +26,10 @@ import {LoginController} from "../login/login";
 import {JoinController} from "../join/join";
 import IDialogOptions = angular.material.IDialogOptions;
 
-export class LandingController {
+export class LandingController implements angular.IController {
 	static $inject = ['URLService', '$translate', '$mdMedia', '$mdDialog', '$window', 'DataService'];
+
+	$onInit() { }
 
 	//vars
 	private customFullscreen: boolean;

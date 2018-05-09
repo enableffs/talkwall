@@ -21,12 +21,15 @@ import IBottomSheetService = angular.material.IBottomSheetService;
 import IDocumentService = angular.IDocumentService;
 import ITimeoutService = angular.ITimeoutService;
 import {DataService} from "../../services/dataservice";
+import { IController } from "angular";
 
-export class EditMessageController {
+export class EditMessageController implements IController {
 	static $inject = ['$mdBottomSheet', '$document', '$timeout', 'DataService'];
 
 	private messageText = '';
 
+	$onInit() { } 
+	
 	constructor(
 		private $mdBottomSheet: IBottomSheetService,
 		private $document: IDocumentService,

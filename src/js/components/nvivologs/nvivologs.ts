@@ -27,8 +27,9 @@ import {UtilityService} from "../../services/utilityservice";
 import {URLService} from "../../services/urlservice";
 import * as moment from 'moment';
 import Moment = moment.Moment;
+import { IController } from "angular";
 
-export class NvivoLogController {
+export class NvivoLogController implements IController {
     static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 
     private data : {
@@ -54,6 +55,8 @@ export class NvivoLogController {
     private wall: models.Wall = null;
     private errorString: string;
     private languageCode: string = 'no';
+
+    $onInit() { }
 
     constructor(
         private dataService: DataService,

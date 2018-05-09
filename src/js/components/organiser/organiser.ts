@@ -26,6 +26,7 @@ import {Wall, User} from '../../models/models';
 import {DataService} from "../../services/dataservice";
 import {URLService} from "../../services/urlservice";
 import {TalkwallConstants} from "../../app.constants";
+import { IController } from 'angular';
 
 let constants = TalkwallConstants.Constants;
 
@@ -38,7 +39,7 @@ export interface IOrganiserControllerService {
     updateNickname(): void;
 }
 
-export class OrganiserController implements IOrganiserControllerService {
+export class OrganiserController implements IOrganiserControllerService, IController {
     static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 
     private user: User;
@@ -49,6 +50,8 @@ export class OrganiserController implements IOrganiserControllerService {
     private languageCode: string = 'no';
     private maxNicknameChars: number;
 
+    $onInit() { }
+    
     constructor(
         private dataService: DataService,
         private $mdSidenav: ISidenavService,

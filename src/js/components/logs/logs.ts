@@ -26,16 +26,19 @@ import {DataService} from "../../services/dataservice";
 import {UtilityService} from "../../services/utilityservice";
 import {URLService} from "../../services/urlservice";
 import * as d3 from "d3"
+import { IController } from "angular";
 
 let d: d3.Selection<HTMLElement, any, null, undefined> = d3.selection();
 
-export class LogController {
+export class LogController implements IController {
     static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 
     private wall_id: string;
     private wall: models.Wall = null;
     private errorString: string;
     private languageCode: string = 'no';
+
+    $onInit() { }
 
     constructor(
         private dataService: DataService,

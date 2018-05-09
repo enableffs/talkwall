@@ -28,6 +28,7 @@ import {URLService} from "../../services/urlservice";
 import {DataService} from "../../services/dataservice";
 import {UtilityService} from "../../services/utilityservice";
 import IDialogOptions = angular.material.IDialogOptions;
+import { IController } from "angular";
 
 export interface IWallControllerService {
 	/**
@@ -82,7 +83,7 @@ export interface IWallControllerService {
 	showFeed(event: Event): void;
 }
 
-export class WallController implements IWallControllerService {
+export class WallController implements IWallControllerService, IController {
 	static $inject = ['DataService', '$mdSidenav', '$mdBottomSheet', '$translate', '$scope', '$timeout', 'URLService', '$window', 'UtilityService'];
 	private magnifyFeed: boolean = false;
 	private magnifyBoard: boolean = false;
@@ -103,6 +104,7 @@ export class WallController implements IWallControllerService {
 
 	private noTag = 'no tag';
 
+	$onInit() { } 
 	constructor(
 		private dataService: DataService,
 		private $mdSidenav: ISidenavService,

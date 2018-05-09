@@ -20,8 +20,10 @@
 import IDialogService = angular.material.IDialogService;
 
 
-export class LoginController {
+export class LoginController implements angular.IController {
 	static $inject = ['$mdDialog'];
+
+	$onInit() { }
 
 	constructor(
 		private $mdDialog: IDialogService) {

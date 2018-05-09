@@ -20,18 +20,21 @@
 "use strict";
 import {Question} from "../../models/models";
 import {DataService} from "../../services/dataservice";
+import { IController } from "angular";
 
 export interface ITaskQuestionController {
 	deleteQuestion(): void;
 	editQuestion(): void;
 }
 
-class TaskQuestionController implements ITaskQuestionController {
+class TaskQuestionController implements ITaskQuestionController, IController {
 	static $inject = ['$scope', 'DataService', '$mdDialog'];
 
 	private question: Question;
 	private showControls: boolean;
 
+	$onInit() { }
+	
 	constructor(
 		private isolatedScope: TaskQuestionDirectiveScope,
 		public dataService: DataService,

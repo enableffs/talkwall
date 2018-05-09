@@ -22,9 +22,11 @@ import {URLService} from "../../services/urlservice";
 import * as moment from 'moment';
 import Moment = moment.Moment;
 
-export class SessionInfoController {
+export class SessionInfoController implements angular.IController {
 	static $inject = ['URLService', '$translate', '$http', '$window', '$interval'];
 
+	$onInit() { }
+	
 	//vars
 	private data: { pin: string, error: string, showResult: boolean, wall: Wall, name: string, sessionid: string };
 	private timestring: string;

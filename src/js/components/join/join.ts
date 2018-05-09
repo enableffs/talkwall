@@ -23,9 +23,11 @@ import {TalkwallConstants} from "../../app.constants";
 
 let constants = TalkwallConstants.Constants;
 
-export class JoinController {
+export class JoinController implements angular.IController {
 	static $inject = ['$mdDialog', '$document'];
 
+	$onInit() { }
+	
 	private maxNicknameChars: number;
     public joinModel = {
 		nickname: "",
