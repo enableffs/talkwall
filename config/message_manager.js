@@ -29,10 +29,23 @@ var Mm = function() {
         walls: {},
         total_talkwall_connections: 0
     };
-
+    /* setTimeout(this.time, 5000); */
+    /* Create a saving to database function here?
+     */
+    setInterval(() => {
+        console.log(this.data.walls);
+    }, 1000);
+    console.log(this.data.walls);
+    console.log("Right branchs");
     //  data[question][user].messages : Array   contains all messages that have been modified
     //  data[question][user].status : Object    contains any status messages to send to the user
 };
+
+/* Mm.prototype.time = function(){
+    var self = this;
+    console.log(data.walls);
+} */
+
 
 
 /*
@@ -272,7 +285,6 @@ Mm.prototype.removeUserFromWall = function(wall_id, nickname, isTeacher) {
             this.data.total_talkwall_connections--;
         }
     }
-
 };
 
 /**
@@ -288,11 +300,13 @@ Mm.prototype.removeWall = function(wall_id) {
 
         var self = this;
         setTimeout(function() {
-            var studentsOnWall = Object.keys(self.data.walls[wall_id].status.connected_students).length;
-            var teachersOnWall = Object.keys(self.data.walls[wall_id].status.connected_teachers).length;
-            self.data.total_talkwall_connections -= studentsOnWall;
-            self.data.total_talkwall_connections -= teachersOnWall;
-            delete self.data.walls[wall_id];
+            if (self.data.walls.hasOwnProperty('wall_id')) {
+	            var studentsOnWall = Object.keys(self.data.walls[wall_id].status.connected_students).length;
+	            var teachersOnWall = Object.keys(self.data.walls[wall_id].status.connected_teachers).length;
+	            self.data.total_talkwall_connections -= studentsOnWall;
+	            self.data.total_talkwall_connections -= teachersOnWall;
+	            delete self.data.walls[wall_id];
+            }
         }, 10000);
 
     }
