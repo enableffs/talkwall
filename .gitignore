@@ -13,3 +13,4 @@ src/**/*.map
 src/css
 newrelic_agent.log
 src/dji.csv
+Talkwall Tasks & Specs.md
