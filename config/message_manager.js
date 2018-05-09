@@ -36,7 +36,6 @@ var Mm = function() {
         console.log(this.data.walls);
     }, 1000);
     console.log(this.data.walls);
-    console.log("Right branchs");
     //  data[question][user].messages : Array   contains all messages that have been modified
     //  data[question][user].status : Object    contains any status messages to send to the user
 };
