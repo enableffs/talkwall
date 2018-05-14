@@ -7,5 +7,4 @@ The first wall in teachers UX, in edit task:
         - save button is unresponsive.
     - From observation, it seems that save button is unclickable because the state of text area box is "empty"(so it didn't migrate the data to the first wall). 
 - Solved, not a bug, the user just won't get any feedback that the newly created question is a duplicate.
-    - Need to implement it to the program.
-    
+    - Need to implement a function which gives the user an indication of the issue(duplication of questions not possible atm).
