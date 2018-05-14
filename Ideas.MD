@@ -43,3 +43,4 @@ TODO:
 
     Article about scaling in NodeJS.
     http://adrianmejia.com/blog/2016/03/23/how-to-scale-a-nodejs-app-based-on-number-of-users/
+    https://medium.com/iquii/good-practices-for-high-performance-and-scalable-node-js-applications-part-1-3-bb06b6204197
