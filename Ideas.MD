@@ -39,3 +39,7 @@ TODO:
     - Do we want a realtime collborative feature?
     - With the current state, we will only update the users on a specific time(need verification).
     - Can we expand the project to react on change and update the users instantly or almost in real time?
+
+
+    Article about scaling in NodeJS.
+    http://adrianmejia.com/blog/2016/03/23/how-to-scale-a-nodejs-app-based-on-number-of-users/
