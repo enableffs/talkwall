@@ -144,21 +144,50 @@ exports.getWallById = function(req, res) {
 		res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
 			.json({message: common.StatusMessages.PARAMETER_UNDEFINED_ERROR.message});
 	}
-
+	/* Getting data from memory */
+/* 	if( once ) {
+		let test = mm.data.walls[req.params.wall_id];
+		res.status(common.StatusMessages.GET_SUCCESS.status).json({
+			message: common.StatusMessages.GET_SUCCESS.message,
+			result: test
+		});
+	} else {
+		var query = Wall.findOne({ _id: req.params.wall_id }).lean();
+		query.exec(function (error, wall) {
+			if (error || wall === null) {
+				res.status(common.StatusMessages.GET_ERROR.status).json({
+					message: common.StatusMessages.GET_ERROR.message, result: error
+				});
+			}
+			else {
+				res.status(common.StatusMessages.GET_SUCCESS.status).json({
+					message: common.StatusMessages.GET_SUCCESS.message,
+					result: wall
+				});
+			}
+		});
+		once = true;
+	} */
+	console.log(mm.data.walls);
+	
 	var query = Wall.findOne({ _id: req.params.wall_id }).lean();
-	query.exec(function (error, wall) {
-		if (error || wall === null) {
-			res.status(common.StatusMessages.GET_ERROR.status).json({
-				message: common.StatusMessages.GET_ERROR.message, result: error
-			});
-		}
-		else {
-			res.status(common.StatusMessages.GET_SUCCESS.status).json({
-				message: common.StatusMessages.GET_SUCCESS.message,
-				result: wall
-			});
-		}
-	});
+		query.exec(function (error, wall) {
+			if (error || wall === null) {
+				res.status(common.StatusMessages.GET_ERROR.status).json({
+					message: common.StatusMessages.GET_ERROR.message, result: error
+				});
+			}
+			else {
+				console.log(wall);
+				res.status(common.StatusMessages.GET_SUCCESS.status).json({
+					message: common.StatusMessages.GET_SUCCESS.message,
+					result: wall
+				});
+			}
+		});
+	
+
+
 };
 
 /**

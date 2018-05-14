@@ -64,6 +64,7 @@ db.once('open', function callback () {
 });
 
 /********* redis connection handler *********/
+/* MYNOTE: What type of functionality does Redis add? */
 var redisC = require('./config/redis_database');
 redisC.redisClient.on('error', function (err) {
     console.log('Redis error from app.js' + err);

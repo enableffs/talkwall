@@ -587,7 +587,7 @@ exports.getQuestionContributors = function(req, res) {
     var query = Wall.findOne({
         _id : req.params.wall_id
     });
-
+/* Modify the code to use memory instead of querying to the database */
     query.exec(function(error, wall) {
         if(error || wall === null) {
             res.status(common.StatusMessages.GET_ERROR.status).json({
@@ -626,6 +626,7 @@ exports.getQuestionContributors = function(req, res) {
  * @apiSuccess {Question} question The newly created question
  */
 exports.createQuestion = function(req, res) {
+    console.log("start");
     if (typeof req.body.wall_id === 'undefined' || req.body.wall_id === null
         || typeof req.body.question.label === 'undefined' || req.body.question.label === null ){
         res.status(common.StatusMessages.PARAMETER_UNDEFINED_ERROR.status)
@@ -635,7 +636,21 @@ exports.createQuestion = function(req, res) {
     var query = Wall.findOne({
         _id : req.body.wall_id
     });
-    
+
+    /* Directly saving to memory instead of mongoDB */
+   /*  var newQuestion = new Question(req.body.question);
+    let wall = mm.data.walls;
+    console.log(wall[req.body.wall_id].questions); */
+    /* Find a better wayt to set a unique ID for questions */
+  /*   wall[req.body.wall_id].questions.test2 = newQuestion; */
+/*     var qindex = wall[req.body.wall_id].questions.length-1; */
+  /*   console.log(qIndex); */
+/*     wall.req.body.wall_id = newQuestion; */
+/* Find out the updating process, it seems to overwrite the memory data */
+   /*  mm.statusUpdate(req.body.wall_id, 'none'); 
+
+    res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
+        message: common.StatusMessages.CREATE_SUCCESS.message, result: wall[req.body.wall_id].questions.test2}); */
     query.exec(function(error, wall) {
         if(error || wall === null) {
             res.status(common.StatusMessages.CREATE_ERROR.status).json({
@@ -653,9 +668,9 @@ exports.createQuestion = function(req, res) {
                     mm.statusUpdate(req.body.wall_id, 'none');
                     res.status(common.StatusMessages.CREATE_SUCCESS.status).json({
                         message: common.StatusMessages.CREATE_SUCCESS.message, result: wall.questions[qindex]});
+                        
                 }
             });
-
         }
     })
 };

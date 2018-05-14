@@ -1,0 +1,11 @@
+The first wall in teachers UX, in edit task:
+- Can't save a new question on first wall if the question is "asdf", button unresponsive.
+    - Steps to recreate bug:
+        - go to a wall except the first wall
+        - click on "edit task", then "add task"
+        - write "asdf", change to the first wall.
+        - save button is unresponsive.
+    - From observation, it seems that save button is unclickable because the state of text area box is "empty"(so it didn't migrate the data to the first wall). 
+- Solved, not a bug, the user just won't get any feedback that the newly created question is a duplicate.
+    - Need to implement it to the program.
+    

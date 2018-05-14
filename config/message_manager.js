@@ -32,10 +32,10 @@ var Mm = function() {
     /* setTimeout(this.time, 5000); */
     /* Create a saving to database function here?
      */
-    setInterval(() => {
+    /* setInterval(() => {
         console.log(this.data.walls);
     }, 1000);
-    console.log(this.data.walls);
+    console.log(this.data.walls); */
     //  data[question][user].messages : Array   contains all messages that have been modified
     //  data[question][user].status : Object    contains any status messages to send to the user
 };
@@ -110,7 +110,7 @@ var Mm = function() {
 */
 
 Mm.prototype.pruneWalls = function() {
-
+    /* MYNOTE: Memory gets reset here*/
     // If the wall is not used in a long time, this will clean its message manager from memory
     var self = this;
     var terminationCheck = function() {
