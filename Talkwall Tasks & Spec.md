@@ -1,31 +1,6 @@
 # Talkwall Tasks & Specs
 
 
-## Credentials for Talkwall
-
-Management: https://google.com
-
-* GOOGLE cloud user: samtavla@uio.im
-* GOOGLE password: Samtavla12345
-
-Management: https://console.developers.google.com
-
-* GOOGLE_APP_ID=312282874016-e02bqn75eqr6f966ir4rtdug9i7onfu6.apps.googleusercontent.com
-* GOOGLE_APP_SECRET=JIvKEBDFsIx7LE7osRHBodtf
-* GOOGLE_CALLBACK=http://localhost:8080/auth/google/callback
-
-Management: https://developers.facebook.com
-
-* FACEBOOK account: samtavla@uio.im
-* FACEBOOK password: Samtavla12345
-* FACEBOOK_APP_ID=1790284507858283
-* FACEBOOK_APP_SECRET=16213a4ac5dc75f234e2046b888deb16
-* FACEBOOK_CALLBACK=http://local.talkwall.no:8080/auth/facebook/callback
-
-
-
-
-
 ## Front End
 
 ### 1. Landing page
